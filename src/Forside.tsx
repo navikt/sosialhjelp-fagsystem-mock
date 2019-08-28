@@ -11,12 +11,9 @@ import Form from "react-jsonschema-form";
 import ReactJson from "react-json-view";
 
 // const additionalMetaSchemas = require("ajv/lib/refs/json-schema-draft-06.json");
-// const initialDigisosSoker = require('./digisos/komplett');
+const digisosKomplett = require('./digisos/komplett');
 const initialHendelseTest = require('./digisos/initial-hendelse-test');
 const hendelseSchema = require('./digisos/hendelse-schema-test');
-
-
-
 
 
 function CustomFieldTemplate(props: any) {
@@ -46,9 +43,9 @@ interface ExampleProps {
 
 type Props = ExampleProps & DispatchProps;
 
-class Forside extends React.Component<Props, { input: string, digisosSoker: any}> {
+class Forside extends React.Component<Props, { input: string, digisosSoker: any }> {
 
-    constructor(props: Props){
+    constructor(props: Props) {
         super(props);
         this.state = {
             input: "",
@@ -56,23 +53,23 @@ class Forside extends React.Component<Props, { input: string, digisosSoker: any}
         }
     }
 
-    handleInput(value: string){
+    handleInput(value: string) {
         this.setState({
             input: value,
         });
     }
 
-    handleClickSystemButton(){
+    handleClickSystemButton() {
         this.props.dispatch(setAppName(this.state.input))
     }
 
-    handleChange(json: any){
+    handleChange(json: any) {
         this.setState({
             digisosSoker: json.formData
         });
     }
 
-    handleSubmit(json: any){
+    handleSubmit(json: any) {
         this.setState({
             digisosSoker: json.formData
         });
@@ -81,6 +78,14 @@ class Forside extends React.Component<Props, { input: string, digisosSoker: any}
     render() {
 
         const {appname} = this.props.example;
+
+        const listOfJsxHendelser = digisosKomplett.hendelser.map((hendelse: any, idx: any) => {
+            return (
+                <li key={idx}>
+                    {hendelse.type}
+                </li>
+            );
+        });
 
         return (
             <div>
@@ -91,7 +96,9 @@ class Forside extends React.Component<Props, { input: string, digisosSoker: any}
                     <Input
                         label={'Enter app name:'}
                         value={this.state.input}
-                        onChange={(evt: ChangeEvent<HTMLInputElement>) => {this.handleInput(evt.target.value)}}
+                        onChange={(evt: ChangeEvent<HTMLInputElement>) => {
+                            this.handleInput(evt.target.value)
+                        }}
                     />
 
                     <Knapp
@@ -99,7 +106,7 @@ class Forside extends React.Component<Props, { input: string, digisosSoker: any}
                         form="kompakt"
                         onClick={() => this.handleClickSystemButton()}
                     >
-                        <Cog />
+                        <Cog/>
                         <span className="sr-only">Submit</span>
                     </Knapp>
 
@@ -111,6 +118,14 @@ class Forside extends React.Component<Props, { input: string, digisosSoker: any}
                     </Panel>
 
                 </Panel>
+
+                <Panel>
+                    <ol>
+                        {listOfJsxHendelser}
+                    </ol>
+                </Panel>
+
+
                 <Panel>
                     <div className={"column"}>
                         {/*<Form schema={schemaDigisosSoker}*/}
@@ -124,8 +139,8 @@ class Forside extends React.Component<Props, { input: string, digisosSoker: any}
                         <Form schema={hendelseSchema}
                               formData={this.state.digisosSoker}
                               uiSchema={uiSchema}
-                              // @ts-disable
-                              //additionalMetaSchemas={[additionalMetaSchemas]}
+                            // @ts-disable
+                            //additionalMetaSchemas={[additionalMetaSchemas]}
                               onChange={(json) => this.handleChange(json)}
                               onSubmit={(json) => this.handleSubmit(json)}
                               onError={log("errors")}
