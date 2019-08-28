@@ -62,6 +62,7 @@ class App extends React.Component {
   render(){
     return (
       <div className={"wrapper"}>
+        <AppBanner/>
         <div className={"column"}>
           {/*<Form schema={schemaDigisosSoker}*/}
           {/*      formData={this.state.digisosSoker}*/}
