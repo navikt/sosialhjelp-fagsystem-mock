@@ -34,7 +34,7 @@ jobs:
             echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_LOGIN" --password-stdin
             docker push "navikt/sosialhjelp-fagsystem-mock:${CIRCLE_SHA1}"
 
-  deploy_dev: ==
+  deploy_dev:
     docker:
       - image: navikt/deployment-cli:v0.1.6
     steps:
