@@ -1,0 +1,67 @@
+version: 2.1
+
+jobs:
+  bygg:
+    docker:
+      - image: circleci/node:10
+    steps:
+      - checkout
+#      - restore_cache:
+#          keys:
+#            # when lock file changes, use increasingly general patterns to restore cache
+#            - node-v1-{{ .Branch }}-{{ checksum "package-lock.json" }}
+#            - node-v1-{{ .Branch }}-
+#            - node-v1-
+#      - run:
+#          name: Bygg React app
+#          command: |
+#            npm ci
+#            npm run build
+#      - save_cache:
+#          paths:
+#            - ~/usr/local/lib/node_modules # location depends on npm version
+#          key: node-v1-{{ .Branch }}-{{ checksum "package-lock.json" }}
+
+      - setup_remote_docker
+      - run:
+          name: Bygger Docker image
+          command:
+#            docker build -t "navikt/sosialhjelp-innsyn:$VERSION" .
+            docker build -t "navikt/sosialhjelp-fagsystem-mock:${CIRCLE_SHA1}" .
+      - run:
+          name: Pusher Docker image
+          command: |
+            echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_LOGIN" --password-stdin
+            docker push "navikt/sosialhjelp-fagsystem-mock:${CIRCLE_SHA1}"
+
+  deploy_dev: ==
+    docker:
+      - image: navikt/deployment-cli:v0.1.6
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run: # Brukernavn og passord til Github ligger i miljøvariablene DEPLOYMENT_USERNAME og DEPLOYMENT_PASSWORD. TODO: legge til støtte for deploy til prod og valgt q-miljø
+          name: Deploy til q0 dev-sbs
+          command: |
+            deployment-cli deploy create --cluster=dev-sbs --repository=navikt/sosialhjelp-fagsystem-mock --team=digisos -r=nais.yaml --version=${CIRCLE_SHA1} --vars=nais/dev/q0.json
+
+
+
+workflows:
+  version: 2.1
+  bygg-og-publish-image:
+    jobs:
+      - bygg:
+          context: NAIS deployment
+# FIXME: Trigger ikke, og holder igjen deploy_dev
+#      - hold_for_deploy: # <<< A job that will require manual approval in the CircleCI web application.
+#          type: approval # <<< This key-value pair will set your workflow to a status of "On Hold"
+#          requires:
+#            - bygg
+      - deploy_dev:
+          requires:
+            - bygg
+#            - hold_for_deploy
+          filters:
+            branches:
+              only: master
