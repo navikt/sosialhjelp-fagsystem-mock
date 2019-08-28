@@ -1,0 +1,3 @@
+[submodule "soknadsosialhjelp-filformat"]
+	path = soknadsosialhjelp-filformat
+	url = https://github.com/navikt/soknadsosialhjelp-filformat.git
