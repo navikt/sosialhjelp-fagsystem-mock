@@ -2,15 +2,19 @@ import 'whatwg-fetch'
 
 export function erDev(): boolean {
     const url = window.location.href;
-    return (url.indexOf("localhost:3000") > 0);
+    return (url.indexOf("localhost:3000") > 0 || url.indexOf("localhost:3001") > 0);
 }
 
 export function getApiBaseUrl(): string {
     if (erDev()) {
-        return "http://localhost:8080/sosialhjelp/innsyn-api/api/v1/innsyn"; // /1234/saksStatus
+        return "http://localhost:8080/sosialhjelp/innsyn-api/api/v1"; // /1234/saksStatus
     } else {
-        return getAbsoluteApiUrl() + "api/v1/innsyn"
+        return getAbsoluteApiUrl() + "api/v1"
     }
+}
+
+export function getDigisosApiControllerPath(){
+    return `${getApiBaseUrl()}/digisosapi/oppdaterDigisosSak`;
 }
 
 export function getApiBaseUrlForSwagger(): string {
@@ -42,12 +46,13 @@ export enum REST_STATUS {
     INITIALISERT = "INITIALISERT"
 }
 
-const getHeaders = () => {
-    return new Headers({
+const getHeaders = (): Headers => {
+    const headersRecord: Record<string, string> = {
         "Content-Type": "application/json",
-        "Authorization": "1234", // TODO: Ikke hardkodet Authorization id
-        "Accept": "application/json, text/plain, */*"
-    });
+        "Accept": "application/json, text/plain, */*",
+        "Origin": "http://localhost:3000"
+    };
+    return new Headers(headersRecord)
 };
 
 export const serverRequest = (method: string, urlPath: string, body: string|null) => {
@@ -58,7 +63,7 @@ export const serverRequest = (method: string, urlPath: string, body: string|null
     };
 
     return new Promise((resolve, reject) => {
-        fetch(getApiBaseUrl() + urlPath, OPTIONS)
+        fetch(urlPath, OPTIONS)
             .then((response: Response) => {
                 sjekkStatuskode(response);
                 const jsonResponse = toJson(response);

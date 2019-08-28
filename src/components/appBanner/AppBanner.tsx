@@ -1,12 +1,13 @@
 import * as React from "react";
-import Banner from "../banner/Banner";
 
 const AppBanner: React.FC<{}> = () => {
-	return (
-		<Banner>
-			Søknad om økonomisk sosialhjelp
-		</Banner>
-	);
+    return (
+        <div className={"app-banner"}>
+            <p className={"app-banner__tittel"}>
+                Sosialhjelp Fagsystem Mock
+            </p>
+        </div>
+    );
 };
 
 export default AppBanner;

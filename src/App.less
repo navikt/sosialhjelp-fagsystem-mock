@@ -10,7 +10,26 @@ a.lenke_uten_ramme:hover {
   text-decoration: underline;
 }
 
-.blokk-center .vedlegg_liste_panel {
+.blokk-center {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@media screen and (max-width: 640px ) {
+  .blokk-center {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+}
+
+@media screen and (min-width: 641px ) {
+  .blokk-center {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}
+
+.blokk-center {
   padding-bottom: 5rem;
 }
 
