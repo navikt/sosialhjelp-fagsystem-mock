@@ -11,7 +11,7 @@ import hendelseSchema from './digisos/hendelse-schema-test';
 export const log = (type) => console.log.bind(console, type);
 
 const additionalMetaSchemas = require("ajv/lib/refs/json-schema-draft-06.json");
-const initialDigisosSoker = require('./digisos/komplett');
+// const initialDigisosSoker = require('./digisos/komplett');
 const initialHendelseTest = require('./digisos/initial-hendelse-test');
 
 
