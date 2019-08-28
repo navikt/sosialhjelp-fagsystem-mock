@@ -10,7 +10,7 @@ import Cog from "./components/ikoner/TannHjul";
 import Form from "react-jsonschema-form";
 import ReactJson from "react-json-view";
 
-const additionalMetaSchemas = require("ajv/lib/refs/json-schema-draft-06.json");
+// const additionalMetaSchemas = require("ajv/lib/refs/json-schema-draft-06.json");
 // const initialDigisosSoker = require('./digisos/komplett');
 const initialHendelseTest = require('./digisos/initial-hendelse-test');
 const hendelseSchema = require('./digisos/hendelse-schema-test');
