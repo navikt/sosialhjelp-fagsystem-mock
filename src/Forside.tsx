@@ -9,13 +9,16 @@ import {Input, SkjemaGruppe} from "nav-frontend-skjema";
 import Cog from "./components/ikoner/TannHjul";
 import Form from "react-jsonschema-form";
 import ReactJson from "react-json-view";
+import {Hendelse} from "./types/foo";
+
 
 // const additionalMetaSchemas = require("ajv/lib/refs/json-schema-draft-06.json");
-const digisosKomplett = require('./digisos/komplett');
 const initialHendelseTest = require('./digisos/initial-hendelse-test');
 const hendelseSchema = require('./digisos/hendelse-schema-test');
 const minimal = require('./digisos/minimal');
+const digisosKomplett = require('./digisos/komplett');
 
+const hendelserKomplett: Hendelse[] = digisosKomplett.hendelser;
 
 function CustomFieldTemplate(props: any) {
     const {id, classNames, label, help, required, description, errors, children} = props;
@@ -45,7 +48,7 @@ interface ForsideProps {
 interface ForsideState {
     input: string;
     digisosSoker: object;
-    preparedDigisosSoker: object;
+    hendelserPrepared: Hendelse[];
 }
 
 type Props = ForsideProps & DispatchProps;
@@ -57,7 +60,7 @@ class Forside extends React.Component<Props, ForsideState> {
         this.state = {
             input: "",
             digisosSoker: initialHendelseTest,
-            preparedDigisosSoker: minimal
+            hendelserPrepared: minimal
         }
     }
 
@@ -87,9 +90,11 @@ class Forside extends React.Component<Props, ForsideState> {
 
         const {appname} = this.props.example;
 
-        const listOfJsxHendelser = digisosKomplett.hendelser.map((hendelse: any, idx: any) => {
+        const listOfJsxHendelser = hendelserKomplett.map((hendelse: Hendelse, idx: number) => {
 
-            buttonText = this.state.preparedDigisosSoker.hendelser.length > idx + 1;
+            const buttonText = this.state.hendelserPrepared.length > idx
+                ? "red"
+                : "green";
 
             return (
                 <li key={idx}>
@@ -98,7 +103,7 @@ class Forside extends React.Component<Props, ForsideState> {
                         <Knapp
                             disabled={idx === 0}
                         >
-                            asd
+                            {buttonText}
                         </Knapp>
                     </Panel>
                 </li>
@@ -126,7 +131,7 @@ class Forside extends React.Component<Props, ForsideState> {
                 <Panel>
                     <div className={"column"}>
                         <div className={"jsonView"}>
-                            <ReactJson src={this.state.preparedDigisosSoker}/>
+                            <ReactJson src={this.state.hendelserPrepared}/>
                         </div>
                     </div>
                 </Panel>

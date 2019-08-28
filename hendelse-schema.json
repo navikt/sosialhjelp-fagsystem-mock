@@ -1,0 +1,644 @@
+{
+    "$schema": "http://json-schema.org/draft-06/schema#",
+
+    "title": "Hendelse",
+    "description": "Feltet \"type\" angir hvilken type hendelse det er. Se egen definisjon per hendelse. Det som er dokumentert direkte under er kun det som er felles for alle hendelser.",
+    "javaType": "no.nav.sbl.soknadsosialhjelp.digisos.soker.Hendelse",
+    "type": "object",
+
+    "oneOf": [
+        {"$ref": "#/definitions/tildeltNavKontor"},
+        {"$ref": "#/definitions/soknadsStatus"},
+        {"$ref": "#/definitions/vedtakFattet"},
+        {"$ref": "#/definitions/dokumentasjonEtterspurt"},
+        {"$ref": "#/definitions/forelopigSvar"},
+        {"$ref": "#/definitions/saksStatus"},
+        {"$ref": "#/definitions/utbetaling"},
+        {"$ref": "#/definitions/vilkar"},
+        {"$ref": "#/definitions/rammevedtak"}
+    ],
+    "properties": {
+        "type": {
+            "title": "Angir hendelsestypen og dermed også hvilke felter som må settes..",
+            "type": "string",
+            "description": "Det kan legges til nye hendelsestyper i enumen, men ingen gamle kan fjernes fra valideringsskjemaet (grunnet kompatibilitet).",
+            "enum": [
+                "tildeltNavKontor", "soknadsStatus", "vedtakFattet", "dokumentasjonEtterspurt", "forelopigSvar", "saksStatus", "utbetaling", "vilkar", "rammevedtak"
+            ]
+        },
+        "hendelsestidspunkt": {
+            "$ref": "#/definitions/tidspunkt"
+        }
+    },
+    "definitions": {
+        "tidspunkt": {
+            "$schema": "http://json-schema.org/draft-06/schema#",
+            "title": "Et tidspunkt.",
+            "description": "Kombinert dato og tid etter ISO8601 med UTC som tidssone og millisekundpresisjon, for eksempel \"2018-10-04T13:37:00.134Z\"",
+            "type": "string",
+            "pattern": "^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]T[0-9][0-9]:[0-9][0-9]:[0-9][0-9].[0-9][0-9]*Z$"
+        },
+        "tildeltNavKontor": {
+            "$schema": "http://json-schema.org/draft-06/schema#",
+            "title": "Nytt NAV-kontor behandler søknaden.",
+            "javaType": "no.nav.sbl.soknadsosialhjelp.digisos.soker.hendelse.TildeltNavKontor",
+            "type": "object",
+            "extends": {
+                "ONLY_CODEGEN$ref": "#/definitions/hendelse"
+            },
+            "allOf": [
+                {
+                    "properties": {
+                        "type": {
+                            "type": "string",
+                            "enum": [
+                                "tildeltNavKontor"
+                            ]
+                        }
+                    }
+                }
+            ],
+            "properties": {
+                "navKontor": {
+                    "type": "string",
+                    "description": "En identifikator for NAV-kontor. Vi benytter NORG som har oversikt over alle NAV-kontor i Norge, for hver kommune og bydel.",
+                    "pattern": "^[0-9][0-9][0-9][0-9]$"
+                }
+            },
+            "required": [
+                "navKontor"
+            ]
+        },
+        "soknadsStatus": {
+            "$schema": "http://json-schema.org/draft-06/schema#",
+            "title": "Ny status på søknaden.",
+            "javaType": "no.nav.sbl.soknadsosialhjelp.digisos.soker.hendelse.SoknadsStatus",
+            "type": "object",
+            "extends": {
+                "ONLY_CODEGEN$ref": "#/definitions/hendelse"
+            },
+            "allOf": [
+                {
+                    "properties": {
+                        "type": {
+                            "type": "string",
+                            "enum": [
+                                "soknadsStatus"
+                            ]
+                        }
+                    }
+                }
+            ],
+            "properties": {
+                "status": {
+                    "type": "string",
+                    "description": "Det kan legges til nye statustyper i enumen, men ingen gamle kan fjernes fra valideringsskjemaet (grunnet kompatibilitet).",
+                    "enum": [
+                        "MOTTATT",
+                        "UNDER_BEHANDLING",
+                        "FERDIGBEHANDLET",
+                        "BEHANDLES_IKKE"
+                    ]
+                }
+            },
+            "required": [
+                "status"
+            ]
+        },
+        "vedtakFattet": {
+            "$schema": "http://json-schema.org/draft-06/schema#",
+            "title": "Et vedtak, i tilknytning til søknaden, har blitt fattet.",
+            "description": "Det er kun vedtak som ligger inn under Sosialtjenesteloven som skal sendes.",
+            "javaType": "no.nav.sbl.soknadsosialhjelp.digisos.soker.hendelse.VedtakFattet",
+            "type": "object",
+            "extends": {
+                "ONLY_CODEGEN$ref": "#/definitions/hendelse"
+            },
+            "allOf": [
+                {
+                    "properties": {
+                        "type": {
+                            "type": "string",
+                            "enum": [
+                                "vedtakFattet"
+                            ]
+                        }
+                    }
+                }
+            ],
+            "properties": {
+                "saksreferanse": {
+                    "type": "string",
+                    "description": "Referanse vedtaket skal tilknyttes til"
+                },
+                "utfall": {
+                    "type": "object",
+                    "title": "Utfallet",
+                    "description": "Utfallet i vedtaket",
+                    "properties": {
+                        "utfall": {
+                            "type": "string",
+                            "description": "Utfallet av vedtaket",
+                            "enum": [
+                                "INNVILGET",
+                                "DELVIS_INNVILGET",
+                                "AVSLATT",
+                                "AVVIST"
+                            ]
+                        }
+                    }
+                },
+                "vedtaksfil": {
+                    "type": "object",
+                    "title": "Vedtaksfil",
+                    "description": "Vedtaksfilen som søker skal ha mulighet til å se. Det er ingen garanti for at filen blir vist til søker. Filformatet skal være PDF.",
+                    "properties": {
+                        "referanse": {
+                            "$ref": "#/definitions/filreferanse"
+                        }
+                    },
+                    "required": [
+                        "referanse"
+                    ]
+                },
+                "vedlegg": {
+                    "type": "array",
+                    "title": "Vedlegg til vedtaksfil",
+                    "description": "En liste med vedlegg til vedtaksfilen som søker skal ha mulighet til å se. Det er ingen garanti for at filene blir vist til søker. Filformatet skal være PDF.",
+                    "items": {
+                        "$ref": "#/definitions/vedlegg"
+                    }
+                }
+            },
+            "required": [
+                "vedtaksfil",
+                "vedlegg",
+                "saksreferanse"
+            ]
+        },
+        "dokumentasjonEtterspurt": {
+            "$schema": "http://json-schema.org/draft-06/schema#",
+            "title": "Veileder ber om mer dokumentasjon fra søker",
+            "javaType": "no.nav.sbl.soknadsosialhjelp.digisos.soker.hendelse.DokumentasjonEtterspurt",
+            "type": "object",
+            "extends": {
+                "ONLY_CODEGEN$ref": "#/definitions/hendelse"
+            },
+            "allOf": [
+                {
+                    "properties": {
+                        "type": {
+                            "type": "string",
+                            "enum": [
+                                "dokumentasjonEtterspurt"
+                            ]
+                        }
+                    }
+                }
+            ],
+            "properties": {
+                "forvaltningsbrev": {
+                    "$ref": "#/definitions/forvaltningsbrev"
+                },
+                "vedlegg": {
+                    "type": "array",
+                    "title": "Vedlegg til forvaltningsbrev",
+                    "description": "En liste med vedlegg til forvaltningsbrevet som søker skal ha mulighet til å se. Det er ingen garanti for at filene blir vist til søker. Filformatet skal være PDF.",
+                    "items": {
+                        "$ref": "#/definitions/vedlegg"
+                    }
+                },
+                "dokumenter": {
+                    "type": "array",
+                    "title": "Liste over dokumentene etterspurt",
+                    "items": {
+                        "title": "Dokument",
+                        "type": "object",
+                        "properties": {
+                            "dokumenttype": {
+                                "title": "Dokumenttype",
+                                "type": "string",
+                                "description": "En predefinert eller fritekstbasert dokumenttype som veileder etterspør fra søker, eks: \"strømfaktura\" eller \"kontoutskrift\""
+                            },
+                            "tilleggsinformasjon": {
+                                "title": "Tilleggsinformasjon",
+                                "type": "string",
+                                "description": "Tilleggsinformasjon til dokumenttypen veileder etterspør"
+                            },
+                            "innsendelsesfrist": {
+                                "$ref": "#/definitions/tidspunkt"
+                            }
+                        },
+                        "required": [
+                            "dokumenttype",
+                            "innsendelsesfrist"
+                        ]
+                    }
+                }
+            },
+            "required": [
+                "forvaltningsbrev",
+                "dokumenter"
+            ]
+        },
+        "forelopigSvar": {
+            "$schema": "http://json-schema.org/draft-06/schema#",
+            "title": "Foreløpig svar",
+            "javaType": "no.nav.sbl.soknadsosialhjelp.digisos.soker.hendelse.ForelopigSvar",
+            "type": "object",
+            "extends": {
+                "ONLY_CODEGEN$ref": "#/definitions/hendelse"
+            },
+            "allOf": [
+                {
+                    "properties": {
+                        "type": {
+                            "type": "string",
+                            "enum": [
+                                "forelopigSvar"
+                            ]
+                        }
+                    }
+                }
+            ],
+            "properties": {
+                "forvaltningsbrev": {
+                    "$ref": "#/definitions/forvaltningsbrev"
+                },
+                "vedlegg": {
+                    "type": "array",
+                    "title": "Vedlegg til forvaltningsbrev",
+                    "description": "En liste med vedlegg til forvaltningsbrevet som søker skal ha mulighet til å se. Det er ingen garanti for at filene blir vist til søker. Filformatet skal være PDF.",
+                    "items": {
+                        "$ref": "#/definitions/vedlegg"
+                    }
+                }
+            },
+            "required": [
+                "forvaltningsbrev"
+            ]
+        },
+        "saksStatus": {
+            "$schema": "http://json-schema.org/draft-06/schema#",
+            "title": "En sak, i tilknytning til søknaden, har blitt opprettet og har status",
+            "description": "Status på sak som vil resultere i et vedtak.",
+            "javaType": "no.nav.sbl.soknadsosialhjelp.digisos.soker.hendelse.SaksStatus",
+            "type": "object",
+            "extends": {
+                "ONLY_CODEGEN$ref": "#/definitions/hendelse"
+            },
+            "allOf": [
+                {
+                    "properties": {
+                        "type": {
+                            "type": "string",
+                            "enum": [
+                                "saksStatus"
+                            ]
+                        }
+                    }
+                }
+            ],
+            "properties": {
+                "referanse": {
+                    "description": "En referanse slik at et vedtak kan tilknyttes på et senere tidspunkt",
+                    "type": "string"
+                },
+                "tittel": {
+                    "type": "string",
+                    "description": "Tittel på saken, hva saken gjelder"
+                },
+                "status": {
+                    "type": "string",
+                    "description": "Det kan legges til nye statustyper i enumen, men ingen gamle kan fjernes fra valideringsskjemaet (grunnet bakoverkompatibilitet). Saker uten innsyn blir behandlet, men søkeren får ikke innsyn i saken (feks. når saken ikke gjelder økonomisk sosialhjelp), Ved feilregistrering vil ikke saken vises.",
+                    "enum": [
+                        "UNDER_BEHANDLING",
+                        "IKKE_INNSYN",
+                        "BEHANDLES_IKKE",
+                        "FEILREGISTRERT"
+                    ]
+                }
+            },
+            "required": [
+                "referanse"
+            ]
+        },
+        "utbetaling": {
+            "$schema": "http://json-schema.org/draft-06/schema#",
+            "title": "Utbetaling",
+            "description": "Utbetalingsinformasjon",
+            "javaType": "no.nav.sbl.soknadsosialhjelp.digisos.soker.hendelse.Utbetaling",
+            "type": "object",
+            "extends": {
+                "ONLY_CODEGEN$ref": "#/definitions/hendelse"
+            },
+            "allOf": [
+                {
+                    "properties": {
+                        "type": {
+                            "type": "string",
+                            "enum": [
+                                "utbetaling"
+                            ]
+                        }
+                    }
+                }
+            ],
+            "properties": {
+                "utbetalingsreferanse": {
+                    "type": "string",
+                    "description": "Unik referanse per utbetaling slik at utbetalingsinformasjonen kan bli skiftet ut når det kommer ny informasjon"
+                },
+                "saksreferanse": {
+                    "type": "string",
+                    "description": "Referanse utbetalingen skal tilknyttes til (samme som i vedtak fattet og saksstatus)"
+                },
+                "rammevedtaksreferanse": {
+                    "type": "string",
+                    "description": "Settes dersom utbetalingen er en del av et rammevedtak"
+                },
+                "status": {
+                    "type": "string",
+                    "description": "Status for utbetalingen",
+                    "enum": [
+                        "PLANLAGT_UTBETALING",
+                        "UTBETALT",
+                        "STOPPET",
+                        "ANNULLERT"
+                    ]
+                },
+                "belop": {
+                    "type": "number",
+                    "description": "Utbetalingsbeløp i kr"
+                },
+                "beskrivelse": {
+                    "type": "string",
+                    "description": "Stønaden utbetalingen gjelder for (livsopphold, strøm etc.)"
+                },
+                "forfallsdato": {
+                    "description": "Når betalingen er lagt til forfall",
+                    "$ref": "#/definitions/dato"
+                },
+                "stonadstype": {
+                    "type": "string",
+                    "description": "Grupperingsnøkkel"
+                },
+                "utbetalingsdato": {
+                    "description": "Når utbetalingen kom inn på konto",
+                    "$ref": "#/definitions/dato"
+                },
+                "fom": {
+                    "description": "Utbetalingsperiode (Fra)",
+                    "$ref": "#/definitions/dato"
+                },
+                "tom": {
+                    "description": "Utbetalingsperiode (Til)",
+                    "$ref": "#/definitions/dato"
+                },
+                "mottaker": {
+                    "type": "string",
+                    "description": "Mottaker (søker eller annen mottaker)"
+                },
+                "utbetalingsform": {
+                    "type": "string",
+                    "description": "Utbetalingsform, eks kontooverføring, kontantkort"
+                }
+            },
+            "required": [
+                "saksreferanse",
+                "utbetalingsreferanse"
+            ]
+        },
+        "vilkar": {
+            "$schema": "http://json-schema.org/draft-06/schema#",
+            "title": "Vilkar",
+            "description": "Vilkar",
+            "javaType": "no.nav.sbl.soknadsosialhjelp.digisos.soker.hendelse.Vilkar",
+            "type": "object",
+            "extends": {
+                "ONLY_CODEGEN$ref": "#/definitions/hendelse"
+            },
+            "allOf": [
+                {
+                    "properties": {
+                        "type": {
+                            "type": "string",
+                            "enum": [
+                                "vilkar"
+                            ]
+                        }
+                    }
+                }
+            ],
+            "properties": {
+                "utbetalingsreferanse": {
+                    "type": "array",
+                    "description": "Hvilke utbetalinger vilkåret er knyttet til",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "beskrivelse": {
+                    "type": "string",
+                    "description": "Hva som må gjøres"
+                },
+                "status": {
+                    "type": "string",
+                    "description": "Status for vilkåret",
+                    "enum": [
+                        "OPPFYLT",
+                        "IKKE_OPPFYLT"
+                    ]
+                }
+            }
+        },
+        "rammevedtak": {
+            "$schema": "http://json-schema.org/draft-06/schema#",
+            "title": "Rammevedtak",
+            "description": "Rammevedtak",
+            "javaType": "no.nav.sbl.soknadsosialhjelp.digisos.soker.hendelse.Rammevedtak",
+            "type": "object",
+            "extends": {
+                "ONLY_CODEGEN$ref": "#/definitions/hendelse"
+            },
+            "allOf": [
+                {
+                    "properties": {
+                        "type": {
+                            "type": "string",
+                            "enum": [
+                                "rammevedtak"
+                            ]
+                        }
+                    }
+                }
+            ],
+            "properties": {
+                "rammevedtaksreferanse": {
+                    "type": "string",
+                    "description": "Unik referanse per rammevedtak."
+                },
+                "saksreferanse": {
+                    "type": "string",
+                    "description": "Referanse rammevedtaket skal tilknyttes til"
+                },
+                "beskrivelse": {
+                    "type": "string",
+                    "description": "Hva er rammevedtaket for, eks strøm, legeregning"
+                },
+                "belop": {
+                    "type": "number",
+                    "description": "Hvor mye, i kr"
+                },
+                "fom": {
+                    "description": "Utbetalingsperiode (Fra)",
+                    "$ref": "#/definitions/dato"
+                },
+                "tom": {
+                    "description": "Utbetalingsperiode (Til)",
+                    "$ref": "#/definitions/dato"
+                }
+            }
+        },
+        "dato" : {
+            "$schema": "http://json-schema.org/draft-06/schema#",
+
+            "title": "En dato med formatet YYYY-MM-DD.",
+            "type": "string",
+            "pattern": "^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$"
+        },
+        "vedlegg" : {
+            "$schema": "http://json-schema.org/draft-06/schema#",
+
+            "title": "Vedlegg til vedtaksfil, forvaltningsbrev eller dokumentasjonEtterspurt",
+            "javaType": "no.nav.sbl.soknadsosialhjelp.digisos.soker.Vedlegg",
+            "type": "object",
+
+            "properties": {
+                "tittel": {
+                    "type": "string",
+                    "description": "En tittel som kan brukes som lenke/forklaringstekst til hva vedlegget er."
+                },
+                "referanse": {
+                    "$ref": "#/definitions/filreferanse"
+                }
+            },
+            "required": [
+                "tittel",
+                "referanse"
+            ]
+        },
+        "filreferanse" : {
+            "$schema": "http://json-schema.org/draft-06/schema#",
+
+            "title": "Filreferanse til FIKS",
+            "javaType": "no.nav.sbl.soknadsosialhjelp.digisos.soker.Filreferanse",
+
+            "type": "object",
+
+            "oneOf": [
+                {"$ref": "#/definitions/svarut"},
+                {"$ref": "#/definitions/dokumentlager"}
+            ],
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "description": "Typen filreferanse.",
+                    "enum": [
+                        "svarut", "dokumentlager"
+                    ]
+                }
+            },
+            "required": [
+                "type"
+            ]
+        },
+        "forvaltningsbrev": {
+            "$schema": "http://json-schema.org/draft-06/schema#",
+
+            "title": "Forvaltningsbrevet som søker skal ha mulighet til å se. Det er ingen garanti for at filen blir vist til søker. Filformatet skal være PDF.",
+            "javaType": "no.nav.sbl.soknadsosialhjelp.digisos.soker.Forvaltningsbrev",
+            "type": "object",
+
+            "properties": {
+                "referanse": {
+                    "$ref": "#/definitions/filreferanse"
+                }
+            },
+            "required": [
+                "referanse"
+            ]
+        },
+        "svarut" : {
+            "$schema": "http://json-schema.org/draft-06/schema#",
+
+            "title": "Referanse til en fil som har blitt lagret gjennom SvarUt.",
+            "javaType": "no.nav.sbl.soknadsosialhjelp.digisos.soker.filreferanse.SvarUtFilreferanse",
+            "type": "object",
+            "extends": {
+                "ONLY_CODEGEN$ref": "#/definitions/filreferanse"
+            },
+            "typeNameForExtends": "svarut",
+            "allOf": [
+                {
+                    "properties": {
+                        "type": {
+                            "type": "string",
+                            "enum": [
+                                "svarut"
+                            ]
+                        }
+                    }
+                }
+            ],
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "description": "En UUID som identifiserer SvarUt-forsendelsen.",
+                    "pattern": "^[0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f]-[0-9a-f][0-9a-f][0-9a-f][0-9a-f]-[0-9a-f][0-9a-f][0-9a-f][0-9a-f]-[0-9a-f][0-9a-f][0-9a-f][0-9a-f]-[0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f]$"
+                },
+                "nr": {
+                    "type": "integer",
+                    "description": "Filnummer i SvarUt-forsendelsen."
+                }
+            },
+            "required": [
+                "id", "nr"
+            ]
+        },
+        "dokumentlager" : {
+            "$schema": "http://json-schema.org/draft-06/schema#",
+
+            "title": "Referanse til en fil som ligger lagret i Dokumentlager.",
+            "javaType": "no.nav.sbl.soknadsosialhjelp.digisos.soker.filreferanse.DokumentlagerFilreferanse",
+            "type": "object",
+            "extends": {
+                "ONLY_CODEGEN$ref": "#/definitions/filreferanse"
+            },
+            "typeNameForExtends": "dokumentlager",
+            "allOf": [
+                {
+                    "properties": {
+                        "type": {
+                            "type": "string",
+                            "enum": [
+                                "dokumentlager"
+                            ]
+                        }
+                    }
+                }
+            ],
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "description": "En UUID som identifiserer dokumentet i Dokumentlager.",
+                    "pattern": "^[0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f]-[0-9a-f][0-9a-f][0-9a-f][0-9a-f]-[0-9a-f][0-9a-f][0-9a-f][0-9a-f]-[0-9a-f][0-9a-f][0-9a-f][0-9a-f]-[0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f]$"
+                }
+            },
+            "required": [
+                "id"
+            ]
+        }
+    },
+    "required": ["type", "hendelsestidspunkt"]
+}
