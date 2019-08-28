@@ -5,7 +5,7 @@ import {AppState, DispatchProps} from "./redux/reduxTypes";
 import {Panel} from "nav-frontend-paneler";
 import {Knapp} from "nav-frontend-knapper";
 import {setAppName} from "./redux/example/exampleActions";
-import {Input} from "nav-frontend-skjema";
+import {Input, SkjemaGruppe} from "nav-frontend-skjema";
 import Cog from "./components/ikoner/TannHjul";
 import Form from "react-jsonschema-form";
 import ReactJson from "react-json-view";
@@ -14,6 +14,7 @@ import ReactJson from "react-json-view";
 const digisosKomplett = require('./digisos/komplett');
 const initialHendelseTest = require('./digisos/initial-hendelse-test');
 const hendelseSchema = require('./digisos/hendelse-schema-test');
+const minimal = require('./digisos/minimal');
 
 
 function CustomFieldTemplate(props: any) {
@@ -37,19 +38,26 @@ const uiSchema = {
 };
 
 
-interface ExampleProps {
+interface ForsideProps {
     example: ExampleModel
 }
 
-type Props = ExampleProps & DispatchProps;
+interface ForsideState {
+    input: string;
+    digisosSoker: object;
+    preparedDigisosSoker: object;
+}
 
-class Forside extends React.Component<Props, { input: string, digisosSoker: any }> {
+type Props = ForsideProps & DispatchProps;
+
+class Forside extends React.Component<Props, ForsideState> {
 
     constructor(props: Props) {
         super(props);
         this.state = {
             input: "",
-            digisosSoker: initialHendelseTest
+            digisosSoker: initialHendelseTest,
+            preparedDigisosSoker: minimal
         }
     }
 
@@ -80,49 +88,47 @@ class Forside extends React.Component<Props, { input: string, digisosSoker: any 
         const {appname} = this.props.example;
 
         const listOfJsxHendelser = digisosKomplett.hendelser.map((hendelse: any, idx: any) => {
+
+            buttonText = this.state.preparedDigisosSoker.hendelser.length > idx + 1;
+
             return (
                 <li key={idx}>
-                    {hendelse.type}
+                    <Panel>
+                        {hendelse.type}
+                        <Knapp
+                            disabled={idx === 0}
+                        >
+                            asd
+                        </Knapp>
+                    </Panel>
                 </li>
             );
         });
 
         return (
-            <div>
+            <div className={"margintop"}>
                 <Panel>
                     <h3>
-                        APP NAME:
+                        Bruker- og søknadsdata
                     </h3>
-                    <Input
-                        label={'Enter app name:'}
-                        value={this.state.input}
-                        onChange={(evt: ChangeEvent<HTMLInputElement>) => {
-                            this.handleInput(evt.target.value)
-                        }}
-                    />
-
-                    <Knapp
-                        id={"system_button"}
-                        form="kompakt"
-                        onClick={() => this.handleClickSystemButton()}
-                    >
-                        <Cog/>
-                        <span className="sr-only">Submit</span>
-                    </Knapp>
-
-                    <Panel
-                        border={true}
-                        className={"margintop"}
-                    >
-                        {appname}
-                    </Panel>
-
+                    <SkjemaGruppe>
+                        <Input label={'Bruker identifikator'}/>
+                        <Input label={'Søknadsreferanse'}/>
+                    </SkjemaGruppe>
                 </Panel>
 
                 <Panel>
                     <ol>
                         {listOfJsxHendelser}
                     </ol>
+                </Panel>
+
+                <Panel>
+                    <div className={"column"}>
+                        <div className={"jsonView"}>
+                            <ReactJson src={this.state.preparedDigisosSoker}/>
+                        </div>
+                    </div>
                 </Panel>
 
 
@@ -154,6 +160,36 @@ class Forside extends React.Component<Props, { input: string, digisosSoker: any 
                             <ReactJson src={this.state.digisosSoker}/>
                         </div>
                     </div>
+                </Panel>
+
+                <Panel>
+                    <h3>
+                        Example panel
+                    </h3>
+                    <Input
+                        label={'Enter app name:'}
+                        value={this.state.input}
+                        onChange={(evt: ChangeEvent<HTMLInputElement>) => {
+                            this.handleInput(evt.target.value)
+                        }}
+                    />
+
+                    <Knapp
+                        id={"system_button"}
+                        form="kompakt"
+                        onClick={() => this.handleClickSystemButton()}
+                    >
+                        <Cog/>
+                        <span className="sr-only">Submit</span>
+                    </Knapp>
+
+                    <Panel
+                        border={true}
+                        className={"margintop"}
+                    >
+                        {appname}
+                    </Panel>
+
                 </Panel>
             </div>
         )
