@@ -9,6 +9,7 @@ import {tekster} from "./tekster/tekster";
 import './App.less';
 import UserGuide from "./pages/UserGuide";
 import Forside from "./Forside";
+import NotFound from "./components/notFound";
 
 const store = configureStore();
 
@@ -24,6 +25,7 @@ const App: React.FC = () => {
 							<Switch>
 								<Route exact path="/" component={Forside} />
 								<Route exact path="/userguide" component={UserGuide} />
+								<Route component={NotFound} />
 							</Switch>
 
 						</div>

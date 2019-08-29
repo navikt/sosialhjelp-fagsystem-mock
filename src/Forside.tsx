@@ -49,6 +49,7 @@ interface ForsideState {
     input: string;
     digisosSoker: object;
     hendelserPrepared: Hendelse[];
+    historyPoint: number;
 }
 
 type Props = ForsideProps & DispatchProps;
@@ -60,7 +61,8 @@ class Forside extends React.Component<Props, ForsideState> {
         this.state = {
             input: "",
             digisosSoker: initialHendelseTest,
-            hendelserPrepared: minimal
+            hendelserPrepared: minimal.hendelser,
+            historyPoint: 0
         }
     }
 
@@ -86,15 +88,49 @@ class Forside extends React.Component<Props, ForsideState> {
         });
     }
 
+    handleChooseHistoryPoint(idx: number){
+
+        const listOfHendelserKomplett: Hendelse[] = digisosKomplett["hendelser"];
+        const hendelserPrepared: Hendelse[]  = this.state.hendelserPrepared;
+
+        const antallDetSkalVaere: number = idx + 1;
+        const antallDetForOyeblikketEr: number = hendelserPrepared.length;
+
+        let hendelsePreparedUpdated: Hendelse[];
+
+        if (antallDetSkalVaere < antallDetForOyeblikketEr){
+            // Fjern overflødige elementer i lista. Siden det spoles tilbake i tid.
+            hendelsePreparedUpdated = hendelserPrepared.slice(0, antallDetSkalVaere);
+        } else {
+            // Legg til nye elementer i hendelsePreparedUpdated fra komplett lista
+            const hendelserALeggeTil: Hendelse[] = listOfHendelserKomplett.slice(antallDetForOyeblikketEr,antallDetSkalVaere);
+            hendelsePreparedUpdated = hendelserPrepared.concat(hendelserALeggeTil);
+        }
+        
+        this.setState({
+            hendelserPrepared: hendelsePreparedUpdated,
+            historyPoint: idx
+        })
+    }
+
     render() {
 
         const {appname} = this.props.example;
 
         const listOfJsxHendelser = hendelserKomplett.map((hendelse: Hendelse, idx: number) => {
 
+            const {historyPoint} = this.state;
             const buttonText = this.state.hendelserPrepared.length > idx
-                ? "red"
-                : "green";
+                ? "Hit"
+                : "Hit";
+
+            let buttonBackgroundColor: string = "grey";
+
+            if ( idx > historyPoint){
+                buttonBackgroundColor = "white";
+            } else if (idx === historyPoint) {
+                buttonBackgroundColor = "red";
+            }
 
             return (
                 <li key={idx}>
@@ -102,6 +138,8 @@ class Forside extends React.Component<Props, ForsideState> {
                         {hendelse.type}
                         <Knapp
                             disabled={idx === 0}
+                            style={{backgroundColor: buttonBackgroundColor}}
+                            onClick={() => this.handleChooseHistoryPoint(idx)}
                         >
                             {buttonText}
                         </Knapp>
@@ -135,6 +173,11 @@ class Forside extends React.Component<Props, ForsideState> {
                         </div>
                     </div>
                 </Panel>
+
+
+
+
+
 
 
                 <Panel>
