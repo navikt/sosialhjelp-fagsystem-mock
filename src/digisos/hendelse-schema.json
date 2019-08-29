@@ -1,21 +1,37 @@
 {
     "$schema": "http://json-schema.org/draft-06/schema#",
-
     "title": "Hendelse",
     "description": "Feltet \"type\" angir hvilken type hendelse det er. Se egen definisjon per hendelse. Det som er dokumentert direkte under er kun det som er felles for alle hendelser.",
     "javaType": "no.nav.sbl.soknadsosialhjelp.digisos.soker.Hendelse",
     "type": "object",
-
     "oneOf": [
-        {"$ref": "#/definitions/tildeltNavKontor"},
-        {"$ref": "#/definitions/soknadsStatus"},
-        {"$ref": "#/definitions/vedtakFattet"},
-        {"$ref": "#/definitions/dokumentasjonEtterspurt"},
-        {"$ref": "#/definitions/forelopigSvar"},
-        {"$ref": "#/definitions/saksStatus"},
-        {"$ref": "#/definitions/utbetaling"},
-        {"$ref": "#/definitions/vilkar"},
-        {"$ref": "#/definitions/rammevedtak"}
+        {
+            "$ref": "#/definitions/tildeltNavKontor"
+        },
+        {
+            "$ref": "#/definitions/soknadsStatus"
+        },
+        {
+            "$ref": "#/definitions/vedtakFattet"
+        },
+        {
+            "$ref": "#/definitions/dokumentasjonEtterspurt"
+        },
+        {
+            "$ref": "#/definitions/forelopigSvar"
+        },
+        {
+            "$ref": "#/definitions/saksStatus"
+        },
+        {
+            "$ref": "#/definitions/utbetaling"
+        },
+        {
+            "$ref": "#/definitions/vilkar"
+        },
+        {
+            "$ref": "#/definitions/rammevedtak"
+        }
     ],
     "properties": {
         "type": {
@@ -23,14 +39,29 @@
             "type": "string",
             "description": "Det kan legges til nye hendelsestyper i enumen, men ingen gamle kan fjernes fra valideringsskjemaet (grunnet kompatibilitet).",
             "enum": [
-                "tildeltNavKontor", "soknadsStatus", "vedtakFattet", "dokumentasjonEtterspurt", "forelopigSvar", "saksStatus", "utbetaling", "vilkar", "rammevedtak"
+                "tildeltNavKontor",
+                "soknadsStatus",
+                "vedtakFattet",
+                "dokumentasjonEtterspurt",
+                "forelopigSvar",
+                "saksStatus",
+                "utbetaling",
+                "vilkar",
+                "rammevedtak"
             ]
         },
         "hendelsestidspunkt": {
             "$ref": "#/definitions/tidspunkt"
         }
     },
+    "required": [
+        "type",
+        "hendelsestidspunkt"
+    ],
     "definitions": {
+        "hendelse": {
+
+        },
         "tidspunkt": {
             "$schema": "http://json-schema.org/draft-06/schema#",
             "title": "Et tidspunkt.",
@@ -639,6 +670,5 @@
                 "id"
             ]
         }
-    },
-    "required": ["type", "hendelsestidspunkt"]
+    }
 }

@@ -10,11 +10,13 @@ import Cog from "./components/ikoner/TannHjul";
 import Form from "react-jsonschema-form";
 import ReactJson from "react-json-view";
 import {Hendelse} from "./types/foo";
-
+import {mergeListsToLengthN} from "./utils/utilityFunctions";
+import Ekspanderbartpanel from "nav-frontend-ekspanderbartpanel";
 
 // const additionalMetaSchemas = require("ajv/lib/refs/json-schema-draft-06.json");
 const initialHendelseTest = require('./digisos/initial-hendelse-test');
-const hendelseSchema = require('./digisos/hendelse-schema-test');
+const hendelseSchemaTest = require('./digisos/hendelse-schema-test');
+const hendelseSchema = require('./digisos/hendelse-schema');
 const minimal = require('./digisos/minimal');
 const digisosKomplett = require('./digisos/komplett');
 
@@ -54,6 +56,9 @@ interface ForsideState {
 
 type Props = ForsideProps & DispatchProps;
 
+
+
+
 class Forside extends React.Component<Props, ForsideState> {
 
     constructor(props: Props) {
@@ -90,25 +95,11 @@ class Forside extends React.Component<Props, ForsideState> {
 
     handleChooseHistoryPoint(idx: number){
 
-        const listOfHendelserKomplett: Hendelse[] = digisosKomplett["hendelser"];
-        const hendelserPrepared: Hendelse[]  = this.state.hendelserPrepared;
+        const komplett: Hendelse[] = digisosKomplett["hendelser"];
+        const {hendelserPrepared} = this.state;
 
-        const antallDetSkalVaere: number = idx + 1;
-        const antallDetForOyeblikketEr: number = hendelserPrepared.length;
-
-        let hendelsePreparedUpdated: Hendelse[];
-
-        if (antallDetSkalVaere < antallDetForOyeblikketEr){
-            // Fjern overflødige elementer i lista. Siden det spoles tilbake i tid.
-            hendelsePreparedUpdated = hendelserPrepared.slice(0, antallDetSkalVaere);
-        } else {
-            // Legg til nye elementer i hendelsePreparedUpdated fra komplett lista
-            const hendelserALeggeTil: Hendelse[] = listOfHendelserKomplett.slice(antallDetForOyeblikketEr,antallDetSkalVaere);
-            hendelsePreparedUpdated = hendelserPrepared.concat(hendelserALeggeTil);
-        }
-        
         this.setState({
-            hendelserPrepared: hendelsePreparedUpdated,
+            hendelserPrepared: mergeListsToLengthN(hendelserPrepared, komplett, idx + 1),
             historyPoint: idx
         })
     }
@@ -135,7 +126,7 @@ class Forside extends React.Component<Props, ForsideState> {
             return (
                 <li key={idx}>
                     <Panel>
-                        {hendelse.type}
+                        <p>{hendelse.type}</p>
                         <Knapp
                             disabled={idx === 0}
                             style={{backgroundColor: buttonBackgroundColor}}
@@ -143,6 +134,16 @@ class Forside extends React.Component<Props, ForsideState> {
                         >
                             {buttonText}
                         </Knapp>
+                        <div style={{display: "inline-flex"}}>
+                            <Ekspanderbartpanel tittel={"Rediger element"} border>
+                                <Form schema={hendelseSchema}
+                                      formData={hendelse}
+                                      // onChange={(json) => this.handleChange(json)}
+                                      // onSubmit={(json) => this.handleSubmit(json)}
+                                      // onError={log("errors")}
+                                />
+                            </Ekspanderbartpanel>
+                        </div>
                     </Panel>
                 </li>
             );
@@ -182,15 +183,7 @@ class Forside extends React.Component<Props, ForsideState> {
 
                 <Panel>
                     <div className={"column"}>
-                        {/*<Form schema={schemaDigisosSoker}*/}
-                        {/*      formData={this.state.digisosSoker}*/}
-                        {/*      additionalMetaSchemas={[additionalMetaSchemas]}*/}
-                        {/*      onChange={(json) => this.handleChange(json)}*/}
-                        {/*      onSubmit={(json) => this.handleSubmit(json)}*/}
-                        {/*      onError={log("errors")}*/}
-                        {/*/>*/}
-
-                        <Form schema={hendelseSchema}
+                        <Form schema={hendelseSchemaTest}
                               formData={this.state.digisosSoker}
                               uiSchema={uiSchema}
                             // @ts-disable
