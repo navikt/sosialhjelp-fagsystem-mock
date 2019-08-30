@@ -7,37 +7,24 @@ import {Input} from "nav-frontend-skjema";
 import Form from "react-jsonschema-form";
 import ReactJson from "react-json-view";
 import {Hendelse} from "./types/foo";
-import {mergeListsToLengthN} from "./utils/utilityFunctions";
+import {getSchemaByHendelseType, mergeListsToLengthN} from "./utils/utilityFunctions";
 import Lesmerpanel from "nav-frontend-lesmerpanel";
+import uiSchemaSaksStatus from "./uischemas/saksStatus";
+import {HendelseType} from "./types/hendelseTypes";
 
 // const additionalMetaSchemas = require("ajv/lib/refs/json-schema-draft-06.json");
-const initialHendelseTest = require('./digisos/initial-hendelse-test');
 // const hendelseSchemaTest = require('./digisos/hendelse-schema-test');
-const hendelseSchema = require('./digisos/hendelse-schema');
+const initialHendelseTest = require('./digisos/initial-hendelse-test');
+// const hendelseSchema = require('./digisos/hendelse-schema');
+// const soknadsStatus = require('./digisos/hendelse/soknadsStatus');
 const minimal = require('./digisos/minimal');
 const digisosKomplett = require('./digisos/komplett');
 
 const hendelserKomplett: Hendelse[] = digisosKomplett.hendelser;
 
-// function CustomFieldTemplate(props: any) {
-//     const {id, classNames, label, help, required, description, errors, children} = props;
-//
-//     return (
-//         <div className={classNames}>
-//             <label htmlFor={id}>{label}{required ? "*" : null}</label>
-//             {description}
-//             {children}
-//             {errors}
-//             {help}
-//         </div>
-//     );
-// }
-
 export const log = (type: any) => console.log.bind(console, type);
 
-// const uiSchema = {
-//     "ui:FieldTemplate": CustomFieldTemplate
-// };
+
 
 interface ForsideState {
     digisosSoker: object;
@@ -112,15 +99,27 @@ class Forside extends React.Component<Props, ForsideState> {
                 </>
             );
 
+            let schema: any;
+            if (hendelse.type){
+                schema = getSchemaByHendelseType(hendelse.type);
+            } else {
+                schema = getSchemaByHendelseType(HendelseType.soknadsStatus);
+            }
+
             return (
                 <li key={idx} className={"margintop"}>
                     <Lesmerpanel intro={intro} border>
-                        <Form schema={hendelseSchema}
+                        <Form schema={schema}
                               formData={hendelse}
+                              uiSchema={uiSchemaSaksStatus}
                               // onChange={(json) => this.handleChange(json)}
                               // onSubmit={(json) => this.handleSubmit(json)}
                               // onError={log("errors")}
                         />
+                        <div>
+                            { JSON.stringify(hendelse, null, 4)}
+                        </div>
+
                     </Lesmerpanel>
                 </li>
             );

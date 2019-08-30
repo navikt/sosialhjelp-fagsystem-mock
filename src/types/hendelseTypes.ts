@@ -52,9 +52,9 @@ export interface rammevedtak extends Hendelse {
 
 
 export enum HendelseType {
-    tildeltNavKontor = "tildeltNavKontor",
     soknadsStatus = "soknadsStatus",
     vedtakFattet = "vedtakFattet",
+    tildeltNavKontor = "tildeltNavKontor",
     dokumentasjonEtterspurt = "dokumentasjonEtterspurt",
     forelopigSvar = "forelopigSvar",
     saksStatus = "saksStatus",

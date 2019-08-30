@@ -1,0 +1,89 @@
+{
+	"$schema": "http://json-schema.org/draft-06/schema#",
+
+	"title": "Utbetaling",
+	"description": "Utbetalingsinformasjon",
+	"javaType": "no.nav.sbl.soknadsosialhjelp.digisos.soker.hendelse.Utbetaling",
+	"type": "object",
+	"extends": {
+		"ONLY_CODEGEN$ref": "../hendelse.json"
+	},
+	"allOf": [
+	{
+		"properties": {
+			"type": {
+				"type": "string",
+				"enum": [
+					"utbetaling"
+				]
+			}
+		}
+	}
+],
+	"properties": {
+		"utbetalingsreferanse": {
+			"type": "string",
+			"description": "Unik referanse per utbetaling slik at utbetalingsinformasjonen kan bli skiftet ut når det kommer ny informasjon"
+		},
+		"saksreferanse": {
+			"type": "string",
+			"description": "Referanse utbetalingen skal tilknyttes til (samme som i vedtak fattet og saksstatus)"
+		},
+		"rammevedtaksreferanse": {
+			"type": "string",
+			"description": "Settes dersom utbetalingen er en del av et rammevedtak"
+		},
+		"status": {
+			"type": "string",
+			"description": "Status for utbetalingen",
+			"enum": [
+				"PLANLAGT_UTBETALING", "UTBETALT", "STOPPET", "ANNULLERT"
+			]
+		},
+		"belop": {
+			"type": "number",
+			"description": "Utbetalingsbeløp i kr"
+		},
+		"beskrivelse": {
+			"type": "string",
+			"description": "Stønaden utbetalingen gjelder for (livsopphold, strøm etc.)"
+		},
+		"forfallsdato": {
+			"description": "Når betalingen er lagt til forfall",
+			"$ref": "../../../../types/dato.json"
+		},
+		"stonadstype": {
+			"type": "string",
+			"description": "Grupperingsnøkkel"
+		},
+		"utbetalingsdato": {
+			"description": "Når utbetalingen kom inn på konto",
+			"$ref": "../../../../types/dato.json"
+		},
+		"fom": {
+			"description": "Utbetalingsperiode (Fra)",
+			"$ref": "../../../../types/dato.json"
+		},
+		"tom": {
+			"description": "Utbetalingsperiode (Til)",
+			"$ref": "../../../../types/dato.json"
+		},
+		"mottaker": {
+			"type": "string",
+			"description": "Mottaker (søker eller annen mottaker), fnummer, orgnummer, eller navn"
+		},
+		"kontonummer": {
+			"type": "string",
+			"description": "Mottakers kontonummer, bank i Norge, blir bare vist dersom mottaker er brukeren",
+			"pattern": "^[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]$"
+		},
+		"utbetalingsmetode": {
+			"type": "string",
+			"description": "Utbetalingsmetode, eks kontooverføring, kontantkort"
+		}
+	},
+	"required": [
+		"saksreferanse",
+		"utbetalingsreferanse"
+	]
+}

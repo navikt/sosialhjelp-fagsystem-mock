@@ -10,6 +10,7 @@ import './App.less';
 import UserGuide from "./pages/UserGuide";
 import Forside from "./Forside";
 import NotFound from "./components/notFound";
+import Example from "./pages/Example";
 
 const store = configureStore();
 
@@ -25,6 +26,7 @@ const App: React.FC = () => {
 							<Switch>
 								<Route exact path="/" component={Forside} />
 								<Route exact path="/userguide" component={UserGuide} />
+								<Route exact path="/examplepage" component={Example} />
 								<Route component={NotFound} />
 							</Switch>
 

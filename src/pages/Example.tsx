@@ -1,6 +1,5 @@
 import React, {ChangeEvent} from 'react';
 import {Panel} from "nav-frontend-paneler";
-import ReactJson from "react-json-view";
 import {Input} from "nav-frontend-skjema";
 import {Knapp} from "nav-frontend-knapper";
 import Cog from "../components/ikoner/TannHjul";
@@ -46,7 +45,7 @@ class Example extends React.Component<Props, ExampleState> {
         const {appname} = this.props.example;
 
         return (
-            <div>
+            <div className={"margintop"}>
                 {/*<Panel>*/}
                 {/*    <div className={"column"}>*/}
                 {/*        <Form schema={hendelseSchemaTest}*/}
