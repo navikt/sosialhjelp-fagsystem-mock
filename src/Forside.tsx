@@ -5,14 +5,14 @@ import {AppState, DispatchProps} from "./redux/reduxTypes";
 import {Panel} from "nav-frontend-paneler";
 import {Knapp} from "nav-frontend-knapper";
 import {setAppName} from "./redux/example/exampleActions";
-import {Input, SkjemaGruppe} from "nav-frontend-skjema";
+import {Input} from "nav-frontend-skjema";
 import Cog from "./components/ikoner/TannHjul";
 import Form from "react-jsonschema-form";
 import ReactJson from "react-json-view";
 import {Hendelse} from "./types/foo";
 import {mergeListsToLengthN} from "./utils/utilityFunctions";
-import Ekspanderbartpanel from "nav-frontend-ekspanderbartpanel";
 import Lesmerpanel from "nav-frontend-lesmerpanel";
+import Sidebar from "react-sidebar";
 
 // const additionalMetaSchemas = require("ajv/lib/refs/json-schema-draft-06.json");
 const initialHendelseTest = require('./digisos/initial-hendelse-test');
@@ -53,6 +53,7 @@ interface ForsideState {
     digisosSoker: object;
     hendelserPrepared: Hendelse[];
     historyPoint: number;
+    sidebarOpen: boolean;
 }
 
 type Props = ForsideProps & DispatchProps;
@@ -68,8 +69,14 @@ class Forside extends React.Component<Props, ForsideState> {
             input: "",
             digisosSoker: initialHendelseTest,
             hendelserPrepared: minimal.hendelser,
-            historyPoint: 0
-        }
+            historyPoint: 0,
+            sidebarOpen: false
+        };
+        this.onToggleSidebarOpen = this.onToggleSidebarOpen.bind(this);
+    }
+
+    onToggleSidebarOpen(open: boolean) {
+        this.setState({ sidebarOpen: open });
     }
 
     handleInput(value: string) {
@@ -183,6 +190,17 @@ class Forside extends React.Component<Props, ForsideState> {
                         </div>
                     </div>
                 </Panel>
+                <Sidebar
+                    sidebar={<b>Sidebar content</b>}
+                    open={this.state.sidebarOpen}
+                    onSetOpen={this.onToggleSidebarOpen}
+                    styles={{ sidebar: { background: "white" } }}
+                    pullRight={true}
+                >
+                    <button onClick={() => this.onToggleSidebarOpen(!this.state.sidebarOpen)}>
+                        Open sidebar!
+                    </button>
+                </Sidebar>
 
 
 
