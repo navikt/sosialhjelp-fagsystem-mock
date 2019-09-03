@@ -1,4 +1,5 @@
-import {HendelseType} from "../types/hendelseTypes";
+import HendelseBase, {FiksDigisosSokerJson, HendelseType, SoknadsStatus} from "../types/hendelseTypes";
+import Hendelse from "../types/hendelseTypes";
 
 const tildeltNavKontorSchema = require('../digisos/hendelse/tildeltNavKontor');
 const soknadsStatusSchema = require('../digisos/hendelse/soknadsStatus');
@@ -48,4 +49,28 @@ export function getSchemaByHendelseType(type: any) {
     }
 }
 
+
+export const getLastHendelseOfType = (fiksDigisosSokerJson: FiksDigisosSokerJson, hendelseType: HendelseType): Hendelse | undefined => {
+
+    const hendelser: Hendelse[] = fiksDigisosSokerJson.sak.soker.hendelser;
+    const hendelserCopied: Hendelse[] = hendelser.slice();
+    return hendelserCopied.reverse().find((hendelse: Hendelse) => hendelse.type === hendelseType);
+};
+
+export function getNow(): string {
+    const time = new Date().getTime();
+    const date = new Date(time);
+
+//    "2018-10-04T13:37:00.134Z"
+
+    const year = date.getFullYear();
+    let month = date.getMonth() + 1;
+    let day = date.getDay() + 1;
+    let hour = date.getHours();
+    let minutes = date.getMinutes();
+    let seconds = date.getSeconds();
+    const millis = date.getMilliseconds();
+
+    return `${year}-${month}-${day}T${hour}:${minutes}:${seconds}:${millis}Z`
+}
 

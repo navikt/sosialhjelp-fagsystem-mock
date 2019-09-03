@@ -1,12 +1,33 @@
 import {Reducer} from "redux";
 import {V2Action, V2ActionTypeKeys, V2Model} from "./v2Types";
+import {FiksDigisosSokerJson, soknadsStatus, tildeltNavKontor} from "../../types/hendelseTypes";
 
-const minimal: any = require('../../digisos/fiks-minimal');
+
+const minimal: FiksDigisosSokerJson = {
+    sak: {
+        soker: {
+            version: "1.0.0",
+            avsender: {
+                systemnavn: "Testsystemet",
+                systemversjon: "1.0.0"
+            },
+            hendelser: [
+                {
+                    type: "soknadsStatus",
+                    hendelsestidspunkt: "2018-10-04T13:37:00.134Z",
+                    status: "MOTTATT"
+                } as soknadsStatus
+            ]
+        }
+    },
+    type: "no.nav.digisos.digisos.soker.v1"
+};
 
 export const initialV2Model: V2Model = {
     fiksDigisosId: "",
-    digisosSokerJson: minimal,
-    loaderOn: false
+    fiksDigisosSokerJson: minimal,
+    loaderOn: false,
+    setFiksDigisosIdIsEnabled: true
 };
 
 const v2Reducer: Reducer<V2Model, V2Action> = (
@@ -23,6 +44,8 @@ const v2Reducer: Reducer<V2Model, V2Action> = (
         }
         case V2ActionTypeKeys.TURN_ON_LOADER: return {...state, loaderOn: true};
         case V2ActionTypeKeys.TURN_OFF_LOADER: return {...state, loaderOn: false};
+        case V2ActionTypeKeys.ENABLE_SET_FIKS_DIGISOS_ID: return {...state, setFiksDigisosIdIsEnabled: true};
+        case V2ActionTypeKeys.DISABLE_SET_FIKS_DIGISOS_ID: return {...state, setFiksDigisosIdIsEnabled: false};
         default:
             return state;
     }

@@ -1,6 +1,6 @@
 import React from 'react';
 import {Panel} from "nav-frontend-paneler";
-import {Input} from "nav-frontend-skjema";
+import {Input, RadioPanelGruppe} from "nav-frontend-skjema";
 import {Knapp} from "nav-frontend-knapper";
 import {AppState, DispatchProps} from "../redux/reduxTypes";
 import {connect} from "react-redux";
@@ -9,9 +9,15 @@ import Lesmerpanel from "nav-frontend-lesmerpanel";
 import {V2Model} from "../redux/v2/v2Types";
 import NavFrontendSpinner from "nav-frontend-spinner";
 import Modal from 'nav-frontend-modal';
-import {sendDigisosSokerJson, setfiksDigisosId} from "../redux/v2/v2Actions";
-
-
+import {
+    disableSetFiksDigisosId,
+    enableSetFiksDigisosId,
+    sendFiksDigisosSokerJson,
+    setfiksDigisosId
+} from "../redux/v2/v2Actions";
+import ReactJson from "react-json-view";
+import Hendelse, {FiksDigisosSokerJson, HendelseType, SoknadsStatus} from "../types/hendelseTypes";
+import {getLastHendelseOfType, getNow} from "../utils/utilityFunctions";
 
 
 interface V2Props {
@@ -47,83 +53,165 @@ class V2 extends React.Component<Props, State> {
 
     render() {
 
+        console.warn(getNow());
+
         if (!this.props.v2) {
-            return "...loading"
-        }
-
-        const {fiksDigisosId, digisosSokerJson, loaderOn} = this.props.v2;
-
-        return (
-            <div>
-                <div>
-                    Referanse Id
-                    <Panel>
-                        <Input value={fiksDigisosId} label={'fiksDigisosId'} onChange={(evt) => this.props.dispatch(setfiksDigisosId(evt.target.value))}/>
-                        <button className={"btn btn-primary"}
-                                onClick={() => {
-                                    this.props.dispatch(sendDigisosSokerJson(fiksDigisosId && fiksDigisosId !== "" ? fiksDigisosId : "1234", JSON.stringify(digisosSokerJson, null, 4)))
-                                }}
-                        >
-                            OK
-                        </button>
-                    </Panel>
-                </div>
-                <div>
-                    Soknads status
-                    <Panel>
-                        <Knapp>Mottatt</Knapp>
-                        <Knapp>Under behandling</Knapp>
-                        <Knapp>ferdigstilt</Knapp>
-                    </Panel>
-                </div>
-                <div>
-                    Tildel nytt navkontor
-                    <Panel>
-                        <Input label={'Nav kontor kode (4 siffer)'}/>
-                        <button onClick={() => console.warn('Tildeler nytt navkontor')}>
-                            OK
-                        </button>
-                    </Panel>
-                </div>
-                <div>
-                    Opprett sak
-                    <Lesmerpanel intro={<div>kommer ...</div>}>
-                        <Knapp>Knapp 1</Knapp>
-                        <Knapp>Knapp 2</Knapp>
-                        <Knapp>Knapp 3</Knapp>
-                    </Lesmerpanel>
-                </div>
-                <div>
-
-                    <button
-                        // style={{backgroundColor: buttonBackgroundColor}}
-                        onClick={() => console.warn("Oppretter sak")}
-                    >
-                        <span className="glyphicon glyphicon-arrow-right" aria-hidden="true"/>
-                    </button>
-                    Opprett sak
-                </div>
-                <div style={{display: "none"}}>
-                    Backend url
-                    <Panel>
-                        <Input id={"asdf"} label={'url'}/>
-                    </Panel>
-                </div>
-
+            return (
                 <Modal
-                    isOpen={loaderOn}
+                    isOpen={true}
                     contentLabel=""
-                    onRequestClose={() => console.warn("aksjdn")}
+                    onRequestClose={() => console.warn("onRequestClose Loading Modal")}
                     closeButton={false}
                     shouldCloseOnOverlayClick={false}
                     className={"modal-style-override"}
                 >
                     <div className="application-spinner">
-                        {/*<div style={{padding:'2rem 2.5rem'}}>Innhold her</div>*/}
-                        <NavFrontendSpinner type="XXL" />
+                        <NavFrontendSpinner type="XXL"/>
                     </div>
                 </Modal>
+            )
+        }
 
+        const {
+            fiksDigisosId,
+            fiksDigisosSokerJson,
+            loaderOn,
+            setFiksDigisosIdIsEnabled
+        } = this.props.v2;
+
+
+        const lastSoknadsStatus: Hendelse | undefined = getLastHendelseOfType(fiksDigisosSokerJson, HendelseType.soknadsStatus);
+
+        const soknadsStatusJsx = () => {
+            if (lastSoknadsStatus && lastSoknadsStatus.type === HendelseType.soknadsStatus){
+                return (
+                    <RadioPanelGruppe
+                        name="soknadsStatus"
+                        legend="Endre status på søknaden:"
+                        radios={[
+                            {label: 'Mottatt', value: SoknadsStatus.MOTTATT},
+                            {label: 'Under behandling', value: SoknadsStatus.UNDER_BEHANDLING},
+                            {label: 'Ferdigbehandlet', value: SoknadsStatus.FERDIGBEHANDLET},
+                            {label: 'Behandles ikke', value: SoknadsStatus.BEHANDLES_IKKE}
+                        ]}
+                        checked={lastSoknadsStatus.status}
+                        onChange={(evt, nySoknadsStatus) => {
+                            console.warn("nySoknadsStatus: " + nySoknadsStatus);
+                            switch (nySoknadsStatus) {
+                                case SoknadsStatus.MOTTATT || SoknadsStatus.UNDER_BEHANDLING || SoknadsStatus.FERDIGBEHANDLET || SoknadsStatus.BEHANDLES_IKKE: {
+                                    const updatedListOfHendelser: Hendelse[] = fiksDigisosSokerJson.sak.soker.hendelser.slice();
+                                    updatedListOfHendelser.push({
+                                        type: HendelseType.soknadsStatus,
+                                        hendelsestidspunkt: getNow(),
+                                        status: nySoknadsStatus
+                                    });
+                                    const fiksDigisosSokerJsonUpdated: FiksDigisosSokerJson = JSON.parse(JSON.stringify(fiksDigisosSokerJson));
+                                    fiksDigisosSokerJsonUpdated.sak.soker.hendelser = updatedListOfHendelser;
+                                    this.props.dispatch(sendFiksDigisosSokerJson(fiksDigisosId, fiksDigisosSokerJsonUpdated));
+                                    break;
+                                }
+                                default: {
+
+                                }
+                            }
+                        }}
+                    />
+                );
+            }
+            throw Error("Det er ingen hendelse i listen med soknadsStatus. Så noe er galt, fordi det skal det være.")
+        };
+
+
+
+        const fiksDigisosIdIsValid = fiksDigisosId && fiksDigisosId !== "" && !setFiksDigisosIdIsEnabled;
+
+        return (
+            <div>
+                <div>
+                    Fiks Digisos Id
+                    <Panel>
+                        <Input disabled={!setFiksDigisosIdIsEnabled} value={fiksDigisosId} label={'fiksDigisosId'}
+                               onChange={(evt) => this.props.dispatch(setfiksDigisosId(evt.target.value))}/>
+                        <button className={"btn btn-primary"}
+                                onClick={() => {
+                                    this.props.dispatch(disableSetFiksDigisosId());
+                                    this.props.dispatch(sendFiksDigisosSokerJson(fiksDigisosId && fiksDigisosId !== "" ? fiksDigisosId : "1234", fiksDigisosSokerJson))
+                                }}
+                        >
+                            OK
+                        </button>
+                        <button className={"btn btn-danger"}
+                                onClick={() => {
+                                    this.props.dispatch(enableSetFiksDigisosId());
+                                    this.props.dispatch(sendFiksDigisosSokerJson(fiksDigisosId && fiksDigisosId !== "" ? fiksDigisosId : "1234", fiksDigisosSokerJson))
+                                }}
+                        >
+                            EDIT
+                        </button>
+
+                    </Panel>
+                </div>
+
+                {fiksDigisosIdIsValid && (
+                    <>
+                        <div>
+                            Soknads status
+                            <Panel>
+                                {soknadsStatusJsx()}
+                            </Panel>
+                        </div>
+                        <div>
+                            Tildel nytt navkontor
+                            <Panel>
+                                <Input label={'Nav kontor kode (4 siffer)'}/>
+                                <button onClick={() => console.warn('Tildeler nytt navkontor')}>
+                                    OK
+                                </button>
+                            </Panel>
+                        </div>
+                        <div>
+                            Opprett sak
+                            <Lesmerpanel intro={<div>kommer ...</div>}>
+                                <Knapp>Knapp 1</Knapp>
+                                <Knapp>Knapp 2</Knapp>
+                                <Knapp>Knapp 3</Knapp>
+                            </Lesmerpanel>
+                        </div>
+                        <div>
+
+                            <button
+                                // style={{backgroundColor: buttonBackgroundColor}}
+                                onClick={() => console.warn("Oppretter sak")}
+                            >
+                                <span className="glyphicon glyphicon-arrow-right" aria-hidden="true"/>
+                            </button>
+                            Opprett sak
+                        </div>
+                        <div style={{display: "none"}}>
+                            Backend url
+                            <Panel>
+                                <Input id={"asdf"} label={'url'}/>
+                            </Panel>
+                        </div>
+
+                        <Modal
+                            isOpen={loaderOn}
+                            contentLabel=""
+                            onRequestClose={() => console.warn("aksjdn")}
+                            closeButton={false}
+                            shouldCloseOnOverlayClick={false}
+                            className={"modal-style-override"}
+                        >
+                            <div className="application-spinner">
+                                {/*<div style={{padding:'2rem 2.5rem'}}>Innhold her</div>*/}
+                                <NavFrontendSpinner type="XXL"/>
+                            </div>
+                        </Modal>
+                    </>
+                )}
+                <Panel>
+                    <ReactJson src={fiksDigisosSokerJson}/>
+                </Panel>
             </div>
         );
     }

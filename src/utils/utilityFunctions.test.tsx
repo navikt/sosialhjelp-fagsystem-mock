@@ -1,5 +1,6 @@
 import React from 'react';
-import {mergeListsToLengthN} from "./utilityFunctions";
+import {getLastHendelseOfType, mergeListsToLengthN} from "./utilityFunctions";
+import {FiksDigisosSokerJson, HendelseType, soknadsStatus, tildeltNavKontor} from "../types/hendelseTypes";
 
 it('returnerer en liste med riktig komponenter', () => {
 
@@ -28,4 +29,46 @@ it('returnerer en liste med riktig komponenter', () => {
     expect(mergeListsToLengthN(current4, komplett, n4)).toEqual(
         ["x", "y", "z", "d", "e", "f"]
     );
+});
+
+it('returns the last occurence of a hendelse type', () => {
+
+    const fiksDigisosSokerJson: FiksDigisosSokerJson = {
+        "sak": {
+            "soker": {
+                "version": "1.0.0",
+                "avsender": {
+                    "systemnavn": "Testsystemet",
+                    "systemversjon": "1.0.0"
+                },
+                "hendelser": [
+                    {
+                        "type": "soknadsStatus",
+                        "hendelsestidspunkt": "2018-10-04T13:37:00.134Z",
+                        "status": "MOTTATT"
+                    } as soknadsStatus,
+                    {
+                        "type": "tildeltNavKontor",
+                        "hendelsestidspunkt": "2018-10-04T13:42:00.134Z",
+                        "navKontor": "0314"
+                    } as tildeltNavKontor,
+                    {
+                        "type": "soknadsStatus",
+                        "hendelsestidspunkt": "2018-10-04T13:52:00.134Z",
+                        "status": "UNDER_BEHANDLING"
+                    } as soknadsStatus
+                ]
+            }
+        },
+        "type": "no.nav.digisos.digisos.soker.v1"
+    };
+
+    expect(getLastHendelseOfType(fiksDigisosSokerJson, HendelseType.soknadsStatus)).toEqual(
+        {
+            "type": "soknadsStatus",
+            "hendelsestidspunkt": "2018-10-04T13:52:00.134Z",
+            "status": "UNDER_BEHANDLING"
+        }
+    );
+
 });

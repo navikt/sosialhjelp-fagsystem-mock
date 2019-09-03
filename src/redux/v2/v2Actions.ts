@@ -1,6 +1,7 @@
 import {V2Action, V2ActionTypeKeys} from "./v2Types";
 import {Dispatch} from "redux";
 import {fetchPost, getDigisosApiControllerPath} from "../../utils/restUtils";
+import {FiksDigisosSokerJson} from "../../types/hendelseTypes";
 
 export const setfiksDigisosId = (fiksDigisosId: string): V2Action => {
     return {
@@ -9,7 +10,7 @@ export const setfiksDigisosId = (fiksDigisosId: string): V2Action => {
     }
 };
 
-export const setDigisosSokerJson = (digisosSokerJson: any): V2Action => {
+export const setFiksDigisosSokerJson = (digisosSokerJson: any): V2Action => {
     return {
         type: V2ActionTypeKeys.SET_DIGISOS_SOKER_JSON,
         digisosSokerJson
@@ -17,12 +18,13 @@ export const setDigisosSokerJson = (digisosSokerJson: any): V2Action => {
 };
 
 
-export function sendDigisosSokerJson(fiksDigisosId: string, digisosSokerJson: string) {
+export function sendFiksDigisosSokerJson(fiksDigisosId: string, fiksDigisosSokerJson: FiksDigisosSokerJson) {
     return (dispatch: Dispatch) => {
         dispatch(turnOnLoader());
         const url = getDigisosApiControllerPath();
         const queryParam = `?fiksDigisosId=${fiksDigisosId}`;
-        fetchPost(`${url}${queryParam}`, digisosSokerJson).then((response: any) => {
+        fetchPost(`${url}${queryParam}`, JSON.stringify(fiksDigisosSokerJson)).then((response: any) => {
+            dispatch(setFiksDigisosSokerJson(fiksDigisosSokerJson));
             dispatch(turnOffLoader());
         }).catch((reason) => {
             // TODO: Handle it!
@@ -41,3 +43,7 @@ export const turnOffLoader = (): V2Action => {
         type: V2ActionTypeKeys.TURN_OFF_LOADER
     }
 };
+
+export const enableSetFiksDigisosId = (): V2Action => { return {type: V2ActionTypeKeys.ENABLE_SET_FIKS_DIGISOS_ID}};
+export const disableSetFiksDigisosId = (): V2Action => { return {type: V2ActionTypeKeys.DISABLE_SET_FIKS_DIGISOS_ID}};
+

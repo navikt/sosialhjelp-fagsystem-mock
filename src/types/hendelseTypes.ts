@@ -1,55 +1,26 @@
-interface Hendelse {
-    type: HendelseType;
-    hendelsestidspunkt: string;
+export interface FiksDigisosSokerJson {
+    "sak" : {
+        "soker": DigisosSokerJson
+    }
+    "type": string
 }
 
-export interface tildeltNavKontor extends Hendelse {
-    navKontor: string;
-}
-export interface soknadsStatus extends Hendelse {
-    status: SoknadsStatus
-}
-export interface vedtakFattet extends Hendelse {
-    saksreferanse: string;
-    utfall: { utfall: Utfall };
-    vedtaksfil: { referanse: Filreferanse};
-    vedlegg: Vedlegg[]
-}
-export interface dokumentasjonEtterspurt extends Hendelse {
-    forvaltningsbrev: Forvaltningsbrev;
-    vedlegg: Vedlegg[];
-    dokumenter: Dokument[];
-}
-export interface forelopigSvar extends Hendelse {
-    forvaltningsbrev: Forvaltningsbrev;
-    vedlegg: Vedlegg[];
-}
-export interface saksStatus extends Hendelse {
-    referanse: string;
-    tittel: string;
-    status: SaksStatus;
-}
-export interface utbetaling extends Hendelse {
-    // FIXME: fullfør implementasjon
-}
-export interface vilkar extends Hendelse {
-    utbetalingsreferanse: string[];
-    beskrivelse: string;
-    status: VilkarStatus;
-}
-export enum VilkarStatus {
-    OPPFYLT = "OPPFYLT",
-    IKKE_OPPFYLT = "IKKE_OPPFYLT"
-}
-export interface rammevedtak extends Hendelse {
-    rammevedtaksreferanse: string;
-    saksreferanse: string;
-    beskrivelse: string;
-    belop: string;
-    fom: string;
-    tom: string;
+export interface DigisosSokerJson {
+    "version": Version,
+    "avsender": Avsender,
+    "hendelser": Hendelse[]
 }
 
+export type Hendelse
+    = soknadsStatus
+    | vedtakFattet
+    | tildeltNavKontor
+    | dokumentasjonEtterspurt
+    | forelopigSvar
+    | saksStatus
+    | utbetaling
+    | vilkar
+    | rammevedtak
 
 export enum HendelseType {
     soknadsStatus = "soknadsStatus",
@@ -61,6 +32,74 @@ export enum HendelseType {
     utbetaling = "utbetaling",
     vilkar = "vilkar",
     rammevedtak = "rammevedtak"
+}
+
+
+export interface tildeltNavKontor {
+    type: HendelseType.tildeltNavKontor;
+    hendelsestidspunkt: string;
+    navKontor: string;
+}
+export interface soknadsStatus {
+    type: HendelseType.soknadsStatus;
+    hendelsestidspunkt: string;
+    status: SoknadsStatus
+}
+export interface vedtakFattet {
+    type: HendelseType.vedtakFattet;
+    hendelsestidspunkt: string;
+    saksreferanse: string;
+    utfall: { utfall: Utfall };
+    vedtaksfil: { referanse: Filreferanse};
+    vedlegg: Vedlegg[]
+}
+export interface dokumentasjonEtterspurt {
+    type: HendelseType.dokumentasjonEtterspurt;
+    hendelsestidspunkt: string;
+    forvaltningsbrev: Forvaltningsbrev;
+    vedlegg: Vedlegg[];
+    dokumenter: Dokument[];
+}
+export interface forelopigSvar {
+    type: HendelseType.forelopigSvar;
+    hendelsestidspunkt: string;
+    forvaltningsbrev: Forvaltningsbrev;
+    vedlegg: Vedlegg[];
+}
+export interface saksStatus {
+    type: HendelseType.saksStatus;
+    hendelsestidspunkt: string;
+    referanse: string;
+    tittel: string;
+    status: SaksStatus;
+}
+export interface utbetaling {
+    type: HendelseType.utbetaling;
+    hendelsestidspunkt: string;
+    // FIXME: fullfør implementasjon
+}
+export interface vilkar {
+    type: HendelseType.vilkar;
+    hendelsestidspunkt: string;
+    utbetalingsreferanse: string[];
+    beskrivelse: string;
+    status: VilkarStatus;
+}
+export interface rammevedtak {
+    type: HendelseType.rammevedtak;
+    hendelsestidspunkt: string;
+    rammevedtaksreferanse: string;
+    saksreferanse: string;
+    beskrivelse: string;
+    belop: string;
+    fom: string;
+    tom: string;
+}
+
+
+export enum VilkarStatus {
+    OPPFYLT = "OPPFYLT",
+    IKKE_OPPFYLT = "IKKE_OPPFYLT"
 }
 
 export enum SoknadsStatus {
@@ -107,6 +146,15 @@ export interface Dokument {
     dokumenttype: string;
     tilleggsinformasjon: string;
     innsendelsesfrist: string;
+}
+
+export interface Version {
+
+}
+
+export interface Avsender {
+    systemnavn: string,
+    systemversjon: string
 }
 
 export default Hendelse;
