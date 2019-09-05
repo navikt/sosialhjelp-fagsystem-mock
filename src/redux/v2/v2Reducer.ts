@@ -36,10 +36,10 @@ const v2Reducer: Reducer<V2Model, V2Action> = (
 ) => {
     switch (action.type) {
         case V2ActionTypeKeys.SET_FIKS_DIGISOS_ID: return {...state, fiksDigisosId: action.fiksDigisosId};
-        case V2ActionTypeKeys.SET_DIGISOS_SOKER_JSON: {
+        case V2ActionTypeKeys.SET_FIKS_DIGISOS_SOKER_JSON: {
             return {
                 ...state,
-                digisosSokerJson: action.digisosSokerJson
+                fiksDigisosSokerJson: action.fiksDigisosSokerJson
             };
         }
         case V2ActionTypeKeys.TURN_ON_LOADER: return {...state, loaderOn: true};

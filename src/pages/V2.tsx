@@ -22,6 +22,7 @@ import {getLastHendelseOfType, getNow} from "../utils/utilityFunctions";
 
 interface V2Props {
     v2: V2Model
+    hendelserUpdated: Hendelse[]
 }
 
 interface V2State {
@@ -96,23 +97,16 @@ class V2 extends React.Component<Props, State> {
                         ]}
                         checked={lastSoknadsStatus.status}
                         onChange={(evt, nySoknadsStatus) => {
-                            console.warn("nySoknadsStatus: " + nySoknadsStatus);
-                            switch (nySoknadsStatus) {
-                                case SoknadsStatus.MOTTATT || SoknadsStatus.UNDER_BEHANDLING || SoknadsStatus.FERDIGBEHANDLET || SoknadsStatus.BEHANDLES_IKKE: {
-                                    const updatedListOfHendelser: Hendelse[] = fiksDigisosSokerJson.sak.soker.hendelser.slice();
-                                    updatedListOfHendelser.push({
-                                        type: HendelseType.soknadsStatus,
-                                        hendelsestidspunkt: getNow(),
-                                        status: nySoknadsStatus
-                                    });
-                                    const fiksDigisosSokerJsonUpdated: FiksDigisosSokerJson = JSON.parse(JSON.stringify(fiksDigisosSokerJson));
-                                    fiksDigisosSokerJsonUpdated.sak.soker.hendelser = updatedListOfHendelser;
-                                    this.props.dispatch(sendFiksDigisosSokerJson(fiksDigisosId, fiksDigisosSokerJsonUpdated));
-                                    break;
-                                }
-                                default: {
-
-                                }
+                            if (nySoknadsStatus === SoknadsStatus.MOTTATT || nySoknadsStatus || SoknadsStatus.UNDER_BEHANDLING || SoknadsStatus.FERDIGBEHANDLET || SoknadsStatus.BEHANDLES_IKKE){
+                                // @ts-ignore
+                                this.props.hendelserUpdated.push({
+                                    type: HendelseType.soknadsStatus,
+                                    hendelsestidspunkt: getNow(),
+                                    status: nySoknadsStatus
+                                });
+                                const fiksDigisosSokerJsonUpdated: FiksDigisosSokerJson = JSON.parse(JSON.stringify(fiksDigisosSokerJson));
+                                fiksDigisosSokerJsonUpdated.sak.soker.hendelser = this.props.hendelserUpdated;
+                                this.props.dispatch(sendFiksDigisosSokerJson(fiksDigisosId, fiksDigisosSokerJsonUpdated));
                             }
                         }}
                     />
@@ -219,7 +213,8 @@ class V2 extends React.Component<Props, State> {
 }
 
 const mapStateToProps = (state: AppState) => ({
-    v2: state.v2
+    v2: state.v2,
+    hendelserUpdated: JSON.parse(JSON.stringify(state.v2.fiksDigisosSokerJson.sak.soker.hendelser))
 });
 
 const mapDispatchToProps = (dispatch: any) => {

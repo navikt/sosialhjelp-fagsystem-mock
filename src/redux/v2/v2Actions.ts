@@ -10,10 +10,10 @@ export const setfiksDigisosId = (fiksDigisosId: string): V2Action => {
     }
 };
 
-export const setFiksDigisosSokerJson = (digisosSokerJson: any): V2Action => {
+export const setFiksDigisosSokerJson = (fiksDigisosSokerJson: any): V2Action => {
     return {
-        type: V2ActionTypeKeys.SET_DIGISOS_SOKER_JSON,
-        digisosSokerJson
+        type: V2ActionTypeKeys.SET_FIKS_DIGISOS_SOKER_JSON,
+        fiksDigisosSokerJson: fiksDigisosSokerJson
     }
 };
 

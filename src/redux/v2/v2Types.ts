@@ -18,7 +18,7 @@ export type V2Action
 
 export enum V2ActionTypeKeys {
     SET_FIKS_DIGISOS_ID = "v2/SET_DIGISOS_FIKS_ID",
-    SET_DIGISOS_SOKER_JSON = "v2/UPDATE_DIGISOS_SOKER_JSON",
+    SET_FIKS_DIGISOS_SOKER_JSON = "v2/UPDATE_DIGISOS_SOKER_JSON",
     TURN_ON_LOADER = "v2/TURN_ON_LOADER",
     TURN_OFF_LOADER = "v2/TURN_OFF_LOADER",
     ENABLE_SET_FIKS_DIGISOS_ID = "v2/ENABLE_SET_FIKS_DIGISOS_ID",
@@ -31,8 +31,8 @@ export interface SetFiksDigisosId {
 }
 
 export interface SetDigisosSokerJson {
-    type: V2ActionTypeKeys.SET_DIGISOS_SOKER_JSON;
-    digisosSokerJson: any;
+    type: V2ActionTypeKeys.SET_FIKS_DIGISOS_SOKER_JSON;
+    fiksDigisosSokerJson: any;
 }
 
 export interface TurnOnLoader {
