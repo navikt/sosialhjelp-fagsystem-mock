@@ -16,8 +16,15 @@ import {
     setfiksDigisosId
 } from "../redux/v2/v2Actions";
 import ReactJson from "react-json-view";
-import Hendelse, {FiksDigisosSokerJson, HendelseType, SoknadsStatus} from "../types/hendelseTypes";
+import Hendelse, {
+    FiksDigisosSokerJson,
+    HendelseType,
+    saksStatus,
+    soknadsStatus,
+    SoknadsStatus, tildeltNavKontor
+} from "../types/hendelseTypes";
 import {getLastHendelseOfType, getNow} from "../utils/utilityFunctions";
+import TildelNyttNavKontor from "../components/tildelNyttNavKontor";
 
 
 interface V2Props {
@@ -50,6 +57,12 @@ class V2 extends React.Component<Props, State> {
 
     handleClickSystemButton() {
         this.props.dispatch(setAppName(this.state.input))
+    }
+
+    private updateAndSendFiksDigisosSokerJson() {
+        const fiksDigisosSokerJsonUpdated: FiksDigisosSokerJson = JSON.parse(JSON.stringify(this.props.v2.fiksDigisosSokerJson));
+        fiksDigisosSokerJsonUpdated.sak.soker.hendelser = this.props.hendelserUpdated;
+        this.props.dispatch(sendFiksDigisosSokerJson(this.props.v2.fiksDigisosId, fiksDigisosSokerJsonUpdated));
     }
 
     render() {
@@ -98,15 +111,12 @@ class V2 extends React.Component<Props, State> {
                         checked={lastSoknadsStatus.status}
                         onChange={(evt, nySoknadsStatus) => {
                             if (nySoknadsStatus === SoknadsStatus.MOTTATT || nySoknadsStatus || SoknadsStatus.UNDER_BEHANDLING || SoknadsStatus.FERDIGBEHANDLET || SoknadsStatus.BEHANDLES_IKKE){
-                                // @ts-ignore
                                 this.props.hendelserUpdated.push({
                                     type: HendelseType.soknadsStatus,
                                     hendelsestidspunkt: getNow(),
                                     status: nySoknadsStatus
-                                });
-                                const fiksDigisosSokerJsonUpdated: FiksDigisosSokerJson = JSON.parse(JSON.stringify(fiksDigisosSokerJson));
-                                fiksDigisosSokerJsonUpdated.sak.soker.hendelser = this.props.hendelserUpdated;
-                                this.props.dispatch(sendFiksDigisosSokerJson(fiksDigisosId, fiksDigisosSokerJsonUpdated));
+                                } as soknadsStatus);
+                                this.updateAndSendFiksDigisosSokerJson();
                             }
                         }}
                     />
@@ -154,15 +164,20 @@ class V2 extends React.Component<Props, State> {
                                 {soknadsStatusJsx()}
                             </Panel>
                         </div>
-                        <div>
-                            Tildel nytt navkontor
-                            <Panel>
-                                <Input label={'Nav kontor kode (4 siffer)'}/>
-                                <button onClick={() => console.warn('Tildeler nytt navkontor')}>
-                                    OK
-                                </button>
-                            </Panel>
-                        </div>
+
+                        <TildelNyttNavKontor
+                            onClick={(nyttNavKontor) => {
+                                console.warn("nytt navkontor nummer (4 siffer):" + nyttNavKontor);
+                                this.props.hendelserUpdated.push({
+                                    type: HendelseType.tildeltNavKontor,
+                                    hendelsestidspunkt: getNow(),
+                                    navKontor: nyttNavKontor
+                                } as tildeltNavKontor)
+                                this.updateAndSendFiksDigisosSokerJson();
+                            }}
+                        />
+
+
                         <div>
                             Opprett sak
                             <Lesmerpanel intro={<div>kommer ...</div>}>
@@ -209,6 +224,7 @@ class V2 extends React.Component<Props, State> {
             </div>
         );
     }
+
 
 }
 

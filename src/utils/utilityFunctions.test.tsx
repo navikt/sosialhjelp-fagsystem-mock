@@ -1,5 +1,5 @@
 import React from 'react';
-import {getLastHendelseOfType, mergeListsToLengthN} from "./utilityFunctions";
+import {getLastHendelseOfType, isNDigits, mergeListsToLengthN} from "./utilityFunctions";
 import {FiksDigisosSokerJson, HendelseType, soknadsStatus, tildeltNavKontor} from "../types/hendelseTypes";
 
 it('returnerer en liste med riktig komponenter', () => {
@@ -72,3 +72,10 @@ it('returns the last occurence of a hendelse type', () => {
     );
 
 });
+
+it('validated that the input is a string consisting of x digits', () => {
+    expect(isNDigits("1234", 4)).toEqual(true);
+    expect(isNDigits("1234", 5)).toEqual(false);
+    expect(isNDigits("12345", 5)).toEqual(true);
+});
+

@@ -1,6 +1,6 @@
 import {Reducer} from "redux";
 import {V2Action, V2ActionTypeKeys, V2Model} from "./v2Types";
-import {FiksDigisosSokerJson, soknadsStatus, tildeltNavKontor} from "../../types/hendelseTypes";
+import {FiksDigisosSokerJson, soknadsStatus} from "../../types/hendelseTypes";
 
 
 const minimal: FiksDigisosSokerJson = {
@@ -24,10 +24,10 @@ const minimal: FiksDigisosSokerJson = {
 };
 
 export const initialV2Model: V2Model = {
-    fiksDigisosId: "",
+    fiksDigisosId: "1234",
     fiksDigisosSokerJson: minimal,
     loaderOn: false,
-    setFiksDigisosIdIsEnabled: true
+    setFiksDigisosIdIsEnabled: false
 };
 
 const v2Reducer: Reducer<V2Model, V2Action> = (

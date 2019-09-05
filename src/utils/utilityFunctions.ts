@@ -74,3 +74,7 @@ export function getNow(): string {
     return `${year}-${month}-${day}T${hour}:${minutes}:${seconds}:${millis}Z`
 }
 
+export const isNDigits = (value: string, n_digits: number): boolean => {
+    const a: RegExpMatchArray | null = value.match(`^[0-9]{${n_digits}}$`);
+    return !!a
+};
