@@ -35,7 +35,7 @@ const v2Reducer: Reducer<V2Model, V2Action> = (
     action: V2Action
 ) => {
     switch (action.type) {
-        case V2ActionTypeKeys.SET_FIKS_DIGISOS_ID: return {...state, fiksDigisosId: action.fiksDigisosId};
+        case V2ActionTypeKeys.SET_FIKS_DIGISOS_ID: return {...state, fiksDigisosId: action.fiksDigisosId, fiksDigisosSokerJson: minimal};
         case V2ActionTypeKeys.SET_FIKS_DIGISOS_SOKER_JSON: {
             return {
                 ...state,

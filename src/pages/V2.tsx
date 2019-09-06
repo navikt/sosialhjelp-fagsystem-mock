@@ -19,7 +19,6 @@ import ReactJson from "react-json-view";
 import Hendelse, {
     FiksDigisosSokerJson,
     HendelseType,
-    saksStatus,
     soknadsStatus,
     SoknadsStatus, tildeltNavKontor
 } from "../types/hendelseTypes";

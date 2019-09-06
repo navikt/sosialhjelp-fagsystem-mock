@@ -1,4 +1,4 @@
-import HendelseBase, {FiksDigisosSokerJson, HendelseType, SoknadsStatus} from "../types/hendelseTypes";
+import {FiksDigisosSokerJson, HendelseType} from "../types/hendelseTypes";
 import Hendelse from "../types/hendelseTypes";
 
 const tildeltNavKontorSchema = require('../digisos/hendelse/tildeltNavKontor');
