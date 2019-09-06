@@ -2,6 +2,7 @@ import {V2Action, V2ActionTypeKeys} from "./v2Types";
 import {Dispatch} from "redux";
 import {fetchPost} from "../../utils/restUtils";
 import {FiksDigisosSokerJson} from "../../types/hendelseTypes";
+import {NotificationLevel} from "../../pages/V2";
 
 export const setfiksDigisosId = (fiksDigisosId: string): V2Action => {
     return {
@@ -18,19 +19,36 @@ export const setFiksDigisosSokerJson = (fiksDigisosSokerJson: any): V2Action => 
 };
 
 
-export function sendFiksDigisosSokerJson(fiksDigisosId: string, fiksDigisosSokerJson: FiksDigisosSokerJson, backendUrl: string) {
+export function sendFiksDigisosSokerJson(fiksDigisosId: string, fiksDigisosSokerJson: FiksDigisosSokerJson, backendUrl: string, notification: (level: NotificationLevel, text: string, options: any) => void) {
     return (dispatch: Dispatch) => {
         dispatch(turnOnLoader());
         // const url = getDigisosApiControllerPath();
         const queryParam = `?fiksDigisosId=${fiksDigisosId}`;
         fetchPost(`${backendUrl}${queryParam}`, JSON.stringify(fiksDigisosSokerJson)).then((response: any) => {
             dispatch(setFiksDigisosSokerJson(fiksDigisosSokerJson));
-            dispatch(turnOffLoader());
+            setTimeout(() => {
+                dispatch(turnOffLoader());
+                notification(NotificationLevel.SUCCESS, "Successfully posted data to fiks", {containerId: 'A'});
+            }, 1000);
+
         }).catch((reason) => {
             switch (reason.message) {
                 case "Not Found": {
                     console.warn("Got 404. Specify a valid backend url...");
-                    dispatch(turnOffLoader());
+                    setTimeout(() => {
+                        dispatch(turnOffLoader());
+                        notification(NotificationLevel.ERROR, "Failed. Got 404. Specify a valid backend url.", {containerId: 'A'});
+                    }, 1000);
+
+                    break;
+                }
+                case "Failed to fetch": {
+                    console.warn("Got 404. Specify a valid backend url...");
+                    setTimeout(() => {
+                        dispatch(turnOffLoader());
+                        notification(NotificationLevel.ERROR, "Failed. Got 404. Specify a valid backend url.", {containerId: 'A'});
+                    }, 1000);
+
                     break;
                 }
                 default: {

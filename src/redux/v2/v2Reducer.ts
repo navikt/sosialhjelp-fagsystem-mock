@@ -24,11 +24,11 @@ const minimal: FiksDigisosSokerJson = {
 };
 
 export const backendUrlsLocalTemplate: string = "http://localhost:8080/sosialhjelp/innsyn-api/api/v1/digisosapi/oppdaterDigisosSak";
-export const backendUrlsDigisostestTemplate: string = "https://www.digisos-test.com/sosialhjelp/innsyn-api/api/v1/digisosapi/oppdaterDigisosSak";
+export const backendUrlsDigisostestTemplate: string = "https://www.digisos-test.com/sosialhjelp/login-api/innsyn-api/api/v1/digisosapi/oppdaterDigisosSak";
 export const backendUrlsQTemplate: string = "https://www-q1.nav.no/sosialhjelp/innsyn/innsyn-api/api/v1/digisosapi/oppdaterDigisosSak";
 
 export const initialV2Model: V2Model = {
-    fiksDigisosId: "1234",
+    fiksDigisosId: "1337",
     fiksDigisosSokerJson: minimal,
     loaderOn: false,
     setFiksDigisosIdIsEnabled: false,
