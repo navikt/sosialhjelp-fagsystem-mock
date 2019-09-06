@@ -24,6 +24,7 @@ import Hendelse, {
 } from "../types/hendelseTypes";
 import {getLastHendelseOfType, getNow} from "../utils/utilityFunctions";
 import TildelNyttNavKontor from "../components/tildelNyttNavKontor";
+import BackendUrl from "../components/backendUrl";
 
 
 interface V2Props {
@@ -59,14 +60,18 @@ class V2 extends React.Component<Props, State> {
     }
 
     private updateAndSendFiksDigisosSokerJson() {
-        const fiksDigisosSokerJsonUpdated: FiksDigisosSokerJson = JSON.parse(JSON.stringify(this.props.v2.fiksDigisosSokerJson));
-        fiksDigisosSokerJsonUpdated.sak.soker.hendelser = this.props.hendelserUpdated;
-        this.props.dispatch(sendFiksDigisosSokerJson(this.props.v2.fiksDigisosId, fiksDigisosSokerJsonUpdated));
+
+        const { hendelserUpdated} = this.props;
+        const {backendUrlTypeToUse, backendUrls, fiksDigisosId, fiksDigisosSokerJson} = this.props.v2;
+
+        const fiksDigisosSokerJsonUpdated: FiksDigisosSokerJson = JSON.parse(JSON.stringify(fiksDigisosSokerJson));
+        fiksDigisosSokerJsonUpdated.sak.soker.hendelser = hendelserUpdated;
+        // @ts-ignore
+        const currentBackendUrl = backendUrls[backendUrlTypeToUse];
+        this.props.dispatch(sendFiksDigisosSokerJson(fiksDigisosId, fiksDigisosSokerJsonUpdated, currentBackendUrl));
     }
 
     render() {
-
-        console.warn(getNow());
 
         if (!this.props.v2) {
             return (
@@ -89,8 +94,13 @@ class V2 extends React.Component<Props, State> {
             fiksDigisosId,
             fiksDigisosSokerJson,
             loaderOn,
-            setFiksDigisosIdIsEnabled
+            setFiksDigisosIdIsEnabled,
+            backendUrls,
+            backendUrlTypeToUse
         } = this.props.v2;
+
+        // @ts-ignore
+        const currentBackendUrl = backendUrls[backendUrlTypeToUse];
 
 
         const lastSoknadsStatus: Hendelse | undefined = getLastHendelseOfType(fiksDigisosSokerJson, HendelseType.soknadsStatus);
@@ -130,6 +140,8 @@ class V2 extends React.Component<Props, State> {
 
         return (
             <div>
+                <BackendUrl />
+
                 <div>
                     Fiks Digisos Id
                     <Panel>
@@ -138,7 +150,7 @@ class V2 extends React.Component<Props, State> {
                         <button className={"btn btn-primary"}
                                 onClick={() => {
                                     this.props.dispatch(disableSetFiksDigisosId());
-                                    this.props.dispatch(sendFiksDigisosSokerJson(fiksDigisosId && fiksDigisosId !== "" ? fiksDigisosId : "1234", fiksDigisosSokerJson))
+                                    this.props.dispatch(sendFiksDigisosSokerJson(fiksDigisosId && fiksDigisosId !== "" ? fiksDigisosId : "1234", fiksDigisosSokerJson, currentBackendUrl ))
                                 }}
                         >
                             OK
@@ -146,7 +158,7 @@ class V2 extends React.Component<Props, State> {
                         <button className={"btn btn-danger"}
                                 onClick={() => {
                                     this.props.dispatch(enableSetFiksDigisosId());
-                                    this.props.dispatch(sendFiksDigisosSokerJson(fiksDigisosId && fiksDigisosId !== "" ? fiksDigisosId : "1234", fiksDigisosSokerJson))
+                                    this.props.dispatch(sendFiksDigisosSokerJson(fiksDigisosId && fiksDigisosId !== "" ? fiksDigisosId : "1234", fiksDigisosSokerJson, currentBackendUrl ))
                                 }}
                         >
                             EDIT
@@ -166,7 +178,6 @@ class V2 extends React.Component<Props, State> {
 
                         <TildelNyttNavKontor
                             onClick={(nyttNavKontor) => {
-                                console.warn("nytt navkontor nummer (4 siffer):" + nyttNavKontor);
                                 this.props.hendelserUpdated.push({
                                     type: HendelseType.tildeltNavKontor,
                                     hendelsestidspunkt: getNow(),
