@@ -139,98 +139,100 @@ class V2 extends React.Component<Props, State> {
         const fiksDigisosIdIsValid = fiksDigisosId && fiksDigisosId !== "" && !setFiksDigisosIdIsEnabled;
 
         return (
-            <div>
-                <BackendUrl />
+            <div className={"v2-wrapper"}>
+                <div className={"v2-content"}>
+                    <BackendUrl />
 
-                <div>
-                    Fiks Digisos Id
+                    <div>
+                        Fiks Digisos Id
+                        <Panel>
+                            <Input disabled={!setFiksDigisosIdIsEnabled} value={fiksDigisosId} label={'fiksDigisosId'}
+                                   onChange={(evt) => this.props.dispatch(setfiksDigisosId(evt.target.value))}/>
+                            <button className={"btn btn-primary"}
+                                    onClick={() => {
+                                        this.props.dispatch(disableSetFiksDigisosId());
+                                        this.props.dispatch(sendFiksDigisosSokerJson(fiksDigisosId && fiksDigisosId !== "" ? fiksDigisosId : "1234", fiksDigisosSokerJson, currentBackendUrl ))
+                                    }}
+                            >
+                                OK
+                            </button>
+                            <button className={"btn btn-danger"}
+                                    onClick={() => {
+                                        this.props.dispatch(enableSetFiksDigisosId());
+                                        this.props.dispatch(sendFiksDigisosSokerJson(fiksDigisosId && fiksDigisosId !== "" ? fiksDigisosId : "1234", fiksDigisosSokerJson, currentBackendUrl ))
+                                    }}
+                            >
+                                EDIT
+                            </button>
+
+                        </Panel>
+                    </div>
+
+                    {fiksDigisosIdIsValid && (
+                        <>
+                            <div>
+                                Soknads status
+                                <Panel>
+                                    {soknadsStatusJsx()}
+                                </Panel>
+                            </div>
+
+                            <TildelNyttNavKontor
+                                onClick={(nyttNavKontor) => {
+                                    this.props.hendelserUpdated.push({
+                                        type: HendelseType.tildeltNavKontor,
+                                        hendelsestidspunkt: getNow(),
+                                        navKontor: nyttNavKontor
+                                    } as tildeltNavKontor)
+                                    this.updateAndSendFiksDigisosSokerJson();
+                                }}
+                            />
+
+
+                            <div>
+                                Opprett sak
+                                <Lesmerpanel intro={<div>kommer ...</div>}>
+                                    <Knapp>Knapp 1</Knapp>
+                                    <Knapp>Knapp 2</Knapp>
+                                    <Knapp>Knapp 3</Knapp>
+                                </Lesmerpanel>
+                            </div>
+                            <div>
+
+                                <button
+                                    // style={{backgroundColor: buttonBackgroundColor}}
+                                    onClick={() => console.warn("Oppretter sak")}
+                                >
+                                    <span className="glyphicon glyphicon-arrow-right" aria-hidden="true"/>
+                                </button>
+                                Opprett sak
+                            </div>
+                            <div style={{display: "none"}}>
+                                Backend url
+                                <Panel>
+                                    <Input id={"asdf"} label={'url'}/>
+                                </Panel>
+                            </div>
+
+                            <Modal
+                                isOpen={loaderOn}
+                                contentLabel=""
+                                onRequestClose={() => console.warn("aksjdn")}
+                                closeButton={false}
+                                shouldCloseOnOverlayClick={false}
+                                className={"modal-style-override"}
+                            >
+                                <div className="application-spinner">
+                                    {/*<div style={{padding:'2rem 2.5rem'}}>Innhold her</div>*/}
+                                    <NavFrontendSpinner type="XXL"/>
+                                </div>
+                            </Modal>
+                        </>
+                    )}
                     <Panel>
-                        <Input disabled={!setFiksDigisosIdIsEnabled} value={fiksDigisosId} label={'fiksDigisosId'}
-                               onChange={(evt) => this.props.dispatch(setfiksDigisosId(evt.target.value))}/>
-                        <button className={"btn btn-primary"}
-                                onClick={() => {
-                                    this.props.dispatch(disableSetFiksDigisosId());
-                                    this.props.dispatch(sendFiksDigisosSokerJson(fiksDigisosId && fiksDigisosId !== "" ? fiksDigisosId : "1234", fiksDigisosSokerJson, currentBackendUrl ))
-                                }}
-                        >
-                            OK
-                        </button>
-                        <button className={"btn btn-danger"}
-                                onClick={() => {
-                                    this.props.dispatch(enableSetFiksDigisosId());
-                                    this.props.dispatch(sendFiksDigisosSokerJson(fiksDigisosId && fiksDigisosId !== "" ? fiksDigisosId : "1234", fiksDigisosSokerJson, currentBackendUrl ))
-                                }}
-                        >
-                            EDIT
-                        </button>
-
+                        <ReactJson src={fiksDigisosSokerJson}/>
                     </Panel>
                 </div>
-
-                {fiksDigisosIdIsValid && (
-                    <>
-                        <div>
-                            Soknads status
-                            <Panel>
-                                {soknadsStatusJsx()}
-                            </Panel>
-                        </div>
-
-                        <TildelNyttNavKontor
-                            onClick={(nyttNavKontor) => {
-                                this.props.hendelserUpdated.push({
-                                    type: HendelseType.tildeltNavKontor,
-                                    hendelsestidspunkt: getNow(),
-                                    navKontor: nyttNavKontor
-                                } as tildeltNavKontor)
-                                this.updateAndSendFiksDigisosSokerJson();
-                            }}
-                        />
-
-
-                        <div>
-                            Opprett sak
-                            <Lesmerpanel intro={<div>kommer ...</div>}>
-                                <Knapp>Knapp 1</Knapp>
-                                <Knapp>Knapp 2</Knapp>
-                                <Knapp>Knapp 3</Knapp>
-                            </Lesmerpanel>
-                        </div>
-                        <div>
-
-                            <button
-                                // style={{backgroundColor: buttonBackgroundColor}}
-                                onClick={() => console.warn("Oppretter sak")}
-                            >
-                                <span className="glyphicon glyphicon-arrow-right" aria-hidden="true"/>
-                            </button>
-                            Opprett sak
-                        </div>
-                        <div style={{display: "none"}}>
-                            Backend url
-                            <Panel>
-                                <Input id={"asdf"} label={'url'}/>
-                            </Panel>
-                        </div>
-
-                        <Modal
-                            isOpen={loaderOn}
-                            contentLabel=""
-                            onRequestClose={() => console.warn("aksjdn")}
-                            closeButton={false}
-                            shouldCloseOnOverlayClick={false}
-                            className={"modal-style-override"}
-                        >
-                            <div className="application-spinner">
-                                {/*<div style={{padding:'2rem 2.5rem'}}>Innhold her</div>*/}
-                                <NavFrontendSpinner type="XXL"/>
-                            </div>
-                        </Modal>
-                    </>
-                )}
-                <Panel>
-                    <ReactJson src={fiksDigisosSokerJson}/>
-                </Panel>
             </div>
         );
     }

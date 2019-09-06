@@ -1,6 +1,6 @@
 import {V2Action, V2ActionTypeKeys} from "./v2Types";
 import {Dispatch} from "redux";
-import {fetchPost, getDigisosApiControllerPath} from "../../utils/restUtils";
+import {fetchPost} from "../../utils/restUtils";
 import {FiksDigisosSokerJson} from "../../types/hendelseTypes";
 
 export const setfiksDigisosId = (fiksDigisosId: string): V2Action => {
