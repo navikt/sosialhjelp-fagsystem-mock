@@ -25,6 +25,16 @@ import Hendelse, {
 import {getLastHendelseOfType, getNow} from "../utils/utilityFunctions";
 import TildelNyttNavKontor from "../components/tildelNyttNavKontor";
 import BackendUrl from "../components/backendUrl";
+import {toast, ToastContainer} from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
+import {PacmanLoader} from "react-spinners";
+import { css } from '@emotion/core';
+
+const override = css`
+    display: block;
+    margin: 0 auto;
+    border-color: red;
+`;
 
 
 interface V2Props {
@@ -34,6 +44,13 @@ interface V2Props {
 
 interface V2State {
     input: string;
+}
+
+export enum NotificationLevel {
+    INFO = "INFO",
+    SUCCESS = "SUCESS",
+    ERROR = "ERROR",
+    WARNING = "WARNING"
 }
 
 type Props = DispatchProps & V2Props;
@@ -49,6 +66,17 @@ class V2 extends React.Component<Props, State> {
         }
     }
 
+    notifyA = (level: NotificationLevel, text: string, options: any) => {
+        switch (level) {
+            case NotificationLevel.INFO: {toast.info(text, options); break;}
+            case NotificationLevel.SUCCESS: {toast.success(text, options); break;}
+            case NotificationLevel.WARNING: {toast.warn(text, options); break;}
+            case NotificationLevel.ERROR: {toast.error(text, options); break;}
+            default: {toast.info(text, options); break;}
+        }
+    };
+
+
     handleInput(value: string) {
         this.setState({
             input: value,
@@ -61,14 +89,14 @@ class V2 extends React.Component<Props, State> {
 
     private updateAndSendFiksDigisosSokerJson() {
 
-        const { hendelserUpdated} = this.props;
+        const {hendelserUpdated} = this.props;
         const {backendUrlTypeToUse, backendUrls, fiksDigisosId, fiksDigisosSokerJson} = this.props.v2;
 
         const fiksDigisosSokerJsonUpdated: FiksDigisosSokerJson = JSON.parse(JSON.stringify(fiksDigisosSokerJson));
         fiksDigisosSokerJsonUpdated.sak.soker.hendelser = hendelserUpdated;
         // @ts-ignore
         const currentBackendUrl = backendUrls[backendUrlTypeToUse];
-        this.props.dispatch(sendFiksDigisosSokerJson(fiksDigisosId, fiksDigisosSokerJsonUpdated, currentBackendUrl));
+        this.props.dispatch(sendFiksDigisosSokerJson(fiksDigisosId, fiksDigisosSokerJsonUpdated, currentBackendUrl, this.notifyA));
     }
 
     render() {
@@ -106,7 +134,7 @@ class V2 extends React.Component<Props, State> {
         const lastSoknadsStatus: Hendelse | undefined = getLastHendelseOfType(fiksDigisosSokerJson, HendelseType.soknadsStatus);
 
         const soknadsStatusJsx = () => {
-            if (lastSoknadsStatus && lastSoknadsStatus.type === HendelseType.soknadsStatus){
+            if (lastSoknadsStatus && lastSoknadsStatus.type === HendelseType.soknadsStatus) {
                 return (
                     <RadioPanelGruppe
                         name="soknadsStatus"
@@ -119,7 +147,7 @@ class V2 extends React.Component<Props, State> {
                         ]}
                         checked={lastSoknadsStatus.status}
                         onChange={(evt, nySoknadsStatus) => {
-                            if (nySoknadsStatus === SoknadsStatus.MOTTATT || nySoknadsStatus || SoknadsStatus.UNDER_BEHANDLING || SoknadsStatus.FERDIGBEHANDLET || SoknadsStatus.BEHANDLES_IKKE){
+                            if (nySoknadsStatus === SoknadsStatus.MOTTATT || nySoknadsStatus || SoknadsStatus.UNDER_BEHANDLING || SoknadsStatus.FERDIGBEHANDLET || SoknadsStatus.BEHANDLES_IKKE) {
                                 this.props.hendelserUpdated.push({
                                     type: HendelseType.soknadsStatus,
                                     hendelsestidspunkt: getNow(),
@@ -135,13 +163,12 @@ class V2 extends React.Component<Props, State> {
         };
 
 
-
         const fiksDigisosIdIsValid = fiksDigisosId && fiksDigisosId !== "" && !setFiksDigisosIdIsEnabled;
 
         return (
             <div className={"v2-wrapper"}>
                 <div className={"v2-content"}>
-                    <BackendUrl />
+                    <BackendUrl/>
 
                     <div>
                         Fiks Digisos Id
@@ -151,7 +178,7 @@ class V2 extends React.Component<Props, State> {
                             <button className={"btn btn-primary"}
                                     onClick={() => {
                                         this.props.dispatch(disableSetFiksDigisosId());
-                                        this.props.dispatch(sendFiksDigisosSokerJson(fiksDigisosId && fiksDigisosId !== "" ? fiksDigisosId : "1234", fiksDigisosSokerJson, currentBackendUrl ))
+                                        this.props.dispatch(sendFiksDigisosSokerJson(fiksDigisosId && fiksDigisosId !== "" ? fiksDigisosId : "1234", fiksDigisosSokerJson, currentBackendUrl, this.notifyA))
                                     }}
                             >
                                 OK
@@ -159,7 +186,7 @@ class V2 extends React.Component<Props, State> {
                             <button className={"btn btn-danger"}
                                     onClick={() => {
                                         this.props.dispatch(enableSetFiksDigisosId());
-                                        this.props.dispatch(sendFiksDigisosSokerJson(fiksDigisosId && fiksDigisosId !== "" ? fiksDigisosId : "1234", fiksDigisosSokerJson, currentBackendUrl ))
+                                        this.props.dispatch(sendFiksDigisosSokerJson(fiksDigisosId && fiksDigisosId !== "" ? fiksDigisosId : "1234", fiksDigisosSokerJson, currentBackendUrl, this.notifyA))
                                     }}
                             >
                                 EDIT
@@ -189,24 +216,25 @@ class V2 extends React.Component<Props, State> {
                             />
 
 
-                            <div>
+                            <Panel>
                                 Opprett sak
                                 <Lesmerpanel intro={<div>kommer ...</div>}>
                                     <Knapp>Knapp 1</Knapp>
                                     <Knapp>Knapp 2</Knapp>
                                     <Knapp>Knapp 3</Knapp>
                                 </Lesmerpanel>
-                            </div>
-                            <div>
+                                <div>
 
-                                <button
-                                    // style={{backgroundColor: buttonBackgroundColor}}
-                                    onClick={() => console.warn("Oppretter sak")}
-                                >
-                                    <span className="glyphicon glyphicon-arrow-right" aria-hidden="true"/>
-                                </button>
-                                Opprett sak
-                            </div>
+                                    <button
+                                        // style={{backgroundColor: buttonBackgroundColor}}
+                                        onClick={() => console.warn("Oppretter sak")}
+                                        className={"btn btn-primary"}
+                                    >
+                                        <span className="glyphicon glyphicon-arrow-right" aria-hidden="true"/>
+                                    </button>
+                                    Opprett sak
+                                </div>
+                            </Panel>
                             <div style={{display: "none"}}>
                                 Backend url
                                 <Panel>
@@ -214,24 +242,44 @@ class V2 extends React.Component<Props, State> {
                                 </Panel>
                             </div>
 
-                            <Modal
-                                isOpen={loaderOn}
-                                contentLabel=""
-                                onRequestClose={() => console.warn("aksjdn")}
-                                closeButton={false}
-                                shouldCloseOnOverlayClick={false}
-                                className={"modal-style-override"}
-                            >
-                                <div className="application-spinner">
-                                    {/*<div style={{padding:'2rem 2.5rem'}}>Innhold her</div>*/}
-                                    <NavFrontendSpinner type="XXL"/>
-                                </div>
-                            </Modal>
+                            {/*<Modal*/}
+                            {/*    isOpen={loaderOn}*/}
+                            {/*    contentLabel=""*/}
+                            {/*    onRequestClose={() => console.warn("aksjdn")}*/}
+                            {/*    closeButton={false}*/}
+                            {/*    shouldCloseOnOverlayClick={false}*/}
+                            {/*    className={"modal-style-override"}*/}
+                            {/*>*/}
+                            {/*    <div className="application-spinner">*/}
+                            {/*        /!*<div style={{padding:'2rem 2.5rem'}}>Innhold her</div>*!/*/}
+                            {/*        /!*<NavFrontendSpinner type="XXL"/>*!/*/}
+                            {/*        <div className='sweet-loading pacmanloader'>*/}
+                            {/*            <PacmanLoader*/}
+                            {/*                css={override}*/}
+                            {/*                sizeUnit={"px"}*/}
+                            {/*                size={50}*/}
+                            {/*                color={'#000'}*/}
+                            {/*                loading={loaderOn}*/}
+                            {/*            />*/}
+                            {/*        </div>*/}
+                            {/*    </div>*/}
+                            {/*</Modal>*/}
                         </>
                     )}
                     <Panel>
                         <ReactJson src={fiksDigisosSokerJson}/>
                     </Panel>
+                    {/*{loaderOn && this.notify()}*/}
+                    <ToastContainer containerId={'A'} autoClose={2000}/>
+                </div>
+                <div className='sweet-loading pacmanloader'>
+                    <PacmanLoader
+                        css={override}
+                        sizeUnit={"px"}
+                        size={50}
+                        color={'#000'}
+                        loading={loaderOn}
+                    />
                 </div>
             </div>
         );
