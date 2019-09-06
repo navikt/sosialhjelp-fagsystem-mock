@@ -27,7 +27,7 @@ import TildelNyttNavKontor from "../components/tildelNyttNavKontor";
 import BackendUrl from "../components/backendUrl";
 import {toast, ToastContainer} from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
-import {ClipLoader, PacmanLoader} from "react-spinners";
+import {PacmanLoader} from "react-spinners";
 import { css } from '@emotion/core';
 
 const override = css`
