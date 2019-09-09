@@ -1,5 +1,4 @@
-import {FiksDigisosSokerJson, HendelseType} from "../types/hendelseTypes";
-import Hendelse from "../types/hendelseTypes";
+import Hendelse, {FiksDigisosSokerJson, HendelseType, saksStatus, vedtakFattet} from "../types/hendelseTypes";
 
 const tildeltNavKontorSchema = require('../digisos/hendelse/tildeltNavKontor');
 const soknadsStatusSchema = require('../digisos/hendelse/soknadsStatus');
@@ -77,4 +76,31 @@ export function getNow(): string {
 export const isNDigits = (value: string, n_digits: number): boolean => {
     const a: RegExpMatchArray | null = value.match(`^[0-9]{${n_digits}}$`);
     return !!a
+};
+
+export const getAllSaksStatuser = (hendelser: Hendelse[]): saksStatus[] => {
+    return hendelser
+        .filter((hendelse: Hendelse) => {
+            switch (hendelse.type) {
+                case HendelseType.saksStatus: {
+                    return true;
+                }
+                default: {
+                    return false;
+                }
+            }
+        })
+        .map((saksStatusHendelse: Hendelse) => {
+            return saksStatusHendelse as saksStatus;
+        });
+};
+
+export const sakEksistererOgEtVedtakErIkkeFattet = (hendelser: Hendelse[], saksReferanse: string): boolean => {
+    const saksStatus: Hendelse | undefined = hendelser.find((hendelse) => hendelse.type === HendelseType.saksStatus && (hendelse as saksStatus).referanse === saksReferanse);
+
+    const vedtakForSaksStatus: Hendelse | undefined = hendelser.find((hendelse) => {
+        return hendelse.type === HendelseType.vedtakFattet && (hendelse as vedtakFattet).saksreferanse === saksReferanse;
+    });
+
+    return !!(saksStatus && !vedtakForSaksStatus);
 };
