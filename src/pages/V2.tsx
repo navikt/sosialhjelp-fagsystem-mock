@@ -1,11 +1,9 @@
 import React from 'react';
 import {Panel} from "nav-frontend-paneler";
 import {Input, RadioPanelGruppe} from "nav-frontend-skjema";
-import {Knapp} from "nav-frontend-knapper";
 import {AppState, DispatchProps} from "../redux/reduxTypes";
 import {connect} from "react-redux";
 import {setAppName} from "../redux/example/exampleActions";
-import Lesmerpanel from "nav-frontend-lesmerpanel";
 import {V2Model} from "../redux/v2/v2Types";
 import NavFrontendSpinner from "nav-frontend-spinner";
 import Modal from 'nav-frontend-modal';
@@ -28,7 +26,7 @@ import BackendUrl from "../components/backendUrl";
 import {toast, ToastContainer} from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import {PacmanLoader} from "react-spinners";
-import { css } from '@emotion/core';
+import { css } from '@emotion/core';import OpprettNySaksStatus from "../components/saksStatus";
 
 const override = css`
     display: block;
@@ -215,31 +213,20 @@ class V2 extends React.Component<Props, State> {
                                         type: HendelseType.tildeltNavKontor,
                                         hendelsestidspunkt: getNow(),
                                         navKontor: nyttNavKontor
-                                    } as tildeltNavKontor)
+                                    } as tildeltNavKontor);
                                     this.updateAndSendFiksDigisosSokerJson();
                                 }}
                             />
 
 
-                            <Panel>
-                                Opprett sak
-                                <Lesmerpanel intro={<div>kommer ...</div>}>
-                                    <Knapp>Knapp 1</Knapp>
-                                    <Knapp>Knapp 2</Knapp>
-                                    <Knapp>Knapp 3</Knapp>
-                                </Lesmerpanel>
-                                <div>
+                            <OpprettNySaksStatus
+                                onClick={(nySaksStatus) => {
+                                    this.props.hendelserUpdated.push(nySaksStatus);
+                                    this.updateAndSendFiksDigisosSokerJson();
+                                }}
+                            />
 
-                                    <button
-                                        // style={{backgroundColor: buttonBackgroundColor}}
-                                        onClick={() => console.warn("Oppretter sak")}
-                                        className={"btn btn-primary"}
-                                    >
-                                        <span className="glyphicon glyphicon-arrow-right" aria-hidden="true"/>
-                                    </button>
-                                    Opprett sak
-                                </div>
-                            </Panel>
+
                             <div style={{display: "none"}}>
                                 Backend url
                                 <Panel>
