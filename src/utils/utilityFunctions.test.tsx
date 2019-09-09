@@ -1,6 +1,6 @@
 import React from 'react';
-import {getLastHendelseOfType, isNDigits, mergeListsToLengthN} from "./utilityFunctions";
-import {FiksDigisosSokerJson, HendelseType, soknadsStatus, tildeltNavKontor} from "../types/hendelseTypes";
+import {getAllSaksStatuser, getLastHendelseOfType, isNDigits, mergeListsToLengthN} from "./utilityFunctions";
+import Hendelse, {FiksDigisosSokerJson, HendelseType, soknadsStatus, tildeltNavKontor} from "../types/hendelseTypes";
 
 it('returnerer en liste med riktig komponenter', () => {
 
@@ -78,4 +78,89 @@ it('validated that the input is a string consisting of x digits', () => {
     expect(isNDigits("1234", 5)).toEqual(false);
     expect(isNDigits("12345", 5)).toEqual(true);
 });
+
+
+it('validated that the input is a string consisting of x digits', () => {
+
+    const input: Hendelse[] = [
+        {
+            // @ts-ignore
+            "type": "soknadsStatus",
+            "hendelsestidspunkt": "2018-10-04T13:37:00.134Z",
+            "status": "MOTTATT"
+        },
+        {
+            // @ts-ignore
+            "type": "soknadsStatus",
+            "hendelsestidspunkt": "2019-9-2T12:19:51:771Z",
+            "status": "UNDER_BEHANDLING"
+        },
+        {
+            // @ts-ignore
+            "type": "saksStatus",
+            "hendelsestidspunkt": "2019-9-2T12:19:27:520Z",
+            "status": "UNDER_BEHANDLING",
+            "referanse": "SAK1",
+            "tittel": "Nødhjelp"
+        },
+        {
+            // @ts-ignore
+            "type": "soknadsStatus",
+            "hendelsestidspunkt": "2019-9-2T12:19:57:635Z",
+            "status": "FERDIGBEHANDLET"
+        },
+        {
+            // @ts-ignore
+            "type": "saksStatus",
+            "hendelsestidspunkt": "2019-9-2T12:19:27:520Z",
+            "status": "IKKE_INNSYN",
+            "referanse": "SAK1",
+            "tittel": "Nødhjelp"
+        },
+        {
+            // @ts-ignore
+            "type": "soknadsStatus",
+            "hendelsestidspunkt": "2019-9-2T12:20:2:248Z",
+            "status": "BEHANDLES_IKKE"
+        },
+        {
+            // @ts-ignore
+            "type": "saksStatus",
+            "hendelsestidspunkt": "2019-9-2T12:19:27:520Z",
+            "status": "BEHANDLES_IKKE",
+            "referanse": "SAK1",
+            "tittel": "Nødhjelp"
+        }
+    ];
+
+    const expectedOutput = [
+        {
+            "type": "saksStatus",
+            "hendelsestidspunkt": "2019-9-2T12:19:27:520Z",
+            "status": "UNDER_BEHANDLING",
+            "referanse": "SAK1",
+            "tittel": "Nødhjelp"
+        },
+        {
+            "type": "saksStatus",
+            "hendelsestidspunkt": "2019-9-2T12:19:27:520Z",
+            "status": "IKKE_INNSYN",
+            "referanse": "SAK1",
+            "tittel": "Nødhjelp"
+        },
+        {
+            "type": "saksStatus",
+            "hendelsestidspunkt": "2019-9-2T12:19:27:520Z",
+            "status": "BEHANDLES_IKKE",
+            "referanse": "SAK1",
+            "tittel": "Nødhjelp"
+        }
+    ];
+
+    expect(getAllSaksStatuser(input)).toEqual(expectedOutput)
+
+
+
+});
+
 

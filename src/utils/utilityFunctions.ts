@@ -1,5 +1,4 @@
-import {FiksDigisosSokerJson, HendelseType} from "../types/hendelseTypes";
-import Hendelse from "../types/hendelseTypes";
+import Hendelse, {FiksDigisosSokerJson, HendelseType, saksStatus} from "../types/hendelseTypes";
 
 const tildeltNavKontorSchema = require('../digisos/hendelse/tildeltNavKontor');
 const soknadsStatusSchema = require('../digisos/hendelse/soknadsStatus');
@@ -77,4 +76,21 @@ export function getNow(): string {
 export const isNDigits = (value: string, n_digits: number): boolean => {
     const a: RegExpMatchArray | null = value.match(`^[0-9]{${n_digits}}$`);
     return !!a
+};
+
+export const getAllSaksStatuser = (hendelser: Hendelse[]): saksStatus[] => {
+    return hendelser
+        .filter((hendelse: Hendelse) => {
+            switch (hendelse.type) {
+                case HendelseType.saksStatus: {
+                    return true;
+                }
+                default: {
+                    return false;
+                }
+            }
+        })
+        .map((saksStatusHendelse: Hendelse) => {
+            return saksStatusHendelse as saksStatus;
+        });
 };

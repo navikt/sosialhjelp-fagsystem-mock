@@ -76,8 +76,8 @@ class OpprettNySaksStatus extends React.Component<Props, State> {
                             this.setState({nySaksStatus: nySaksStatus});
                         }}/>
                         <RadioPanelGruppe
-                            name="samplename"
-                            legend="Hvilken drikke er best?"
+                            name="saksStatus"
+                            legend="Status på sak"
                             radios={[
                                 { label: 'Under behandling', value: SaksStatus.UNDER_BEHANDLING },
                                 { label: 'Ikke innsyn', value: SaksStatus.IKKE_INNSYN },

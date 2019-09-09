@@ -18,7 +18,7 @@ import Hendelse, {
     FiksDigisosSokerJson,
     HendelseType,
     soknadsStatus,
-    SoknadsStatus, tildeltNavKontor
+    SoknadsStatus, tildeltNavKontor, vedtakFattet
 } from "../types/hendelseTypes";
 import {getLastHendelseOfType, getNow} from "../utils/utilityFunctions";
 import TildelNyttNavKontor from "../components/tildelNyttNavKontor";
@@ -27,6 +27,7 @@ import {toast, ToastContainer} from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import {PacmanLoader} from "react-spinners";
 import { css } from '@emotion/core';import OpprettNySaksStatus from "../components/saksStatus";
+import FattNyttVedtak from "../components/vedtakFattet";
 
 const override = css`
     display: block;
@@ -226,6 +227,10 @@ class V2 extends React.Component<Props, State> {
                                 }}
                             />
 
+                            <FattNyttVedtak
+                                onFattVedtak={(vedtakFattet: vedtakFattet) => console.warn(vedtakFattet)}
+                                hendelser={this.props.hendelserUpdated}
+                            />
 
                             <div style={{display: "none"}}>
                                 Backend url
