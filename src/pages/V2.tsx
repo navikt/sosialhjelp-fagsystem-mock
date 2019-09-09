@@ -168,6 +168,11 @@ class V2 extends React.Component<Props, State> {
         return (
             <div className={"v2-wrapper"}>
                 <div className={"v2-content"}>
+
+                    <button className={"btn btn-default"}>
+                        <span className="glyphicon glyphicon-cog" aria-hidden="true"/>
+                    </button>
+
                     <BackendUrl/>
 
                     <div>
