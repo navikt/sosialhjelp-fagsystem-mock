@@ -1,0 +1,64 @@
+{
+  "$schema": "http://json-schema.org/draft-06/schema#",
+
+  "title": "Veileder ber om mer dokumentasjon fra søker",
+  "javaType": "no.nav.sbl.soknadsosialhjelp.digisos.soker.hendelse.DokumentasjonEtterspurt",
+  "type": "object",
+  "extends": {
+    "ONLY_CODEGEN$ref": "../hendelse.json"
+  },
+  "allOf": [
+    {
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "dokumentasjonEtterspurt"
+          ]
+        }
+      }
+    }
+  ],
+  "properties": {
+    "forvaltningsbrev": {
+      "$ref": "../forvaltningsbrev.json"
+    },
+    "vedlegg": {
+      "type": "array",
+      "title": "Vedlegg til forvaltningsbrev",
+      "description": "En liste med vedlegg til forvaltningsbrevet som søker skal ha mulighet til å se. Det er ingen garanti for at filene blir vist til søker. Filformatet skal være PDF.",
+      "items": {
+        "$ref": "../vedlegg.json"
+      }
+    },
+    "dokumenter": {
+      "type": "array",
+      "title": "Liste over dokumentene etterspurt",
+      "items": {
+        "title": "Dokument",
+        "type": "object",
+        "properties": {
+          "dokumenttype": {
+            "title": "Dokumenttype",
+            "type": "string",
+            "description": "En predefinert eller fritekstbasert dokumenttype som veileder etterspør fra søker, eks: \"strømfaktura\" eller \"kontoutskrift\""
+          },
+          "tilleggsinformasjon": {
+            "title": "Tilleggsinformasjon",
+            "type": "string",
+            "description": "Tilleggsinformasjon til dokumenttypen veileder etterspør"
+          },
+          "innsendelsesfrist": {
+            "$ref": "../../../../types/tidspunkt.json"
+          }
+        },
+        "required": [
+          "dokumenttype", "innsendelsesfrist"
+        ]
+      }
+    }
+  },
+  "required": [
+    "forvaltningsbrev", "dokumenter"
+  ]
+}

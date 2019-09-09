@@ -1,0 +1,43 @@
+{
+	"$schema": "http://json-schema.org/draft-06/schema#",
+	"title": "Vilkar",
+	"description": "Vilkar",
+	"javaType": "no.nav.sbl.soknadsosialhjelp.digisos.soker.hendelse.Vilkar",
+	"type": "object",
+	"extends": {
+		"ONLY_CODEGEN$ref": "../hendelse.json"
+	},
+	"allOf": [
+		{
+			"properties": {
+				"type": {
+					"type": "string",
+					"enum": [
+						"vilkar"
+					]
+				}
+			}
+		}
+	],
+	"properties": {
+		"utbetalingsreferanse": {
+			"type": "array",
+			"description": "Hvilke utbetalinger vilkåret er knyttet til",
+			"items": {
+				"type": "string"
+			}
+		},
+		"beskrivelse": {
+			"type": "string",
+			"description": "Hva som må gjøres"
+		},
+		"status": {
+			"type": "string",
+			"description": "Status for vilkåret",
+			"enum": [
+				"OPPFYLT",
+				"IKKE_OPPFYLT"
+			]
+		}
+	}
+}

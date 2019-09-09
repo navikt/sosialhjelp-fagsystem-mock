@@ -1,0 +1,32 @@
+{
+	"$schema": "http://json-schema.org/draft-06/schema#",
+
+	"title": "Nytt NAV-kontor behandler søknaden.",
+	"javaType": "no.nav.sbl.soknadsosialhjelp.digisos.soker.hendelse.TildeltNavKontor",
+	"type": "object",
+	"extends": {
+		"ONLY_CODEGEN$ref": "../hendelse.json"
+	},
+	"allOf": [
+		{
+			"properties": {
+				"type": {
+					"type": "string",
+					"enum": [
+						"tildeltNavKontor"
+					]
+				}
+			}
+		}
+	],
+	"properties": {
+		"navKontor": {
+			"type": "string",
+			"description": "En identifikator for NAV-kontor. Vi benytter NORG som har oversikt over alle NAV-kontor i Norge, for hver kommune og bydel.",
+			"pattern": "^[0-9][0-9][0-9][0-9]$"
+		}
+	},
+	"required": [
+		"navKontor"
+	]
+}

@@ -8,7 +8,10 @@ import {IntlProvider} from "react-intl";
 import {tekster} from "./tekster/tekster";
 import './App.less';
 import UserGuide from "./pages/UserGuide";
-import Forside from "./Forside";
+import Forside from "./pages/Forside";
+import NotFound from "./components/notFound";
+import Example from "./pages/Example";
+import V2 from "./pages/V2";
 
 const store = configureStore();
 
@@ -22,8 +25,11 @@ const App: React.FC = () => {
 					<ConnectedRouter history={history}>
 						<div className="blokk-center">
 							<Switch>
-								<Route exact path="/" component={Forside} />
+								<Route exact path={"/v1"} component={Forside} />
+								<Route exact path={"/v2"} component={V2} />
 								<Route exact path="/userguide" component={UserGuide} />
+								<Route exact path="/examplepage" component={Example} />
+								<Route component={NotFound} />
 							</Switch>
 
 						</div>
