@@ -8,7 +8,7 @@ import Hendelse, {
     Vedlegg,
     vedtakFattet
 } from "../../types/hendelseTypes";
-import {Input, RadioPanelGruppe, Select} from "nav-frontend-skjema";
+import {RadioPanelGruppe, Select} from "nav-frontend-skjema";
 import {getAllSaksStatuser, getNow, sakEksistererOgEtVedtakErIkkeFattet} from "../../utils/utilityFunctions";
 
 const nyttVedtakTemplate: vedtakFattet = {
