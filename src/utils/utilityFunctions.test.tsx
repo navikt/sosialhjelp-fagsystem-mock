@@ -158,9 +158,6 @@ it('validated that the input is a string consisting of x digits', () => {
     ];
 
     expect(getAllSaksStatuser(input)).toEqual(expectedOutput)
-
-
-
 });
 
 

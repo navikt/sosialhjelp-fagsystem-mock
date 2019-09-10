@@ -54,7 +54,7 @@ class OpprettNySaksStatus extends React.Component<Props, State> {
                     }
                     { !isOpen &&
                         <button onClick={() => this.setState({isOpen: !isOpen, nySaksStatus: {...saksStatusTemplate}})}
-                                className={"btn btn-primary"}><div>Ny sak <span className="glyphicon glyphicon-plus" aria-hidden="true"/></div>
+                                className={"btn btn-primary"}><div>Opprett sak <span className="glyphicon glyphicon-plus" aria-hidden="true"/></div>
                         </button>
                     }
                 </div>
