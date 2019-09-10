@@ -28,7 +28,8 @@ const nyttVedleggTemplate: Vedlegg = {
 enum VedtaksFeiltype {
     SAKS_REFERANSE = "SAKS_REFERANSE",
     UTFALL = "UTFALL",
-    VEDLEGG_TITTEL = "VEDLEGG_TITTEL"
+    VEDLEGG_TITTEL = "VEDLEGG_TITTEL",
+    INGEN_VEDLEGG = "INGEN_VEDLEGG"
 }
 
 interface VedtaksFeil {
@@ -94,6 +95,9 @@ class FattNyttVedtak extends React.Component<Props, State> {
             return !!vedtaksfeil.id
         });
         listOfFeil = listOfFeil.concat(feilIVedlegg);
+        if (nyttVedtak.vedlegg.length === 0 ){
+            listOfFeil.push({type: VedtaksFeiltype.INGEN_VEDLEGG})
+        }
 
         if (listOfFeil.length === 0) {
             this.props.onFattVedtak(this.state.nyttVedtak);
@@ -166,6 +170,32 @@ class FattNyttVedtak extends React.Component<Props, State> {
         this.setState({nyttVedtak: nyttVedtak});
     }
 
+    removeVedleggFromList(vedleggIdx: number){
+        const nyttVedtak = {...this.state.nyttVedtak};
+        const vedleggUpdated: Vedlegg[] = nyttVedtak.vedlegg.map(vedlegg => vedlegg);
+        vedleggUpdated.splice(vedleggIdx, 1);
+        nyttVedtak.vedlegg = vedleggUpdated;
+        this.setState({
+            nyttVedtak: nyttVedtak,
+            editVedleggIdx: undefined
+        })
+    }
+
+    harFeilAvType(type: VedtaksFeiltype){
+        return this.state.feil.filter(feil => {
+            return feil.type === type;
+        }).length > 0;
+    }
+
+    getFeilmeldingForSaksreferanse(){
+        const nyttVedtak = this.state.nyttVedtak;
+        if (nyttVedtak.saksreferanse === ""){
+            return "En gyldig sak må velges."
+        } else {
+            return "Denne saken har allerede fått et vedtak knyttet til seg."
+        }
+    }
+
 
     render() {
 
@@ -211,44 +241,70 @@ class FattNyttVedtak extends React.Component<Props, State> {
 
                     if (editVedleggIdx !== undefined && editVedleggIdx === idx) {
                         return (
-                            <div>
-                                Tittel redigering: <input value={vedlegg.tittel} onChange={(evt) => {
-                                const vedleggUpdated = {...vedlegg};
-                                vedleggUpdated.tittel = evt.target.value;
-                                this.updateVedleggInListOfVedlegg(vedleggUpdated, idx);
-                            }}
-                            />
-                                Type:
-                                <select onChange={(evt) => {
-                                    const vedleggUpdated = JSON.parse(JSON.stringify(vedlegg));
-                                    let filreferanseUpdated: FilreferanseType = FilreferanseType.svarut;
-                                    switch (evt.target.value) {
-                                        case "svarut": {filreferanseUpdated = FilreferanseType.svarut; break;}
-                                        case "dokumentlager": {filreferanseUpdated = FilreferanseType.dokumentlager; break;}
-                                    }
-                                    vedleggUpdated.referanse.type = filreferanseUpdated;
+                            <div className={"vedleggrad vedleggrad--editerbar"}>
+                                <div>
+                                    Tittel redigering:
+                                </div>
+                                <div>
+                                    <input value={vedlegg.tittel} onChange={(evt) => {
+                                    const vedleggUpdated = {...vedlegg};
+                                    vedleggUpdated.tittel = evt.target.value;
                                     this.updateVedleggInListOfVedlegg(vedleggUpdated, idx);
-                                }}>
-                                    <option selected={vedlegg.referanse.type === FilreferanseType.svarut} value={FilreferanseType.svarut}>svarut</option>
-                                    <option selected={vedlegg.referanse.type === FilreferanseType.dokumentlager} value={FilreferanseType.dokumentlager}>dokumentlager</option>
-                                </select>
-                                <button className={"btn btn-default"}
-                                        onClick={(evt) => this.setState({editVedleggIdx: undefined})}>
-                                    <span className="glyphicon glyphicon-ok" aria-hidden="true"/>
-                                </button>
+                                    }}
+                                    />
+                                </div>
+                                <div>
+                                    Type:
+                                </div>
+                                <div>
+                                    <select onChange={(evt) => {
+                                        const vedleggUpdated = JSON.parse(JSON.stringify(vedlegg));
+                                        let filreferanseUpdated: FilreferanseType = FilreferanseType.svarut;
+                                        switch (evt.target.value) {
+                                            case "svarut": {filreferanseUpdated = FilreferanseType.svarut; break;}
+                                            case "dokumentlager": {filreferanseUpdated = FilreferanseType.dokumentlager; break;}
+                                        }
+                                        vedleggUpdated.referanse.type = filreferanseUpdated;
+                                        this.updateVedleggInListOfVedlegg(vedleggUpdated, idx);
+                                    }}>
+                                        <option selected={vedlegg.referanse.type === FilreferanseType.svarut} value={FilreferanseType.svarut}>svarut</option>
+                                        <option selected={vedlegg.referanse.type === FilreferanseType.dokumentlager} value={FilreferanseType.dokumentlager}>dokumentlager</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <button className={"btn btn-default"}
+                                            onClick={(evt) => this.setState({editVedleggIdx: undefined})}>
+                                        <span className="glyphicon glyphicon-ok" aria-hidden="true"/>
+                                    </button>
+                                </div>
                             </div>
                         )
                     } else {
                         return (
-                            <div>
-                                Tittel: {vedlegg.tittel}. Referanse: {vedlegg.referanse.type}
-                                <button className={"btn btn-default"}
-                                        onClick={(evt) => this.setState({editVedleggIdx: idx})}>
-                                    <span className="glyphicon glyphicon-pencil" aria-hidden="true"/>
-                                </button>
-                                <button className={"btn btn-default"}>
-                                    <span className="glyphicon glyphicon-remove" aria-hidden="true"/>
-                                </button>
+                            <div className={"vedleggrad"}>
+                                <div>
+                                    Tittel:
+                                </div>
+                                <div>
+                                    {vedlegg.tittel}
+                                </div>
+                                <div>
+                                    . Referanse:
+                                </div>
+                                <div>
+                                    {vedlegg.referanse.type}
+                                </div>
+                                <div>
+                                    <button className={"btn btn-default"}
+                                            onClick={(evt) => this.setState({editVedleggIdx: idx})}>
+                                        <span className="glyphicon glyphicon-pencil" aria-hidden="true"/>
+                                    </button>
+                                </div>
+                                <div>
+                                    <button className={"btn btn-default"} onClick={(evt) => this.removeVedleggFromList(idx)}>
+                                        <span className="glyphicon glyphicon-remove" aria-hidden="true"/>
+                                    </button>
+                                </div>
                             </div>
                         )
                     }
@@ -260,7 +316,7 @@ class FattNyttVedtak extends React.Component<Props, State> {
 
             vedleggsOversiktJsx.push(
                 <div>
-                    <button onClick={(evt) => {
+                    <button className={"btn"} onClick={(evt) => {
                         const nyttVedtakUpdated: vedtakFattet = {...this.state.nyttVedtak};
                         const vedleggslisteUpdated: Vedlegg[] = nyttVedtakUpdated.vedlegg.map((vedlegg) => vedlegg);
                         vedleggslisteUpdated.push({...nyttVedleggTemplate});
@@ -279,6 +335,7 @@ class FattNyttVedtak extends React.Component<Props, State> {
             return (
                 <div>
                     {vedleggsOversiktJsx}
+                    {!this.state.isValid && this.harFeilAvType(VedtaksFeiltype.INGEN_VEDLEGG) && "Minimum ett vedlegg må spesifiseres"}
                 </div>
             );
         };
@@ -286,18 +343,19 @@ class FattNyttVedtak extends React.Component<Props, State> {
         const harSakerContent: JSX.Element = (
             <>
                 {/*Velg saksreferanse*/}
-                <Select onChange={(e) => this.handleSelectSaksReferanse(e.target.value)} label='Saksreferanse'>
+                <Select feil={!this.state.isValid && this.harFeilAvType(VedtaksFeiltype.SAKS_REFERANSE) ? { feilmelding: this.getFeilmeldingForSaksreferanse()} : undefined}
+                        onChange={(e) => this.handleSelectSaksReferanse(e.target.value)} label='Saksreferanse'>
                     <option value=''>Velg saksreferanse</option>
                     {optionsSaksreferanse}
                 </Select>
 
                 {/*Velg utfall*/}
-                <Select onChange={e => this.handleSelectUtfall(e.target.value)} label='Utfall'>
+                <Select feil={!this.state.isValid && this.harFeilAvType(VedtaksFeiltype.UTFALL) ? { feilmelding: "Velg et utfall"} : undefined}
+                        onChange={e => this.handleSelectUtfall(e.target.value)} label='Utfall'>
                     <option value=''>Velg utfall</option>
                     <option value={"INNVILGET"}>Innvilget</option>
-                    ,
-                    <option value={"DELVIS_INNVILGET"}>Delvis innvilget</option>,
-                    <option value={"AVSLATT"}>Avslått</option>,
+                    <option value={"DELVIS_INNVILGET"}>Delvis innvilget</option>
+                    <option value={"AVSLATT"}>Avslått</option>
                     <option value={"AVVIST"}>Avvist</option>
                 </Select>
 
@@ -360,9 +418,6 @@ class FattNyttVedtak extends React.Component<Props, State> {
             <div>
                 Fatt nytt vedtak
                 <Panel>
-                    <div>
-                        <span>Noe tekst</span><input/><span>noe mer tekst</span><select></select>
-                    </div>
                     {
                         !this.state.isOpen && isClosedContent
                     }

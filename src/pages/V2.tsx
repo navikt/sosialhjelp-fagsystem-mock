@@ -228,7 +228,10 @@ class V2 extends React.Component<Props, State> {
                             />
 
                             <FattNyttVedtak
-                                onFattVedtak={(vedtakFattet: vedtakFattet) => console.warn(vedtakFattet)}
+                                onFattVedtak={(vedtakFattet: vedtakFattet) => {
+                                    this.props.hendelserUpdated.push(vedtakFattet);
+                                    this.updateAndSendFiksDigisosSokerJson();
+                                }}
                                 hendelser={this.props.hendelserUpdated}
                             />
 
