@@ -1,6 +1,7 @@
 import {Reducer} from "redux";
-import {BackendUrls, V2Action, V2ActionTypeKeys, V2Model} from "./v2Types";
-import {FiksDigisosSokerJson, soknadsStatus} from "../../types/hendelseTypes";
+import {BackendUrls, Filreferanselager, V2Action, V2ActionTypeKeys, V2Model} from "./v2Types";
+import {Dokumentlager, FiksDigisosSokerJson, FilreferanseType, soknadsStatus, Svarut} from "../../types/hendelseTypes";
+import {generateFilreferanseId} from "../../utils/utilityFunctions";
 
 
 const minimal: FiksDigisosSokerJson = {
@@ -23,6 +24,20 @@ const minimal: FiksDigisosSokerJson = {
     type: "no.nav.digisos.digisos.soker.v1"
 };
 
+const initialFilreferanselager: Filreferanselager = {
+    svarutlager: [
+        {type: FilreferanseType.svarut, id: generateFilreferanseId(), nr: 1},
+        {type: FilreferanseType.svarut, id: generateFilreferanseId(), nr: 2},
+        {type: FilreferanseType.svarut, id: generateFilreferanseId(), nr: 3},
+        {type: FilreferanseType.svarut, id: generateFilreferanseId(), nr: 4},
+    ],
+    dokumentlager: [
+        {type: FilreferanseType.dokumentlager, id: generateFilreferanseId()},
+        {type: FilreferanseType.dokumentlager, id: generateFilreferanseId()},
+        {type: FilreferanseType.dokumentlager, id: generateFilreferanseId()},
+    ]
+};
+
 export const backendUrlsLocalTemplate: string = "http://localhost:8080/sosialhjelp/innsyn-api/api/v1/digisosapi/oppdaterDigisosSak";
 export const backendUrlsDigisostestTemplate: string = "https://www.digisos-test.com/sosialhjelp/login-api/innsyn-api/api/v1/digisosapi/oppdaterDigisosSak";
 export const backendUrlsQTemplate: string = "https://www-q1.nav.no/sosialhjelp/innsyn/innsyn-api/api/v1/digisosapi/oppdaterDigisosSak";
@@ -37,7 +52,8 @@ export const initialV2Model: V2Model = {
         digisostest: backendUrlsDigisostestTemplate,
         q: backendUrlsQTemplate
     },
-    backendUrlTypeToUse: "local"
+    backendUrlTypeToUse: "local",
+    filreferanselager: initialFilreferanselager
 };
 
 const v2Reducer: Reducer<V2Model, V2Action> = (

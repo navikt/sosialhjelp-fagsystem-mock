@@ -1,4 +1,4 @@
-import {FiksDigisosSokerJson} from "../../types/hendelseTypes";
+import {Dokumentlager, FiksDigisosSokerJson, Svarut} from "../../types/hendelseTypes";
 
 export interface V2Model {
     fiksDigisosId: string;
@@ -7,6 +7,7 @@ export interface V2Model {
     setFiksDigisosIdIsEnabled: boolean;
     backendUrls: BackendUrls;
     backendUrlTypeToUse: string;
+    filreferanselager: Filreferanselager;
 }
 
 export interface BackendUrls {
@@ -15,6 +16,10 @@ export interface BackendUrls {
     q: string
 }
 
+export interface Filreferanselager {
+    svarutlager: Svarut[],
+    dokumentlager: Dokumentlager[]
+}
 
 export type V2Action
     = SetFiksDigisosId
@@ -73,4 +78,3 @@ export interface EditBackendUrlForType {
     backendUrlType: string;
     backendUrlUpdated: string;
 }
-

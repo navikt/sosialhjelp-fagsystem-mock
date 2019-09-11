@@ -104,3 +104,18 @@ export const sakEksistererOgEtVedtakErIkkeFattet = (hendelser: Hendelse[], saksR
 
     return !!(saksStatus && !vedtakForSaksStatus);
 };
+
+export const generateFilreferanseId = (): string => {
+
+    const listOfCharacters: string[] = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0"];
+    const n = listOfCharacters.length;
+
+    const r: string[] = [];
+    for (let i = 0; i < 32; i++){
+        const idx = Math.floor(Math.random() * n);
+        const randomCharacter = listOfCharacters[idx];
+        r.push(randomCharacter);
+    }
+    const jp = "";
+    return `${r.slice(0, 8).join(jp)}-${r.slice(8, 12).join(jp)}-${r.slice(12, 16).join(jp)}-${r.slice(16, 20).join(jp)}-${r.slice(20).join(jp)}`;
+};

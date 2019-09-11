@@ -1,9 +1,10 @@
 import * as React from 'react';
 import {Panel} from "nav-frontend-paneler";
 import Hendelse, {
+    Dokumentlager,
     FilreferanseType,
     HendelseType,
-    saksStatus,
+    saksStatus, Svarut,
     Utfall,
     Vedlegg,
     vedtakFattet
@@ -16,13 +17,13 @@ const nyttVedtakTemplate: vedtakFattet = {
     hendelsestidspunkt: getNow(),
     saksreferanse: "",
     utfall: {utfall: Utfall.INNVILGET},
-    vedtaksfil: {referanse: {type: FilreferanseType.svarut}},
+    vedtaksfil: {referanse: {type: FilreferanseType.svarut, id: "12345678-9abc-def0-1234-56789abcdea4", nr: 2}},
     vedlegg: []
 };
 
 const nyttVedleggTemplate: Vedlegg = {
     tittel: "",
-    referanse: {type: FilreferanseType.svarut}
+    referanse: {type: FilreferanseType.svarut, id: "12345678-9abc-def0-1234-56789abcdea4", nr:42}
 };
 
 enum VedtaksFeiltype {

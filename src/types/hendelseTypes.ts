@@ -50,7 +50,7 @@ export interface vedtakFattet {
     hendelsestidspunkt: string;
     saksreferanse: string;
     utfall: { utfall: Utfall };
-    vedtaksfil: { referanse: Filreferanse};
+    vedtaksfil: { referanse: Svarut | Dokumentlager};
     vedlegg: Vedlegg[]
 }
 export interface dokumentasjonEtterspurt {
@@ -124,22 +124,33 @@ export enum SaksStatus {
 }
 
 
-export interface Filreferanse {
-    type: FilreferanseType
-}
+// export interface Filreferanse {
+//     type: SvarUt | DokumentLager;
+// }
 
 export enum FilreferanseType {
     svarut = "svarut",
     dokumentlager = "dokumentlager"
 }
 
+export interface Svarut {
+    type: FilreferanseType;
+    id: string; // pattern "^[0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f]-[0-9a-f][0-9a-f][0-9a-f][0-9a-f]-[0-9a-f][0-9a-f][0-9a-f][0-9a-f]-[0-9a-f][0-9a-f][0-9a-f][0-9a-f]-[0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f]$"
+    nr: number; // Filnummer i SvarUt-forsendelsen.
+}
+
+export interface Dokumentlager {
+    type: FilreferanseType;
+    id: string; // pattern "^[0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f]-[0-9a-f][0-9a-f][0-9a-f][0-9a-f]-[0-9a-f][0-9a-f][0-9a-f][0-9a-f]-[0-9a-f][0-9a-f][0-9a-f][0-9a-f]-[0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f]$"
+}
+
 export interface Vedlegg {
     tittel: string;
-    referanse: Filreferanse;
+    referanse: Svarut | Dokumentlager;
 }
 
 export interface Forvaltningsbrev {
-    referanse: Filreferanse;
+    referanse: Svarut | Dokumentlager;
 }
 
 export interface Dokument {
