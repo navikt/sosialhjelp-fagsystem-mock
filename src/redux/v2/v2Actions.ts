@@ -1,7 +1,13 @@
 import {V2Action, V2ActionTypeKeys} from "./v2Types";
 import {Dispatch} from "redux";
 import {fetchPost} from "../../utils/restUtils";
-import {FiksDigisosSokerJson} from "../../types/hendelseTypes";
+import {
+    Dokumentlager,
+    DokumentlagerExtended,
+    FiksDigisosSokerJson,
+    Svarut,
+    SvarutExtended
+} from "../../types/hendelseTypes";
 import {NotificationLevel} from "../../pages/V2";
 
 export const setfiksDigisosId = (fiksDigisosId: string): V2Action => {
@@ -79,5 +85,12 @@ export const editBackendUrlForType = (backendUrlType: string, backendUrlUpdated:
         type: V2ActionTypeKeys.EDIT_BACKEND_URL_FOR_TYPE,
         backendUrlType,
         backendUrlUpdated
+    }
+};
+
+export const leggTilNyFilILager = (nyFilreferanse: SvarutExtended | DokumentlagerExtended): V2Action => {
+    return {
+        type: V2ActionTypeKeys.LEGG_TIL_NY_FIL_I_LAGER,
+        nyFilreferanse
     }
 };

@@ -28,6 +28,8 @@ import 'react-toastify/dist/ReactToastify.css';
 import {PacmanLoader} from "react-spinners";
 import { css } from '@emotion/core';import OpprettNySaksStatus from "../components/saksStatus";
 import FattNyttVedtak from "../components/vedtakFattet";
+import DokumentasjonEtterspurt from "../components/dokumentasjonEtterspurt";
+import FilreferanseLager from "../components/filreferanseLager";
 
 const override = css`
     display: block;
@@ -227,6 +229,8 @@ class V2 extends React.Component<Props, State> {
                                 }}
                             />
 
+                            <DokumentasjonEtterspurt />
+
                             <FattNyttVedtak
                                 onFattVedtak={(vedtakFattet) => {
                                     this.props.hendelserUpdated.push(vedtakFattet);
@@ -235,6 +239,9 @@ class V2 extends React.Component<Props, State> {
                                 hendelser={this.props.hendelserUpdated}
                             />
 
+                            <FilreferanseLager />
+
+                            {/* Kan gjøres slik for at testcafe skal kunne sette riktig backend url*/}
                             <div style={{display: "none"}}>
                                 Backend url
                                 <Panel>

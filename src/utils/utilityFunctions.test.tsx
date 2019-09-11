@@ -1,5 +1,11 @@
 import React from 'react';
-import {getAllSaksStatuser, getLastHendelseOfType, isNDigits, mergeListsToLengthN} from "./utilityFunctions";
+import {
+    generateFilreferanseId,
+    getAllSaksStatuser,
+    getLastHendelseOfType,
+    isNDigits,
+    mergeListsToLengthN
+} from "./utilityFunctions";
 import Hendelse, {FiksDigisosSokerJson, HendelseType, soknadsStatus, tildeltNavKontor} from "../types/hendelseTypes";
 
 it('returnerer en liste med riktig komponenter', () => {
@@ -160,4 +166,8 @@ it('validated that the input is a string consisting of x digits', () => {
     expect(getAllSaksStatuser(input)).toEqual(expectedOutput)
 });
 
+it('doesnt fail' , () => {
+    let s = generateFilreferanseId();
+    expect(s).resolves;
+});
 
