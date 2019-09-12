@@ -1,5 +1,4 @@
-import {FiksDigisosSokerJson, HendelseType} from "../types/hendelseTypes";
-import Hendelse from "../types/hendelseTypes";
+import Hendelse, {FiksDigisosSokerJson, HendelseType, saksStatus, vedtakFattet} from "../types/hendelseTypes";
 
 const tildeltNavKontorSchema = require('../digisos/hendelse/tildeltNavKontor');
 const soknadsStatusSchema = require('../digisos/hendelse/soknadsStatus');
@@ -77,4 +76,46 @@ export function getNow(): string {
 export const isNDigits = (value: string, n_digits: number): boolean => {
     const a: RegExpMatchArray | null = value.match(`^[0-9]{${n_digits}}$`);
     return !!a
+};
+
+export const getAllSaksStatuser = (hendelser: Hendelse[]): saksStatus[] => {
+    return hendelser
+        .filter((hendelse: Hendelse) => {
+            switch (hendelse.type) {
+                case HendelseType.saksStatus: {
+                    return true;
+                }
+                default: {
+                    return false;
+                }
+            }
+        })
+        .map((saksStatusHendelse: Hendelse) => {
+            return saksStatusHendelse as saksStatus;
+        });
+};
+
+export const sakEksistererOgEtVedtakErIkkeFattet = (hendelser: Hendelse[], saksReferanse: string): boolean => {
+    const saksStatus: Hendelse | undefined = hendelser.find((hendelse) => hendelse.type === HendelseType.saksStatus && (hendelse as saksStatus).referanse === saksReferanse);
+
+    const vedtakForSaksStatus: Hendelse | undefined = hendelser.find((hendelse) => {
+        return hendelse.type === HendelseType.vedtakFattet && (hendelse as vedtakFattet).saksreferanse === saksReferanse;
+    });
+
+    return !!(saksStatus && !vedtakForSaksStatus);
+};
+
+export const generateFilreferanseId = (): string => {
+
+    const listOfCharacters: string[] = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0"];
+    const n = listOfCharacters.length;
+
+    const r: string[] = [];
+    for (let i = 0; i < 32; i++){
+        const idx = Math.floor(Math.random() * n);
+        const randomCharacter = listOfCharacters[idx];
+        r.push(randomCharacter);
+    }
+    const jp = "";
+    return `${r.slice(0, 8).join(jp)}-${r.slice(8, 12).join(jp)}-${r.slice(12, 16).join(jp)}-${r.slice(16, 20).join(jp)}-${r.slice(20).join(jp)}`;
 };

@@ -54,7 +54,7 @@ class OpprettNySaksStatus extends React.Component<Props, State> {
                     }
                     { !isOpen &&
                         <button onClick={() => this.setState({isOpen: !isOpen, nySaksStatus: {...saksStatusTemplate}})}
-                                className={"btn btn-primary"}><div>Ny sak <span className="glyphicon glyphicon-plus" aria-hidden="true"/></div>
+                                className={"btn btn-primary"}><div>Opprett sak <span className="glyphicon glyphicon-plus" aria-hidden="true"/></div>
                         </button>
                     }
                 </div>
@@ -76,8 +76,8 @@ class OpprettNySaksStatus extends React.Component<Props, State> {
                             this.setState({nySaksStatus: nySaksStatus});
                         }}/>
                         <RadioPanelGruppe
-                            name="samplename"
-                            legend="Hvilken drikke er best?"
+                            name="saksStatus"
+                            legend="Status på sak"
                             radios={[
                                 { label: 'Under behandling', value: SaksStatus.UNDER_BEHANDLING },
                                 { label: 'Ikke innsyn', value: SaksStatus.IKKE_INNSYN },
