@@ -1,7 +1,6 @@
 import * as React from 'react';
 import {Panel} from "nav-frontend-paneler";
 import Hendelse, {
-    Dokumentlager,
     FilreferanseType,
     HendelseType,
     saksStatus, Svarut,
