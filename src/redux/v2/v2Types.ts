@@ -1,4 +1,10 @@
-import {Dokumentlager, FiksDigisosSokerJson, Svarut} from "../../types/hendelseTypes";
+import {
+    Dokumentlager,
+    DokumentlagerExtended,
+    FiksDigisosSokerJson,
+    Svarut,
+    SvarutExtended
+} from "../../types/hendelseTypes";
 
 export interface V2Model {
     fiksDigisosId: string;
@@ -17,8 +23,8 @@ export interface BackendUrls {
 }
 
 export interface Filreferanselager {
-    svarutlager: Svarut[],
-    dokumentlager: Dokumentlager[]
+    svarutlager: SvarutExtended[],
+    dokumentlager: DokumentlagerExtended[]
 }
 
 export type V2Action
@@ -30,6 +36,7 @@ export type V2Action
     | DisableSetFiksDigisosId
     | SetBackendUrlTypeToUse
     | EditBackendUrlForType
+    | LeggTilNyFilILager
 
 export enum V2ActionTypeKeys {
     SET_FIKS_DIGISOS_ID = "v2/SET_DIGISOS_FIKS_ID",
@@ -39,7 +46,8 @@ export enum V2ActionTypeKeys {
     ENABLE_SET_FIKS_DIGISOS_ID = "v2/ENABLE_SET_FIKS_DIGISOS_ID",
     DISABLE_SET_FIKS_DIGISOS_ID = "v2/DISABLE_SET_FIKS_DIGISOS_ID",
     SET_BACKEND_URL_TYPE_TO_USE = "v2/SET_BACKEND_URL_TYPE_TO_USE",
-    EDIT_BACKEND_URL_FOR_TYPE = "v2/EDIT_BACKEND_URL_FOR_TYPE"
+    EDIT_BACKEND_URL_FOR_TYPE = "v2/EDIT_BACKEND_URL_FOR_TYPE",
+    LEGG_TIL_NY_FIL_I_LAGER = "v2/LEGG_TIL_NY_TIL_I_LAGER"
 }
 
 export interface SetFiksDigisosId {
@@ -77,4 +85,9 @@ export interface EditBackendUrlForType {
     type: V2ActionTypeKeys.EDIT_BACKEND_URL_FOR_TYPE;
     backendUrlType: string;
     backendUrlUpdated: string;
+}
+
+export interface LeggTilNyFilILager {
+    type: V2ActionTypeKeys.LEGG_TIL_NY_FIL_I_LAGER;
+    nyFilreferanse: SvarutExtended | DokumentlagerExtended;
 }

@@ -134,14 +134,28 @@ export enum FilreferanseType {
 }
 
 export interface Svarut {
-    type: FilreferanseType;
+    type: FilreferanseType.svarut;
     id: string; // pattern "^[0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f]-[0-9a-f][0-9a-f][0-9a-f][0-9a-f]-[0-9a-f][0-9a-f][0-9a-f][0-9a-f]-[0-9a-f][0-9a-f][0-9a-f][0-9a-f]-[0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f]$"
     nr: number; // Filnummer i SvarUt-forsendelsen.
 }
 
+export interface SvarutExtended {
+    type: FilreferanseType.svarut
+    id: string;
+    nr: number;
+    tittel: string;
+}
+
 export interface Dokumentlager {
-    type: FilreferanseType;
+    type: FilreferanseType.dokumentlager;
     id: string; // pattern "^[0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f]-[0-9a-f][0-9a-f][0-9a-f][0-9a-f]-[0-9a-f][0-9a-f][0-9a-f][0-9a-f]-[0-9a-f][0-9a-f][0-9a-f][0-9a-f]-[0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f]$"
+
+}
+
+export interface DokumentlagerExtended{
+    type: FilreferanseType.dokumentlager
+    id: string;
+    tittel: string;
 }
 
 export interface Vedlegg {

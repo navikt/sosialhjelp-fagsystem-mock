@@ -1,6 +1,6 @@
 import {Reducer} from "redux";
 import {BackendUrls, Filreferanselager, V2Action, V2ActionTypeKeys, V2Model} from "./v2Types";
-import {Dokumentlager, FiksDigisosSokerJson, FilreferanseType, soknadsStatus, Svarut} from "../../types/hendelseTypes";
+import {FiksDigisosSokerJson, FilreferanseType, soknadsStatus} from "../../types/hendelseTypes";
 import {generateFilreferanseId} from "../../utils/utilityFunctions";
 
 
@@ -26,15 +26,15 @@ const minimal: FiksDigisosSokerJson = {
 
 const initialFilreferanselager: Filreferanselager = {
     svarutlager: [
-        {type: FilreferanseType.svarut, id: generateFilreferanseId(), nr: 1},
-        {type: FilreferanseType.svarut, id: generateFilreferanseId(), nr: 2},
-        {type: FilreferanseType.svarut, id: generateFilreferanseId(), nr: 3},
-        {type: FilreferanseType.svarut, id: generateFilreferanseId(), nr: 4},
+        {type: FilreferanseType.svarut, id: generateFilreferanseId(), nr: 1, tittel: "DOC1 - Nødhjelp innvilget - svarut"},
+        {type: FilreferanseType.svarut, id: generateFilreferanseId(), nr: 2, tittel: "DOC2 - Vedtak om delvis innvilget - svarut"},
+        {type: FilreferanseType.svarut, id: generateFilreferanseId(), nr: 3, tittel: "En random pdf fra fagsystemet - svarut"},
+        {type: FilreferanseType.svarut, id: generateFilreferanseId(), nr: 4, tittel: "01 - vedtak - asdf - svarut"},
     ],
     dokumentlager: [
-        {type: FilreferanseType.dokumentlager, id: generateFilreferanseId()},
-        {type: FilreferanseType.dokumentlager, id: generateFilreferanseId()},
-        {type: FilreferanseType.dokumentlager, id: generateFilreferanseId()},
+        {type: FilreferanseType.dokumentlager, id: generateFilreferanseId(), tittel: "01 - qwer - dokumentalger"},
+        {type: FilreferanseType.dokumentlager, id: generateFilreferanseId(), tittel: "02 - asdf - dokumentlager"},
+        {type: FilreferanseType.dokumentlager, id: generateFilreferanseId(), tittel: "03 - zxcv - dokumentlager"},
     ]
 };
 
@@ -78,6 +78,23 @@ const v2Reducer: Reducer<V2Model, V2Action> = (
             // @ts-ignore
             backendUrlsUpdated[action.backendUrlType] = action.backendUrlUpdated;
             return {...state, backendUrls: backendUrlsUpdated}
+        }
+        case V2ActionTypeKeys.LEGG_TIL_NY_FIL_I_LAGER: {
+            const {nyFilreferanse} = action;
+            const filreferanselagerUpdated = {...state.filreferanselager};
+            const svarutlagerUpdated = filreferanselagerUpdated.svarutlager.map((f) => f);
+            const dokumentlagerUpdated = filreferanselagerUpdated.dokumentlager.map((f) => f);
+
+            switch (nyFilreferanse.type) {
+                case FilreferanseType.svarut: {svarutlagerUpdated.push(nyFilreferanse); break;}
+                case FilreferanseType.dokumentlager: {dokumentlagerUpdated.push(nyFilreferanse); break;}
+            }
+            filreferanselagerUpdated.svarutlager = svarutlagerUpdated;
+            filreferanselagerUpdated.dokumentlager = dokumentlagerUpdated;
+            return {
+                ...state,
+                filreferanselager: filreferanselagerUpdated
+            }
         }
         default:
             return state;
