@@ -18,7 +18,7 @@ import Hendelse, {
     FiksDigisosSokerJson,
     HendelseType,
     soknadsStatus,
-    SoknadsStatus, tildeltNavKontor
+    SoknadsStatus, tildeltNavKontor, vedtakFattet
 } from "../types/hendelseTypes";
 import {getLastHendelseOfType, getNow} from "../utils/utilityFunctions";
 import TildelNyttNavKontor from "../components/tildelNyttNavKontor";
@@ -232,11 +232,10 @@ class V2 extends React.Component<Props, State> {
                             <DokumentasjonEtterspurt />
 
                             <FattNyttVedtak
-                                onFattVedtak={(vedtakFattet) => {
+                                onFattVedtak={(vedtakFattet: vedtakFattet) => {
                                     this.props.hendelserUpdated.push(vedtakFattet);
                                     this.updateAndSendFiksDigisosSokerJson();
                                 }}
-                                hendelser={this.props.hendelserUpdated}
                             />
 
                             <FilreferanseLager />

@@ -1,29 +1,45 @@
 import * as React from 'react';
 import {Panel} from "nav-frontend-paneler";
 import Hendelse, {
+    Dokumentlager,
+    DokumentlagerExtended,
     FilreferanseType,
     HendelseType,
-    saksStatus, Svarut,
+    saksStatus,
+    Svarut,
+    SvarutExtended,
     Utfall,
     Vedlegg,
     vedtakFattet
 } from "../../types/hendelseTypes";
 import {RadioPanelGruppe, Select} from "nav-frontend-skjema";
 import {getAllSaksStatuser, getNow, sakEksistererOgEtVedtakErIkkeFattet} from "../../utils/utilityFunctions";
+import {AppState, DispatchProps} from "../../redux/reduxTypes";
+import {Filreferanselager} from "../../redux/v2/v2Types";
+import {connect} from "react-redux";
+import ReactJson from "react-json-view";
 
-const nyttVedtakTemplate: vedtakFattet = {
+
+export interface vedtakFattetExtended {
+    type: HendelseType.vedtakFattet;
+    hendelsestidspunkt: string;
+    saksreferanse: string;
+    utfall: { utfall: Utfall | undefined };
+    vedtaksfil: {
+        referanse: SvarutExtended | DokumentlagerExtended | undefined
+    }
+    vedlegg: (SvarutExtended | DokumentlagerExtended)[]
+}
+
+const nyttVedtakTemplate: vedtakFattetExtended = {
     type: HendelseType.vedtakFattet,
     hendelsestidspunkt: getNow(),
     saksreferanse: "",
-    utfall: {utfall: Utfall.INNVILGET},
-    vedtaksfil: {referanse: {type: FilreferanseType.svarut, id: "12345678-9abc-def0-1234-56789abcdea4", nr: 2}},
+    utfall: {utfall: undefined},
+    vedtaksfil: {referanse: undefined},
     vedlegg: []
 };
 
-const nyttVedleggTemplate: Vedlegg = {
-    tittel: "",
-    referanse: {type: FilreferanseType.svarut, id: "12345678-9abc-def0-1234-56789abcdea4", nr:42}
-};
 
 enum VedtaksFeiltype {
     SAKS_REFERANSE = "SAKS_REFERANSE",
@@ -37,28 +53,41 @@ interface VedtaksFeil {
     id?: string;
 }
 
-interface Props {
+interface OwnProps {
     onFattVedtak: (vedtak: vedtakFattet) => void;
+}
+
+interface ReduxProps {
+    filreferanselager: Filreferanselager
     hendelser: Hendelse[];
 }
+
+type Props = OwnProps & ReduxProps & DispatchProps
 
 interface State {
     isOpen: boolean;
     isValid: boolean;
-    nyttVedtak: vedtakFattet;
-    nyttVedlegg: Vedlegg;
+    nyttVedtak: vedtakFattetExtended;
     feil: VedtaksFeil[];
     editVedleggIdx: number | undefined;
+    valgtLagringssted: string;
+    visLeggTilVedlegg: boolean;
+    lagerlokasjonsvalg: FilreferanseType | undefined;
+    vedleggOptionsValg: FilreferanseType | undefined;
 }
 
 
 const initialState: State = {
-    isOpen: false,
+    // FIXME: Husk å fjern denne. Lagt til kun for å lettere utvikle vedtakFattet.
+    isOpen: true,
     isValid: true,
     nyttVedtak: {...nyttVedtakTemplate},
-    nyttVedlegg: {...nyttVedleggTemplate},
     feil: [],
-    editVedleggIdx: undefined
+    editVedleggIdx: undefined,
+    valgtLagringssted: '',
+    visLeggTilVedlegg: false,
+    lagerlokasjonsvalg: undefined,
+    vedleggOptionsValg: undefined
 };
 
 class FattNyttVedtak extends React.Component<Props, State> {
@@ -80,27 +109,25 @@ class FattNyttVedtak extends React.Component<Props, State> {
             nyttVedtak.utfall.utfall !== Utfall.INNVILGET) {
             listOfFeil.push({type: VedtaksFeiltype.UTFALL});
         }
-        const feilIVedlegg = nyttVedtak.vedlegg.map((vedlegg: Vedlegg, idx): VedtaksFeil => {
-            if (vedlegg.tittel === "") {
-                return {
-                    type: VedtaksFeiltype.VEDLEGG_TITTEL,
-                    id: `${idx}`
-                };
-            } else {
-                return {
-                    type: VedtaksFeiltype.VEDLEGG_TITTEL,
-                };
-            }
-        }).filter((vedtaksfeil: VedtaksFeil) => {
-            return !!vedtaksfeil.id
-        });
-        listOfFeil = listOfFeil.concat(feilIVedlegg);
-        if (nyttVedtak.vedlegg.length === 0 ){
-            listOfFeil.push({type: VedtaksFeiltype.INGEN_VEDLEGG})
-        }
 
-        if (listOfFeil.length === 0) {
-            this.props.onFattVedtak(this.state.nyttVedtak);
+        if (listOfFeil.length === 0 &&
+            nyttVedtak.utfall.utfall &&
+            nyttVedtak.vedtaksfil.referanse
+        ) {
+            const vedtaksfilUpdated: Svarut | Dokumentlager = convertToFilreferanse(nyttVedtak.vedtaksfil.referanse);
+            const vedleggUpdated: Vedlegg[] = convertToListOfVedlegg(nyttVedtak.vedlegg);
+
+
+            const nyttVedtakFattet: vedtakFattet = {
+                type: HendelseType.vedtakFattet,
+                hendelsestidspunkt: getNow(),
+                saksreferanse: nyttVedtak.saksreferanse,
+                utfall: {utfall: nyttVedtak.utfall.utfall},
+                vedtaksfil: {referanse: vedtaksfilUpdated},
+                vedlegg: vedleggUpdated
+            };
+
+            this.props.onFattVedtak(nyttVedtakFattet);
             this.setState({...initialState});
         } else {
 
@@ -130,27 +157,15 @@ class FattNyttVedtak extends React.Component<Props, State> {
                 nyttVedtak.utfall.utfall = Utfall.AVVIST;
                 break;
             }
-        }
-        this.setState({nyttVedtak: nyttVedtak, isValid: true});
-    }
-
-    handleSelectFilreferanse(value: string) {
-        const nyttVedtak: vedtakFattet = {...this.state.nyttVedtak};
-        switch (value) {
-            case "svarut": {
-                nyttVedtak.vedtaksfil.referanse.type = FilreferanseType.svarut;
-                break;
-            }
-            case "dokumentlager": {
-                nyttVedtak.vedtaksfil.referanse.type = FilreferanseType.dokumentlager;
-                break;
+            default: {
+                nyttVedtak.utfall.utfall = undefined;
             }
         }
         this.setState({nyttVedtak: nyttVedtak, isValid: true});
     }
 
     handleSelectSaksReferanse(saksReferanseString: string) {
-        const nyttVedtak: vedtakFattet = {...this.state.nyttVedtak};
+        const nyttVedtak: vedtakFattetExtended = {...this.state.nyttVedtak};
         nyttVedtak.saksreferanse = saksReferanseString;
         this.setState({
             nyttVedtak: nyttVedtak,
@@ -158,21 +173,9 @@ class FattNyttVedtak extends React.Component<Props, State> {
         });
     }
 
-    updateVedleggInListOfVedlegg(updatedVedlegg: Vedlegg, idx: number) {
-        const nyttVedtak: vedtakFattet = this.state.nyttVedtak;
-        const vedleggslisteUpdated: Vedlegg[] = nyttVedtak.vedlegg.map((vedlegg, index) => {
-            if (index === idx) {
-                return updatedVedlegg;
-            }
-            return vedlegg;
-        });
-        nyttVedtak.vedlegg = vedleggslisteUpdated;
-        this.setState({nyttVedtak: nyttVedtak});
-    }
-
-    removeVedleggFromList(vedleggIdx: number){
+    removeVedleggFromList(vedleggIdx: number) {
         const nyttVedtak = {...this.state.nyttVedtak};
-        const vedleggUpdated: Vedlegg[] = nyttVedtak.vedlegg.map(vedlegg => vedlegg);
+        const vedleggUpdated: (SvarutExtended | DokumentlagerExtended)[] = nyttVedtak.vedlegg.map(vedlegg => vedlegg);
         vedleggUpdated.splice(vedleggIdx, 1);
         nyttVedtak.vedlegg = vedleggUpdated;
         this.setState({
@@ -181,15 +184,15 @@ class FattNyttVedtak extends React.Component<Props, State> {
         })
     }
 
-    harFeilAvType(type: VedtaksFeiltype){
+    harFeilAvType(type: VedtaksFeiltype) {
         return this.state.feil.filter(feil => {
             return feil.type === type;
         }).length > 0;
     }
 
-    getFeilmeldingForSaksreferanse(){
+    getFeilmeldingForSaksreferanse() {
         const nyttVedtak = this.state.nyttVedtak;
-        if (nyttVedtak.saksreferanse === ""){
+        if (nyttVedtak.saksreferanse === "") {
             return "En gyldig sak må velges."
         } else {
             return "Denne saken har allerede fått et vedtak knyttet til seg."
@@ -198,24 +201,10 @@ class FattNyttVedtak extends React.Component<Props, State> {
 
 
     render() {
-
         const {hendelser} = this.props;
         const {nyttVedtak} = this.state;
-
-
         const alleSaksStatuser: saksStatus[] = getAllSaksStatuser(hendelser);
-
         const harSaker: boolean = alleSaksStatuser.length > 0;
-
-
-        // export interface vedtakFattet {
-        //     type: HendelseType.vedtakFattet;
-        //     hendelsestidspunkt: string;
-        //     saksreferanse: string;
-        //     utfall: { utfall: Utfall };
-        //     vedtaksfil: { referanse: Filreferanse};
-        //     vedlegg: Vedlegg[]
-        // }
 
         const optionsSaksreferanse: JSX.Element[] = alleSaksStatuser.map((saksStatus: saksStatus) => {
             return (
@@ -224,134 +213,134 @@ class FattNyttVedtak extends React.Component<Props, State> {
             )
         });
 
-
-        // export interface Vedlegg {
-        //     tittel: string;
-        //     referanse: Filreferanse;
-        // }
-
         const insertVedleggContent: () => JSX.Element = () => {
             const nyttVedtak = {...this.state.nyttVedtak};
+            const {visLeggTilVedlegg} = this.state;
+            const {svarutlager, dokumentlager} = this.props.filreferanselager;
+            const {vedleggOptionsValg} = this.state;
 
-            let vedleggsOversiktJsx: JSX.Element[];
-            if (nyttVedtak.vedlegg.length > 0) {
-                vedleggsOversiktJsx = nyttVedtak.vedlegg.map((vedlegg: Vedlegg, idx: number) => {
 
-                    const editVedleggIdx: number | undefined = this.state.editVedleggIdx;
+            const vedleggsOversiktJsx = nyttVedtak.vedlegg.map((vedlegg: (SvarutExtended | DokumentlagerExtended), idx) => {
+                return (
+                    <div>
+                        <div>Tittel: {vedlegg.tittel}</div>
+                        <button onClick={() => this.removeVedleggFromList(idx)}><span
+                            className="glyphicon glyphicon-remove" aria-hidden="true"/></button>
+                    </div>
+                )
+            });
 
-                    if (editVedleggIdx !== undefined && editVedleggIdx === idx) {
-                        return (
-                            <div className={"vedleggrad vedleggrad--editerbar"}>
-                                <div>
-                                    Tittel redigering:
-                                </div>
-                                <div>
-                                    <input value={vedlegg.tittel} onChange={(evt) => {
-                                    const vedleggUpdated = {...vedlegg};
-                                    vedleggUpdated.tittel = evt.target.value;
-                                    this.updateVedleggInListOfVedlegg(vedleggUpdated, idx);
-                                    }}
-                                    />
-                                </div>
-                                <div>
-                                    Type:
-                                </div>
-                                <div>
-                                    <select onChange={(evt) => {
-                                        const vedleggUpdated = JSON.parse(JSON.stringify(vedlegg));
-                                        let filreferanseUpdated: FilreferanseType = FilreferanseType.svarut;
-                                        switch (evt.target.value) {
-                                            case "svarut": {filreferanseUpdated = FilreferanseType.svarut; break;}
-                                            case "dokumentlager": {filreferanseUpdated = FilreferanseType.dokumentlager; break;}
-                                        }
-                                        vedleggUpdated.referanse.type = filreferanseUpdated;
-                                        this.updateVedleggInListOfVedlegg(vedleggUpdated, idx);
-                                    }}>
-                                        <option selected={vedlegg.referanse.type === FilreferanseType.svarut} value={FilreferanseType.svarut}>svarut</option>
-                                        <option selected={vedlegg.referanse.type === FilreferanseType.dokumentlager} value={FilreferanseType.dokumentlager}>dokumentlager</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <button className={"btn btn-default"}
-                                            onClick={(evt) => this.setState({editVedleggIdx: undefined})}>
-                                        <span className="glyphicon glyphicon-ok" aria-hidden="true"/>
-                                    </button>
-                                </div>
-                            </div>
-                        )
-                    } else {
-                        return (
-                            <div className={"vedleggrad"}>
-                                <div>
-                                    Tittel:
-                                </div>
-                                <div>
-                                    {vedlegg.tittel}
-                                </div>
-                                <div>
-                                    . Referanse:
-                                </div>
-                                <div>
-                                    {vedlegg.referanse.type}
-                                </div>
-                                <div>
-                                    <button className={"btn btn-default"}
-                                            onClick={(evt) => this.setState({editVedleggIdx: idx})}>
-                                        <span className="glyphicon glyphicon-pencil" aria-hidden="true"/>
-                                    </button>
-                                </div>
-                                <div>
-                                    <button className={"btn btn-default"} onClick={(evt) => this.removeVedleggFromList(idx)}>
-                                        <span className="glyphicon glyphicon-remove" aria-hidden="true"/>
-                                    </button>
-                                </div>
-                            </div>
-                        )
-                    }
-                });
-
-            } else {
-                vedleggsOversiktJsx = [<div>Ingen vedlegg lagt til ennå...</div>];
-            }
-
-            vedleggsOversiktJsx.push(
-                <div>
-                    <button className={"btn"} onClick={(evt) => {
-                        const nyttVedtakUpdated: vedtakFattet = {...this.state.nyttVedtak};
-                        const vedleggslisteUpdated: Vedlegg[] = nyttVedtakUpdated.vedlegg.map((vedlegg) => vedlegg);
-                        vedleggslisteUpdated.push({...nyttVedleggTemplate});
-                        nyttVedtakUpdated.vedlegg = vedleggslisteUpdated;
-                        this.setState({
-                            nyttVedtak: nyttVedtakUpdated,
-                            editVedleggIdx: vedleggslisteUpdated.length - 1,
-                            isValid: true
-                        });
-                    }}>
-                        <span className={"glyphicon glyphicon-plus"} aria-hidden={"true"} />
-                    </button>
-                </div>
-            );
+            const radios = [
+                {label: 'Svarut', value: FilreferanseType.svarut},
+                {label: 'Dokumentlager', value: FilreferanseType.dokumentlager}
+            ];
 
             return (
                 <div>
+                    <h4>Diverse vedlegg som skal følge vedtaket kan legges til her:</h4>
                     {vedleggsOversiktJsx}
-                    {!this.state.isValid && this.harFeilAvType(VedtaksFeiltype.INGEN_VEDLEGG) && "Minimum ett vedlegg må spesifiseres"}
+                    <div>
+                        {visLeggTilVedlegg && (
+                            <div>
+                                <select onChange={(evt) => {
+                                    switch (evt.target.value) {
+                                        case "svarut": {this.setState({vedleggOptionsValg: FilreferanseType.svarut}); break;}
+                                        case "dokumentlager": {this.setState({vedleggOptionsValg: FilreferanseType.dokumentlager}); break;}
+                                        default: {this.setState({vedleggOptionsValg: undefined}); break;}
+                                    }
+                                }}>
+                                    <option selected={(vedleggOptionsValg === undefined)} value={''}>Velg lagrings sted</option>
+                                    <option selected={vedleggOptionsValg === FilreferanseType.svarut} value={FilreferanseType.svarut}>svarut</option>
+                                    <option selected={vedleggOptionsValg === FilreferanseType.dokumentlager} value={FilreferanseType.dokumentlager}>dokumentlager</option>
+                                </select>
+                                <select onChange={(evt) => {
+                                    const nyttVedtakUpdated = {...this.state.nyttVedtak};
+                                    const vedleggslisteUpdated = this.state.nyttVedtak.vedlegg.map(v => v);
+                                    const filreferanse: SvarutExtended | DokumentlagerExtended | undefined = getFilreferanseExtended(evt.target.value, this.props.filreferanselager);
+                                    if (filreferanse){
+                                        vedleggslisteUpdated.push(filreferanse);
+                                        nyttVedtakUpdated.vedlegg = vedleggslisteUpdated;
+                                        this.setState({nyttVedtak: nyttVedtakUpdated, visLeggTilVedlegg: false, vedleggOptionsValg: undefined});
+                                    }
+                                }}>
+                                    { vedleggOptionsValg !== undefined &&
+                                        <option value={''}>Velg fil som skal legges ved</option>
+                                    }
+                                    {vedleggOptionsValg === FilreferanseType.svarut && svarutlager.map((s: SvarutExtended) => {
+                                        return <option value={s.id}>{s.tittel}</option>
+                                    })}
+                                    {vedleggOptionsValg === FilreferanseType.dokumentlager && dokumentlager.map((s: DokumentlagerExtended) => {
+                                        return <option value={s.id}>{s.tittel}</option>
+                                    })}
+                                </select>
+
+                                <button className={"btn btn-danger"} onClick={() => this.setState({visLeggTilVedlegg: false})}>
+                                    <span className={"glyphicon glyphicon-remove"} aria-hidden="true"/>
+                                </button>
+                            </div>
+
+                        )}
+                        {!visLeggTilVedlegg && (
+                            <button
+                                onClick={() => {this.setState({visLeggTilVedlegg: true})}}
+                                className={"btn btn-primary"}>
+                                <span className="glyphicon glyphicon-plus" aria-hidden="true"/>
+                            </button>
+                        )}
+                    </div>
                 </div>
             );
+        };
+
+        const insertOptionsVedtaksfil = () => {
+
+            const {nyttVedtak} = this.state;
+            const ref: SvarutExtended | DokumentlagerExtended | undefined = nyttVedtak.vedtaksfil.referanse;
+            let options: JSX.Element[] = [];
+
+            if (this.state.valgtLagringssted === FilreferanseType.svarut) {
+                options = this.props.filreferanselager.svarutlager.map((svarut: SvarutExtended) => {
+                    return <option value={svarut.id}>Tittel: {svarut.tittel} . Id: {svarut.tittel}</option>
+                })
+            }
+            if (this.state.valgtLagringssted === FilreferanseType.dokumentlager) {
+                options = this.props.filreferanselager.dokumentlager.map((dokumentlager: DokumentlagerExtended) => {
+                    return <option value={dokumentlager.id}>Tittel: {dokumentlager.tittel} . Id: {dokumentlager.tittel}</option>
+                })
+            }
+            console.warn("valgt vedtaksfil: " + JSON.stringify(nyttVedtak.vedtaksfil.referanse, null, 4));
+            return (
+                <Select
+                    label={'Filreferanse'}
+                    onChange={(evt) => {
+                        console.warn('value: ' + evt.target.value);
+                        const nyttVedtakUpdated = {...nyttVedtak};
+                        const filreferanse: SvarutExtended | DokumentlagerExtended | undefined = getFilreferanseExtended(evt.target.value,this.props.filreferanselager)
+                        nyttVedtakUpdated.vedtaksfil.referanse = filreferanse;
+                        this.setState({nyttVedtak: nyttVedtakUpdated})
+                    }}
+                    selected={nyttVedtak.vedtaksfil.referanse ? nyttVedtak.vedtaksfil.referanse.id : ''}
+                >
+                    <option selected={ref === undefined} value={''}>Velg vedtaksfil</option>
+                    {options}
+                </Select>
+            )
         };
 
         const harSakerContent: JSX.Element = (
             <>
                 {/*Velg saksreferanse*/}
-                <Select feil={!this.state.isValid && this.harFeilAvType(VedtaksFeiltype.SAKS_REFERANSE) ? { feilmelding: this.getFeilmeldingForSaksreferanse()} : undefined}
-                        onChange={(e) => this.handleSelectSaksReferanse(e.target.value)} label='Saksreferanse'>
+                <Select
+                    feil={!this.state.isValid && this.harFeilAvType(VedtaksFeiltype.SAKS_REFERANSE) ? {feilmelding: this.getFeilmeldingForSaksreferanse()} : undefined}
+                    onChange={(e) => this.handleSelectSaksReferanse(e.target.value)} label='Saksreferanse'>
                     <option value=''>Velg saksreferanse</option>
                     {optionsSaksreferanse}
                 </Select>
 
                 {/*Velg utfall*/}
-                <Select feil={!this.state.isValid && this.harFeilAvType(VedtaksFeiltype.UTFALL) ? { feilmelding: "Velg et utfall"} : undefined}
-                        onChange={e => this.handleSelectUtfall(e.target.value)} label='Utfall'>
+                <Select
+                    feil={!this.state.isValid && this.harFeilAvType(VedtaksFeiltype.UTFALL) ? {feilmelding: "Velg et utfall"} : undefined}
+                    onChange={e => this.handleSelectUtfall(e.target.value)} label='Utfall'>
                     <option value=''>Velg utfall</option>
                     <option value={"INNVILGET"}>Innvilget</option>
                     <option value={"DELVIS_INNVILGET"}>Delvis innvilget</option>
@@ -360,16 +349,30 @@ class FattNyttVedtak extends React.Component<Props, State> {
                 </Select>
 
                 {/*Vedtaksfil*/}
-                <RadioPanelGruppe
-                    name="vedtaksfil"
-                    legend="Filreferanse"
-                    radios={[
-                        {label: 'Svarut', value: FilreferanseType.svarut},
-                        {label: 'Dokumentlager', value: FilreferanseType.dokumentlager},
-                    ]}
-                    checked={nyttVedtak.vedtaksfil.referanse.type}
-                    onChange={(evt, value) => this.handleSelectFilreferanse(value)}
-                />
+                <div>
+                    <RadioPanelGruppe
+                        name="lagringssted"
+                        legend="Velg sted hvor filen er lagret"
+                        radios={[
+                            {label: 'Svarut', value: FilreferanseType.svarut},
+                            {label: 'Dokumentlager', value: FilreferanseType.dokumentlager},
+                        ]}
+                        checked={this.state.valgtLagringssted}
+                        onChange={(evt, value) => {
+                            const nyttVedtak = {...this.state.nyttVedtak};
+                            nyttVedtak.vedtaksfil.referanse = undefined;
+                            this.setState({valgtLagringssted: value, nyttVedtak: nyttVedtak})
+                        }}
+                    />
+                    {/*FIXME: */}
+
+                    {
+                        this.state.valgtLagringssted === 'svarut'
+                        || this.state.valgtLagringssted === 'dokumentlager'
+                            ? insertOptionsVedtaksfil() : null
+                    }
+                </div>
+
 
                 {/*Vedlegg*/}
 
@@ -404,7 +407,6 @@ class FattNyttVedtak extends React.Component<Props, State> {
                         onClick={() => this.setState({
                             isOpen: false,
                             nyttVedtak: {...nyttVedtakTemplate},
-                            nyttVedlegg: {...nyttVedleggTemplate},
                             isValid: true
                         })}
                         className={"btn btn-danger"}>
@@ -428,9 +430,64 @@ class FattNyttVedtak extends React.Component<Props, State> {
                         return (<div> {feil.type} {feil.id}</div>)
                     })}
                 </Panel>
+                <Panel>
+                    <ReactJson src={this.state.nyttVedtak}/>
+                </Panel>
             </div>
         )
     }
 }
 
-export default FattNyttVedtak;
+const convertToFilreferanse = (extended: SvarutExtended | DokumentlagerExtended): Svarut | Dokumentlager => {
+    switch (extended.type) {
+        case FilreferanseType.svarut: {
+            return {
+                type: FilreferanseType.svarut,
+                id: extended.id,
+                nr: extended.nr
+            } as Svarut;
+        }
+        default: {
+            return {
+                type: FilreferanseType.dokumentlager,
+                id: extended.id
+            } as Dokumentlager
+        }
+    }
+};
+
+const convertToListOfVedlegg = (vedleggsliste: (SvarutExtended | DokumentlagerExtended)[]): Vedlegg[] => {
+    return vedleggsliste.map((vedlegg: (SvarutExtended | DokumentlagerExtended)) => {
+        return {
+            tittel: vedlegg.tittel,
+            referanse: convertToFilreferanse(vedlegg)
+
+        } as Vedlegg
+    }) as Vedlegg[];
+};
+
+const getFilreferanseExtended = (id: string, filreferanselager: Filreferanselager) => {
+    let filreferanse: SvarutExtended | DokumentlagerExtended | undefined = filreferanselager.dokumentlager.find((d) => {
+        return d.id === id;
+    });
+    if (filreferanse === undefined){
+        filreferanse = filreferanselager.svarutlager.find((d) => {
+            return d.id === id;
+        });
+    }
+    return filreferanse;
+};
+
+
+const mapStateToProps = (state: AppState) => ({
+    hendelser: state.v2.fiksDigisosSokerJson.sak.soker.hendelser,
+    filreferanselager: state.v2.filreferanselager
+});
+
+const mapDispatchToProps = (dispatch: any) => {
+    return {
+        dispatch
+    }
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(FattNyttVedtak);
