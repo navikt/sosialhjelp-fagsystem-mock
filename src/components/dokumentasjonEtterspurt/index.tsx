@@ -3,66 +3,20 @@ import {useState} from 'react';
 import {Panel} from "nav-frontend-paneler";
 import Hendelse, {
     Dokument,
-    dokumentasjonEtterspurt,
+    dokumentasjonEtterspurt, DokumentlagerExtended,
     FilreferanseType,
     Forvaltningsbrev,
-    HendelseType,
+    HendelseType, SvarutExtended,
     Vedlegg
 } from "../../types/hendelseTypes";
-import {getNow} from "../../utils/utilityFunctions";
+import {formatDate, getNow} from "../../utils/utilityFunctions";
 import {connect} from "react-redux";
 import {AppState} from "../../redux/reduxTypes";
 import {Filreferanselager} from "../../redux/v2/v2Types";
 import Filreferanse from '../Filreferanse';
+import {Input, SkjemaGruppe} from "nav-frontend-skjema";
+import DayPickerInput from 'react-day-picker/DayPickerInput';
 
-
-// const dokumentasjonEtterspurtTemplate2: dokumentasjonEtterspurt = {
-//     "type": "dokumentasjonEtterspurt",
-//     "hendelsestidspunkt": "2018-10-11T13:42:00.134Z",
-//     "forvaltningsbrev": {
-//         "referanse": {
-//             "type": "dokumentlager",
-//             "id": "12345678-9abc-def0-1234-56789abcdea1"
-//         }
-//     },
-//     "vedlegg": [
-//         {
-//             "tittel": "dokumentasjon etterspurt dokumentlager",
-//             "referanse": {
-//                 "type": "dokumentlager",
-//                 "id": "12345678-9abc-def0-1234-56789abcdea2"
-//             }
-//         },
-//         {
-//             "tittel": "dokumentasjon etterspurt svarut",
-//             "referanse": {
-//                 "type": "svarut",
-//                 "id": "12345678-9abc-def0-1234-56789abcdea3",
-//                 "nr": 1
-//             }
-//         }
-//     ],
-//     "dokumenter": [
-//         {
-//             "dokumenttype": "Strømfaktura",
-//             "tilleggsinformasjon": "For periode 01.01.2019 til 01.02.2019",
-//             "innsendelsesfrist": "2018-10-20T07:37:00.134Z"
-//         },
-//         {
-//             "dokumenttype": "Kopi av depositumskonto",
-//             "tilleggsinformasjon": "Signert av både deg og utleier",
-//             "innsendelsesfrist": "2018-10-20T07:37:30.000Z"
-//         }
-//     ]
-// }
-
-
-interface State {
-    nyDokumentasjonEtterspurt: dokumentasjonEtterspurt;
-    // nytt vedlegg:
-    nyttVedlegg: Vedlegg | undefined;
-    nyttDokument: DokumentExtended | undefined;
-}
 
 interface DokumentExtended {
     dokumenttype: string;
@@ -84,11 +38,15 @@ const nyttDokumentTemplate: DokumentExtended = {
     innsendelsesfrist: ''
 };
 
-const initialState: State = {
-    nyDokumentasjonEtterspurt: {...dokumentasjonEtterspurtTemplate},
-    nyttVedlegg: undefined,
-    nyttDokument: {...nyttDokumentTemplate}
-};
+
+// export interface dokumentasjonEtterspurt {
+//     type: HendelseType.dokumentasjonEtterspurt;
+//     hendelsestidspunkt: string;
+//     forvaltningsbrev: Forvaltningsbrev;
+//     vedlegg: Vedlegg[];
+//     dokumenter: Dokument[];
+// }
+
 
 interface OwnProps {
 
@@ -101,35 +59,89 @@ interface StoreProps {
 
 type Props = OwnProps & StoreProps;
 
-// export interface dokumentasjonEtterspurt {
-//     type: HendelseType.dokumentasjonEtterspurt;
-//     hendelsestidspunkt: string;
-//     forvaltningsbrev: Forvaltningsbrev;
-//     vedlegg: Vedlegg[];
-//     dokumenter: Dokument[];
-// }
 
-interface dokumentasjonEtterspurtExtended {
-    forvaltningsbrev: Forvaltningsbrev | undefined;
+interface State {
+    forvaltningsbrev: SvarutExtended | DokumentlagerExtended | undefined;
+    dokumenter: DokumentExtended[];
     vedlegg: Vedlegg[];
-    dokumenter: Dokument[];
+    nyttDokumentkrav: DokumentExtended;
 }
 
+const initialState: State = {
+    forvaltningsbrev: undefined,
+    dokumenter: [],
+    vedlegg: [],
+    nyttDokumentkrav: {...nyttDokumentTemplate}
+};
 
 
 const DokumentasjonEtterspurt = (props: Props) => {
 
     const [state, setState]: [State, (state: State) => void] = useState(initialState);
 
-    console.warn(JSON.stringify(state));
-    console.warn(JSON.stringify(setState));
+    const visValgtForvaltningsbre = () => {
+        const {forvaltningsbrev} = state;
+        return forvaltningsbrev ? (<div>{forvaltningsbrev.tittel}</div>) : null;
+    };
+
+    const settInnListeOverDokumenterSomKreves = () => {
+        return state.dokumenter.map((dokument: DokumentExtended) => {
+            return (
+                <div>Dokumenttype: {dokument.dokumenttype}. Tilleggsinformasjon: {dokument.tilleggsinformasjon}.
+                    Frist: {dokument.innsendelsesfrist}</div>
+            )
+        })
+    };
 
     return (
         <div>
             Etterspør dokumentasjon
             <Panel>
                 <div className={"dokumentasjonEtterspurt-row"}>
-                    <Filreferanse onVelgFilreferanse={() => console.warn("On submit file")} />
+                    Forvaltningsbrev:
+                    <span>{visValgtForvaltningsbre()}</span>
+                    <Filreferanse
+                        onVelgFilreferanse={(filreferanse: SvarutExtended | DokumentlagerExtended) => {
+                            setState({
+                                ...state,
+                                forvaltningsbrev: filreferanse
+                            })
+                        }}
+                    />
+                    Liste over dokumenter som kreves:
+                    {settInnListeOverDokumenterSomKreves()}
+                    Legg til nytt dokumentasjonskrav:
+                    <SkjemaGruppe>
+                        <Input value={state.nyttDokumentkrav.dokumenttype} label="Dokumenttype"
+                               onChange={(evt) => setState({
+                                   ...state,
+                                   nyttDokumentkrav: {...state.nyttDokumentkrav, dokumenttype: evt.target.value}
+                               })}/>
+                        <Input value={state.nyttDokumentkrav.tilleggsinformasjon} label="Tilleggsinformasjon"
+                               onChange={(evt) => setState({
+                                   ...state,
+                                   nyttDokumentkrav: {...state.nyttDokumentkrav, tilleggsinformasjon: evt.target.value}
+                               })}/>
+                        <DayPickerInput
+                            format={'MM/dd/yyyy'}
+                            onDayChange={(date: Date) => {
+                                const frist: string = formatDate(date);
+                                setState({...state, nyttDokumentkrav: {...state.nyttDokumentkrav, innsendelsesfrist: frist}})
+                            }}
+                        />
+                        <div className={"margin-top"}>
+                            <button
+                                className={"btn btn-primary"}
+                                onClick={() => {
+                                    const dokumenterUpdated = state.dokumenter.map(d => d);
+                                    dokumenterUpdated.push(state.nyttDokumentkrav);
+                                    setState({...state, dokumenter: dokumenterUpdated, nyttDokumentkrav: {...nyttDokumentTemplate}})
+                                }}
+                            >
+                                Legg til dokumentkrav
+                            </button>
+                        </div>
+                    </SkjemaGruppe>
                 </div>
             </Panel>
         </div>

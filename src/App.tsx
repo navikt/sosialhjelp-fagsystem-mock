@@ -12,7 +12,6 @@ import Forside from "./pages/Forside";
 import NotFound from "./components/notFound";
 import Example from "./pages/Example";
 import V2 from "./pages/V2";
-import SplashScreen from "./components/splashScreen";
 
 const store = configureStore();
 
@@ -21,7 +20,7 @@ const App: React.FC = () => {
 	return (
 		<Provider store={store}>
 			<IntlProvider defaultLocale={language} locale={language} messages={tekster[language]}>
-				<SplashScreen>
+				{/*<SplashScreen>*/}
 					<div className="informasjon-side">
 						<AppBanner/>
 							<ConnectedRouter history={history}>
@@ -36,7 +35,7 @@ const App: React.FC = () => {
 								</div>
 							</ConnectedRouter>
 					</div>
-				</SplashScreen>
+				{/*</SplashScreen>*/}
 			</IntlProvider>
 		</Provider>
 	);
