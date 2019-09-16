@@ -33,22 +33,18 @@ class BackendUrl extends React.Component<Props, State> {
         const {backendUrls, backendUrlToUse} = this.props;
 
         const radios = Object.keys(backendUrls).map((backendUrlType: string, index: number) => {
-
             // @ts-ignore
             const url = backendUrls[backendUrlType];
-
             let label: JSX.Element | string = (
                 <div>
                     <p>{backendUrlType}</p>
                     <p>{url}</p>
                 </div>
             );
-
             if (backendUrlToUse === backendUrlType) {
-                label = <Input label={backendUrlType} value={url}
+                label = <Input className={"sp-input"} label={backendUrlType} value={url}
                                onChange={(evt) => this.props.dispatch(editBackendUrlForType(backendUrlType, evt.target.value))}/>;
             }
-
             return {
                 label: label,
                 value: backendUrlType,
@@ -58,10 +54,10 @@ class BackendUrl extends React.Component<Props, State> {
         return (
             <div>
                 BackendUrl
-                <Panel>
+                <Panel class={"sp-panel"}>
                     <RadioPanelGruppe
-                        name="soknadsStatus"
-                        legend="Endre status på søknaden:"
+                        name="backendUrl"
+                        legend="Sett backend url:"
                         radios={radios}
                         checked={backendUrlToUse}
                         onChange={(evt, nyBackendUrlTypeToUse) => {

@@ -32,6 +32,7 @@ import OpprettNySaksStatus from "../components/saksStatus";
 import FattNyttVedtak from "../components/vedtakFattet";
 import DokumentasjonEtterspurt from "../components/dokumentasjonEtterspurt";
 import FilreferanseLager from "../components/filreferanseLager";
+import ReactModal from "react-modal";
 
 const override = css`
     display: block;
@@ -47,7 +48,13 @@ interface V2Props {
 
 interface V2State {
     input: string;
+    systemPreferencesVisible: boolean;
 }
+
+const initialState: V2State = {
+    input: '',
+    systemPreferencesVisible: false,
+};
 
 export enum NotificationLevel {
     INFO = "INFO",
@@ -64,9 +71,7 @@ class V2 extends React.Component<Props, State> {
 
     constructor(props: Props) {
         super(props);
-        this.state = {
-            input: ""
-        }
+        this.state = initialState;
     }
 
     notifyA = (level: NotificationLevel, text: string, options: any) => {
@@ -185,16 +190,16 @@ class V2 extends React.Component<Props, State> {
 
 
         return (
-
-
             <div className={"v2-wrapper"}>
                 <div className={"v2-content"}>
 
-                    <button className={"btn btn-default"}>
+                    <button
+                        className={"btn btn-default"}
+                        onClick={() => this.setState({systemPreferencesVisible: true})}
+                    >
                         <span className="glyphicon glyphicon-cog" aria-hidden="true"/>
                     </button>
 
-                    <BackendUrl/>
 
                     <div>
                         Fiks Digisos Id
@@ -304,6 +309,28 @@ class V2 extends React.Component<Props, State> {
                     {/*{loaderOn && this.notify()}*/}
                     <ToastContainer containerId={'A'} autoClose={2000}/>
                 </div>
+                <ReactModal
+                    isOpen={this.state.systemPreferencesVisible}
+                    // style={{
+                    //     content: {
+                    //         color: "white",
+                    //         backgroundColor: "#121212"
+                    //     },
+                    //     overlay: {
+                    //         background: "transparent"
+                    //     }
+                    // }}
+                    shouldCloseOnEsc={true}
+                    shouldCloseOnOverlayClick={true}
+                >
+                    <div className={"system-preferences"}>
+                        <button className={"btn btn-default"}
+                                onClick={() => this.setState({systemPreferencesVisible: false})}>
+                            <span className={"glyphicon glyphicon-remove"}/>
+                        </button>
+                        <BackendUrl/>
+                    </div>
+                </ReactModal>
                 <div className='sweet-loading pacmanloader'>
                     <PacmanLoader
                         css={override}
