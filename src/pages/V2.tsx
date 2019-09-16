@@ -26,10 +26,12 @@ import BackendUrl from "../components/backendUrl";
 import {toast, ToastContainer} from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import {PacmanLoader} from "react-spinners";
-import { css } from '@emotion/core';import OpprettNySaksStatus from "../components/saksStatus";
+import {css} from '@emotion/core';
+import OpprettNySaksStatus from "../components/saksStatus";
 import FattNyttVedtak from "../components/vedtakFattet";
 import DokumentasjonEtterspurt from "../components/dokumentasjonEtterspurt";
 import FilreferanseLager from "../components/filreferanseLager";
+import SplashScreen from "../components/splashScreen";
 
 const override = css`
     display: block;
@@ -69,11 +71,26 @@ class V2 extends React.Component<Props, State> {
 
     notifyA = (level: NotificationLevel, text: string, options: any) => {
         switch (level) {
-            case NotificationLevel.INFO: {toast.info(text, options); break;}
-            case NotificationLevel.SUCCESS: {toast.success(text, options); break;}
-            case NotificationLevel.WARNING: {toast.warn(text, options); break;}
-            case NotificationLevel.ERROR: {toast.error(text, options); break;}
-            default: {toast.info(text, options); break;}
+            case NotificationLevel.INFO: {
+                toast.info(text, options);
+                break;
+            }
+            case NotificationLevel.SUCCESS: {
+                toast.success(text, options);
+                break;
+            }
+            case NotificationLevel.WARNING: {
+                toast.warn(text, options);
+                break;
+            }
+            case NotificationLevel.ERROR: {
+                toast.error(text, options);
+                break;
+            }
+            default: {
+                toast.info(text, options);
+                break;
+            }
         }
     };
 
@@ -166,7 +183,10 @@ class V2 extends React.Component<Props, State> {
 
         const fiksDigisosIdIsValid = fiksDigisosId && fiksDigisosId !== "" && !setFiksDigisosIdIsEnabled;
 
+
         return (
+
+
             <div className={"v2-wrapper"}>
                 <div className={"v2-content"}>
 
@@ -229,7 +249,7 @@ class V2 extends React.Component<Props, State> {
                                 }}
                             />
 
-                            <DokumentasjonEtterspurt />
+                            <DokumentasjonEtterspurt/>
 
                             <FattNyttVedtak
                                 onFattVedtak={(vedtakFattet: vedtakFattet) => {
@@ -238,7 +258,7 @@ class V2 extends React.Component<Props, State> {
                                 }}
                             />
 
-                            <FilreferanseLager />
+                            <FilreferanseLager/>
 
                             {/* Kan gjøres slik for at testcafe skal kunne sette riktig backend url*/}
                             <div style={{display: "none"}}>

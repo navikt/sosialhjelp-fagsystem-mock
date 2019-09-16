@@ -1,4 +1,13 @@
-import Hendelse, {FiksDigisosSokerJson, HendelseType, saksStatus, vedtakFattet} from "../types/hendelseTypes";
+import Hendelse, {
+    Dokumentlager,
+    DokumentlagerExtended,
+    FiksDigisosSokerJson, FilreferanseType,
+    HendelseType,
+    saksStatus, Svarut,
+    SvarutExtended, Vedlegg,
+    vedtakFattet
+} from "../types/hendelseTypes";
+import {Filreferanselager} from "../redux/v2/v2Types";
 
 const tildeltNavKontorSchema = require('../digisos/hendelse/tildeltNavKontor');
 const soknadsStatusSchema = require('../digisos/hendelse/soknadsStatus');
@@ -136,3 +145,44 @@ export const generateFilreferanseId = (): string => {
     const jp = "";
     return `${r.slice(0, 8).join(jp)}-${r.slice(8, 12).join(jp)}-${r.slice(12, 16).join(jp)}-${r.slice(16, 20).join(jp)}-${r.slice(20).join(jp)}`;
 };
+
+export const convertToFilreferanse = (extended: SvarutExtended | DokumentlagerExtended): Svarut | Dokumentlager => {
+    switch (extended.type) {
+        case FilreferanseType.svarut: {
+            return {
+                type: FilreferanseType.svarut,
+                id: extended.id,
+                nr: extended.nr
+            } as Svarut;
+        }
+        default: {
+            return {
+                type: FilreferanseType.dokumentlager,
+                id: extended.id
+            } as Dokumentlager
+        }
+    }
+};
+
+export const convertToListOfVedlegg = (vedleggsliste: (SvarutExtended | DokumentlagerExtended)[]): Vedlegg[] => {
+    return vedleggsliste.map((vedlegg: (SvarutExtended | DokumentlagerExtended)) => {
+        return {
+            tittel: vedlegg.tittel,
+            referanse: convertToFilreferanse(vedlegg)
+
+        } as Vedlegg
+    }) as Vedlegg[];
+};
+
+export const getFilreferanseExtended = (id: string, filreferanselager: Filreferanselager) => {
+    let filreferanse: SvarutExtended | DokumentlagerExtended | undefined = filreferanselager.dokumentlager.find((d) => {
+        return d.id === id;
+    });
+    if (filreferanse === undefined){
+        filreferanse = filreferanselager.svarutlager.find((d) => {
+            return d.id === id;
+        });
+    }
+    return filreferanse;
+};
+

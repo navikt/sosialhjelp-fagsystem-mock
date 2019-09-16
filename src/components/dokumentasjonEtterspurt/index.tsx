@@ -1,21 +1,20 @@
 import * as React from 'react';
 import {useState} from 'react';
 import {Panel} from "nav-frontend-paneler";
-import {Dokument, dokumentasjonEtterspurt, FilreferanseType, HendelseType, Vedlegg} from "../../types/hendelseTypes";
+import Hendelse, {
+    Dokument,
+    dokumentasjonEtterspurt,
+    FilreferanseType,
+    Forvaltningsbrev,
+    HendelseType,
+    Vedlegg
+} from "../../types/hendelseTypes";
 import {getNow} from "../../utils/utilityFunctions";
+import {connect} from "react-redux";
+import {AppState} from "../../redux/reduxTypes";
+import {Filreferanselager} from "../../redux/v2/v2Types";
+import Filreferanse from '../Filreferanse';
 
-
-interface State {
-    nyDokumentasjonEtterspurt: dokumentasjonEtterspurt;
-}
-
-const dokumentasjonEtterspurtTemplate: dokumentasjonEtterspurt = {
-    type: HendelseType.dokumentasjonEtterspurt,
-    hendelsestidspunkt: getNow(),
-    forvaltningsbrev: {referanse: {type: FilreferanseType.svarut, id: "12345678-9abc-def0-1234-56789abcdea1", nr: 1}},
-    vedlegg: [], // Vedlegg[]
-    dokumenter: [], // Dokument[]
-};
 
 // const dokumentasjonEtterspurtTemplate2: dokumentasjonEtterspurt = {
 //     "type": "dokumentasjonEtterspurt",
@@ -57,23 +56,68 @@ const dokumentasjonEtterspurtTemplate: dokumentasjonEtterspurt = {
 //     ]
 // }
 
-const dokumentTemplate: Dokument = {
-    dokumenttype: "Verdivurdering for Black Lotus",
-    tilleggsinformasjon: "Antatt mint condition",
-    innsendelsesfrist: "millisToLocalDate(Date.now() + daysToMillis(30))"
+
+interface State {
+    nyDokumentasjonEtterspurt: dokumentasjonEtterspurt;
+    // nytt vedlegg:
+    nyttVedlegg: Vedlegg | undefined;
+    nyttDokument: DokumentExtended | undefined;
+}
+
+interface DokumentExtended {
+    dokumenttype: string;
+    tilleggsinformasjon: string;
+    innsendelsesfrist: string;
+}
+
+const dokumentasjonEtterspurtTemplate: dokumentasjonEtterspurt = {
+    type: HendelseType.dokumentasjonEtterspurt,
+    hendelsestidspunkt: getNow(),
+    forvaltningsbrev: {referanse: {type: FilreferanseType.svarut, id: "12345678-9abc-def0-1234-56789abcdea1", nr: 1}},
+    vedlegg: [], // Vedlegg[]
+    dokumenter: [], // Dokument[]
 };
 
-const vedleggTemplate: Vedlegg = {
-    tittel: "dokumentasjon etterspurt dokumentlager",
-    referanse: {type: FilreferanseType.dokumentlager, id: "12345678-9abc-def0-1234-56789abcdea2"}
+const nyttDokumentTemplate: DokumentExtended = {
+    dokumenttype: '',
+    tilleggsinformasjon: '',
+    innsendelsesfrist: ''
 };
 
 const initialState: State = {
-    nyDokumentasjonEtterspurt: {...dokumentasjonEtterspurtTemplate}
+    nyDokumentasjonEtterspurt: {...dokumentasjonEtterspurtTemplate},
+    nyttVedlegg: undefined,
+    nyttDokument: {...nyttDokumentTemplate}
 };
 
+interface OwnProps {
 
-const DokumentasjonEtterspurt= () => {
+}
+
+interface StoreProps {
+    hendelser: Hendelse[],
+    filreferanselager: Filreferanselager
+}
+
+type Props = OwnProps & StoreProps;
+
+// export interface dokumentasjonEtterspurt {
+//     type: HendelseType.dokumentasjonEtterspurt;
+//     hendelsestidspunkt: string;
+//     forvaltningsbrev: Forvaltningsbrev;
+//     vedlegg: Vedlegg[];
+//     dokumenter: Dokument[];
+// }
+
+interface dokumentasjonEtterspurtExtended {
+    forvaltningsbrev: Forvaltningsbrev | undefined;
+    vedlegg: Vedlegg[];
+    dokumenter: Dokument[];
+}
+
+
+
+const DokumentasjonEtterspurt = (props: Props) => {
 
     const [state, setState]: [State, (state: State) => void] = useState(initialState);
 
@@ -83,11 +127,22 @@ const DokumentasjonEtterspurt= () => {
             Etterspør dokumentasjon
             <Panel>
                 <div className={"dokumentasjonEtterspurt-row"}>
-                    asdf
+                    <Filreferanse onVelgFilreferanse={() => console.warn("On submit file")} />
                 </div>
             </Panel>
         </div>
     )
 };
 
-export default DokumentasjonEtterspurt;
+const mapStateToProps = (state: AppState) => ({
+    hendelser: state.v2.fiksDigisosSokerJson.sak.soker.hendelser,
+    filreferanselager: state.v2.filreferanselager
+});
+
+const mapDispatchToProps = (dispatch: any) => {
+    return {
+        dispatch
+    }
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(DokumentasjonEtterspurt)

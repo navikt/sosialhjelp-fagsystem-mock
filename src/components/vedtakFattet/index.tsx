@@ -13,7 +13,13 @@ import Hendelse, {
     vedtakFattet
 } from "../../types/hendelseTypes";
 import {RadioPanelGruppe, Select} from "nav-frontend-skjema";
-import {getAllSaksStatuser, getNow, sakEksistererOgEtVedtakErIkkeFattet} from "../../utils/utilityFunctions";
+import {
+    convertToFilreferanse, convertToListOfVedlegg,
+    getAllSaksStatuser,
+    getFilreferanseExtended,
+    getNow,
+    sakEksistererOgEtVedtakErIkkeFattet
+} from "../../utils/utilityFunctions";
 import {AppState, DispatchProps} from "../../redux/reduxTypes";
 import {Filreferanselager} from "../../redux/v2/v2Types";
 import {connect} from "react-redux";
@@ -438,45 +444,6 @@ class FattNyttVedtak extends React.Component<Props, State> {
     }
 }
 
-const convertToFilreferanse = (extended: SvarutExtended | DokumentlagerExtended): Svarut | Dokumentlager => {
-    switch (extended.type) {
-        case FilreferanseType.svarut: {
-            return {
-                type: FilreferanseType.svarut,
-                id: extended.id,
-                nr: extended.nr
-            } as Svarut;
-        }
-        default: {
-            return {
-                type: FilreferanseType.dokumentlager,
-                id: extended.id
-            } as Dokumentlager
-        }
-    }
-};
-
-const convertToListOfVedlegg = (vedleggsliste: (SvarutExtended | DokumentlagerExtended)[]): Vedlegg[] => {
-    return vedleggsliste.map((vedlegg: (SvarutExtended | DokumentlagerExtended)) => {
-        return {
-            tittel: vedlegg.tittel,
-            referanse: convertToFilreferanse(vedlegg)
-
-        } as Vedlegg
-    }) as Vedlegg[];
-};
-
-const getFilreferanseExtended = (id: string, filreferanselager: Filreferanselager) => {
-    let filreferanse: SvarutExtended | DokumentlagerExtended | undefined = filreferanselager.dokumentlager.find((d) => {
-        return d.id === id;
-    });
-    if (filreferanse === undefined){
-        filreferanse = filreferanselager.svarutlager.find((d) => {
-            return d.id === id;
-        });
-    }
-    return filreferanse;
-};
 
 
 const mapStateToProps = (state: AppState) => ({
