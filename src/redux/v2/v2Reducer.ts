@@ -1,6 +1,6 @@
 import {Reducer} from "redux";
 import {BackendUrls, Filreferanselager, V2Action, V2ActionTypeKeys, V2Model} from "./v2Types";
-import {FiksDigisosSokerJson, FilreferanseType, saksStatus, soknadsStatus} from "../../types/hendelseTypes";
+import {FiksDigisosSokerJson, FilreferanseType, soknadsStatus} from "../../types/hendelseTypes";
 import {generateFilreferanseId} from "../../utils/utilityFunctions";
 
 

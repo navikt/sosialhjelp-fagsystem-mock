@@ -31,7 +31,6 @@ import OpprettNySaksStatus from "../components/saksStatus";
 import FattNyttVedtak from "../components/vedtakFattet";
 import DokumentasjonEtterspurt from "../components/dokumentasjonEtterspurt";
 import FilreferanseLager from "../components/filreferanseLager";
-import SplashScreen from "../components/splashScreen";
 
 const override = css`
     display: block;
@@ -252,8 +251,8 @@ class V2 extends React.Component<Props, State> {
                             <DokumentasjonEtterspurt/>
 
                             <FattNyttVedtak
-                                onFattVedtak={(vedtakFattet: vedtakFattet) => {
-                                    this.props.hendelserUpdated.push(vedtakFattet);
+                                onFattVedtak={(v: vedtakFattet) => {
+                                    this.props.hendelserUpdated.push(v);
                                     this.updateAndSendFiksDigisosSokerJson();
                                 }}
                             />

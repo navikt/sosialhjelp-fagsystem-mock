@@ -3,14 +3,12 @@ import {useState} from 'react';
 import {connect} from "react-redux";
 import {AppState} from "../../redux/reduxTypes";
 import {
-    Dokumentlager,
     DokumentlagerExtended,
     FilreferanseType,
-    Svarut,
     SvarutExtended
 } from "../../types/hendelseTypes";
 import {Filreferanselager} from "../../redux/v2/v2Types";
-import {generateFilreferanseId, getFilreferanseExtended} from "../../utils/utilityFunctions";
+import {getFilreferanseExtended} from "../../utils/utilityFunctions";
 
 interface OwnProps {
     onVelgFilreferanse: (filreferanse: SvarutExtended | DokumentlagerExtended) => void;

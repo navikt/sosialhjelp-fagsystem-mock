@@ -2,10 +2,8 @@ import {V2Action, V2ActionTypeKeys} from "./v2Types";
 import {Dispatch} from "redux";
 import {fetchPost} from "../../utils/restUtils";
 import {
-    Dokumentlager,
     DokumentlagerExtended,
     FiksDigisosSokerJson,
-    Svarut,
     SvarutExtended
 } from "../../types/hendelseTypes";
 import {NotificationLevel} from "../../pages/V2";

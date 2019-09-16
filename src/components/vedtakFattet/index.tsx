@@ -208,7 +208,7 @@ class FattNyttVedtak extends React.Component<Props, State> {
 
     render() {
         const {hendelser} = this.props;
-        const {nyttVedtak} = this.state;
+        // const {nyttVedtak} = this.state;
         const alleSaksStatuser: saksStatus[] = getAllSaksStatuser(hendelser);
         const harSaker: boolean = alleSaksStatuser.length > 0;
 
@@ -235,11 +235,6 @@ class FattNyttVedtak extends React.Component<Props, State> {
                     </div>
                 )
             });
-
-            const radios = [
-                {label: 'Svarut', value: FilreferanseType.svarut},
-                {label: 'Dokumentlager', value: FilreferanseType.dokumentlager}
-            ];
 
             return (
                 <div>

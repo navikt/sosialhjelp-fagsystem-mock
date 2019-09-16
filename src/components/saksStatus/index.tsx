@@ -255,4 +255,4 @@ const mapDispatchToProps = (dispatch: any) => {
     }
 };
 
-export default connect(mapStateToProps)(OpprettNySaksStatus);
+export default connect(mapStateToProps, mapDispatchToProps)(OpprettNySaksStatus);

@@ -1,8 +1,6 @@
 import {
-    Dokumentlager,
     DokumentlagerExtended,
     FiksDigisosSokerJson,
-    Svarut,
     SvarutExtended
 } from "../../types/hendelseTypes";
 

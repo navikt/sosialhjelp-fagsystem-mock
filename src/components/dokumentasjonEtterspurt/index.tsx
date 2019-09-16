@@ -121,6 +121,8 @@ const DokumentasjonEtterspurt = (props: Props) => {
 
     const [state, setState]: [State, (state: State) => void] = useState(initialState);
 
+    console.warn(JSON.stringify(state));
+    console.warn(JSON.stringify(setState));
 
     return (
         <div>
