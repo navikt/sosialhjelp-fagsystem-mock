@@ -25,7 +25,7 @@ const SplashScreen: React.FC<{}> = ( {children}) => {
             <div className={"splashscreen splashscreen-wrapper"}>
                 <div className={"splashscreen-content"}>
                     <div className={'splashscreen-img'}>
-                        <img src={'image3.png'} alt={''}/>
+                        <img src={'img/image3.png'} alt={''}/>
                     </div>
                 </div>
             </div>
