@@ -205,7 +205,7 @@ class OpprettNySaksStatus extends React.Component<Props, State> {
                     </div>
                     {isOpen && nySaksStatusPanel()}
                     {introPanel()}
-                    <ReactJson src={this.state.nySaksStatusValidation}/>
+                    {/*<ReactJson src={this.state.nySaksStatusValidation}/>*/}
                 </Panel>
             </div>
         )

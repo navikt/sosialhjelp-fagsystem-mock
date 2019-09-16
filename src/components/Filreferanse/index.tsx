@@ -45,7 +45,6 @@ const Filreferanse: React.FC<Props> = (props: Props) => {
 
         return (
             <div>
-                <h4>Diverse vedlegg som skal følge vedtaket kan legges til her:</h4>
                 <div>
                     {visLeggTilVedlegg && (
                         <div>
@@ -96,16 +95,27 @@ const Filreferanse: React.FC<Props> = (props: Props) => {
                                     return <option value={s.id}>{s.tittel}</option>
                                 })}
                             </select>
-                            <button disabled={!state.valgtFilreferanse} onClick={() => {
-                                if (state.valgtFilreferanse) {
-                                    props.onVelgFilreferanse(state.valgtFilreferanse);
-                                }
-                            }}>
-                                Velg
+                            <button
+                                className={"btn btn-primary"}
+                                disabled={!state.valgtFilreferanse}
+                                onClick={() => {
+                                    if (state.valgtFilreferanse) {
+                                        props.onVelgFilreferanse(state.valgtFilreferanse);
+                                    }
+                                }}
+                            >
+                                <span className={"glyphicon glyphicon-ok"} aria-hidden={"true"}/>
                             </button>
 
                             <button className={"btn btn-danger"}
-                                    onClick={() => setState({...state, visLeggTilVedlegg: false})}>
+                                    onClick={() => setState({
+                                        ...state,
+                                        visLeggTilVedlegg: false,
+                                        valgtFilreferanse: undefined,
+                                        vedleggOptionsValg: undefined
+
+                                    })}
+                            >
                                 <span className={"glyphicon glyphicon-remove"} aria-hidden="true"/>
                             </button>
                         </div>

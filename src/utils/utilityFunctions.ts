@@ -86,6 +86,22 @@ export function getNow(): string {
     }
 }
 
+export function formatDate(date: Date): string {
+    const year = date.getFullYear();
+    const month = addZeroInFrontAndToString(date.getMonth() + 1);
+    const day = addZeroInFrontAndToString(date.getDate());
+    const hour = addZeroInFrontAndToString(date.getHours());
+    const minutes = addZeroInFrontAndToString(date.getMinutes());
+    const seconds = addZeroInFrontAndToString(date.getSeconds());
+    const millis = fixMillisecondsThreeDigits(date.getMilliseconds());
+
+    if (millis.toString().length === 3 ){
+        return `${year}-${month}-${day}T${hour}:${minutes}:${seconds}:${millis}Z`
+    } else {
+        throw Error("Length of millis is not 3. Fix the getNow() function!")
+    }
+}
+
 export const addZeroInFrontAndToString = (number: number): string => {
     return number < 10 ? `0${number}` : `${number}`;
 };
