@@ -5,7 +5,6 @@ import {Input, RadioPanelGruppe} from "nav-frontend-skjema";
 import {connect} from "react-redux";
 import {AppState} from "../../redux/reduxTypes";
 import {getNow} from "../../utils/utilityFunctions";
-import ReactJson from "react-json-view";
 
 
 interface OwnProps {

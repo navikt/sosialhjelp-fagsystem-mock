@@ -4,16 +4,13 @@ import {Panel} from "nav-frontend-paneler";
 import Hendelse, {
     Dokument,
     dokumentasjonEtterspurt,
-    Dokumentlager,
     DokumentlagerExtended,
-    FilreferanseType,
     Forvaltningsbrev,
     HendelseType,
-    Svarut,
     SvarutExtended,
     Vedlegg
 } from "../../types/hendelseTypes";
-import {convertToFilreferanse, formatDate, generateFilreferanseId, getNow} from "../../utils/utilityFunctions";
+import {convertToFilreferanse, formatDate, getNow} from "../../utils/utilityFunctions";
 import {connect} from "react-redux";
 import {AppState} from "../../redux/reduxTypes";
 import {Filreferanselager} from "../../redux/v2/v2Types";
@@ -33,13 +30,13 @@ interface VedleggExtended {
     referanse: SvarutExtended | DokumentlagerExtended | undefined;
 }
 
-const dokumentasjonEtterspurtTemplate: dokumentasjonEtterspurt = {
-    type: HendelseType.dokumentasjonEtterspurt,
-    hendelsestidspunkt: getNow(),
-    forvaltningsbrev: {referanse: {type: FilreferanseType.svarut, id: "12345678-9abc-def0-1234-56789abcdea1", nr: 1}},
-    vedlegg: [], // Vedlegg[]
-    dokumenter: [], // Dokument[]
-};
+// const dokumentasjonEtterspurtTemplate: dokumentasjonEtterspurt = {
+//     type: HendelseType.dokumentasjonEtterspurt,
+//     hendelsestidspunkt: getNow(),
+//     forvaltningsbrev: {referanse: {type: FilreferanseType.svarut, id: "12345678-9abc-def0-1234-56789abcdea1", nr: 1}},
+//     vedlegg: [], // Vedlegg[]
+//     dokumenter: [], // Dokument[]
+// };
 
 const nyttDokumentTemplate: DokumentExtended = {
     dokumenttype: '',

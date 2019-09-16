@@ -21,22 +21,22 @@ const App: React.FC = () => {
 	return (
 		<Provider store={store}>
 			<IntlProvider defaultLocale={language} locale={language} messages={tekster[language]}>
-				{/*<SplashScreen>*/}
+				<SplashScreen>
 					<div className="informasjon-side">
 						<AppBanner/>
-							<ConnectedRouter history={history}>
-								<div className="blokk-center">
-									<Switch>
-										<Route exact path={"/v1"} component={Forside} />
-										<Route exact path={"/v2"} component={V2} />
-										<Route exact path="/userguide" component={UserGuide} />
-										<Route exact path="/examplepage" component={Example} />
-										<Route component={NotFound} />
-									</Switch>
-								</div>
-							</ConnectedRouter>
+						<ConnectedRouter history={history}>
+							<div className="blokk-center">
+								<Switch>
+									<Route exact path={"/v1"} component={Forside}/>
+									<Route exact path={"/v2"} component={V2}/>
+									<Route exact path="/userguide" component={UserGuide}/>
+									<Route exact path="/examplepage" component={Example}/>
+									<Route component={NotFound}/>
+								</Switch>
+							</div>
+						</ConnectedRouter>
 					</div>
-				{/*</SplashScreen>*/}
+				</SplashScreen>
 			</IntlProvider>
 		</Provider>
 	);
