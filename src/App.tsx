@@ -21,7 +21,7 @@ const App: React.FC = () => {
 	return (
 		<Provider store={store}>
 			<IntlProvider defaultLocale={language} locale={language} messages={tekster[language]}>
-				<SplashScreen>
+				{/*<SplashScreen>*/}
 					<div className="informasjon-side">
 						<AppBanner/>
 							<ConnectedRouter history={history}>
@@ -36,7 +36,7 @@ const App: React.FC = () => {
 								</div>
 							</ConnectedRouter>
 					</div>
-				</SplashScreen>
+				{/*</SplashScreen>*/}
 			</IntlProvider>
 		</Provider>
 	);
