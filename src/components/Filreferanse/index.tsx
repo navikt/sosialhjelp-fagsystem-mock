@@ -101,6 +101,10 @@ const Filreferanse: React.FC<Props> = (props: Props) => {
                                 onClick={() => {
                                     if (state.valgtFilreferanse) {
                                         props.onVelgFilreferanse(state.valgtFilreferanse);
+                                        setState({...state,
+                                            visLeggTilVedlegg: false,
+                                            valgtFilreferanse: undefined
+                                        })
                                     }
                                 }}
                             >
@@ -127,7 +131,7 @@ const Filreferanse: React.FC<Props> = (props: Props) => {
                                 setState({...state, visLeggTilVedlegg: true})
                             }}
                             className={"btn btn-primary"}>
-                            <span className="glyphicon glyphicon-plus" aria-hidden="true"/>
+                            Velg fil <span className="glyphicon glyphicon-plus" aria-hidden="true"/>
                         </button>
                     )}
                 </div>
@@ -137,9 +141,7 @@ const Filreferanse: React.FC<Props> = (props: Props) => {
 
     return (
         <div>
-            Velg filreferanse:
             {insertVedleggContent()}
-            <img src={'image3.png'} alt={''}/>
         </div>
     )
 };

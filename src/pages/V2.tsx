@@ -15,6 +15,7 @@ import {
 } from "../redux/v2/v2Actions";
 import ReactJson from "react-json-view";
 import Hendelse, {
+    dokumentasjonEtterspurt,
     FiksDigisosSokerJson,
     HendelseType,
     soknadsStatus,
@@ -248,7 +249,13 @@ class V2 extends React.Component<Props, State> {
                                 }}
                             />
 
-                            <DokumentasjonEtterspurt/>
+                            <DokumentasjonEtterspurt
+                                onLeggTilDokumentasjonEtterspurt={(hendelse: dokumentasjonEtterspurt) => {
+                                    console.warn("legger til nytt dokumentasjonskrav");
+                                    this.props.hendelserUpdated.push(hendelse);
+                                    this.updateAndSendFiksDigisosSokerJson();
+                                }}
+                            />
 
                             <FattNyttVedtak
                                 onFattVedtak={(v: vedtakFattet) => {

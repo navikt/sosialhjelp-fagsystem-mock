@@ -16,7 +16,7 @@ const SplashScreen: React.FC<{}> = ( {children}) => {
     useEffect(() => {
         setTimeout(() => {
             setState({...state, showSplashScreen: false})
-        }, 2900);
+        }, 3400);
     });
 
 
