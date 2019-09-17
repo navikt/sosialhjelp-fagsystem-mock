@@ -19,53 +19,53 @@ export type Hendelse =
   | Vilkar
   | Rammevedtak;
 export type NyttNAVKontorBehandlerSoknaden = {
-  type?: "tildeltNavKontor";
+  type?: "TildeltNavKontor";
   [k: string]: any;
 };
 export type NyStatusPaSoknaden = {
-  type?: "soknadsStatus";
+  type?: "SoknadsStatus";
   [k: string]: any;
 };
 /**
  * Det er kun vedtak som ligger inn under Sosialtjenesteloven som skal sendes.
  */
 export type EtVedtakITilknytningTilSoknadenHarBlittFattet = {
-  type?: "vedtakFattet";
+  type?: "VedtakFattet";
   [k: string]: any;
 };
 export type VeilederBerOmMerDokumentasjonFraSoker = {
-  type?: "dokumentasjonEtterspurt";
+  type?: "DokumentasjonEtterspurt";
   [k: string]: any;
 };
 export type ForelopigSvar = {
-  type?: "forelopigSvar";
+  type?: "ForelopigSvar";
   [k: string]: any;
 };
 /**
  * Status på sak som vil resultere i et vedtak.
  */
 export type EnSakITilknytningTilSoknadenHarBlittOpprettetOgHarStatus = {
-  type?: "saksStatus";
+  type?: "SaksStatus";
   [k: string]: any;
 };
 /**
  * Utbetalingsinformasjon
  */
 export type Utbetaling = {
-  type?: "utbetaling";
+  type?: "Utbetaling";
   [k: string]: any;
 };
 /**
  * Vilkar
  */
 export type Vilkar = {
-  type?: "vilkar";
+  type?: "Vilkar";
   [k: string]: any;
 };
 /**
  * Rammevedtak
  */
 export type Rammevedtak = {
-  type?: "rammevedtak";
+  type?: "Rammevedtak";
   [k: string]: any;
 };

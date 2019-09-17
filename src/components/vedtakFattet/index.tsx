@@ -5,12 +5,12 @@ import Hendelse, {
     DokumentlagerExtended,
     FilreferanseType,
     HendelseType,
-    saksStatus,
+    SaksStatus,
     Svarut,
     SvarutExtended,
     Utfall,
     Vedlegg,
-    vedtakFattet
+    VedtakFattet
 } from "../../types/hendelseTypes";
 import {RadioPanelGruppe, Select} from "nav-frontend-skjema";
 import {
@@ -27,7 +27,7 @@ import ReactJson from "react-json-view";
 
 
 export interface vedtakFattetExtended {
-    type: HendelseType.vedtakFattet;
+    type: HendelseType.VedtakFattet;
     hendelsestidspunkt: string;
     saksreferanse: string;
     utfall: { utfall: Utfall | undefined };
@@ -38,7 +38,7 @@ export interface vedtakFattetExtended {
 }
 
 const nyttVedtakTemplate: vedtakFattetExtended = {
-    type: HendelseType.vedtakFattet,
+    type: HendelseType.VedtakFattet,
     hendelsestidspunkt: getNow(),
     saksreferanse: "",
     utfall: {utfall: undefined},
@@ -60,7 +60,7 @@ interface VedtaksFeil {
 }
 
 interface OwnProps {
-    onFattVedtak: (vedtak: vedtakFattet) => void;
+    onFattVedtak: (vedtak: VedtakFattet) => void;
 }
 
 interface ReduxProps {
@@ -84,7 +84,7 @@ interface State {
 
 
 const initialState: State = {
-    // FIXME: Husk å fjern denne. Lagt til kun for å lettere utvikle vedtakFattet.
+    // FIXME: Husk å fjern denne. Lagt til kun for å lettere utvikle VedtakFattet.
     isOpen: true,
     isValid: true,
     nyttVedtak: {...nyttVedtakTemplate},
@@ -124,8 +124,8 @@ class FattNyttVedtak extends React.Component<Props, State> {
             const vedleggUpdated: Vedlegg[] = convertToListOfVedlegg(nyttVedtak.vedlegg);
 
 
-            const nyttVedtakFattet: vedtakFattet = {
-                type: HendelseType.vedtakFattet,
+            const nyttVedtakFattet: VedtakFattet = {
+                type: HendelseType.VedtakFattet,
                 hendelsestidspunkt: getNow(),
                 saksreferanse: nyttVedtak.saksreferanse,
                 utfall: {utfall: nyttVedtak.utfall.utfall},
@@ -209,10 +209,10 @@ class FattNyttVedtak extends React.Component<Props, State> {
     render() {
         const {hendelser} = this.props;
         // const {nyttVedtak} = this.state;
-        const alleSaksStatuser: saksStatus[] = getAllSaksStatuser(hendelser);
+        const alleSaksStatuser: SaksStatus[] = getAllSaksStatuser(hendelser);
         const harSaker: boolean = alleSaksStatuser.length > 0;
 
-        const optionsSaksreferanse: JSX.Element[] = alleSaksStatuser.map((saksStatus: saksStatus) => {
+        const optionsSaksreferanse: JSX.Element[] = alleSaksStatuser.map((saksStatus: SaksStatus) => {
             return (
                 <option value={saksStatus.referanse}>{saksStatus.tittel} (saksreferanse: {saksStatus.referanse},
                     status: {saksStatus.status})</option>

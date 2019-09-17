@@ -3,6 +3,7 @@ import {
     FiksDigisosSokerJson,
     SvarutExtended
 } from "../../types/hendelseTypes";
+import {PaletteType} from "@material-ui/core";
 
 export interface V2Model {
     fiksDigisosId: string;
@@ -12,6 +13,7 @@ export interface V2Model {
     backendUrls: BackendUrls;
     backendUrlTypeToUse: string;
     filreferanselager: Filreferanselager;
+    thememode: PaletteType;
 }
 
 export interface BackendUrls {
@@ -35,6 +37,8 @@ export type V2Action
     | SetBackendUrlTypeToUse
     | EditBackendUrlForType
     | LeggTilNyFilILager
+    | SwitchToDarkMode
+    | SwitchToLightMode
 
 export enum V2ActionTypeKeys {
     SET_FIKS_DIGISOS_ID = "v2/SET_DIGISOS_FIKS_ID",
@@ -45,7 +49,9 @@ export enum V2ActionTypeKeys {
     DISABLE_SET_FIKS_DIGISOS_ID = "v2/DISABLE_SET_FIKS_DIGISOS_ID",
     SET_BACKEND_URL_TYPE_TO_USE = "v2/SET_BACKEND_URL_TYPE_TO_USE",
     EDIT_BACKEND_URL_FOR_TYPE = "v2/EDIT_BACKEND_URL_FOR_TYPE",
-    LEGG_TIL_NY_FIL_I_LAGER = "v2/LEGG_TIL_NY_TIL_I_LAGER"
+    LEGG_TIL_NY_FIL_I_LAGER = "v2/LEGG_TIL_NY_TIL_I_LAGER",
+    SWITCH_TO_DARK_MODE = "v2/SWITCH_TO_DARK_MODE",
+    SWITCH_TO_LIGHT_MODE = "v2/SWITCH_TO_LIGHT_MODE",
 }
 
 export interface SetFiksDigisosId {
@@ -88,4 +94,12 @@ export interface EditBackendUrlForType {
 export interface LeggTilNyFilILager {
     type: V2ActionTypeKeys.LEGG_TIL_NY_FIL_I_LAGER;
     nyFilreferanse: SvarutExtended | DokumentlagerExtended;
+}
+
+export interface SwitchToDarkMode {
+    type: V2ActionTypeKeys.SWITCH_TO_DARK_MODE;
+}
+
+export interface SwitchToLightMode {
+    type: V2ActionTypeKeys.SWITCH_TO_LIGHT_MODE;
 }

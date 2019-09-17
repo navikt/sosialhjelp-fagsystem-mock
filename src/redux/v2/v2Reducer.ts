@@ -1,6 +1,6 @@
 import {Reducer} from "redux";
 import {BackendUrls, Filreferanselager, V2Action, V2ActionTypeKeys, V2Model} from "./v2Types";
-import {FiksDigisosSokerJson, FilreferanseType, soknadsStatus} from "../../types/hendelseTypes";
+import {FiksDigisosSokerJson, FilreferanseType, SoknadsStatus} from "../../types/hendelseTypes";
 import {generateFilreferanseId} from "../../utils/utilityFunctions";
 
 
@@ -14,18 +14,18 @@ const minimal: FiksDigisosSokerJson = {
             },
             hendelser: [
                 {
-                    type: "soknadsStatus",
+                    type: "SoknadsStatus",
                     hendelsestidspunkt: "2018-10-04T13:37:00.134Z",
                     status: "MOTTATT"
-                } as soknadsStatus
-                // // FIXME: Husk å fjern denne. Lagt til kun for å lettere utvikle vedtakFattet.
+                } as SoknadsStatus
+                // // FIXME: Husk å fjern denne. Lagt til kun for å lettere utvikle VedtakFattet.
                 // {
-                //     "type": "saksStatus",
+                //     "type": "SaksStatus",
                 //     "hendelsestidspunkt": "2019-09-06T10:03:18:169Z",
                 //     "status": "UNDER_BEHANDLING",
                 //     "referanse": "SAK1",
                 //     "tittel": "Nødhjelp"
-                // } as saksStatus
+                // } as SaksStatus
             ]
         }
     },
@@ -61,7 +61,8 @@ export const initialV2Model: V2Model = {
         q: backendUrlsQTemplate
     },
     backendUrlTypeToUse: "local",
-    filreferanselager: initialFilreferanselager
+    filreferanselager: initialFilreferanselager,
+    thememode: 'light'
 };
 
 const v2Reducer: Reducer<V2Model, V2Action> = (
@@ -104,6 +105,8 @@ const v2Reducer: Reducer<V2Model, V2Action> = (
                 filreferanselager: filreferanselagerUpdated
             }
         }
+        case V2ActionTypeKeys.SWITCH_TO_LIGHT_MODE: {return {...state, thememode: 'light'}}
+        case V2ActionTypeKeys.SWITCH_TO_DARK_MODE: {return {...state, thememode: 'dark'}}
         default:
             return state;
     }
