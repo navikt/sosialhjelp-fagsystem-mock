@@ -12,81 +12,81 @@ export interface DigisosSokerJson {
 }
 
 export type Hendelse
-    = soknadsStatus
-    | vedtakFattet
-    | tildeltNavKontor
-    | dokumentasjonEtterspurt
-    | forelopigSvar
-    | saksStatus
-    | utbetaling
-    | vilkar
-    | rammevedtak
+    = SoknadsStatus
+    | VedtakFattet
+    | TildeltNavKontor
+    | DokumentasjonEtterspurt
+    | ForelopigSvar
+    | SaksStatus
+    | Utbetaling
+    | Vilkar
+    | Rammevedtak
 
 export enum HendelseType {
-    soknadsStatus = "soknadsStatus",
-    vedtakFattet = "vedtakFattet",
-    tildeltNavKontor = "tildeltNavKontor",
-    dokumentasjonEtterspurt = "dokumentasjonEtterspurt",
-    forelopigSvar = "forelopigSvar",
-    saksStatus = "saksStatus",
-    utbetaling = "utbetaling",
-    vilkar = "vilkar",
-    rammevedtak = "rammevedtak"
+    SoknadsStatus = "SoknadsStatus",
+    VedtakFattet = "VedtakFattet",
+    TildeltNavKontor = "TildeltNavKontor",
+    DokumentasjonEtterspurt = "DokumentasjonEtterspurt",
+    ForelopigSvar = "ForelopigSvar",
+    SaksStatus = "SaksStatus",
+    Utbetaling = "Utbetaling",
+    Vilkar = "Vilkar",
+    Rammevedtak = "Rammevedtak"
 }
 
 
-export interface tildeltNavKontor {
-    type: HendelseType.tildeltNavKontor;
+export interface TildeltNavKontor {
+    type: HendelseType.TildeltNavKontor;
     hendelsestidspunkt: string;
     navKontor: string;
 }
-export interface soknadsStatus {
-    type: HendelseType.soknadsStatus;
+export interface SoknadsStatus {
+    type: HendelseType.SoknadsStatus;
     hendelsestidspunkt: string;
-    status: SoknadsStatus
+    status: SoknadsStatusType
 }
-export interface vedtakFattet {
-    type: HendelseType.vedtakFattet;
+export interface VedtakFattet {
+    type: HendelseType.VedtakFattet;
     hendelsestidspunkt: string;
     saksreferanse: string;
     utfall: { utfall: Utfall };
     vedtaksfil: { referanse: Svarut | Dokumentlager};
     vedlegg: Vedlegg[]
 }
-export interface dokumentasjonEtterspurt {
-    type: HendelseType.dokumentasjonEtterspurt;
+export interface DokumentasjonEtterspurt {
+    type: HendelseType.DokumentasjonEtterspurt;
     hendelsestidspunkt: string;
     forvaltningsbrev: Forvaltningsbrev;
     vedlegg: Vedlegg[];
     dokumenter: Dokument[];
 }
-export interface forelopigSvar {
-    type: HendelseType.forelopigSvar;
+export interface ForelopigSvar {
+    type: HendelseType.ForelopigSvar;
     hendelsestidspunkt: string;
     forvaltningsbrev: Forvaltningsbrev;
     vedlegg: Vedlegg[];
 }
-export interface saksStatus {
-    type: HendelseType.saksStatus;
+export interface SaksStatus {
+    type: HendelseType.SaksStatus;
     hendelsestidspunkt: string;
     referanse: string;
     tittel: string;
-    status: SaksStatus;
+    status: SaksStatusType;
 }
-export interface utbetaling {
-    type: HendelseType.utbetaling;
+export interface Utbetaling {
+    type: HendelseType.Utbetaling;
     hendelsestidspunkt: string;
     // FIXME: fullfør implementasjon
 }
-export interface vilkar {
-    type: HendelseType.vilkar;
+export interface Vilkar {
+    type: HendelseType.Vilkar;
     hendelsestidspunkt: string;
     utbetalingsreferanse: string[];
     beskrivelse: string;
     status: VilkarStatus;
 }
-export interface rammevedtak {
-    type: HendelseType.rammevedtak;
+export interface Rammevedtak {
+    type: HendelseType.Rammevedtak;
     hendelsestidspunkt: string;
     rammevedtaksreferanse: string;
     saksreferanse: string;
@@ -102,7 +102,7 @@ export enum VilkarStatus {
     IKKE_OPPFYLT = "IKKE_OPPFYLT"
 }
 
-export enum SoknadsStatus {
+export enum SoknadsStatusType {
     MOTTATT = "MOTTATT",
     UNDER_BEHANDLING = "UNDER_BEHANDLING",
     FERDIGBEHANDLET = "FERDIGBEHANDLET",
@@ -116,7 +116,7 @@ export enum Utfall {
     AVVIST = "AVVIST"
 }
 
-export enum SaksStatus {
+export enum SaksStatusType {
     UNDER_BEHANDLING = "UNDER_BEHANDLING",
     IKKE_INNSYN = "IKKE_INNSYN",
     BEHANDLES_IKKE = "BEHANDLES_IKKE",

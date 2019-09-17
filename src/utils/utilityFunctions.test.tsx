@@ -7,7 +7,7 @@ import {
     isNDigits,
     mergeListsToLengthN
 } from "./utilityFunctions";
-import Hendelse, {FiksDigisosSokerJson, HendelseType, soknadsStatus, tildeltNavKontor} from "../types/hendelseTypes";
+import Hendelse, {FiksDigisosSokerJson, HendelseType, SoknadsStatus, TildeltNavKontor} from "../types/hendelseTypes";
 
 it('returnerer en liste med riktig komponenter', () => {
 
@@ -50,29 +50,29 @@ it('returns the last occurence of a hendelse type', () => {
                 },
                 "hendelser": [
                     {
-                        "type": "soknadsStatus",
+                        "type": "SoknadsStatus",
                         "hendelsestidspunkt": "2018-10-04T13:37:00.134Z",
                         "status": "MOTTATT"
-                    } as soknadsStatus,
+                    } as SoknadsStatus,
                     {
-                        "type": "tildeltNavKontor",
+                        "type": "TildeltNavKontor",
                         "hendelsestidspunkt": "2018-10-04T13:42:00.134Z",
                         "navKontor": "0314"
-                    } as tildeltNavKontor,
+                    } as TildeltNavKontor,
                     {
-                        "type": "soknadsStatus",
+                        "type": "SoknadsStatus",
                         "hendelsestidspunkt": "2018-10-04T13:52:00.134Z",
                         "status": "UNDER_BEHANDLING"
-                    } as soknadsStatus
+                    } as SoknadsStatus
                 ]
             }
         },
         "type": "no.nav.digisos.digisos.soker.v1"
     };
 
-    expect(getLastHendelseOfType(fiksDigisosSokerJson, HendelseType.soknadsStatus)).toEqual(
+    expect(getLastHendelseOfType(fiksDigisosSokerJson, HendelseType.SoknadsStatus)).toEqual(
         {
-            "type": "soknadsStatus",
+            "type": "SoknadsStatus",
             "hendelsestidspunkt": "2018-10-04T13:52:00.134Z",
             "status": "UNDER_BEHANDLING"
         }
@@ -92,19 +92,19 @@ it('validated that the input is a string consisting of x digits', () => {
     const input: Hendelse[] = [
         {
             // @ts-ignore
-            "type": "soknadsStatus",
+            "type": "SoknadsStatus",
             "hendelsestidspunkt": "2018-10-04T13:37:00.134Z",
             "status": "MOTTATT"
         },
         {
             // @ts-ignore
-            "type": "soknadsStatus",
+            "type": "SoknadsStatus",
             "hendelsestidspunkt": "2019-9-2T12:19:51:771Z",
             "status": "UNDER_BEHANDLING"
         },
         {
             // @ts-ignore
-            "type": "saksStatus",
+            "type": "SaksStatus",
             "hendelsestidspunkt": "2019-9-2T12:19:27:520Z",
             "status": "UNDER_BEHANDLING",
             "referanse": "SAK1",
@@ -112,13 +112,13 @@ it('validated that the input is a string consisting of x digits', () => {
         },
         {
             // @ts-ignore
-            "type": "soknadsStatus",
+            "type": "SoknadsStatus",
             "hendelsestidspunkt": "2019-9-2T12:19:57:635Z",
             "status": "FERDIGBEHANDLET"
         },
         {
             // @ts-ignore
-            "type": "saksStatus",
+            "type": "SaksStatus",
             "hendelsestidspunkt": "2019-9-2T12:19:27:520Z",
             "status": "IKKE_INNSYN",
             "referanse": "SAK1",
@@ -126,13 +126,13 @@ it('validated that the input is a string consisting of x digits', () => {
         },
         {
             // @ts-ignore
-            "type": "soknadsStatus",
+            "type": "SoknadsStatus",
             "hendelsestidspunkt": "2019-9-2T12:20:2:248Z",
             "status": "BEHANDLES_IKKE"
         },
         {
             // @ts-ignore
-            "type": "saksStatus",
+            "type": "SaksStatus",
             "hendelsestidspunkt": "2019-9-2T12:19:27:520Z",
             "status": "BEHANDLES_IKKE",
             "referanse": "SAK1",
@@ -142,21 +142,21 @@ it('validated that the input is a string consisting of x digits', () => {
 
     const expectedOutput = [
         {
-            "type": "saksStatus",
+            "type": "SaksStatus",
             "hendelsestidspunkt": "2019-9-2T12:19:27:520Z",
             "status": "UNDER_BEHANDLING",
             "referanse": "SAK1",
             "tittel": "Nødhjelp"
         },
         {
-            "type": "saksStatus",
+            "type": "SaksStatus",
             "hendelsestidspunkt": "2019-9-2T12:19:27:520Z",
             "status": "IKKE_INNSYN",
             "referanse": "SAK1",
             "tittel": "Nødhjelp"
         },
         {
-            "type": "saksStatus",
+            "type": "SaksStatus",
             "hendelsestidspunkt": "2019-9-2T12:19:27:520Z",
             "status": "BEHANDLES_IKKE",
             "referanse": "SAK1",

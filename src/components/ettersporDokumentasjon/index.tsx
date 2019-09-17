@@ -3,7 +3,7 @@ import {useState} from 'react';
 import {Panel} from "nav-frontend-paneler";
 import Hendelse, {
     Dokument,
-    dokumentasjonEtterspurt,
+    DokumentasjonEtterspurt,
     DokumentlagerExtended,
     Forvaltningsbrev,
     HendelseType,
@@ -30,8 +30,8 @@ interface VedleggExtended {
     referanse: SvarutExtended | DokumentlagerExtended | undefined;
 }
 
-// const dokumentasjonEtterspurtTemplate: dokumentasjonEtterspurt = {
-//     type: HendelseType.dokumentasjonEtterspurt,
+// const dokumentasjonEtterspurtTemplate: DokumentasjonEtterspurt = {
+//     type: HendelseType.DokumentasjonEtterspurt,
 //     hendelsestidspunkt: getNow(),
 //     forvaltningsbrev: {referanse: {type: FilreferanseType.svarut, id: "12345678-9abc-def0-1234-56789abcdea1", nr: 1}},
 //     vedlegg: [], // Vedlegg[]
@@ -51,7 +51,7 @@ const nyttVedleggTemplate: VedleggExtended = {
 
 
 interface asdfdokumentasjonEtterspurt {
-    type: HendelseType.dokumentasjonEtterspurt;
+    type: HendelseType.DokumentasjonEtterspurt;
     hendelsestidspunkt: string;
     forvaltningsbrev: Forvaltningsbrev;
     vedlegg: Vedlegg[];
@@ -60,7 +60,7 @@ interface asdfdokumentasjonEtterspurt {
 
 
 interface OwnProps {
-    onLeggTilDokumentasjonEtterspurt: (hendelse: dokumentasjonEtterspurt) => void;
+    onLeggTilDokumentasjonEtterspurt: (hendelse: DokumentasjonEtterspurt) => void;
 }
 
 interface StoreProps {
@@ -88,7 +88,7 @@ const initialState: State = {
 };
 
 
-const DokumentasjonEtterspurt = (props: Props) => {
+const EttersporDokumentasjonView = (props: Props) => {
 
     const [state, setState]: [State, (state: State) => void] = useState(initialState);
 
@@ -223,8 +223,8 @@ const DokumentasjonEtterspurt = (props: Props) => {
                                 const dokumenterUpdated = state.dokumenter.map(d => d);
 
 
-                                const hendelse: dokumentasjonEtterspurt = {
-                                    type: HendelseType.dokumentasjonEtterspurt,
+                                const hendelse: DokumentasjonEtterspurt = {
+                                    type: HendelseType.DokumentasjonEtterspurt,
                                     hendelsestidspunkt: getNow(),
                                     forvaltningsbrev: {
                                         referanse: forvaltningsbrevFilreferanse,
@@ -256,4 +256,4 @@ const mapDispatchToProps = (dispatch: any) => {
     }
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(DokumentasjonEtterspurt)
+export default connect(mapStateToProps, mapDispatchToProps)(EttersporDokumentasjonView)
