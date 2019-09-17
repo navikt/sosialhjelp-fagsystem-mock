@@ -7,7 +7,7 @@ const AppBanner: React.FC<{}> = () => {
                 Sosialhjelp Fagsystem Mock
             </p>
         </div>
-    );
+    )
 };
 
 export default AppBanner;

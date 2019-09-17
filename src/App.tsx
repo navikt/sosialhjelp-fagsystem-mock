@@ -23,7 +23,6 @@ const App: React.FC = () => {
 			<IntlProvider defaultLocale={language} locale={language} messages={tekster[language]}>
 				<SplashScreen>
 					<div className="informasjon-side">
-						<AppBanner/>
 						<ConnectedRouter history={history}>
 							<div className="blokk-center">
 								<Switch>
