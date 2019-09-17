@@ -311,15 +311,17 @@ class V2 extends React.Component<Props, State> {
                 </div>
                 <ReactModal
                     isOpen={this.state.systemPreferencesVisible}
-                    style={{
-                        content: {
-                            color: "white",
-                            backgroundColor: "#121212"
-                        },
-                        overlay: {
-                            background: "transparent"
-                        }
-                    }}
+                    // style={{
+                    //     content: {
+                    //         color: "white",
+                    //         backgroundColor: "#121212"
+                    //     },
+                    //     overlay: {
+                    //         background: "transparent"
+                    //     }
+                    // }}
+                    shouldCloseOnEsc={true}
+                    shouldCloseOnOverlayClick={true}
                 >
                     <div className={"system-preferences"}>
                         <button className={"btn btn-default"}
