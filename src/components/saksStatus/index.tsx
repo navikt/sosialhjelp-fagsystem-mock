@@ -199,8 +199,14 @@ class OpprettNySaksStatus extends React.Component<Props, State> {
                 Opprett ny sak
                 <Panel>
                     <div>
-                        Her kan en sak opprettes.
-                        Saken får en status, og vil senere resultere i et vedtak.
+                        <span className={"skjemaelement__label"}>
+                            Opprett Sak
+                        </span>
+                        <span>
+                            Her kan en sak opprettes.
+                            Saken får en status, og vil senere resultere i et vedtak.
+                        </span>
+
                     </div>
                     {isOpen && nySaksStatusPanel()}
                     {introPanel()}
