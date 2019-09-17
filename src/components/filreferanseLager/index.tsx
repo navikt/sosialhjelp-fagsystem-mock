@@ -57,7 +57,7 @@ const FilreferanseLager: React.FC<Props> = (props: Props) => {
     const [state, setState]: [State, (state: State) => void] = useState(initialState as State);
 
     const {svarutlager, dokumentlager} = props.filreferanselager;
-    const {nyFil} = state;
+    // const {nyFil} = state;
 
     return (
         <div>

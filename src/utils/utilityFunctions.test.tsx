@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+    addZeroInFrontAndToString,
     generateFilreferanseId,
     getAllSaksStatuser,
     getLastHendelseOfType,
@@ -170,4 +171,15 @@ it('doesnt fail' , () => {
     let s = generateFilreferanseId();
     expect(s).resolves;
 });
+
+
+
+it('doesnt fail' , () => {
+    expect(addZeroInFrontAndToString(1)).toEqual("01");
+    expect(addZeroInFrontAndToString(10)).toEqual("10");
+    expect(addZeroInFrontAndToString(3)).toEqual("03");
+    expect(addZeroInFrontAndToString(13)).toEqual("13");
+
+});
+
 

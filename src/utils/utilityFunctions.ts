@@ -1,4 +1,13 @@
-import Hendelse, {FiksDigisosSokerJson, HendelseType, saksStatus, vedtakFattet} from "../types/hendelseTypes";
+import Hendelse, {
+    Dokumentlager,
+    DokumentlagerExtended,
+    FiksDigisosSokerJson, FilreferanseType,
+    HendelseType,
+    saksStatus, Svarut,
+    SvarutExtended, Vedlegg,
+    vedtakFattet
+} from "../types/hendelseTypes";
+import {Filreferanselager} from "../redux/v2/v2Types";
 
 const tildeltNavKontorSchema = require('../digisos/hendelse/tildeltNavKontor');
 const soknadsStatusSchema = require('../digisos/hendelse/soknadsStatus');
@@ -63,15 +72,49 @@ export function getNow(): string {
 //    "2018-10-04T13:37:00.134Z"
 
     const year = date.getFullYear();
-    let month = date.getMonth() + 1;
-    let day = date.getDay() + 1;
-    let hour = date.getHours();
-    let minutes = date.getMinutes();
-    let seconds = date.getSeconds();
-    const millis = date.getMilliseconds();
+    const month = addZeroInFrontAndToString(date.getMonth() + 1);
+    const day = addZeroInFrontAndToString(date.getDay() + 1);
+    const hour = addZeroInFrontAndToString(date.getHours());
+    const minutes = addZeroInFrontAndToString(date.getMinutes());
+    const seconds = addZeroInFrontAndToString(date.getSeconds());
+    const millis = fixMillisecondsThreeDigits(date.getMilliseconds());
 
-    return `${year}-${month}-${day}T${hour}:${minutes}:${seconds}:${millis}Z`
+    if (millis.toString().length === 3 ){
+        return `${year}-${month}-${day}T${hour}:${minutes}:${seconds}:${millis}Z`
+    } else {
+        throw Error("Length of millis is not 3. Fix the getNow() function!")
+    }
 }
+
+export function formatDate(date: Date): string {
+    const year = date.getFullYear();
+    const month = addZeroInFrontAndToString(date.getMonth() + 1);
+    const day = addZeroInFrontAndToString(date.getDate());
+    const hour = addZeroInFrontAndToString(date.getHours());
+    const minutes = addZeroInFrontAndToString(date.getMinutes());
+    const seconds = addZeroInFrontAndToString(date.getSeconds());
+    const millis = fixMillisecondsThreeDigits(date.getMilliseconds());
+
+    if (millis.toString().length === 3 ){
+        return `${year}-${month}-${day}T${hour}:${minutes}:${seconds}:${millis}Z`
+    } else {
+        throw Error("Length of millis is not 3. Fix the getNow() function!")
+    }
+}
+
+export const addZeroInFrontAndToString = (number: number): string => {
+    return number < 10 ? `0${number}` : `${number}`;
+};
+
+export const fixMillisecondsThreeDigits = (milliseconds: number): string => {
+    if (milliseconds < 10){
+        return `00${milliseconds}`
+    }
+    if (milliseconds < 100){
+        return `0${milliseconds}`
+    }
+    return `${milliseconds}`
+};
 
 export const isNDigits = (value: string, n_digits: number): boolean => {
     const a: RegExpMatchArray | null = value.match(`^[0-9]{${n_digits}}$`);
@@ -97,7 +140,6 @@ export const getAllSaksStatuser = (hendelser: Hendelse[]): saksStatus[] => {
 
 export const sakEksistererOgEtVedtakErIkkeFattet = (hendelser: Hendelse[], saksReferanse: string): boolean => {
     const saksStatus: Hendelse | undefined = hendelser.find((hendelse) => hendelse.type === HendelseType.saksStatus && (hendelse as saksStatus).referanse === saksReferanse);
-
     const vedtakForSaksStatus: Hendelse | undefined = hendelser.find((hendelse) => {
         return hendelse.type === HendelseType.vedtakFattet && (hendelse as vedtakFattet).saksreferanse === saksReferanse;
     });
@@ -119,3 +161,44 @@ export const generateFilreferanseId = (): string => {
     const jp = "";
     return `${r.slice(0, 8).join(jp)}-${r.slice(8, 12).join(jp)}-${r.slice(12, 16).join(jp)}-${r.slice(16, 20).join(jp)}-${r.slice(20).join(jp)}`;
 };
+
+export const convertToFilreferanse = (extended: SvarutExtended | DokumentlagerExtended): Svarut | Dokumentlager => {
+    switch (extended.type) {
+        case FilreferanseType.svarut: {
+            return {
+                type: FilreferanseType.svarut,
+                id: extended.id,
+                nr: extended.nr
+            } as Svarut;
+        }
+        default: {
+            return {
+                type: FilreferanseType.dokumentlager,
+                id: extended.id
+            } as Dokumentlager
+        }
+    }
+};
+
+export const convertToListOfVedlegg = (vedleggsliste: (SvarutExtended | DokumentlagerExtended)[]): Vedlegg[] => {
+    return vedleggsliste.map((vedlegg: (SvarutExtended | DokumentlagerExtended)) => {
+        return {
+            tittel: vedlegg.tittel,
+            referanse: convertToFilreferanse(vedlegg)
+
+        } as Vedlegg
+    }) as Vedlegg[];
+};
+
+export const getFilreferanseExtended = (id: string, filreferanselager: Filreferanselager) => {
+    let filreferanse: SvarutExtended | DokumentlagerExtended | undefined = filreferanselager.dokumentlager.find((d) => {
+        return d.id === id;
+    });
+    if (filreferanse === undefined){
+        filreferanse = filreferanselager.svarutlager.find((d) => {
+            return d.id === id;
+        });
+    }
+    return filreferanse;
+};
+

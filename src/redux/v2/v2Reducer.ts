@@ -18,6 +18,14 @@ const minimal: FiksDigisosSokerJson = {
                     hendelsestidspunkt: "2018-10-04T13:37:00.134Z",
                     status: "MOTTATT"
                 } as soknadsStatus
+                // // FIXME: Husk å fjern denne. Lagt til kun for å lettere utvikle vedtakFattet.
+                // {
+                //     "type": "saksStatus",
+                //     "hendelsestidspunkt": "2019-09-06T10:03:18:169Z",
+                //     "status": "UNDER_BEHANDLING",
+                //     "referanse": "SAK1",
+                //     "tittel": "Nødhjelp"
+                // } as saksStatus
             ]
         }
     },
