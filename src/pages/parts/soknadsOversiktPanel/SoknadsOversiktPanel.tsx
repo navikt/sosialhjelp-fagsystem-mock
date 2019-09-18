@@ -3,21 +3,27 @@ import {V2Model} from "../../../redux/v2/v2Types";
 import Hendelse from "../../../types/hendelseTypes";
 import {AppState, DispatchProps} from "../../../redux/reduxTypes";
 import {connect} from "react-redux";
-import {Box} from "@material-ui/core";
-import Container from "@material-ui/core/Container";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import ListItemText from "@material-ui/core/ListItemText";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
-import Divider from "@material-ui/core/Divider";
+import {soknadMockData} from "./soknadsoversikt-mockdata";
+import {Soknad} from "../../../types/additionalTypes";
+import {Typography} from "@material-ui/core";
+import Paper from "@material-ui/core/Paper";
+
+const soknaderMockData: Soknad[] = soknadMockData.map(s => s);
 
 const useStyles = makeStyles(theme => ({
     root: {
         width: '100%',
         maxWidth: 360,
-        color: 'white',
-        backgroundColor: 'black',
+        // color: 'white',
+        // backgroundColor: 'white',
     },
+    card: {
+        padding: theme.spacing(3, 2)
+    }
 }));
 
 interface SoknadsOversiktPanelProps {
@@ -33,6 +39,7 @@ const initialState: SoknadsOversiktPanelState = {
     input: ''
 };
 
+
 type Props = DispatchProps & SoknadsOversiktPanelProps;
 type State = SoknadsOversiktPanelState;
 
@@ -42,31 +49,34 @@ const SoknadsOversiktPanel: React.FC<Props> = (props: Props) => {
 
     const classes = useStyles();
 
+
+
     return (
-        <div className={"soknads-oversikt-panel-wrapper"}>
-            SoknadsOversiktPanel
-            <Box color="primary.main">
-                <Container className={"dark-container"}>
-                    <List component="nav" className={classes.root} aria-label="mailbox folders">
-                        <ListItem button>
-                            <ListItemText primary="Inbox" />
-                        </ListItem>
-                        <Divider />
-                        <ListItem button divider>
-                            <ListItemText primary="Drafts" />
-                        </ListItem>
-                        <ListItem button>
-                            <ListItemText primary="Trash" />
-                        </ListItem>
-                        <Divider light />
-                        <ListItem button>
-                            <ListItemText primary="Spam" />
-                        </ListItem>
-                    </List>
-                </Container>
-            </Box>
+        <div>
+            <Paper className={classes.card}>
+                <Typography variant="h5" component="h3">
+                    Inboks
+                </Typography>
+                <Typography component="p">
+                    Oversikt over søknader i systemet
+                </Typography>
+            </Paper>
+            <List component="nav"  aria-label="mailbox folders">
+                { getSoknadListItems(soknaderMockData) }
+            </List>
         </div>
     );
+};
+
+const getSoknadListItems = (soknader: Soknad[]): JSX.Element[] => {
+    return soknader.map((soknad: Soknad) => {
+        return (
+            <ListItem button divider>
+                <ListItemText primary={soknad.name} />
+            </ListItem>
+
+        )
+    });
 };
 
 const mapStateToProps = (state: AppState) => ({

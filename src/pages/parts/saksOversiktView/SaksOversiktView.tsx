@@ -73,6 +73,9 @@ const useStyles = makeStyles((theme: Theme) =>
     }),
 );
 
+const theme = {
+    background: 'linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)',
+};
 
 
 
@@ -135,52 +138,54 @@ const SaksOversiktView: React.FC<Props> = (props: Props) => {
         },
     ];
 
+
+
     return (
         <div className={classes.root}>
-            <AppBar position="static" color="default">
-                <Tabs
-                    value={value}
-                    onChange={handleChange}
-                    indicatorColor="primary"
-                    textColor="primary"
-                    variant="fullWidth"
-                    aria-label="action tabs example"
+                <AppBar position="static" color="default">
+                    <Tabs
+                        value={value}
+                        onChange={handleChange}
+                        indicatorColor="primary"
+                        textColor="primary"
+                        variant="fullWidth"
+                        aria-label="action tabs example"
+                    >
+                        <Tab label="Item One" {...a11yProps(0)} />
+                        <Tab label="Item Two" {...a11yProps(1)} />
+                        <Tab label="Item Three" {...a11yProps(2)} />
+                    </Tabs>
+                </AppBar>
+                <SwipeableViews
+                    axis={theme.direction === 'rtl' ? 'x-reverse' : 'x'}
+                    index={value}
+                    onChangeIndex={handleChangeIndex}
                 >
-                    <Tab label="Item One" {...a11yProps(0)} />
-                    <Tab label="Item Two" {...a11yProps(1)} />
-                    <Tab label="Item Three" {...a11yProps(2)} />
-                </Tabs>
-            </AppBar>
-            <SwipeableViews
-                axis={theme.direction === 'rtl' ? 'x-reverse' : 'x'}
-                index={value}
-                onChangeIndex={handleChangeIndex}
-            >
-                <TabPanel value={value} index={0} dir={theme.direction}>
-                    Item One
-                </TabPanel>
-                <TabPanel value={value} index={1} dir={theme.direction}>
-                    Item Two
-                </TabPanel>
-                <TabPanel value={value} index={2} dir={theme.direction}>
-                    Item Three
-                </TabPanel>
-            </SwipeableViews>
-            {fabs.map((fab, index) => (
-                <Zoom
-                    key={fab.color}
-                    in={value === index}
-                    timeout={transitionDuration}
-                    style={{
-                        transitionDelay: `${value === index ? transitionDuration.exit : 0}ms`,
-                    }}
-                    unmountOnExit
-                >
-                    <Fab aria-label={fab.label} className={fab.className} color={fab.color}>
-                        {fab.icon}
-                    </Fab>
-                </Zoom>
-            ))}
+                    <TabPanel value={value} index={0} dir={theme.direction}>
+                        Item One
+                    </TabPanel>
+                    <TabPanel value={value} index={1} dir={theme.direction}>
+                        Item Two
+                    </TabPanel>
+                    <TabPanel value={value} index={2} dir={theme.direction}>
+                        Item Three
+                    </TabPanel>
+                </SwipeableViews>
+                {fabs.map((fab, index) => (
+                    <Zoom
+                        key={fab.color}
+                        in={value === index}
+                        timeout={transitionDuration}
+                        style={{
+                            transitionDelay: `${value === index ? transitionDuration.exit : 0}ms`,
+                        }}
+                        unmountOnExit
+                    >
+                        <Fab aria-label={fab.label} className={fab.className} color={fab.color}>
+                            {fab.icon}
+                        </Fab>
+                    </Zoom>
+                ))}
         </div>
     );
 };

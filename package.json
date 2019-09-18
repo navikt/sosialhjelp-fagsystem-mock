@@ -7,6 +7,7 @@
     "@craco/craco": "^5.3.0",
     "@material-ui/core": "^4.4.2",
     "@material-ui/icons": "^4.4.1",
+    "@material-ui/styles": "^4.4.1",
     "@types/history": "^4.7.3",
     "@types/jest": "24.0.18",
     "@types/node": "12.7.2",
@@ -82,6 +83,7 @@
     "react-toastify": "^5.3.2",
     "redux": "^4.0.4",
     "redux-thunk": "^2.3.0",
+    "typeface-roboto": "0.0.75",
     "typescript": "3.5.3",
     "whatwg-fetch": "^3.0.0"
   },

@@ -92,3 +92,15 @@ export const leggTilNyFilILager = (nyFilreferanse: SvarutExtended | Dokumentlage
         nyFilreferanse
     }
 };
+
+export const switchToDarkMode = (): V2Action => {
+    return {
+        type: V2ActionTypeKeys.SWITCH_TO_DARK_MODE,
+    }
+};
+
+export const switchToLightMode = (): V2Action => {
+    return {
+        type: V2ActionTypeKeys.SWITCH_TO_LIGHT_MODE,
+    }
+};

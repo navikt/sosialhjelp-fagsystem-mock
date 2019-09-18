@@ -4,7 +4,18 @@ import Hendelse from "../../../types/hendelseTypes";
 import {AppState, DispatchProps} from "../../../redux/reduxTypes";
 import {connect} from "react-redux";
 import SaksOversiktView from "../saksOversiktView/SaksOversiktView";
+import {Box} from "@material-ui/core";
+import makeStyles from "@material-ui/core/styles/makeStyles";
 
+
+const useStyles = makeStyles(theme => ({
+    root: {
+        width: '100%',
+        maxWidth: 360,
+        // color: 'white',
+        // backgroundColor: 'white',
+    },
+}));
 
 interface BehandleSoknadPanelProps {
     v2: V2Model
@@ -26,8 +37,13 @@ type State = BehandleSoknadPanelState;
 const BehandleSoknadPanel: React.FC<Props> = (props: Props) => {
     const [state, setState] = useState(initialState);
 
+    const classes = useStyles();
+
     return (
-        <div className={"behandle-soknad-panel-wrapper"}>
+        <div>
+            <Box>
+                Dette er en boks
+            </Box>
             BehandleSoknadPanel
             <SaksOversiktView />
         </div>

@@ -61,7 +61,8 @@ export const initialV2Model: V2Model = {
         q: backendUrlsQTemplate
     },
     backendUrlTypeToUse: "local",
-    filreferanselager: initialFilreferanselager
+    filreferanselager: initialFilreferanselager,
+    thememode: 'light'
 };
 
 const v2Reducer: Reducer<V2Model, V2Action> = (
@@ -104,6 +105,8 @@ const v2Reducer: Reducer<V2Model, V2Action> = (
                 filreferanselager: filreferanselagerUpdated
             }
         }
+        case V2ActionTypeKeys.SWITCH_TO_LIGHT_MODE: {return {...state, thememode: 'light'}}
+        case V2ActionTypeKeys.SWITCH_TO_DARK_MODE: {return {...state, thememode: 'dark'}}
         default:
             return state;
     }

@@ -3,9 +3,8 @@ import {V2Model} from "../../../redux/v2/v2Types";
 import Hendelse from "../../../types/hendelseTypes";
 import {AppState, DispatchProps} from "../../../redux/reduxTypes";
 import {connect} from "react-redux";
-import {Icon} from "@material-ui/core";
-import SvgIcon from "@material-ui/core/SvgIcon";
 import {Bathtub, Build} from "@material-ui/icons";
+import {Button} from "@material-ui/core";
 
 
 interface DarkHeaderProps {
@@ -34,10 +33,12 @@ const DarkHeader: React.FC<Props> = (props: Props) => {
                 <Bathtub />
             </div>
             <div className={"dark-header-center-wrapper"}>
-                WOLDENA TM - Fagsystem mock
+                <h3>Woldena™</h3>
             </div>
             <div className={"dark-header-right-wrapper"}>
-                <Build />
+                <Button color={"inherit"}>
+                    <Build />
+                </Button>
             </div>
         </div>
     );
