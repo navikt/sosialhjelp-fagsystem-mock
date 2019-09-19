@@ -11,25 +11,28 @@ import AppBarView from "./parts/appBarView/AppBarView";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import Grid from "@material-ui/core/Grid";
 import SystemSettingsModal from "./parts/systemSettings/SystemSettingsModal";
+import Button from "@material-ui/core/Button";
+import Snackbar from "@material-ui/core/Snackbar";
+import StatusSnackBarView from "./parts/statusSnackBar/StatusSnackBarView";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         root: {
             flexGrow: 1,
+            padding: theme.spacing(0, 4, 0, 4)
         },
         maingrid: {
-            justifyContent: 'space-evenly'
-        },
-        paper: {
-            padding: theme.spacing(2),
-            textAlign: 'center',
-            color: theme.palette.text.secondary
+            justifyContent: 'center'
         },
         left: {
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'center',
             // border: "1px dotted red"
         },
         right: {
-            padding: theme.spacing(2, 2),
+            paddingRight: 0
+            // padding: theme.spacing(2, 2),
             // border: "1px dotted red"
         }
     }),
@@ -42,10 +45,12 @@ interface V3Props {
 
 interface V3State {
     input: string;
+    showSnackbar: boolean
 }
 
 const initialState: V3State = {
-    input: ''
+    input: '',
+    showSnackbar: true
 };
 
 type Props = DispatchProps & V3Props;
@@ -73,10 +78,19 @@ const V3: React.FC<Props> = (props: Props) => {
                     </Grid>
                 </Grid>
             </div>
+
+            {/* FIXME: Ta i bruk denne senere.*/}
             <SystemSettingsModal />
+
+            <StatusSnackBarView />
+
         </MuiThemeProvider>
     );
 };
+
+
+
+
 
 const mapStateToProps = (state: AppState) => ({
     v2: state.v2,

@@ -1,10 +1,11 @@
 import {
     DokumentlagerExtended,
-    FiksDigisosSokerJson, SoknadsStatusType,
+    FiksDigisosSokerJson, SaksStatus, SoknadsStatusType,
     SvarutExtended
 } from "../../types/hendelseTypes";
 import {PaletteType} from "@material-ui/core";
-import {Sak, Soknad} from "../../types/additionalTypes";
+import {Soknad} from "../../types/additionalTypes";
+import V2 from "../../pages/V2";
 
 export interface V2Model {
     fiksDigisosId: string;
@@ -58,6 +59,7 @@ export type V2Action
     | SkjulSystemSettingsModal
     | SetAktivSoknad
     | SetAktivSak
+    | NySaksStatus
 
 
 export enum V2ActionTypeKeys {
@@ -83,6 +85,7 @@ export enum V2ActionTypeKeys {
     // Aktive ting
     SET_AKTIV_SAK = "v2/SET_AKTIV_SAK",
     SET_AKTIV_SOKNAD = "v2/SET_AKTIV_SOKNAD",
+    NY_SAKS_STATUS = "v2/NY_SAKS_STATUS"
 }
 
 
@@ -175,4 +178,10 @@ export interface SetAktivSoknad {
 export interface SetAktivSak {
     type: V2ActionTypeKeys.SET_AKTIV_SAK;
     saksIndex: number
+}
+
+// Nye ting
+export interface NySaksStatus {
+    type: V2ActionTypeKeys.NY_SAKS_STATUS,
+    saksStatus: SaksStatus
 }

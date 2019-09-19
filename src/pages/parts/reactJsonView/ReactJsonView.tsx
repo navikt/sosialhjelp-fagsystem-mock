@@ -18,9 +18,9 @@ const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         root: {
             backgroundColor: theme.palette.background.paper,
-            // width: 500,
             position: 'relative',
-            minHeight: 200,
+            bottom: theme.spacing(2),
+            right: theme.spacing(2)
         },
         fab: {
             marginRight: theme.spacing(1),
@@ -158,7 +158,7 @@ const ReactJsonView: React.FC<Props> = (props: Props) => {
 
 
     return (
-        <>
+        <div className={classes.root}>
             <Fab aria-label={fab.label} className={fab.className} color={fab.color} onClick={toggleDrawer('right', true)}>
                 {fab.icon}
             </Fab>
@@ -180,7 +180,7 @@ const ReactJsonView: React.FC<Props> = (props: Props) => {
                     {sideList('right')}
                 </Drawer>
             </div>
-        </>
+        </div>
     );
 };
 

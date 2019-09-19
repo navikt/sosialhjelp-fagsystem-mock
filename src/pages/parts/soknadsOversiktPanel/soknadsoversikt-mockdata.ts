@@ -1,20 +1,68 @@
-import {Sak, Soknad} from "../../../types/additionalTypes";
-import {SaksStatusType, SoknadsStatusType} from "../../../types/hendelseTypes";
+import {Soknad} from "../../../types/additionalTypes";
+import {
+    Dokumentlager, FilreferanseType,
+    HendelseType,
+    SaksStatus,
+    SaksStatusType,
+    SoknadsStatusType,
+    Svarut,
+    Utfall, Vedlegg, VedtakFattet
+} from "../../../types/hendelseTypes";
 import {minimal} from "../../../digisos/fiksDigisosSokerJsonMinimal";
 
 
-const saker: Sak[] = [
+const vedtakReferanse: Dokumentlager = {
+    type: FilreferanseType.dokumentlager,
+    id: "3h3960yd-2562-0x96-dv7r-5m78yc2cn57l"
+};
+
+const vedlegg1ref: Dokumentlager = {
+    type: FilreferanseType.dokumentlager,
+    id: "4h3960yd-2562-0x96-dv7r-5m78yc2cn57l"
+};
+
+const vedlegg2ref: Dokumentlager = {
+    type: FilreferanseType.dokumentlager,
+    id: "5h3960yd-2562-0x96-dv7r-5m78yc2cn57l"
+};
+
+const vedlegg1: Vedlegg = {
+    tittel: "Veien videre",
+    referanse: vedlegg1ref
+};
+
+const vedlegg2: Vedlegg = {
+    tittel: "Veien videre",
+    referanse: vedlegg2ref
+};
+
+const vedtak: VedtakFattet = {
+    type: HendelseType.VedtakFattet,
+    hendelsestidspunkt: "2018-10-08T21:47:00.134Z",
+    saksreferanse: "sak1",
+    utfall: { utfall: Utfall.INNVILGET },
+    vedtaksfil: { referanse: vedtakReferanse},
+    vedlegg: [vedlegg1, vedlegg2]
+};
+
+const saker: SaksStatus[] = [
     {
+        type: HendelseType.SaksStatus,
+        hendelsestidspunkt: "2018-10-08T21:47:00.134Z",
         tittel: "Nødhjelp",
         referanse: "sak1",
         status: SaksStatusType.UNDER_BEHANDLING
     },
     {
+        type: HendelseType.SaksStatus,
+        hendelsestidspunkt: "2018-10-08T21:47:00.134Z",
         tittel: "Livsopphold",
         referanse: "sak2",
         status: SaksStatusType.UNDER_BEHANDLING
     },
     {
+        type: HendelseType.SaksStatus,
+        hendelsestidspunkt: "2018-10-08T21:47:00.134Z",
         tittel: "Penger til skateboard",
         referanse: "sak3",
         status: SaksStatusType.UNDER_BEHANDLING

@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {AppState, DispatchProps} from "../../../redux/reduxTypes";
 import {connect} from "react-redux";
 import clsx from 'clsx';
@@ -8,7 +8,6 @@ import AppBar from '@material-ui/core/AppBar';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
-import Zoom from '@material-ui/core/Zoom';
 import Fab from '@material-ui/core/Fab';
 import AddIcon from '@material-ui/icons/Add';
 import EditIcon from '@material-ui/icons/Edit';
@@ -16,9 +15,11 @@ import UpIcon from '@material-ui/icons/KeyboardArrowUp';
 import {green} from '@material-ui/core/colors';
 import Box from '@material-ui/core/Box';
 import {Paper} from "@material-ui/core";
-import {Sak, Soknad} from "../../../types/additionalTypes";
+import {Soknad} from "../../../types/additionalTypes";
 import {setAktivSak, visNySakModal} from "../../../redux/v2/v2Actions";
 import NySakModal from "../nySak/NySak";
+import {SaksStatus} from "../../../types/hendelseTypes";
+import SaksTabView from "./SaksTabView";
 
 
 interface TabPanelProps {
@@ -43,13 +44,6 @@ function TabPanel(props: TabPanelProps) {
             <Box p={3}>{children}</Box>
         </Typography>
     );
-}
-
-function a11yProps(index: any) {
-    return {
-        id: `action-tab-${index}`,
-        'aria-controls': `action-tabpanel-${index}`,
-    };
 }
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -171,16 +165,15 @@ const SaksOversiktView: React.FC<Props> = (props: Props) => {
     const insertSaksOversikt = () => {
 
         if (soknad.saker.length > 0){
-            const listTabs = soknad.saker.map((sak: Sak) => {
+            const listTabs = soknad.saker.map((sak: SaksStatus) => {
                 return (
                     <Tab label={sak.tittel} />
                 )
             });
-            const listTabPanels = soknad.saker.map((sak: Sak, idx) => {
+            const listTabPanels = soknad.saker.map((sak: SaksStatus, idx) => {
                 return(
                     <TabPanel value={aktivSakIndex} index={idx} dir={theme.direction}>
-                        <Typography>Tittel: {sak.tittel}. Status: {sak.status}.</Typography>
-                        Aktiv sak index: {idx}
+                        <SaksTabView idx={idx} sak={sak} />
                     </TabPanel>
                 )
             });

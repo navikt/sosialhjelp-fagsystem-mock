@@ -4,6 +4,7 @@ import {fetchPost} from "../../utils/restUtils";
 import {
     DokumentlagerExtended,
     FiksDigisosSokerJson,
+    SaksStatus,
     SoknadsStatusType,
     SvarutExtended
 } from "../../types/hendelseTypes";
@@ -163,3 +164,9 @@ export const setAktivSak = (saksIndex: number): V2Action => {
     }
 };
 
+export const nySaksStatus = (saksStatus: SaksStatus): V2Action => {
+    return {
+        type: V2ActionTypeKeys.NY_SAKS_STATUS,
+        saksStatus: saksStatus
+    }
+};
