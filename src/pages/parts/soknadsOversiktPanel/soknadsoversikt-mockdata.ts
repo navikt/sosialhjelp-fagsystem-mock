@@ -1,5 +1,6 @@
 import {Sak, Soknad} from "../../../types/additionalTypes";
 import {SaksStatusType, SoknadsStatusType} from "../../../types/hendelseTypes";
+import {minimal} from "../../../digisos/fiksDigisosSokerJsonMinimal";
 
 
 const saker: Sak[] = [
@@ -31,7 +32,8 @@ export const soknadMockData: Soknad[] =
             name: "Nav Frogner"
         },
         "saker": saker,
-        "soknadsStatus": SoknadsStatusType.MOTTATT
+        "soknadsStatus": SoknadsStatusType.MOTTATT,
+        "fiksDigisosSokerJson": {...minimal}
     },
     {
         "fiksDigisosId": "002",
@@ -42,7 +44,8 @@ export const soknadMockData: Soknad[] =
             name: "Nav Kautokeino"
         },
         "saker": [],
-        "soknadsStatus": SoknadsStatusType.MOTTATT
+        "soknadsStatus": SoknadsStatusType.MOTTATT,
+        "fiksDigisosSokerJson": {...minimal}
     },
     {
         "fiksDigisosId": "003",
@@ -53,7 +56,8 @@ export const soknadMockData: Soknad[] =
             name: "Nav Kautokeino"
         },
         "saker": [],
-        "soknadsStatus": SoknadsStatusType.MOTTATT
+        "soknadsStatus": SoknadsStatusType.MOTTATT,
+        "fiksDigisosSokerJson": {...minimal}
     },
     {
         "fiksDigisosId": "004",
@@ -64,7 +68,8 @@ export const soknadMockData: Soknad[] =
             name: "Nav Frogner"
         },
         "saker": [],
-        "soknadsStatus": SoknadsStatusType.MOTTATT
+        "soknadsStatus": SoknadsStatusType.MOTTATT,
+        "fiksDigisosSokerJson": {...minimal}
     },
     {
         "fiksDigisosId": "005",
@@ -75,7 +80,8 @@ export const soknadMockData: Soknad[] =
             name: "Nav Frogner"
         },
         "saker": [],
-        "soknadsStatus": SoknadsStatusType.MOTTATT
+        "soknadsStatus": SoknadsStatusType.MOTTATT,
+        "fiksDigisosSokerJson": {...minimal}
     }
 ];
 

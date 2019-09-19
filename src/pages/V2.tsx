@@ -28,7 +28,7 @@ import {toast, ToastContainer} from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import {PacmanLoader} from "react-spinners";
 import {css} from '@emotion/core';
-import OpprettNySaksStatus from "../components/saksStatus";
+import OpprettNySaksStatus from "../components/opprettNySaksStatus";
 import FattNyttVedtak from "../components/vedtakFattet";
 import EttersporDokumentasjonView from "../components/ettersporDokumentasjon";
 import FilreferanseLager from "../components/filreferanseLager";

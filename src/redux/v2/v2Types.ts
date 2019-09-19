@@ -15,6 +15,8 @@ export interface V2Model {
     backendUrlTypeToUse: string;
     filreferanselager: Filreferanselager;
     thememode: PaletteType;
+
+    // V3
     soknader: Soknad[];
     visNySakModal: boolean;
     visEndreNavKontorModal: boolean;
