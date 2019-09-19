@@ -1,7 +1,9 @@
 import {Reducer} from "redux";
 import {BackendUrls, Filreferanselager, V2Action, V2ActionTypeKeys, V2Model} from "./v2Types";
 import {FiksDigisosSokerJson, FilreferanseType, SoknadsStatus} from "../../types/hendelseTypes";
-import {generateFilreferanseId} from "../../utils/utilityFunctions";
+import {generateFilreferanseId, getSoknadByFiksDigisosId, updateSoknadInSoknader} from "../../utils/utilityFunctions";
+import {soknadMockData} from "../../pages/parts/soknadsOversiktPanel/soknadsoversikt-mockdata";
+import {Soknad} from "../../types/additionalTypes";
 
 
 const minimal: FiksDigisosSokerJson = {
@@ -62,7 +64,19 @@ export const initialV2Model: V2Model = {
     },
     backendUrlTypeToUse: "local",
     filreferanselager: initialFilreferanselager,
-    thememode: 'light'
+
+    // V3
+    soknader: soknadMockData.map(s => s) as Soknad[],
+
+    // Visnings
+    thememode: 'light',
+    visNySakModal: false,
+    visEndreNavKontorModal: false,
+    visSystemSettingsModal: false,
+
+    // Aktive ting
+    aktivSoknad: '001',
+    aktivSakIndex: 0
 };
 
 const v2Reducer: Reducer<V2Model, V2Action> = (
@@ -105,8 +119,34 @@ const v2Reducer: Reducer<V2Model, V2Action> = (
                 filreferanselager: filreferanselagerUpdated
             }
         }
+
+        // Visnings ting
         case V2ActionTypeKeys.SWITCH_TO_LIGHT_MODE: {return {...state, thememode: 'light'}}
         case V2ActionTypeKeys.SWITCH_TO_DARK_MODE: {return {...state, thememode: 'dark'}}
+        case V2ActionTypeKeys.VIS_NY_SAK_MODAL: {return {...state, visNySakModal: true}}
+        case V2ActionTypeKeys.SKJUL_NY_SAK_MODAL: {return {...state, visNySakModal: false}}
+        case V2ActionTypeKeys.VIS_ENDRE_NAV_KONTOR_MODAL: {return {...state, visEndreNavKontorModal: true}}
+        case V2ActionTypeKeys.SKJUL_ENDRE_NAV_KONTOR_MODAL: {return {...state, visEndreNavKontorModal: false}}
+        case V2ActionTypeKeys.VIS_SYSTEM_SETTINGS_MODAL: {return {...state, visSystemSettingsModal: true}}
+        case V2ActionTypeKeys.SKJUL_SYSTEM_SETTINGS_MODAL: {return {...state, visSystemSettingsModal: false}}
+
+        // Aktive ting
+        case V2ActionTypeKeys.SET_AKTIV_SOKNAD: {return {...state, aktivSoknad: action.fiksDigisosId}}
+        case V2ActionTypeKeys.SET_AKTIV_SAK: {return {...state, aktivSakIndex: action.saksIndex}}
+
+
+        case V2ActionTypeKeys.SET_SOKNADS_STATUS: {
+            const {soknadsStatus} = action;
+            const soknad: Soknad | undefined = getSoknadByFiksDigisosId(state.soknader, state.aktivSoknad);
+            if (soknad){
+                const soknadUpdated: Soknad = {...soknad};
+                soknadUpdated.soknadsStatus = soknadsStatus;
+                const soknaderUpdated = updateSoknadInSoknader(soknadUpdated, state.soknader);
+                return {...state, soknader: soknaderUpdated}
+            }
+            return state;
+        }
+
         default:
             return state;
     }

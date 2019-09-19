@@ -11,8 +11,7 @@ import {soknadMockData} from "./soknadsoversikt-mockdata";
 import {Soknad} from "../../../types/additionalTypes";
 import {Typography} from "@material-ui/core";
 import Paper from "@material-ui/core/Paper";
-
-const soknaderMockData: Soknad[] = soknadMockData.map(s => s);
+import {setAktivSoknad} from "../../../redux/v2/v2Actions";
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -23,36 +22,52 @@ const useStyles = makeStyles(theme => ({
     },
     card: {
         padding: theme.spacing(3, 2)
+    },
+    wrapper: {
+        padding: theme.spacing(1, 1)
+    },
+    soknadliste: {
+        padding: theme.spacing(4, 0, 2, 0)
     }
 }));
 
-interface SoknadsOversiktPanelProps {
-    v2: V2Model
-    hendelserUpdated: Hendelse[]
+interface StoreProps {
+    soknader: Soknad[],
+    aktivSoknad: string
 }
 
-interface SoknadsOversiktPanelState {
+interface State {
     input: string;
 }
 
-const initialState: SoknadsOversiktPanelState = {
+const initialState: State = {
     input: ''
 };
 
 
-type Props = DispatchProps & SoknadsOversiktPanelProps;
-type State = SoknadsOversiktPanelState;
+type Props = DispatchProps & StoreProps;
 
 
 const SoknadsOversiktPanel: React.FC<Props> = (props: Props) => {
     const [state, setState] = useState(initialState);
+    const {soknader, aktivSoknad} = props;
 
     const classes = useStyles();
+
+    const getSoknadListItems = (soknader: Soknad[]): JSX.Element[] => {
+        return soknader.map((soknad: Soknad) => {
+            return (
+                <ListItem selected={ soknad.fiksDigisosId === aktivSoknad} button divider onClick={() => props.dispatch(setAktivSoknad(soknad.fiksDigisosId))}>
+                    <ListItemText primary={soknad.name} />
+                </ListItem>
+            )
+        });
+    };
 
 
 
     return (
-        <div>
+        <div className={classes.wrapper}>
             <Paper className={classes.card}>
                 <Typography variant="h5" component="h3">
                     Inboks
@@ -60,28 +75,19 @@ const SoknadsOversiktPanel: React.FC<Props> = (props: Props) => {
                 <Typography component="p">
                     Oversikt over søknader i systemet
                 </Typography>
+                <List className={classes.soknadliste} component="nav"  aria-label="mailbox folders">
+                    { getSoknadListItems(soknader) }
+                </List>
             </Paper>
-            <List component="nav"  aria-label="mailbox folders">
-                { getSoknadListItems(soknaderMockData) }
-            </List>
         </div>
     );
 };
 
-const getSoknadListItems = (soknader: Soknad[]): JSX.Element[] => {
-    return soknader.map((soknad: Soknad) => {
-        return (
-            <ListItem button divider>
-                <ListItemText primary={soknad.name} />
-            </ListItem>
 
-        )
-    });
-};
 
 const mapStateToProps = (state: AppState) => ({
-    v2: state.v2,
-    hendelserUpdated: JSON.parse(JSON.stringify(state.v2.fiksDigisosSokerJson.sak.soker.hendelser))
+    soknader: state.v2.soknader,
+    aktivSoknad: state.v2.aktivSoknad
 });
 
 const mapDispatchToProps = (dispatch: any) => {

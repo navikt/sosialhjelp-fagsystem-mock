@@ -1,9 +1,10 @@
 import {
     DokumentlagerExtended,
-    FiksDigisosSokerJson,
+    FiksDigisosSokerJson, SoknadsStatusType,
     SvarutExtended
 } from "../../types/hendelseTypes";
 import {PaletteType} from "@material-ui/core";
+import {Sak, Soknad} from "../../types/additionalTypes";
 
 export interface V2Model {
     fiksDigisosId: string;
@@ -14,6 +15,13 @@ export interface V2Model {
     backendUrlTypeToUse: string;
     filreferanselager: Filreferanselager;
     thememode: PaletteType;
+    soknader: Soknad[];
+    visNySakModal: boolean;
+    visEndreNavKontorModal: boolean;
+    visSystemSettingsModal: boolean;
+
+    aktivSoknad: string; // fiksDigisosId
+    aktivSakIndex: number | undefined; // sakReferanse
 }
 
 export interface BackendUrls {
@@ -39,6 +47,16 @@ export type V2Action
     | LeggTilNyFilILager
     | SwitchToDarkMode
     | SwitchToLightMode
+    | VisNySakModal
+    | SkjulNySakModal
+    | SetSoknadsStatus
+    | VisEndreNavKontorModal
+    | SkjulEndreNavKontorModal
+    | VisSystemSettingsModal
+    | SkjulSystemSettingsModal
+    | SetAktivSoknad
+    | SetAktivSak
+
 
 export enum V2ActionTypeKeys {
     SET_FIKS_DIGISOS_ID = "v2/SET_DIGISOS_FIKS_ID",
@@ -52,7 +70,19 @@ export enum V2ActionTypeKeys {
     LEGG_TIL_NY_FIL_I_LAGER = "v2/LEGG_TIL_NY_TIL_I_LAGER",
     SWITCH_TO_DARK_MODE = "v2/SWITCH_TO_DARK_MODE",
     SWITCH_TO_LIGHT_MODE = "v2/SWITCH_TO_LIGHT_MODE",
+    // Visnings ting
+    VIS_NY_SAK_MODAL = "v2/VIS_NY_SAK_MODAL",
+    SKJUL_NY_SAK_MODAL = "v2/SKJUL_NY_SAK_MODAL",
+    SET_SOKNADS_STATUS = "v2/SET_SOKNADS_STATUS",
+    VIS_ENDRE_NAV_KONTOR_MODAL = "v2/VIS_ENDRE_NAV_KONTOR_MODAL",
+    SKJUL_ENDRE_NAV_KONTOR_MODAL = "v2/SKJUL_ENDRE_NAV_KONTOR_MODAL",
+    VIS_SYSTEM_SETTINGS_MODAL = "v2/VIS_SYSTEM_SETTINGS_MODAL",
+    SKJUL_SYSTEM_SETTINGS_MODAL = "v2/SKJUL_SYSTEM_SETTINGS_MODAL",
+    // Aktive ting
+    SET_AKTIV_SAK = "v2/SET_AKTIV_SAK",
+    SET_AKTIV_SOKNAD = "v2/SET_AKTIV_SOKNAD",
 }
+
 
 export interface SetFiksDigisosId {
     type: V2ActionTypeKeys.SET_FIKS_DIGISOS_ID;
@@ -102,4 +132,45 @@ export interface SwitchToDarkMode {
 
 export interface SwitchToLightMode {
     type: V2ActionTypeKeys.SWITCH_TO_LIGHT_MODE;
+}
+
+// Vis ting
+export interface VisNySakModal {
+    type: V2ActionTypeKeys.VIS_NY_SAK_MODAL;
+}
+
+export interface SkjulNySakModal {
+    type: V2ActionTypeKeys.SKJUL_NY_SAK_MODAL;
+}
+
+export interface SetSoknadsStatus {
+    type: V2ActionTypeKeys.SET_SOKNADS_STATUS;
+    soknadsStatus: SoknadsStatusType;
+}
+
+export interface VisEndreNavKontorModal {
+    type: V2ActionTypeKeys.VIS_ENDRE_NAV_KONTOR_MODAL,
+}
+
+export interface SkjulEndreNavKontorModal {
+    type: V2ActionTypeKeys.SKJUL_ENDRE_NAV_KONTOR_MODAL,
+}
+
+export interface VisSystemSettingsModal {
+    type: V2ActionTypeKeys.VIS_SYSTEM_SETTINGS_MODAL,
+}
+
+export interface SkjulSystemSettingsModal {
+    type: V2ActionTypeKeys.SKJUL_SYSTEM_SETTINGS_MODAL,
+}
+
+// Aktive ting
+export interface SetAktivSoknad {
+    type: V2ActionTypeKeys.SET_AKTIV_SOKNAD;
+    fiksDigisosId: string
+}
+
+export interface SetAktivSak {
+    type: V2ActionTypeKeys.SET_AKTIV_SAK;
+    saksIndex: number
 }

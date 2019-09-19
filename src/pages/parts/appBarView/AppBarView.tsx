@@ -9,7 +9,7 @@ import {Brightness2, Brightness4, Build} from "@material-ui/icons";
 import {AppState, DispatchProps} from "../../../redux/reduxTypes";
 import {connect} from "react-redux";
 import {V2Model} from "../../../redux/v2/v2Types";
-import {switchToDarkMode, switchToLightMode} from "../../../redux/v2/v2Actions";
+import {switchToDarkMode, switchToLightMode, visSystemSettingsModal} from "../../../redux/v2/v2Actions";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -37,18 +37,20 @@ type Props = OwnProps & StoreProps & DispatchProps;
 
 const AppBarView: React.FC<Props> = (props: Props) => {
     const classes = useStyles();
+    const {dispatch} = props;
 
     return (
         <div className={classes.root}>
             <AppBar position="static">
                 <Toolbar>
-                    <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu">
-                        <Build/>
-                    </IconButton>
                     <Typography variant="h6" className={classes.title}>
                         Woldena™
                     </Typography>
-                    <Button color="inherit">Login</Button>
+                    <IconButton className={classes.menuButton} color="inherit" aria-label="menu"
+                                onClick={() => dispatch(visSystemSettingsModal())}
+                    >
+                        <Build/>
+                    </IconButton>
                     <IconButton
                         color="inherit"
                         onClick={() => {

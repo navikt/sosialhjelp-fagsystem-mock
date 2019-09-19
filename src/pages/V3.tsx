@@ -5,23 +5,33 @@ import {AppState, DispatchProps} from "../redux/reduxTypes";
 import {connect} from "react-redux";
 import SoknadsOversiktPanel from "./parts/soknadsOversiktPanel/SoknadsOversiktPanel";
 import BehandleSoknadPanel from "./parts/behandleSoknadPanel/BehandleSoknadPanel";
-import {createStyles, CssBaseline, MuiThemeProvider, PaletteType, Theme} from "@material-ui/core";
-import createMuiTheme, {ThemeOptions} from "@material-ui/core/styles/createMuiTheme";
+import {createStyles, CssBaseline, MuiThemeProvider, Theme} from "@material-ui/core";
+import createMuiTheme from "@material-ui/core/styles/createMuiTheme";
 import AppBarView from "./parts/appBarView/AppBarView";
-import Box from "@material-ui/core/Box";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import Grid from "@material-ui/core/Grid";
+import SystemSettingsModal from "./parts/systemSettings/SystemSettingsModal";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         root: {
             flexGrow: 1,
         },
+        maingrid: {
+            justifyContent: 'space-evenly'
+        },
         paper: {
             padding: theme.spacing(2),
             textAlign: 'center',
-            color: theme.palette.text.secondary,
+            color: theme.palette.text.secondary
         },
+        left: {
+            // border: "1px dotted red"
+        },
+        right: {
+            padding: theme.spacing(2, 2),
+            // border: "1px dotted red"
+        }
     }),
 );
 
@@ -54,15 +64,16 @@ const V3: React.FC<Props> = (props: Props) => {
             <CssBaseline />
             <AppBarView />
             <div className={classes.root}>
-                <Grid container={true} spacing={8}>
-                    <Grid item sm={3}>
+                <Grid container={true} spacing={8} className={classes.maingrid}>
+                    <Grid item sm={3} className={classes.left}>
                         <SoknadsOversiktPanel />
                     </Grid>
-                    <Grid item sm={9}>
+                    <Grid item sm={9} className={classes.right}>
                         <BehandleSoknadPanel />
                     </Grid>
                 </Grid>
             </div>
+            <SystemSettingsModal />
         </MuiThemeProvider>
     );
 };
