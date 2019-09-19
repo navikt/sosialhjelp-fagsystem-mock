@@ -52,7 +52,6 @@ const SoknadStatusView: React.FC<Props> = (props: Props) => {
             <Paper className={classes.paper}>
                 <FormControl component="fieldset" className={classes.formControl}>
                     <FormLabel component="legend">Status på sak</FormLabel>
-                    {/*FIXME: value*/}
                     <RadioGroup aria-label="soknadsStatus" name="soknadsStatus1" value={soknad.soknadsStatus}
                                 onChange={(event, value) => {
                                     if (

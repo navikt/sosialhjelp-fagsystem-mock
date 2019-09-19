@@ -4,17 +4,19 @@ import {connect} from "react-redux";
 import {createStyles, Modal, Theme} from "@material-ui/core";
 import {skjulNySakModal, visNySakModal} from "../../../redux/v2/v2Actions";
 import makeStyles from "@material-ui/core/styles/makeStyles";
-
-const modalStyle = {
-    top: `50%`,
-    left: `50%`,
-};
+import Fade from "@material-ui/core/Fade";
+import Backdrop from "@material-ui/core/Backdrop";
+import OpprettNySaksStatus from "../../../components/opprettNySaksStatus";
+import {SaksStatus} from "../../../types/hendelseTypes";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
+        modal: {
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+        },
         paper: {
-            position: 'absolute',
-            width: 400,
             backgroundColor: theme.palette.background.paper,
             border: '2px solid #000',
             boxShadow: theme.shadows[5],
@@ -50,14 +52,22 @@ const NySakModal: React.FC<Props> = (props: Props) => {
 
     return (
         <Modal
-            aria-labelledby="simple-modal-title"
-            aria-describedby="simple-modal-description"
+            aria-labelledby="transition-modal-title"
+            aria-describedby="transition-modal-description"
+            className={classes.modal}
+            closeAfterTransition
+            BackdropComponent={Backdrop}
+            BackdropProps={{
+                timeout: 500,
+            }}
             open={visNySakModal}
             onClose={() => props.dispatch(skjulNySakModal())}
         >
-            <div style={modalStyle} className={classes.paper}>
-                Opprett ny sak her.
-            </div>
+            <Fade in={visNySakModal}>
+                <div className={classes.paper}>
+                    <OpprettNySaksStatus onClick={(nySaksStatus: SaksStatus) => console.warn("Ny sak: " + JSON.stringify(nySaksStatus))} />
+                </div>
+            </Fade>
         </Modal>
     );
 };

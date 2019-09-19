@@ -9,6 +9,7 @@ import {Build, Edit} from "@material-ui/icons";
 import IconButton from "@material-ui/core/IconButton";
 import EndreNavKontorModal from "./EndreNavKontorModal";
 import {visEndreNavKontorModal} from "../../../redux/v2/v2Actions";
+import ReactJsonView from "../reactJsonView/ReactJsonView";
 
 const useStyle = makeStyles((theme) => {
     return {
@@ -59,6 +60,7 @@ const SoknadOversiktView: React.FC<Props> = (props: Props) => {
                 </IconButton>
             </Typography>
             <EndreNavKontorModal />
+            <ReactJsonView json={soknad.fiksDigisosSokerJson}/>
         </Paper>
     );
 };

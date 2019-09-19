@@ -1,4 +1,4 @@
-import {SaksStatusType, SoknadsStatusType} from "./hendelseTypes";
+import {FiksDigisosSokerJson, SaksStatusType, SoknadsStatusType} from "./hendelseTypes";
 
 export interface Soknad {
     fiksDigisosId: string,
@@ -6,7 +6,8 @@ export interface Soknad {
     name: string,
     navKontor: NavKontor,
     saker: Sak[],
-    soknadsStatus: SoknadsStatusType
+    soknadsStatus: SoknadsStatusType,
+    fiksDigisosSokerJson: FiksDigisosSokerJson
 }
 
 export interface NavKontor {
