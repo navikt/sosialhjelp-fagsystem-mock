@@ -7,7 +7,7 @@ import Hendelse, {
     SvarutExtended, Vedlegg,
     VedtakFattet
 } from "../types/hendelseTypes";
-import {Filreferanselager} from "../redux/v2/v2Types";
+import {Filreferanselager, V2Model} from "../redux/v2/v2Types";
 import {Soknad} from "../types/additionalTypes";
 
 const tildeltNavKontorSchema = require('../digisos/hendelse/tildeltNavKontor');
@@ -218,4 +218,17 @@ export const updateSoknadInSoknader = (soknad: Soknad, soknader: Soknad[]) => {
         }
     })
 };
+
+// export const asdf = (): V2Model => {
+//     const hendelserUpdated = soknadUpdated.fiksDigisosSokerJson.sak.soker.hendelser.map(h => h);
+//     hendelserUpdated.push(nySaksStatus);
+//     const soknaderUpdated = state.soknader.map((soknad: Soknad) => {
+//         if (soknad.fnr === soknadUpdated.fnr){
+//             return soknadUpdated
+//         }
+//         return soknad
+//     });
+//
+// };
+
 

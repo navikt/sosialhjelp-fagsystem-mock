@@ -1,6 +1,6 @@
 import {Reducer} from "redux";
 import {BackendUrls, Filreferanselager, V2Action, V2ActionTypeKeys, V2Model} from "./v2Types";
-import {FiksDigisosSokerJson, FilreferanseType, SoknadsStatus} from "../../types/hendelseTypes";
+import {FiksDigisosSokerJson, FilreferanseType, SaksStatus, SoknadsStatus} from "../../types/hendelseTypes";
 import {generateFilreferanseId, getSoknadByFiksDigisosId, updateSoknadInSoknader} from "../../utils/utilityFunctions";
 import {soknadMockData} from "../../pages/parts/soknadsOversiktPanel/soknadsoversikt-mockdata";
 import {Soknad} from "../../types/additionalTypes";
@@ -147,9 +147,46 @@ const v2Reducer: Reducer<V2Model, V2Action> = (
             return state;
         }
 
+        // Nye ting
+        case V2ActionTypeKeys.NY_SAKS_STATUS: {
+            const {saksStatus} = action;
+            const aktivSoknad: Soknad | undefined = getSoknadByFiksDigisosId(state.soknader, state.aktivSoknad);
+            if (aktivSoknad) {
+
+
+                const sakerUpdated: SaksStatus[] = aktivSoknad.saker.map(s => s);
+                sakerUpdated.push(saksStatus);
+
+
+                const soknadUpdated: Soknad = {...aktivSoknad};
+                soknadUpdated.saker = sakerUpdated;
+
+
+
+                const hendelserUpdated = aktivSoknad.fiksDigisosSokerJson.sak.soker.hendelser.map(h => h);
+                hendelserUpdated.push(saksStatus);
+                soknadUpdated.fiksDigisosSokerJson.sak.soker.hendelser = hendelserUpdated;
+
+                const soknaderUpdated = state.soknader.map((soknad: Soknad) => {
+                    if (soknad.fnr === soknadUpdated.fnr){
+                        return soknadUpdated
+                    }
+                    return soknad
+                });
+
+
+                return {...state, soknader: soknaderUpdated}
+            }
+            return {...state}
+        }
+
         default:
             return state;
     }
 };
+
+
+
+
 
 export default v2Reducer

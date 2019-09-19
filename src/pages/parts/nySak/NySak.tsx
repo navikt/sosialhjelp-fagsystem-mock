@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import {AppState, DispatchProps} from "../../../redux/reduxTypes";
 import {connect} from "react-redux";
 import {createStyles, Modal, Theme} from "@material-ui/core";
-import {skjulNySakModal, visNySakModal} from "../../../redux/v2/v2Actions";
+import {nySaksStatus, skjulNySakModal, visNySakModal} from "../../../redux/v2/v2Actions";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import Fade from "@material-ui/core/Fade";
 import Backdrop from "@material-ui/core/Backdrop";
@@ -47,7 +47,7 @@ type Props = DispatchProps & OwnProps & StoreProps;
 const NySakModal: React.FC<Props> = (props: Props) => {
     const [state, setState] = useState(initialState);
     const classes = useStyles();
-    const {visNySakModal} = props;
+    const {visNySakModal, dispatch} = props;
 
 
     return (
@@ -65,7 +65,9 @@ const NySakModal: React.FC<Props> = (props: Props) => {
         >
             <Fade in={visNySakModal}>
                 <div className={classes.paper}>
-                    <OpprettNySaksStatus onClick={(nySaksStatus: SaksStatus) => console.warn("Ny sak: " + JSON.stringify(nySaksStatus))} />
+                    <OpprettNySaksStatus onClick={(saksStatus: SaksStatus) => {
+                        dispatch(nySaksStatus(saksStatus))
+                    }}/>
                 </div>
             </Fade>
         </Modal>

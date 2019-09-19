@@ -1,20 +1,26 @@
-import {Sak, Soknad} from "../../../types/additionalTypes";
-import {SaksStatusType, SoknadsStatusType} from "../../../types/hendelseTypes";
+import {Soknad} from "../../../types/additionalTypes";
+import {HendelseType, SaksStatus, SaksStatusType, SoknadsStatusType} from "../../../types/hendelseTypes";
 import {minimal} from "../../../digisos/fiksDigisosSokerJsonMinimal";
 
 
-const saker: Sak[] = [
+const saker: SaksStatus[] = [
     {
+        type: HendelseType.SaksStatus,
+        hendelsestidspunkt: "2018-10-08T21:47:00.134Z",
         tittel: "Nødhjelp",
         referanse: "sak1",
         status: SaksStatusType.UNDER_BEHANDLING
     },
     {
+        type: HendelseType.SaksStatus,
+        hendelsestidspunkt: "2018-10-08T21:47:00.134Z",
         tittel: "Livsopphold",
         referanse: "sak2",
         status: SaksStatusType.UNDER_BEHANDLING
     },
     {
+        type: HendelseType.SaksStatus,
+        hendelsestidspunkt: "2018-10-08T21:47:00.134Z",
         tittel: "Penger til skateboard",
         referanse: "sak3",
         status: SaksStatusType.UNDER_BEHANDLING
