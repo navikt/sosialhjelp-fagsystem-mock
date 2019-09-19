@@ -8,6 +8,7 @@ import Hendelse, {
     VedtakFattet
 } from "../types/hendelseTypes";
 import {Filreferanselager} from "../redux/v2/v2Types";
+import {Soknad} from "../types/additionalTypes";
 
 const tildeltNavKontorSchema = require('../digisos/hendelse/tildeltNavKontor');
 const soknadsStatusSchema = require('../digisos/hendelse/soknadsStatus');
@@ -200,5 +201,21 @@ export const getFilreferanseExtended = (id: string, filreferanselager: Filrefera
         });
     }
     return filreferanse;
+};
+
+export const getSoknadByFiksDigisosId = (soknader: Soknad[], fiksDigisosId: string) => {
+    return soknader.find(s => {
+        return s.fiksDigisosId === fiksDigisosId
+    })
+};
+
+export const updateSoknadInSoknader = (soknad: Soknad, soknader: Soknad[]) => {
+    return soknader.map((s) => {
+        if (s.fiksDigisosId === soknad.fiksDigisosId){
+            return soknad;
+        } else {
+            return s;
+        }
+    })
 };
 

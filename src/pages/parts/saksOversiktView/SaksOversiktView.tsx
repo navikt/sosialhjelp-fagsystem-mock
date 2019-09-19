@@ -1,11 +1,9 @@
 import React, {useState} from 'react';
-import {V2Model} from "../../../redux/v2/v2Types";
-import Hendelse from "../../../types/hendelseTypes";
 import {AppState, DispatchProps} from "../../../redux/reduxTypes";
 import {connect} from "react-redux";
 import clsx from 'clsx';
 import SwipeableViews from 'react-swipeable-views';
-import { makeStyles, useTheme, Theme, createStyles } from '@material-ui/core/styles';
+import {makeStyles, useTheme, Theme, createStyles} from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
@@ -15,8 +13,12 @@ import Fab from '@material-ui/core/Fab';
 import AddIcon from '@material-ui/icons/Add';
 import EditIcon from '@material-ui/icons/Edit';
 import UpIcon from '@material-ui/icons/KeyboardArrowUp';
-import { green } from '@material-ui/core/colors';
+import {green} from '@material-ui/core/colors';
 import Box from '@material-ui/core/Box';
+import {Paper} from "@material-ui/core";
+import {Sak, Soknad} from "../../../types/additionalTypes";
+import {setAktivSak, visNySakModal} from "../../../redux/v2/v2Actions";
+import NySakModal from "../nySak/NySak";
 
 
 interface TabPanelProps {
@@ -27,7 +29,7 @@ interface TabPanelProps {
 }
 
 function TabPanel(props: TabPanelProps) {
-    const { children, value, index, ...other } = props;
+    const {children, value, index, ...other} = props;
 
     return (
         <Typography
@@ -54,14 +56,17 @@ const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         root: {
             backgroundColor: theme.palette.background.paper,
-            width: 500,
+            // width: 500,
             position: 'relative',
             minHeight: 200,
         },
         fab: {
-            position: 'absolute',
-            bottom: theme.spacing(2),
-            right: theme.spacing(2),
+            marginRight: theme.spacing(1),
+            // position: 'absolute',
+            // bottom: theme.spacing(5),
+            // top: theme.spacing(2),
+            // marginBottom: theme.spacing(4),
+            // right: theme.spacing(2),
         },
         fabGreen: {
             color: theme.palette.common.white,
@@ -70,46 +75,52 @@ const useStyles = makeStyles((theme: Theme) =>
                 backgroundColor: green[600],
             },
         },
+        paper: {
+            padding: theme.spacing(2, 2),
+            marginTop: theme.spacing(2)
+
+        },
+        addbox: {
+            margin: theme.spacing(2, 0, 2, 0),
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'flex-start',
+            alignItems: 'center'
+        }
     }),
 );
 
-const theme = {
-    background: 'linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)',
-};
 
-
-
-
-
-
-interface SaksOversiktViewProps {
-    v2: V2Model
-    hendelserUpdated: Hendelse[]
+interface StoreProps {
+    aktivSakIndex: number | undefined;
 }
 
-interface SaksOversiktViewState {
+interface OwnProps {
+    soknad: Soknad
+}
+
+interface State {
     input: string;
 }
 
-const initialState: SaksOversiktViewState = {
+const initialState: State = {
     input: ''
 };
 
-type Props = DispatchProps & SaksOversiktViewProps;
-type State = SaksOversiktViewState;
+type Props = DispatchProps & StoreProps & OwnProps;
 
 
 const SaksOversiktView: React.FC<Props> = (props: Props) => {
     const classes = useStyles();
     const theme = useTheme();
-    const [value, setValue] = React.useState(0);
+    const {soknad, dispatch, aktivSakIndex} = props;
 
     function handleChange(event: unknown, newValue: number) {
-        setValue(newValue);
+        dispatch(setAktivSak(newValue));
     }
 
     function handleChangeIndex(index: number) {
-        setValue(index);
+        dispatch(setAktivSak(index));
     }
 
     const transitionDuration = {
@@ -121,78 +132,110 @@ const SaksOversiktView: React.FC<Props> = (props: Props) => {
         {
             color: 'primary' as 'primary',
             className: classes.fab,
-            icon: <AddIcon />,
+            icon: <AddIcon/>,
             label: 'Add',
         },
         {
             color: 'secondary' as 'secondary',
             className: classes.fab,
-            icon: <EditIcon />,
+            icon: <EditIcon/>,
             label: 'Edit',
         },
         {
             color: 'inherit' as 'inherit',
             className: clsx(classes.fab, classes.fabGreen),
-            icon: <UpIcon />,
+            icon: <UpIcon/>,
             label: 'Expand',
         },
     ];
 
+    const fabAdd = () => {
+        const fab = {
+            color: 'primary' as 'primary',
+                className: classes.fab,
+            icon: <AddIcon/>,
+            label: 'Add',
+        };
+        return (
+            <Box className={classes.addbox}>
+                <Fab aria-label={fab.label} className={fab.className} color={fab.color} onClick={() => dispatch(visNySakModal())}>
+                    {fab.icon}
+                </Fab>
+                <Typography>
+                    Opprett sak
+                </Typography>
+            </Box>
+        )
+    };
+
+    const insertSaksOversikt = () => {
+
+        if (soknad.saker.length > 0){
+            const listTabs = soknad.saker.map((sak: Sak) => {
+                return (
+                    <Tab label={sak.tittel} />
+                )
+            });
+            const listTabPanels = soknad.saker.map((sak: Sak, idx) => {
+                return(
+                    <TabPanel value={aktivSakIndex} index={idx} dir={theme.direction}>
+                        <Typography>Tittel: {sak.tittel}. Status: {sak.status}.</Typography>
+                        Aktiv sak index: {idx}
+                    </TabPanel>
+                )
+            });
+            return (
+                <>
+                    <AppBar position="static" color="default">
+                        <Tabs
+                            value={aktivSakIndex}
+                            onChange={handleChange}
+                            indicatorColor="primary"
+                            textColor="primary"
+                            variant="fullWidth"
+                            aria-label="action tabs example"
+                        >
+                            { listTabs }
+                        </Tabs>
+                    </AppBar>
+                    <SwipeableViews
+                        axis={theme.direction === 'rtl' ? 'x-reverse' : 'x'}
+                        index={aktivSakIndex}
+                        onChangeIndex={handleChangeIndex}
+                    >
+                        { listTabPanels}
+                    </SwipeableViews>
+                </>
+            );
+        } else {
+            return (
+                <>
+                    <Typography variant={"subtitle1"}>
+                        Ingen saker er opprettet for denne søknaden ennå. Opprett en eller flere saker for å kunne gå videre med å behandle søknaden.
+                    </Typography>
+                </>
+            )
+        }
+    };
 
 
     return (
         <div className={classes.root}>
-                <AppBar position="static" color="default">
-                    <Tabs
-                        value={value}
-                        onChange={handleChange}
-                        indicatorColor="primary"
-                        textColor="primary"
-                        variant="fullWidth"
-                        aria-label="action tabs example"
-                    >
-                        <Tab label="Item One" {...a11yProps(0)} />
-                        <Tab label="Item Two" {...a11yProps(1)} />
-                        <Tab label="Item Three" {...a11yProps(2)} />
-                    </Tabs>
-                </AppBar>
-                <SwipeableViews
-                    axis={theme.direction === 'rtl' ? 'x-reverse' : 'x'}
-                    index={value}
-                    onChangeIndex={handleChangeIndex}
-                >
-                    <TabPanel value={value} index={0} dir={theme.direction}>
-                        Item One
-                    </TabPanel>
-                    <TabPanel value={value} index={1} dir={theme.direction}>
-                        Item Two
-                    </TabPanel>
-                    <TabPanel value={value} index={2} dir={theme.direction}>
-                        Item Three
-                    </TabPanel>
-                </SwipeableViews>
-                {fabs.map((fab, index) => (
-                    <Zoom
-                        key={fab.color}
-                        in={value === index}
-                        timeout={transitionDuration}
-                        style={{
-                            transitionDelay: `${value === index ? transitionDuration.exit : 0}ms`,
-                        }}
-                        unmountOnExit
-                    >
-                        <Fab aria-label={fab.label} className={fab.className} color={fab.color}>
-                            {fab.icon}
-                        </Fab>
-                    </Zoom>
-                ))}
+            <Paper className={classes.paper}>
+                <Typography variant={"h5"}>
+                    Saksoversikt:
+                </Typography>
+                { fabAdd() }
+
+                { insertSaksOversikt() }
+                <NySakModal />
+            </Paper>
         </div>
     );
 };
 
 const mapStateToProps = (state: AppState) => ({
-    v2: state.v2,
-    hendelserUpdated: JSON.parse(JSON.stringify(state.v2.fiksDigisosSokerJson.sak.soker.hendelser))
+    aktivSakIndex: state.v2.aktivSakIndex
 });
 
 const mapDispatchToProps = (dispatch: any) => {

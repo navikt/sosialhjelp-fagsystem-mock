@@ -1,25 +1,23 @@
 import React, {useState} from 'react';
-import {V2Model} from "../../../redux/v2/v2Types";
-import Hendelse from "../../../types/hendelseTypes";
 import {AppState, DispatchProps} from "../../../redux/reduxTypes";
 import {connect} from "react-redux";
 
 
-interface ExampleProps {
-    v2: V2Model
-    hendelserUpdated: Hendelse[]
+interface OwnProps {
 }
 
-interface ExampleState {
+interface StoreProps {
+}
+
+interface State {
     input: string;
 }
 
-const initialState: ExampleState = {
+const initialState: State = {
     input: ''
 };
 
-type Props = DispatchProps & ExampleProps;
-type State = ExampleState;
+type Props = DispatchProps & OwnProps & StoreProps;
 
 
 const ExampleView: React.FC<Props> = (props: Props) => {
