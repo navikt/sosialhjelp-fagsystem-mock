@@ -1,30 +1,19 @@
 import React, {useState} from 'react';
-import {V2Model} from "../../../redux/v2/v2Types";
-import Hendelse from "../../../types/hendelseTypes";
 import {AppState, DispatchProps} from "../../../redux/reduxTypes";
 import {connect} from "react-redux";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import ListItemText from "@material-ui/core/ListItemText";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
-import {soknadMockData} from "./soknadsoversikt-mockdata";
 import {Soknad} from "../../../types/additionalTypes";
 import {Typography} from "@material-ui/core";
 import Paper from "@material-ui/core/Paper";
 import {setAktivSoknad} from "../../../redux/v2/v2Actions";
 
 const useStyles = makeStyles(theme => ({
-    root: {
-        width: '100%',
-        maxWidth: 360,
-        // color: 'white',
-        // backgroundColor: 'white',
-    },
-    card: {
-        padding: theme.spacing(3, 2)
-    },
-    wrapper: {
-        padding: theme.spacing(1, 1)
+    paper: {
+        margin: theme.spacing(2),
+        padding: theme.spacing(3, 2),
     },
     soknadliste: {
         padding: theme.spacing(4, 0, 2, 0)
@@ -67,19 +56,17 @@ const SoknadsOversiktPanel: React.FC<Props> = (props: Props) => {
 
 
     return (
-        <div className={classes.wrapper}>
-            <Paper className={classes.card}>
-                <Typography variant="h5" component="h3">
-                    Inboks
-                </Typography>
-                <Typography component="p">
-                    Oversikt over søknader i systemet
-                </Typography>
-                <List className={classes.soknadliste} component="nav"  aria-label="mailbox folders">
-                    { getSoknadListItems(soknader) }
-                </List>
-            </Paper>
-        </div>
+        <Paper className={classes.paper}>
+            <Typography variant="h5" component="h3">
+                Inboks
+            </Typography>
+            <Typography component="p">
+                Oversikt over søknader i systemet
+            </Typography>
+            <List className={classes.soknadliste} component="nav"  aria-label="mailbox folders">
+                { getSoknadListItems(soknader) }
+            </List>
+        </Paper>
     );
 };
 

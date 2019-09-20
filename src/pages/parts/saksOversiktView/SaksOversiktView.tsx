@@ -19,6 +19,7 @@ import {Soknad} from "../../../types/additionalTypes";
 import {setAktivSak, visNySakModal} from "../../../redux/v2/v2Actions";
 import NySakModal from "../nySak/NySak";
 import {SaksStatus} from "../../../types/hendelseTypes";
+import SaksTabView from "./SaksTabView";
 
 
 interface TabPanelProps {
@@ -43,13 +44,6 @@ function TabPanel(props: TabPanelProps) {
             <Box p={3}>{children}</Box>
         </Typography>
     );
-}
-
-function a11yProps(index: any) {
-    return {
-        id: `action-tab-${index}`,
-        'aria-controls': `action-tabpanel-${index}`,
-    };
 }
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -179,8 +173,7 @@ const SaksOversiktView: React.FC<Props> = (props: Props) => {
             const listTabPanels = soknad.saker.map((sak: SaksStatus, idx) => {
                 return(
                     <TabPanel value={aktivSakIndex} index={idx} dir={theme.direction}>
-                        <Typography>Tittel: {sak.tittel}. Status: {sak.status}.</Typography>
-                        Aktiv sak index: {idx}
+                        <SaksTabView idx={idx} sak={sak} />
                     </TabPanel>
                 )
             });
