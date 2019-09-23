@@ -5,6 +5,7 @@ import {
     DokumentlagerExtended,
     FiksDigisosSokerJson,
     SaksStatus,
+    SaksStatusType,
     SoknadsStatusType,
     SvarutExtended
 } from "../../types/hendelseTypes";
@@ -168,5 +169,13 @@ export const nySaksStatus = (saksStatus: SaksStatus): V2Action => {
     return {
         type: V2ActionTypeKeys.NY_SAKS_STATUS,
         saksStatus: saksStatus
+    }
+};
+
+export const settNySaksStatus = (referanse: string, status: SaksStatusType): V2Action => {
+    return {
+        type: V2ActionTypeKeys.SETT_NY_SAKS_STATUS,
+        referanse,
+        status
     }
 };

@@ -71,7 +71,6 @@ class OpprettNySaksStatus extends React.Component<Props, State> {
         const validation: saksStatusValidation = validateSaksStatus(this.state.nySaksStatus, this.props.hendelser);
 
 
-        console.warn("Opprett !");
         if (validation.isValid &&
             nySaksStatus.status
         ) {

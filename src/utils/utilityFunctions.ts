@@ -3,7 +3,7 @@ import Hendelse, {
     DokumentlagerExtended,
     FiksDigisosSokerJson, FilreferanseType,
     HendelseType,
-    SaksStatus, Svarut,
+    SaksStatus, SaksStatusType, Svarut,
     SvarutExtended, Vedlegg,
     VedtakFattet
 } from "../types/hendelseTypes";
@@ -206,6 +206,12 @@ export const getFilreferanseExtended = (id: string, filreferanselager: Filrefera
 export const getSoknadByFiksDigisosId = (soknader: Soknad[], fiksDigisosId: string) => {
     return soknader.find(s => {
         return s.fiksDigisosId === fiksDigisosId
+    })
+};
+
+export const getSaksStatusByReferanse = (soknad: Soknad, referanse: string) => {
+    return soknad.saker.find((sak: SaksStatus) => {
+        return sak.referanse === referanse;
     })
 };
 

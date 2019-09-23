@@ -1,7 +1,12 @@
 import {Reducer} from "redux";
 import {BackendUrls, Filreferanselager, V2Action, V2ActionTypeKeys, V2Model} from "./v2Types";
 import {FiksDigisosSokerJson, FilreferanseType, SaksStatus, SoknadsStatus} from "../../types/hendelseTypes";
-import {generateFilreferanseId, getSoknadByFiksDigisosId, updateSoknadInSoknader} from "../../utils/utilityFunctions";
+import {
+    generateFilreferanseId,
+    getSaksStatusByReferanse,
+    getSoknadByFiksDigisosId,
+    updateSoknadInSoknader
+} from "../../utils/utilityFunctions";
 import {soknadMockData} from "../../pages/parts/soknadsOversiktPanel/soknadsoversikt-mockdata";
 import {Soknad} from "../../types/additionalTypes";
 
@@ -180,6 +185,40 @@ const v2Reducer: Reducer<V2Model, V2Action> = (
             return {...state}
         }
 
+        // Oppdatere ting
+        case V2ActionTypeKeys.SETT_NY_SAKS_STATUS: {
+            const {referanse, status} = action;
+            const aktivSoknad: Soknad | undefined = getSoknadByFiksDigisosId(state.soknader, state.aktivSoknad);
+            if (aktivSoknad) {
+                const aktivSak: SaksStatus | undefined = getSaksStatusByReferanse(aktivSoknad, referanse);
+                if (aktivSak) {
+                    const aktivSakUpdated = {...aktivSak};
+                    aktivSakUpdated.status = status;
+
+                    const sakerUpdated = aktivSoknad.saker.map((sak: SaksStatus) => {
+                        if (sak.referanse === referanse){
+                            return aktivSakUpdated;
+                        }
+                        return sak;
+                    });
+
+                    const hendelserUpdated = aktivSoknad.fiksDigisosSokerJson.sak.soker.hendelser.map(h => h);
+                    hendelserUpdated.push(aktivSakUpdated);
+
+                    const soknadUpdated: Soknad = {...aktivSoknad, saker: sakerUpdated};
+                    soknadUpdated.fiksDigisosSokerJson.sak.soker.hendelser = hendelserUpdated;
+
+                    const soknaderUpdated = state.soknader.map((soknad: Soknad) => {
+                        if(soknad.fiksDigisosId === aktivSoknad.fiksDigisosId){
+                            return soknadUpdated;
+                        }
+                        return soknad;
+                    });
+                    return {...state, soknader: soknaderUpdated};
+                }
+            }
+            return state;
+        }
         default:
             return state;
     }
