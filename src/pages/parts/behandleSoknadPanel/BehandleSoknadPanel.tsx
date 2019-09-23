@@ -54,7 +54,6 @@ const BehandleSoknadPanel: React.FC<Props> = (props: Props) => {
             <div className={classes.root}>
                 <SoknadOversiktView soknad={soknad}/>
                 <SoknadStatusView soknad={soknad}/>
-
                 <SaksOversiktView soknad={soknad}/>
             </div>
         );

@@ -25,10 +25,14 @@ const useStyles = makeStyles((theme: Theme) =>
     }),
 );
 
+export interface SelectValue {
+    value: string;
+    label: string;
+}
 
 interface OwnProps {
     label: string;
-    values: string[];
+    values: SelectValue[];
     selected: string;
     onSelect: (value: string) => void;
 }
@@ -62,7 +66,7 @@ const SimpleSelect: React.FC<Props> = (props: Props) => {
 
     const menuItems = values.map((value) => {
        return (
-           <MenuItem value={value}>{value}</MenuItem>
+           <MenuItem value={value.value}>{value.label}</MenuItem>
        )
     });
 

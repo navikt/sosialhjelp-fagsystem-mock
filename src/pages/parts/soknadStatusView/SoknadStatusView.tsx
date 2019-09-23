@@ -13,7 +13,7 @@ import {setSoknadsStatus, visNySakModal} from "../../../redux/v2/v2Actions";
 import {Soknad} from "../../../types/additionalTypes";
 import Typography from "@material-ui/core/Typography";
 import IconButton from "@material-ui/core/IconButton";
-import AddIcon from "@material-ui/core/SvgIcon/SvgIcon";
+import AddIcon from '@material-ui/icons/Add';
 import Box from "@material-ui/core/Box";
 import Fab from "@material-ui/core/Fab";
 
@@ -56,7 +56,6 @@ const useStyles = makeStyles((theme) => {
         },
         fab: {
             marginRight: theme.spacing(1),
-            color: 'inherit'
         },
         horizontalWrapper: {
             display: 'flex',
@@ -141,9 +140,9 @@ const SoknadStatusView: React.FC<Props> = (props: Props) => {
                 <div className={classes.horizontalWrapper}>
                     <Box className={classes.horizontalBox}>
                         <Typography variant={"h5"}>Dokumentasjon som er etterspurt</Typography>
-                        <IconButton>
+                        {/*<IconButton>*/}
                             { fabAdd() }
-                        </IconButton>
+                        {/*</IconButton>*/}
                     </Box>
                     <Box className={classes.horizontalBox}>
                         <Typography variant={'h5'}>Foreløpig svar</Typography>

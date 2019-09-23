@@ -146,7 +146,7 @@ const SaksOversiktView: React.FC<Props> = (props: Props) => {
     const fabAdd = () => {
         const fab = {
             color: 'primary' as 'primary',
-                className: classes.fab,
+            className: classes.fab,
             icon: <AddIcon/>,
             label: 'Add',
         };

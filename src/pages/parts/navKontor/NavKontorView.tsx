@@ -16,6 +16,15 @@ const useStyle = makeStyles((theme) => {
         paper: {
             padding: theme.spacing(2, 2),
             marginTop: theme.spacing(2),
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'space-between'
+        },
+        col: {
+
+        },
+        colJson: {
+            marginTop: theme.spacing(2)
         }
     }
 });
@@ -47,20 +56,24 @@ const SoknadOversiktView: React.FC<Props> = (props: Props) => {
 
     return (
         <Paper className={classes.paper}>
-            <Typography variant={"h5"} component={"h3"}>
-                Oversikt over søknaden
-            </Typography>
-            <Typography variant={"subtitle1"}>
-                Navn på søker: {soknad.name}
-            </Typography>
-            <Typography variant={"subtitle1"}>
-                Behandles av: {soknad.navKontor.name}
-                <IconButton color="inherit" aria-label="menu" onClick={() => dispatch(visEndreNavKontorModal())}>
-                    <Edit />
-                </IconButton>
-            </Typography>
-            <EndreNavKontorModal />
-            <ReactJsonView json={soknad.fiksDigisosSokerJson}/>
+            <div className={classes.col}>
+                <Typography variant={"h5"} component={"h3"}>
+                    Oversikt over søknaden
+                </Typography>
+                <Typography variant={"subtitle1"}>
+                    Navn på søker: {soknad.name}
+                </Typography>
+                <Typography variant={"subtitle1"}>
+                    Behandles av: {soknad.navKontor.name}
+                    <IconButton color="inherit" aria-label="menu" onClick={() => dispatch(visEndreNavKontorModal())}>
+                        <Edit />
+                    </IconButton>
+                </Typography>
+                <EndreNavKontorModal />
+            </div>
+            <div className={classes.colJson}>
+                <ReactJsonView json={soknad.fiksDigisosSokerJson}/>
+            </div>
         </Paper>
     );
 };

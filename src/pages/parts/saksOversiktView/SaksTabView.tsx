@@ -11,6 +11,7 @@ import Box from "@material-ui/core/Box";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import {createStyles} from "@material-ui/core";
 import SimpleSelect from "../simpleSelect/SimpleSelect";
+import {settNySaksStatus} from "../../../redux/v2/v2Actions";
 
 const useStyles = makeStyles((theme) => {
     return createStyles({
@@ -95,33 +96,25 @@ const SaksTabView: React.FC<Props> = (props: Props) => {
 
             <Typography>Status på sak:</Typography>
             <Box className={classes.box}>
-                <FormControl component="fieldset" className={classes.formControl}>
-                    <Typography variant={'h5'}>Status på Sak</Typography>
-                    <RadioGroup aria-label="saksStatus" name="saksStatus1" value={sak.status}
-                                onChange={(event, value) => {
-                                    if (
-                                        value === SaksStatusType.UNDER_BEHANDLING ||
-                                        value === SaksStatusType.BEHANDLES_IKKE   ||
-                                        value === SaksStatusType.FEILREGISTRERT   ||
-                                        value === SaksStatusType.IKKE_INNSYN
-                                    ){
-                                        // FIXME: Implementer
-                                        // dispatch(setSaksStatus(value as SoknadsStatusType));
-                                        console.warn("Setter status på sak til: " + value)
-                                    }
-                                }}
-                    >
-                        <FormControlLabel value={SaksStatusType.UNDER_BEHANDLING} control={<Radio />} label={"Under behandling"} />
-                        <FormControlLabel value={SaksStatusType.BEHANDLES_IKKE} control={<Radio />} label={"Behandles ikke"} />
-                        <FormControlLabel value={SaksStatusType.FEILREGISTRERT} control={<Radio />} label={"Feilregistrert"} />
-                        <FormControlLabel value={SaksStatusType.IKKE_INNSYN} control={<Radio />} label={"Ikke innsyn"} />
-                    </RadioGroup>
-                </FormControl>
+
                 <SimpleSelect
-                    onSelect={(value) => console.warn("Selected value: " + value)}
-                    label={'Status'}
-                    selected={SaksStatusType.UNDER_BEHANDLING}
-                    values={[SaksStatusType.UNDER_BEHANDLING, SaksStatusType.IKKE_INNSYN, SaksStatusType.FEILREGISTRERT, SaksStatusType.BEHANDLES_IKKE]}
+                    onSelect={(value) => {
+                        if (value === SaksStatusType.UNDER_BEHANDLING
+                            || value === SaksStatusType.BEHANDLES_IKKE
+                            || value === SaksStatusType.FEILREGISTRERT
+                            || value === SaksStatusType.IKKE_INNSYN
+                        ) {
+                            dispatch(settNySaksStatus(sak.referanse, value));
+                        }
+                    }}
+                    label={'Saksstatus'}
+                    selected={sak.status}
+                    values={[
+                        {value: SaksStatusType.UNDER_BEHANDLING, label: "Under behandling"},
+                        {value: SaksStatusType.IKKE_INNSYN, label: "Ikke innsyn"},
+                        {value: SaksStatusType.FEILREGISTRERT, label: "Feilregistrert"},
+                        {value: SaksStatusType.BEHANDLES_IKKE, label: "Behandles ikke"}
+                    ]}
                 />
             </Box>
 
