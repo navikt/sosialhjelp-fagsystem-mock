@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {V2Model} from "../redux/v2/v2Types";
 import Hendelse from "../types/hendelseTypes";
 import {AppState, DispatchProps} from "../redux/reduxTypes";

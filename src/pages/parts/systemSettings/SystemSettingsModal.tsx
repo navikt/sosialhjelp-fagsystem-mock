@@ -1,12 +1,10 @@
 import React, {useState} from 'react';
 import {AppState, DispatchProps} from "../../../redux/reduxTypes";
 import {connect} from "react-redux";
-import {createStyles, Modal, Paper, Theme} from "@material-ui/core";
+import {createStyles, Modal, Theme} from "@material-ui/core";
 import {
     skjulSystemSettingsModal,
-    skjulNySakModal,
-    visNySakModal,
-    editBackendUrlForType, setBackendUrlTypeToUse, setSoknadsStatus
+    setBackendUrlTypeToUse
 } from "../../../redux/v2/v2Actions";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import Backdrop from "@material-ui/core/Backdrop/Backdrop";
@@ -70,7 +68,7 @@ const SystemSettingsModal: React.FC<Props> = (props: Props) => {
         return (
             <FormControlLabel
                 value={url}
-                control={<Radio />} label={backendUrlType}
+                control={<Radio/>} label={backendUrlType}
             >
                 <p>{backendUrlType}</p>
                 <p>{url}</p>

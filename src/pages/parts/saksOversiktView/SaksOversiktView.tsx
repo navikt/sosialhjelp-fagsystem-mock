@@ -1,7 +1,6 @@
 import React from 'react';
 import {AppState, DispatchProps} from "../../../redux/reduxTypes";
 import {connect} from "react-redux";
-import clsx from 'clsx';
 import SwipeableViews from 'react-swipeable-views';
 import {makeStyles, useTheme, Theme, createStyles} from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
@@ -10,12 +9,9 @@ import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
 import Fab from '@material-ui/core/Fab';
 import AddIcon from '@material-ui/icons/Add';
-import EditIcon from '@material-ui/icons/Edit';
-import UpIcon from '@material-ui/icons/KeyboardArrowUp';
 import {green} from '@material-ui/core/colors';
 import Box from '@material-ui/core/Box';
 import {Paper} from "@material-ui/core";
-import {Soknad} from "../../../types/additionalTypes";
 import {setAktivSak, visNySakModal} from "../../../redux/v2/v2Actions";
 import NySakModal from "../nySak/NySak";
 import {SaksStatus} from "../../../types/hendelseTypes";
@@ -94,14 +90,6 @@ interface OwnProps {
     soknad: FsSoknad
 }
 
-interface State {
-    input: string;
-}
-
-const initialState: State = {
-    input: ''
-};
-
 type Props = DispatchProps & StoreProps & OwnProps;
 
 
@@ -118,31 +106,31 @@ const SaksOversiktView: React.FC<Props> = (props: Props) => {
         dispatch(setAktivSak(index));
     }
 
-    const transitionDuration = {
-        enter: theme.transitions.duration.enteringScreen,
-        exit: theme.transitions.duration.leavingScreen,
-    };
-
-    const fabs = [
-        {
-            color: 'primary' as 'primary',
-            className: classes.fab,
-            icon: <AddIcon/>,
-            label: 'Add',
-        },
-        {
-            color: 'secondary' as 'secondary',
-            className: classes.fab,
-            icon: <EditIcon/>,
-            label: 'Edit',
-        },
-        {
-            color: 'inherit' as 'inherit',
-            className: clsx(classes.fab, classes.fabGreen),
-            icon: <UpIcon/>,
-            label: 'Expand',
-        },
-    ];
+    // const transitionDuration = {
+    //     enter: theme.transitions.duration.enteringScreen,
+    //     exit: theme.transitions.duration.leavingScreen,
+    // };
+    //
+    // const fabs = [
+    //     {
+    //         color: 'primary' as 'primary',
+    //         className: classes.fab,
+    //         icon: <AddIcon/>,
+    //         label: 'Add',
+    //     },
+    //     {
+    //         color: 'secondary' as 'secondary',
+    //         className: classes.fab,
+    //         icon: <EditIcon/>,
+    //         label: 'Edit',
+    //     },
+    //     {
+    //         color: 'inherit' as 'inherit',
+    //         className: clsx(classes.fab, classes.fabGreen),
+    //         icon: <UpIcon/>,
+    //         label: 'Expand',
+    //     },
+    // ];
 
     const fabAdd = () => {
         const fab = {

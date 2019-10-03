@@ -1,7 +1,6 @@
-import {Soknad} from "../../types/additionalTypes";
 import {
     DokumentasjonEtterspurt, Dokumentasjonkrav,
-    FiksDigisosSokerJson, ForelopigSvar, Rammevedtak, SaksStatus,
+    ForelopigSvar, Rammevedtak, SaksStatus,
     SoknadsStatus,
     TildeltNavKontor, Utbetaling, VedtakFattet, Vilkar
 } from "../../types/hendelseTypes";

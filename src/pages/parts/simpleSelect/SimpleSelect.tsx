@@ -1,4 +1,4 @@
-import React, {useRef, useState} from 'react';
+import React from 'react';
 import {AppState, DispatchProps} from "../../../redux/reduxTypes";
 import {connect} from "react-redux";
 import {FormControl, Theme} from "@material-ui/core";
@@ -39,16 +39,6 @@ interface OwnProps {
 
 interface StoreProps {
 }
-
-interface State {
-    age: string;
-    name: string;
-}
-
-const initialState: State = {
-    age: '',
-    name: 'hai',
-};
 
 type Props = DispatchProps & OwnProps & StoreProps;
 

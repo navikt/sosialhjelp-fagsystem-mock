@@ -12,7 +12,6 @@ import {
     SoknadsStatus,
     TildeltNavKontor, Utbetaling, VedtakFattet, Vilkar
 } from "../../types/hendelseTypes";
-import {NotificationLevel} from "../../pages/V2";
 import {AnyAction, Dispatch} from "redux";
 import {fetchPost} from "../../utils/restUtils";
 import {setFiksDigisosSokerJson, turnOffLoader, turnOnLoader} from "../v2/v2Actions";

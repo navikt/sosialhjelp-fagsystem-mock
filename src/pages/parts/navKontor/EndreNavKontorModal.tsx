@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import {AppState, DispatchProps} from "../../../redux/reduxTypes";
 import {connect} from "react-redux";
 import {createStyles, Modal, Theme} from "@material-ui/core";
-import {skjulEndreNavKontorModal, skjulNySakModal, visNySakModal} from "../../../redux/v2/v2Actions";
+import {skjulEndreNavKontorModal} from "../../../redux/v2/v2Actions";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 
 const modalStyle = {
