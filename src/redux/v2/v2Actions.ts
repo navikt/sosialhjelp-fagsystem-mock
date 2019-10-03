@@ -172,10 +172,11 @@ export const nySaksStatus = (saksStatus: SaksStatus): V2Action => {
     }
 };
 
-export const settNySaksStatus = (referanse: string, status: SaksStatusType): V2Action => {
+export const settNySaksStatus = (soknadFiksDigisosId: string, saksStatusReferanse: string, nySaksStatus: SaksStatusType): V2Action => {
     return {
         type: V2ActionTypeKeys.SETT_NY_SAKS_STATUS,
-        referanse,
-        status
+        soknadFiksDigisosId,
+        saksStatusReferanse,
+        nySaksStatus
     }
 };

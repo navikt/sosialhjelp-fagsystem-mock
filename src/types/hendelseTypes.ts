@@ -24,18 +24,19 @@ export type Hendelse
     | Dokumentasjonkrav
 
 export enum HendelseType {
-    SoknadsStatus = "SoknadsStatus",
-    VedtakFattet = "VedtakFattet",
-    TildeltNavKontor = "TildeltNavKontor",
-    DokumentasjonEtterspurt = "DokumentasjonEtterspurt",
-    ForelopigSvar = "ForelopigSvar",
-    SaksStatus = "SaksStatus",
-    Utbetaling = "Utbetaling",
-    Vilkar = "Vilkar",
-    Rammevedtak = "Rammevedtak",
-    Dokumentasjonkrav = "Dokumentasjonkrav"
+    SoknadsStatus = "soknadsStatus",
+    VedtakFattet = "vedtakFattet",
+    TildeltNavKontor = "tildeltNavKontor",
+    DokumentasjonEtterspurt = "dokumentasjonEtterspurt",
+    ForelopigSvar = "forelopigSvar",
+    SaksStatus = "saksStatus",
+    Utbetaling = "utbetaling",
+    Vilkar = "vilkar",
+    Rammevedtak = "rammevedtak",
+    Dokumentasjonkrav = "dokumentasjonkrav"
 }
 
+// ----- Disse fire er på søknadsnivå
 export interface SoknadsStatus {
     type: HendelseType.SoknadsStatus;
     hendelsestidspunkt: string;
@@ -48,8 +49,6 @@ export interface TildeltNavKontor {
     navKontor: string;
 }
 
-
-// ----- Disse to er på søknadsnivå
 export interface DokumentasjonEtterspurt {
     type: HendelseType.DokumentasjonEtterspurt;
     hendelsestidspunkt: string;
@@ -96,16 +95,6 @@ export interface Utbetaling {
     kontonummer: string; //"Mottakers kontonummer, bank i Norge, blir bare vist dersom mottaker er brukeren", "^[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]$"
     utbetalingsmetode: string; // "Utbetalingsmetode, eks kontooverføring, kontantkort"
 }
-
-// utbetalingsref
-export interface Vilkar {
-    type: HendelseType.Vilkar;
-    hendelsestidspunkt: string;
-    utbetalingsreferanse: string[];
-    beskrivelse: string;
-    status: VilkarStatus;
-}
-
 //saksreferanse
 export interface VedtakFattet {
     type: HendelseType.VedtakFattet;
@@ -115,7 +104,6 @@ export interface VedtakFattet {
     vedtaksfil: { referanse: Svarut | Dokumentlager};
     vedlegg: Vedlegg[]
 }
-
 // saksreferanse
 export interface Rammevedtak {
     type: HendelseType.Rammevedtak;
@@ -127,6 +115,15 @@ export interface Rammevedtak {
     fom: string;
     tom: string;
 }
+// utbetalingsref
+export interface Vilkar {
+    type: HendelseType.Vilkar;
+    hendelsestidspunkt: string;
+    utbetalingsreferanse: string[];
+    beskrivelse: string;
+    status: VilkarStatus;
+}
+// utbetalingsref
 export interface Dokumentasjonkrav {
     type: HendelseType.Dokumentasjonkrav;
     hendelsestidspunkt: string;
@@ -135,6 +132,8 @@ export interface Dokumentasjonkrav {
     beskrivelse: string, // beskrivelse av hva som må gjøres
     status: VilkarStatus
 }
+
+
 // --------
 
 export enum VilkarStatus {

@@ -1,15 +1,13 @@
 import React, {useState} from 'react';
 import {AppState, DispatchProps} from "../../../redux/reduxTypes";
 import {connect} from "react-redux";
-import {Soknad} from "../../../types/additionalTypes";
-import Paper from "@material-ui/core/Paper";
 import Typography from "@material-ui/core/Typography";
 import makeStyles from "@material-ui/core/styles/makeStyles";
-import {Build, Edit} from "@material-ui/icons";
+import {Edit} from "@material-ui/icons";
 import IconButton from "@material-ui/core/IconButton";
 import EndreNavKontorModal from "./EndreNavKontorModal";
 import {visEndreNavKontorModal} from "../../../redux/v2/v2Actions";
-import ReactJsonView from "../reactJsonView/ReactJsonView";
+import {FsSoknad} from "../../../redux/v3/v3FsTypes";
 
 const useStyle = makeStyles((theme) => {
     return {
@@ -34,7 +32,7 @@ interface StoreProps {
 }
 
 interface OwnProps {
-    soknad: Soknad
+    soknad: FsSoknad
 }
 
 interface State {
@@ -48,33 +46,22 @@ const initialState: State = {
 type Props = DispatchProps & OwnProps & StoreProps;
 
 
-const SoknadOversiktView: React.FC<Props> = (props: Props) => {
+const TildeldeltNavkontorView: React.FC<Props> = (props: Props) => {
     const [state, setState] = useState(initialState);
 
     const classes = useStyle();
     const {soknad, dispatch} = props;
 
     return (
-        <Paper className={classes.paper}>
-            <div className={classes.col}>
-                <Typography variant={"h5"} component={"h3"}>
-                    Oversikt over søknaden
-                </Typography>
-                <Typography variant={"subtitle1"}>
-                    Navn på søker: {soknad.name}
-                </Typography>
-                <Typography variant={"subtitle1"}>
-                    Behandles av: {soknad.navKontor.name}
-                    <IconButton color="inherit" aria-label="menu" onClick={() => dispatch(visEndreNavKontorModal())}>
-                        <Edit />
-                    </IconButton>
-                </Typography>
-                <EndreNavKontorModal />
-            </div>
-            <div className={classes.colJson}>
-                <ReactJsonView json={soknad.fiksDigisosSokerJson}/>
-            </div>
-        </Paper>
+        <div>
+            <Typography variant={"subtitle1"}>
+                Behandles av: {soknad.navKontor ? soknad.navKontor.navKontor : "Default navkontor. Ingen TildeltNavkontorHendelse har skjedd."}
+                <IconButton color="inherit" aria-label="menu" onClick={() => dispatch(visEndreNavKontorModal())}>
+                    <Edit />
+                </IconButton>
+            </Typography>
+            <EndreNavKontorModal />
+        </div>
     );
 };
 
@@ -89,4 +76,4 @@ const mapDispatchToProps = (dispatch: any) => {
 export default connect(
     mapStateToProps,
     mapDispatchToProps
-)(SoknadOversiktView);
+)(TildeldeltNavkontorView);

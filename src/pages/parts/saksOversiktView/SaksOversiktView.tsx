@@ -20,6 +20,7 @@ import {setAktivSak, visNySakModal} from "../../../redux/v2/v2Actions";
 import NySakModal from "../nySak/NySak";
 import {SaksStatus} from "../../../types/hendelseTypes";
 import SaksTabView from "./SaksTabView";
+import {FsSoknad} from "../../../redux/v3/v3FsTypes";
 
 
 interface TabPanelProps {
@@ -90,7 +91,7 @@ interface StoreProps {
 }
 
 interface OwnProps {
-    soknad: Soknad
+    soknad: FsSoknad
 }
 
 interface State {

@@ -9,6 +9,7 @@ import {Soknad} from "../../../types/additionalTypes";
 import {Typography} from "@material-ui/core";
 import Paper from "@material-ui/core/Paper";
 import {setAktivSoknad} from "../../../redux/v2/v2Actions";
+import {FsSoknad} from "../../../redux/v3/v3FsTypes";
 
 const useStyles = makeStyles(theme => ({
     paper: {
@@ -21,7 +22,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 interface StoreProps {
-    soknader: Soknad[],
+    soknader: FsSoknad[],
     aktivSoknad: string
 }
 
@@ -43,11 +44,11 @@ const SoknadsOversiktPanel: React.FC<Props> = (props: Props) => {
 
     const classes = useStyles();
 
-    const getSoknadListItems = (soknader: Soknad[]): JSX.Element[] => {
-        return soknader.map((soknad: Soknad) => {
+    const getSoknadListItems = (soknader: FsSoknad[]): JSX.Element[] => {
+        return soknader.map((soknad: FsSoknad) => {
             return (
                 <ListItem selected={ soknad.fiksDigisosId === aktivSoknad} button divider onClick={() => props.dispatch(setAktivSoknad(soknad.fiksDigisosId))}>
-                    <ListItemText primary={soknad.name} />
+                    <ListItemText primary={soknad.navn} />
                 </ListItem>
             )
         });
@@ -73,7 +74,7 @@ const SoknadsOversiktPanel: React.FC<Props> = (props: Props) => {
 
 
 const mapStateToProps = (state: AppState) => ({
-    soknader: state.v2.soknader,
+    soknader: state.v3.soknader,
     aktivSoknad: state.v2.aktivSoknad
 });
 

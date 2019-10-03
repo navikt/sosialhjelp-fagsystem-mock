@@ -1,14 +1,24 @@
 import {Reducer} from "redux";
 import {BackendUrls, Filreferanselager, V2Action, V2ActionTypeKeys, V2Model} from "./v2Types";
-import {FiksDigisosSokerJson, FilreferanseType, SaksStatus, SoknadsStatus} from "../../types/hendelseTypes";
+import {
+    FiksDigisosSokerJson,
+    FilreferanseType,
+    HendelseType,
+    SaksStatus,
+    SaksStatusType,
+    SoknadsStatus,
+    SoknadsStatusType
+} from "../../types/hendelseTypes";
 import {
     generateFilreferanseId,
-    getSaksStatusByReferanse,
+    getNow,
     getSoknadByFiksDigisosId,
     updateSoknadInSoknader
 } from "../../utils/utilityFunctions";
 import {soknadMockData} from "../../pages/parts/soknadsOversiktPanel/soknadsoversikt-mockdata";
 import {Soknad} from "../../types/additionalTypes";
+import {array} from "fp-ts/lib/Array";
+import {fromTraversable, Lens, Prism, Traversal} from "monocle-ts/es6";
 
 
 const minimal: FiksDigisosSokerJson = {
@@ -21,9 +31,9 @@ const minimal: FiksDigisosSokerJson = {
             },
             hendelser: [
                 {
-                    type: "SoknadsStatus",
-                    hendelsestidspunkt: "2018-10-04T13:37:00.134Z",
-                    status: "MOTTATT"
+                    type: HendelseType.SoknadsStatus,
+                    hendelsestidspunkt: getNow(),
+                    status: SoknadsStatusType.MOTTATT
                 } as SoknadsStatus
                 // // FIXME: Husk å fjern denne. Lagt til kun for å lettere utvikle VedtakFattet.
                 // {
@@ -185,39 +195,70 @@ const v2Reducer: Reducer<V2Model, V2Action> = (
             return {...state}
         }
 
-        // Oppdatere ting
+        // Oppdatere ting (3 ekspempler på hvordan det kan gjøres
         case V2ActionTypeKeys.SETT_NY_SAKS_STATUS: {
-            const {referanse, status} = action;
-            const aktivSoknad: Soknad | undefined = getSoknadByFiksDigisosId(state.soknader, state.aktivSoknad);
-            if (aktivSoknad) {
-                const aktivSak: SaksStatus | undefined = getSaksStatusByReferanse(aktivSoknad, referanse);
-                if (aktivSak) {
-                    const aktivSakUpdated = {...aktivSak};
-                    aktivSakUpdated.status = status;
+            const {soknadFiksDigisosId, saksStatusReferanse, nySaksStatus} = action;
 
-                    const sakerUpdated = aktivSoknad.saker.map((sak: SaksStatus) => {
-                        if (sak.referanse === referanse){
-                            return aktivSakUpdated;
-                        }
-                        return sak;
-                    });
+            // Example 1: Standard
+            // return {
+            //     ...state,
+            //     soknader: {
+            //         ...state.soknader.map((s: Soknad) => {
+            //             if(s.fiksDigisosId === soknadFiksDigisosId){
+            //                 return {...s,
+            //                     saker: s.saker.map((sak: SaksStatus) => {
+            //                         if (sak.referanse === saksStatusReferanse){
+            //                             return { ...sak,
+            //                                 status: action.nySaksStatus
+            //                             }
+            //                         } else {
+            //                             return sak;
+            //                         }
+            //                     })
+            //                 }
+            //             } else {
+            //                 return s;
+            //             }
+            //         })
+            //     }
+            // };
 
-                    const hendelserUpdated = aktivSoknad.fiksDigisosSokerJson.sak.soker.hendelser.map(h => h);
-                    hendelserUpdated.push(aktivSakUpdated);
+            // Example 2: fp-ts sin monocle-ts
+            const soknader: Lens<V2Model, Soknad[]> = Lens.fromProp<V2Model>()('soknader');
+            const soknadTraversal: Traversal<Soknad[], Soknad> = fromTraversable(array)<Soknad>();
+            const getSoknadPrism: (soknadFiksDigisosId: string) => Prism<Soknad, Soknad> = (soknadFiksDigisosId: string): Prism<Soknad, Soknad> => Prism.fromPredicate(soknad => soknad.fiksDigisosId === soknadFiksDigisosId);
+            const saker: Lens<Soknad, SaksStatus[]> = Lens.fromProp<Soknad>()('saker');
+            const sakerTraversal: Traversal<SaksStatus[], SaksStatus> = fromTraversable(array)<SaksStatus>();
+            const getSaksStatus: (saksStatusReferanse: string) => Prism<SaksStatus, SaksStatus> = (saksStatusReferanse: string): Prism<SaksStatus, SaksStatus> => Prism.fromPredicate(saksStatus => saksStatus.referanse === saksStatusReferanse);
+            const status: Lens<SaksStatus, SaksStatusType> = Lens.fromProp<SaksStatus>()('status');
 
-                    const soknadUpdated: Soknad = {...aktivSoknad, saker: sakerUpdated};
-                    soknadUpdated.fiksDigisosSokerJson.sak.soker.hendelser = hendelserUpdated;
+            const getSaksStatusStatusTraversal = (soknadFiksDigisosId: string, saksStatusReferanse: string): Traversal<V2Model, SaksStatusType> => {
+                return soknader
+                          .composeTraversal(soknadTraversal)
+                          .composePrism(getSoknadPrism(soknadFiksDigisosId))
+                          .composeLens(saker)
+                          .composeTraversal(sakerTraversal)
+                          .composePrism(getSaksStatus(saksStatusReferanse))
+                          .composeLens(status);
+            };
 
-                    const soknaderUpdated = state.soknader.map((soknad: Soknad) => {
-                        if(soknad.fiksDigisosId === aktivSoknad.fiksDigisosId){
-                            return soknadUpdated;
-                        }
-                        return soknad;
-                    });
-                    return {...state, soknader: soknaderUpdated};
-                }
-            }
-            return state;
+            return getSaksStatusStatusTraversal(soknadFiksDigisosId, saksStatusReferanse).set(nySaksStatus)(state);
+
+            // debugger;
+            // // Example 3: With immer
+            // return produce(state, (draft: V2Model) => {
+            //     const soknadToUpdate = draft
+            //         .soknader
+            //         .find((soknad: Soknad) => soknad.fiksDigisosId === soknadFiksDigisosId);
+            //     if (soknadToUpdate){
+            //         const saksStatusToUpdate = soknadToUpdate
+            //             .saker
+            //             .find((sak: SaksStatus) => sak.referanse === saksStatusReferanse);
+            //         if (saksStatusToUpdate){
+            //             saksStatusToUpdate.status = nySaksStatus;
+            //         }
+            //     }
+            // })
         }
         default:
             return state;
