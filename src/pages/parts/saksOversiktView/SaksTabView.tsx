@@ -12,6 +12,7 @@ import makeStyles from "@material-ui/core/styles/makeStyles";
 import {createStyles} from "@material-ui/core";
 import SimpleSelect from "../simpleSelect/SimpleSelect";
 import {settNySaksStatus} from "../../../redux/v2/v2Actions";
+import {V2Model} from "../../../redux/v2/v2Types";
 
 const useStyles = makeStyles((theme) => {
     return createStyles({
@@ -70,6 +71,7 @@ interface OwnProps {
 }
 
 interface StoreProps {
+    v2: V2Model
 }
 
 interface State {
@@ -104,7 +106,8 @@ const SaksTabView: React.FC<Props> = (props: Props) => {
                             || value === SaksStatusType.FEILREGISTRERT
                             || value === SaksStatusType.IKKE_INNSYN
                         ) {
-                            dispatch(settNySaksStatus(sak.referanse, value));
+                            console.warn("SETTER NY SAKSSTATUS");
+                            dispatch(settNySaksStatus(props.v2.aktivSoknad, sak.referanse, value));
                         }
                     }}
                     label={'Saksstatus'}

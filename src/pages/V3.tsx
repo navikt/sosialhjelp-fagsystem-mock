@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {V2Model} from "../redux/v2/v2Types";
 import Hendelse from "../types/hendelseTypes";
 import {AppState, DispatchProps} from "../redux/reduxTypes";
@@ -11,9 +11,8 @@ import AppBarView from "./parts/appBarView/AppBarView";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import Grid from "@material-ui/core/Grid";
 import SystemSettingsModal from "./parts/systemSettings/SystemSettingsModal";
-import Button from "@material-ui/core/Button";
-import Snackbar from "@material-ui/core/Snackbar";
 import StatusSnackBarView from "./parts/statusSnackBar/StatusSnackBarView";
+import {V3State} from "../redux/v3/v3Types";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -39,26 +38,19 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface V3Props {
-    v2: V2Model
-    hendelserUpdated: Hendelse[]
+    v2: V2Model;
+    v3: V3State;
+    hendelserUpdated: Hendelse[];
 }
 
-interface V3State {
+interface V3ViewState {
     input: string;
     showSnackbar: boolean
 }
 
-const initialState: V3State = {
-    input: '',
-    showSnackbar: true
-};
-
 type Props = DispatchProps & V3Props;
-type State = V3State;
-
 
 const V3: React.FC<Props> = (props: Props) => {
-    const [state, setState] = useState(initialState);
 
     const theme = { palette: {type: props.v2.thememode}};
     const muiTheme = createMuiTheme(theme);
@@ -94,6 +86,7 @@ const V3: React.FC<Props> = (props: Props) => {
 
 const mapStateToProps = (state: AppState) => ({
     v2: state.v2,
+    v3: state.v3,
     hendelserUpdated: JSON.parse(JSON.stringify(state.v2.fiksDigisosSokerJson.sak.soker.hendelser))
 });
 

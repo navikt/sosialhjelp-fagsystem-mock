@@ -1,17 +1,15 @@
 import React, {useState} from 'react';
-import {V2Model} from "../../../redux/v2/v2Types";
-import Hendelse from "../../../types/hendelseTypes";
 import {AppState, DispatchProps} from "../../../redux/reduxTypes";
 import {connect} from "react-redux";
 import SaksOversiktView from "../saksOversiktView/SaksOversiktView";
-import {Box} from "@material-ui/core";
 import makeStyles from "@material-ui/core/styles/makeStyles";
-import NavKontorViewView from "../navKontor/NavKontorView";
-import {getSoknadByFiksDigisosId} from "../../../utils/utilityFunctions";
-import {Soknad} from "../../../types/additionalTypes";
-import SoknadOversiktView from "../navKontor/NavKontorView";
+import {getFsSoknadByFiksDigisosId, getSoknadByFiksDigisosId} from "../../../utils/utilityFunctions";
 import Paper from "@material-ui/core/Paper";
 import SoknadStatusView from "../soknadStatusView/SoknadStatusView";
+import {FsSoknad} from "../../../redux/v3/v3FsTypes";
+import Typography from "@material-ui/core/Typography";
+import ReactJsonView from "../reactJsonView/ReactJsonView";
+import TildeldeltNavkontorView from "../navKontor/TildeltNavKontorView";
 
 
 const useStyles = makeStyles(theme => ({
@@ -23,11 +21,18 @@ const useStyles = makeStyles(theme => ({
     },
     paper: {
         padding: theme.spacing(1, 1)
+    },
+    col: {
+
+    },
+    colJson: {
+        marginTop: theme.spacing(2)
     }
 }));
 
+
 interface StoreProps {
-    soknad: Soknad | undefined;
+    soknad: FsSoknad | undefined;
 }
 
 interface BehandleSoknadPanelState {
@@ -52,7 +57,22 @@ const BehandleSoknadPanel: React.FC<Props> = (props: Props) => {
     if (soknad) {
         return (
             <div className={classes.root}>
-                <SoknadOversiktView soknad={soknad}/>
+
+                <Paper className={classes.paper}>
+                    <div className={classes.col}>
+                        <Typography variant={"h5"} component={"h3"}>
+                            Oversikt over søknaden
+                        </Typography>
+                        <Typography variant={"subtitle1"}>
+                            Navn på søker: {soknad.navn}
+                        </Typography>
+                        <TildeldeltNavkontorView soknad={soknad} />
+                    </div>
+                    <div className={classes.colJson}>
+                        <ReactJsonView json={soknad.fiksDigisosSokerJson}/>
+                    </div>
+                </Paper>
+
                 <SoknadStatusView soknad={soknad}/>
                 <SaksOversiktView soknad={soknad}/>
             </div>
@@ -68,9 +88,10 @@ const BehandleSoknadPanel: React.FC<Props> = (props: Props) => {
 };
 
 const mapStateToProps = (state: AppState) => {
-    const {soknader, aktivSoknad} = state.v2;
+    const {aktivSoknad} = state.v2;
+    const {soknader} = state.v3;
     return {
-        soknad: getSoknadByFiksDigisosId(soknader, aktivSoknad)
+        soknad: getFsSoknadByFiksDigisosId(soknader, aktivSoknad)
     };
 };
 

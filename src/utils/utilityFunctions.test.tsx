@@ -50,17 +50,17 @@ it('returns the last occurence of a hendelse type', () => {
                 },
                 "hendelser": [
                     {
-                        "type": "SoknadsStatus",
+                        "type": "soknadsStatus",
                         "hendelsestidspunkt": "2018-10-04T13:37:00.134Z",
                         "status": "MOTTATT"
                     } as SoknadsStatus,
                     {
-                        "type": "TildeltNavKontor",
+                        "type": "tildeltNavKontor",
                         "hendelsestidspunkt": "2018-10-04T13:42:00.134Z",
                         "navKontor": "0314"
                     } as TildeltNavKontor,
                     {
-                        "type": "SoknadsStatus",
+                        "type": "soknadsStatus",
                         "hendelsestidspunkt": "2018-10-04T13:52:00.134Z",
                         "status": "UNDER_BEHANDLING"
                     } as SoknadsStatus
@@ -72,7 +72,7 @@ it('returns the last occurence of a hendelse type', () => {
 
     expect(getLastHendelseOfType(fiksDigisosSokerJson, HendelseType.SoknadsStatus)).toEqual(
         {
-            "type": "SoknadsStatus",
+            "type": "soknadsStatus",
             "hendelsestidspunkt": "2018-10-04T13:52:00.134Z",
             "status": "UNDER_BEHANDLING"
         }
@@ -92,19 +92,19 @@ it('validated that the input is a string consisting of x digits', () => {
     const input: Hendelse[] = [
         {
             // @ts-ignore
-            "type": "SoknadsStatus",
+            "type": "soknadsStatus",
             "hendelsestidspunkt": "2018-10-04T13:37:00.134Z",
             "status": "MOTTATT"
         },
         {
             // @ts-ignore
-            "type": "SoknadsStatus",
+            "type": "soknadsStatus",
             "hendelsestidspunkt": "2019-9-2T12:19:51:771Z",
             "status": "UNDER_BEHANDLING"
         },
         {
             // @ts-ignore
-            "type": "SaksStatus",
+            "type": "saksStatus",
             "hendelsestidspunkt": "2019-9-2T12:19:27:520Z",
             "status": "UNDER_BEHANDLING",
             "referanse": "SAK1",
@@ -112,13 +112,13 @@ it('validated that the input is a string consisting of x digits', () => {
         },
         {
             // @ts-ignore
-            "type": "SoknadsStatus",
+            "type": "soknadsStatus",
             "hendelsestidspunkt": "2019-9-2T12:19:57:635Z",
             "status": "FERDIGBEHANDLET"
         },
         {
             // @ts-ignore
-            "type": "SaksStatus",
+            "type": "saksStatus",
             "hendelsestidspunkt": "2019-9-2T12:19:27:520Z",
             "status": "IKKE_INNSYN",
             "referanse": "SAK1",
@@ -126,13 +126,13 @@ it('validated that the input is a string consisting of x digits', () => {
         },
         {
             // @ts-ignore
-            "type": "SoknadsStatus",
+            "type": "soknadsStatus",
             "hendelsestidspunkt": "2019-9-2T12:20:2:248Z",
             "status": "BEHANDLES_IKKE"
         },
         {
             // @ts-ignore
-            "type": "SaksStatus",
+            "type": "saksStatus",
             "hendelsestidspunkt": "2019-9-2T12:19:27:520Z",
             "status": "BEHANDLES_IKKE",
             "referanse": "SAK1",
@@ -142,21 +142,21 @@ it('validated that the input is a string consisting of x digits', () => {
 
     const expectedOutput = [
         {
-            "type": "SaksStatus",
+            "type": "saksStatus",
             "hendelsestidspunkt": "2019-9-2T12:19:27:520Z",
             "status": "UNDER_BEHANDLING",
             "referanse": "SAK1",
             "tittel": "Nødhjelp"
         },
         {
-            "type": "SaksStatus",
+            "type": "saksStatus",
             "hendelsestidspunkt": "2019-9-2T12:19:27:520Z",
             "status": "IKKE_INNSYN",
             "referanse": "SAK1",
             "tittel": "Nødhjelp"
         },
         {
-            "type": "SaksStatus",
+            "type": "saksStatus",
             "hendelsestidspunkt": "2019-9-2T12:19:27:520Z",
             "status": "BEHANDLES_IKKE",
             "referanse": "SAK1",

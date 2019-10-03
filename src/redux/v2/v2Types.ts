@@ -19,6 +19,7 @@ export interface V2Model {
 
     // V3
     soknader: Soknad[];
+
     visNySakModal: boolean;
     visEndreNavKontorModal: boolean;
     visSystemSettingsModal: boolean;
@@ -190,6 +191,7 @@ export interface NySaksStatus {
 
 export interface SettNySaksStatus {
     type: V2ActionTypeKeys.SETT_NY_SAKS_STATUS;
-    referanse: string;
-    status: SaksStatusType;
+    soknadFiksDigisosId: string;
+    saksStatusReferanse: string;
+    nySaksStatus: SaksStatusType;
 }

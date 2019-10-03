@@ -9,6 +9,7 @@ import Hendelse, {
 } from "../types/hendelseTypes";
 import {Filreferanselager, V2Model} from "../redux/v2/v2Types";
 import {Soknad} from "../types/additionalTypes";
+import {FsSoknad} from "../redux/v3/v3FsTypes";
 
 const tildeltNavKontorSchema = require('../digisos/hendelse/tildeltNavKontor');
 const soknadsStatusSchema = require('../digisos/hendelse/soknadsStatus');
@@ -204,6 +205,12 @@ export const getFilreferanseExtended = (id: string, filreferanselager: Filrefera
 };
 
 export const getSoknadByFiksDigisosId = (soknader: Soknad[], fiksDigisosId: string) => {
+    return soknader.find(s => {
+        return s.fiksDigisosId === fiksDigisosId
+    })
+};
+
+export const getFsSoknadByFiksDigisosId = (soknader: FsSoknad[], fiksDigisosId: string) => {
     return soknader.find(s => {
         return s.fiksDigisosId === fiksDigisosId
     })
