@@ -15,7 +15,7 @@ import {HendelseType} from "../types/hendelseTypes";
 // const hendelseSchemaTest = require('./digisos/hendelse-schema-test');
 const initialHendelseTest = require('../digisos/initial-hendelse-test');
 // const hendelseSchema = require('./digisos/hendelse-schema');
-// const soknadsStatus = require('./digisos/hendelse/soknadsStatus');
+// const SoknadsStatus = require('./digisos/hendelse/SoknadsStatus');
 const minimal = require('../digisos/minimal');
 const digisosKomplett = require('../digisos/komplett');
 
@@ -107,7 +107,7 @@ class Forside extends React.Component<Props, ForsideState> {
             if (hendelse.type){
                 schema = getSchemaByHendelseType(hendelse.type);
             } else {
-                schema = getSchemaByHendelseType(HendelseType.soknadsStatus);
+                schema = getSchemaByHendelseType(HendelseType.SoknadsStatus);
             }
 
             return (

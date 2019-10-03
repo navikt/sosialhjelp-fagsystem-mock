@@ -1,5 +1,4 @@
 import React from 'react';
-import AppBanner from "./components/appBanner/AppBanner";
 import { ConnectedRouter } from "connected-react-router";
 import configureStore, {history} from "./configureStore";
 import { Provider } from "react-redux";
@@ -12,7 +11,7 @@ import Forside from "./pages/Forside";
 import NotFound from "./components/notFound";
 import Example from "./pages/Example";
 import V2 from "./pages/V2";
-import SplashScreen from "./components/splashScreen";
+import V3 from "./pages/V3";
 
 const store = configureStore();
 
@@ -21,21 +20,20 @@ const App: React.FC = () => {
 	return (
 		<Provider store={store}>
 			<IntlProvider defaultLocale={language} locale={language} messages={tekster[language]}>
-				<SplashScreen>
+				{/*<SplashScreen>*/}
 					<div className="informasjon-side">
 						<ConnectedRouter history={history}>
-							<div className="blokk-center">
-								<Switch>
-									<Route exact path={"/v1"} component={Forside}/>
-									<Route exact path={"/v2"} component={V2}/>
-									<Route exact path="/userguide" component={UserGuide}/>
-									<Route exact path="/examplepage" component={Example}/>
-									<Route component={NotFound}/>
-								</Switch>
-							</div>
+							<Switch>
+								<Route exact path={"/v1"} component={Forside}/>
+								<Route exact path={"/v2"} component={V2}/>
+								<Route exact path={"/v3"} component={V3}/>
+								<Route exact path="/userguide" component={UserGuide}/>
+								<Route exact path="/examplepage" component={Example}/>
+								<Route component={NotFound}/>
+							</Switch>
 						</ConnectedRouter>
 					</div>
-				</SplashScreen>
+				{/*</SplashScreen>*/}
 			</IntlProvider>
 		</Provider>
 	);

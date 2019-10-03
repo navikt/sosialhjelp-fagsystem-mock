@@ -15,11 +15,11 @@ import {
 } from "../redux/v2/v2Actions";
 import ReactJson from "react-json-view";
 import Hendelse, {
-    dokumentasjonEtterspurt,
+    DokumentasjonEtterspurt,
     FiksDigisosSokerJson,
     HendelseType,
-    soknadsStatus,
-    SoknadsStatus, tildeltNavKontor, vedtakFattet
+    SoknadsStatus,
+    SoknadsStatusType, TildeltNavKontor, VedtakFattet
 } from "../types/hendelseTypes";
 import {getLastHendelseOfType, getNow} from "../utils/utilityFunctions";
 import TildelNyttNavKontor from "../components/tildelNyttNavKontor";
@@ -28,11 +28,12 @@ import {toast, ToastContainer} from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import {PacmanLoader} from "react-spinners";
 import {css} from '@emotion/core';
-import OpprettNySaksStatus from "../components/saksStatus";
+import OpprettNySaksStatus from "../components/opprettNySaksStatus";
 import FattNyttVedtak from "../components/vedtakFattet";
-import DokumentasjonEtterspurt from "../components/dokumentasjonEtterspurt";
+import EttersporDokumentasjonView from "../components/ettersporDokumentasjon";
 import FilreferanseLager from "../components/filreferanseLager";
 import ReactModal from "react-modal";
+import Saksoversikt from "../components/saksoversiktView";
 
 const override = css`
     display: block;
@@ -154,35 +155,35 @@ class V2 extends React.Component<Props, State> {
         const currentBackendUrl = backendUrls[backendUrlTypeToUse];
 
 
-        const lastSoknadsStatus: Hendelse | undefined = getLastHendelseOfType(fiksDigisosSokerJson, HendelseType.soknadsStatus);
+        const lastSoknadsStatus: Hendelse | undefined = getLastHendelseOfType(fiksDigisosSokerJson, HendelseType.SoknadsStatus);
 
         const soknadsStatusJsx = () => {
-            if (lastSoknadsStatus && lastSoknadsStatus.type === HendelseType.soknadsStatus) {
+            if (lastSoknadsStatus && lastSoknadsStatus.type === HendelseType.SoknadsStatus) {
                 return (
                     <RadioPanelGruppe
                         name="soknadsStatus"
                         legend="Endre status på søknaden:"
                         radios={[
-                            {label: 'Mottatt', value: SoknadsStatus.MOTTATT},
-                            {label: 'Under behandling', value: SoknadsStatus.UNDER_BEHANDLING},
-                            {label: 'Ferdigbehandlet', value: SoknadsStatus.FERDIGBEHANDLET},
-                            {label: 'Behandles ikke', value: SoknadsStatus.BEHANDLES_IKKE}
+                            {label: 'Mottatt', value: SoknadsStatusType.MOTTATT},
+                            {label: 'Under behandling', value: SoknadsStatusType.UNDER_BEHANDLING},
+                            {label: 'Ferdigbehandlet', value: SoknadsStatusType.FERDIGBEHANDLET},
+                            {label: 'Behandles ikke', value: SoknadsStatusType.BEHANDLES_IKKE}
                         ]}
                         checked={lastSoknadsStatus.status}
                         onChange={(evt, nySoknadsStatus) => {
-                            if (nySoknadsStatus === SoknadsStatus.MOTTATT || nySoknadsStatus || SoknadsStatus.UNDER_BEHANDLING || SoknadsStatus.FERDIGBEHANDLET || SoknadsStatus.BEHANDLES_IKKE) {
+                            if (nySoknadsStatus === SoknadsStatusType.MOTTATT || nySoknadsStatus || SoknadsStatusType.UNDER_BEHANDLING || SoknadsStatusType.FERDIGBEHANDLET || SoknadsStatusType.BEHANDLES_IKKE) {
                                 this.props.hendelserUpdated.push({
-                                    type: HendelseType.soknadsStatus,
+                                    type: HendelseType.SoknadsStatus,
                                     hendelsestidspunkt: getNow(),
                                     status: nySoknadsStatus
-                                } as soknadsStatus);
+                                } as SoknadsStatus);
                                 this.updateAndSendFiksDigisosSokerJson();
                             }
                         }}
                     />
                 );
             }
-            throw Error("Det er ingen hendelse i listen med soknadsStatus. Så noe er galt, fordi det skal det være.")
+            throw Error("Det er ingen hendelse i listen med SoknadsStatus. Så noe er galt, fordi det skal det være.")
         };
 
 
@@ -190,163 +191,168 @@ class V2 extends React.Component<Props, State> {
 
 
         return (
-            <div>
-                <div className={"v2-banner"}>
-                    <button
-                        className={"btn btn-default"}
-                        onClick={() => this.setState({systemPreferencesVisible: true})}
-                    >
-                        <span className="glyphicon glyphicon-cog" aria-hidden="true"/>
-                    </button>
-                    <p className={"v2-banner__tittel"}>
-                        Sosialhjelp Fagsystem Mock
-                    </p>
-                </div>
-                <div className={"v2-wrapper"}>
+            <div className="blokk-center">
 
-                    <div className={"v2-content"}>
-
-
-
-                        <div>
-                            Fiks Digisos Id
-                            <Panel>
-                                <Input disabled={!setFiksDigisosIdIsEnabled} value={fiksDigisosId}
-                                       label={'fiksDigisosId'}
-                                       onChange={(evt) => this.props.dispatch(setfiksDigisosId(evt.target.value))}/>
-                                <button className={"btn btn-primary"}
-                                        onClick={() => {
-                                            this.props.dispatch(disableSetFiksDigisosId());
-                                            this.props.dispatch(sendFiksDigisosSokerJson(fiksDigisosId && fiksDigisosId !== "" ? fiksDigisosId : "1234", fiksDigisosSokerJson, currentBackendUrl, this.notifyA))
-                                        }}
-                                >
-                                    OK
-                                </button>
-                                <button className={"btn btn-danger"}
-                                        onClick={() => {
-                                            this.props.dispatch(enableSetFiksDigisosId());
-                                            this.props.dispatch(sendFiksDigisosSokerJson(fiksDigisosId && fiksDigisosId !== "" ? fiksDigisosId : "1234", fiksDigisosSokerJson, currentBackendUrl, this.notifyA))
-                                        }}
-                                >
-                                    EDIT
-                                </button>
-
-                            </Panel>
-                        </div>
-
-                        {fiksDigisosIdIsValid && (
-                            <>
-                                <div>
-                                    Soknads status
-                                    <Panel>
-                                        {soknadsStatusJsx()}
-                                    </Panel>
-                                </div>
-
-                                <TildelNyttNavKontor
-                                    onClick={(nyttNavKontor) => {
-                                        this.props.hendelserUpdated.push({
-                                            type: HendelseType.tildeltNavKontor,
-                                            hendelsestidspunkt: getNow(),
-                                            navKontor: nyttNavKontor
-                                        } as tildeltNavKontor);
-                                        this.updateAndSendFiksDigisosSokerJson();
-                                    }}
-                                />
-
-
-                                <OpprettNySaksStatus
-                                    onClick={(nySaksStatus) => {
-                                        this.props.hendelserUpdated.push(nySaksStatus);
-                                        this.updateAndSendFiksDigisosSokerJson();
-                                    }}
-                                />
-
-                                <DokumentasjonEtterspurt
-                                    onLeggTilDokumentasjonEtterspurt={(hendelse: dokumentasjonEtterspurt) => {
-                                        console.warn("legger til nytt dokumentasjonskrav");
-                                        this.props.hendelserUpdated.push(hendelse);
-                                        this.updateAndSendFiksDigisosSokerJson();
-                                    }}
-                                />
-
-                                <FattNyttVedtak
-                                    onFattVedtak={(v: vedtakFattet) => {
-                                        this.props.hendelserUpdated.push(v);
-                                        this.updateAndSendFiksDigisosSokerJson();
-                                    }}
-                                />
-
-                                <FilreferanseLager/>
-
-                                {/* Kan gjøres slik for at testcafe skal kunne sette riktig backend url*/}
-                                <div style={{display: "none"}}>
-                                    Backend url
-                                    <Panel>
-                                        <Input id={"asdf"} label={'url'}/>
-                                    </Panel>
-                                </div>
-
-                                {/*<Modal*/}
-                                {/*    isOpen={loaderOn}*/}
-                                {/*    contentLabel=""*/}
-                                {/*    onRequestClose={() => console.warn("aksjdn")}*/}
-                                {/*    closeButton={false}*/}
-                                {/*    shouldCloseOnOverlayClick={false}*/}
-                                {/*    className={"modal-style-override"}*/}
-                                {/*>*/}
-                                {/*    <div className="application-spinner">*/}
-                                {/*        /!*<div style={{padding:'2rem 2.5rem'}}>Innhold her</div>*!/*/}
-                                {/*        /!*<NavFrontendSpinner type="XXL"/>*!/*/}
-                                {/*        <div className='sweet-loading pacmanloader'>*/}
-                                {/*            <PacmanLoader*/}
-                                {/*                css={override}*/}
-                                {/*                sizeUnit={"px"}*/}
-                                {/*                size={50}*/}
-                                {/*                color={'#000'}*/}
-                                {/*                loading={loaderOn}*/}
-                                {/*            />*/}
-                                {/*        </div>*/}
-                                {/*    </div>*/}
-                                {/*</Modal>*/}
-                            </>
-                        )}
-                        <Panel>
-                            <ReactJson src={fiksDigisosSokerJson}/>
-                        </Panel>
-                        {/*{loaderOn && this.notify()}*/}
-                        <ToastContainer containerId={'A'} autoClose={2000}/>
+                <div>
+                    <div className={"v2-banner"}>
+                        <button
+                            className={"btn btn-default"}
+                            onClick={() => this.setState({systemPreferencesVisible: true})}
+                        >
+                            <span className="glyphicon glyphicon-cog" aria-hidden="true"/>
+                        </button>
+                        <p className={"v2-banner__tittel"}>
+                            Sosialhjelp Fagsystem Mock
+                        </p>
                     </div>
-                    <ReactModal
-                        isOpen={this.state.systemPreferencesVisible}
-                        // style={{
-                        //     content: {
-                        //         color: "white",
-                        //         backgroundColor: "#121212"
-                        //     },
-                        //     overlay: {
-                        //         background: "transparent"
-                        //     }
-                        // }}
-                        shouldCloseOnEsc={true}
-                        shouldCloseOnOverlayClick={true}
-                    >
-                        <div className={"system-preferences"}>
-                            <button className={"btn btn-default"}
-                                    onClick={() => this.setState({systemPreferencesVisible: false})}>
-                                <span className={"glyphicon glyphicon-remove"}/>
-                            </button>
-                            <BackendUrl/>
+                    <div className={"v2-wrapper"}>
+
+                        <div className={"v2-content"}>
+
+
+
+                            <div>
+                                Fiks Digisos Id
+                                <Panel>
+                                    <Input disabled={!setFiksDigisosIdIsEnabled} value={fiksDigisosId}
+                                           label={'fiksDigisosId'}
+                                           onChange={(evt) => this.props.dispatch(setfiksDigisosId(evt.target.value))}/>
+                                    <button className={"btn btn-primary"}
+                                            onClick={() => {
+                                                this.props.dispatch(disableSetFiksDigisosId());
+                                                this.props.dispatch(sendFiksDigisosSokerJson(fiksDigisosId && fiksDigisosId !== "" ? fiksDigisosId : "1234", fiksDigisosSokerJson, currentBackendUrl, this.notifyA))
+                                            }}
+                                    >
+                                        OK
+                                    </button>
+                                    <button className={"btn btn-danger"}
+                                            onClick={() => {
+                                                this.props.dispatch(enableSetFiksDigisosId());
+                                                this.props.dispatch(sendFiksDigisosSokerJson(fiksDigisosId && fiksDigisosId !== "" ? fiksDigisosId : "1234", fiksDigisosSokerJson, currentBackendUrl, this.notifyA))
+                                            }}
+                                    >
+                                        EDIT
+                                    </button>
+
+                                </Panel>
+                            </div>
+
+                            {fiksDigisosIdIsValid && (
+                                <>
+                                    <div>
+                                        Soknads status
+                                        <Panel>
+                                            {soknadsStatusJsx()}
+                                        </Panel>
+                                    </div>
+
+                                    <TildelNyttNavKontor
+                                        onClick={(nyttNavKontor) => {
+                                            this.props.hendelserUpdated.push({
+                                                type: HendelseType.TildeltNavKontor,
+                                                hendelsestidspunkt: getNow(),
+                                                navKontor: nyttNavKontor
+                                            } as TildeltNavKontor);
+                                            this.updateAndSendFiksDigisosSokerJson();
+                                        }}
+                                    />
+
+
+                                    <OpprettNySaksStatus
+                                        onClick={(nySaksStatus) => {
+                                            this.props.hendelserUpdated.push(nySaksStatus);
+                                            this.updateAndSendFiksDigisosSokerJson();
+                                        }}
+                                    />
+
+                                    <Saksoversikt/>
+
+                                    <EttersporDokumentasjonView
+                                        onLeggTilDokumentasjonEtterspurt={(hendelse: DokumentasjonEtterspurt) => {
+                                            console.warn("legger til nytt dokumentasjonskrav");
+                                            this.props.hendelserUpdated.push(hendelse);
+                                            this.updateAndSendFiksDigisosSokerJson();
+                                        }}
+                                    />
+
+                                    <FattNyttVedtak
+                                        onFattVedtak={(v: VedtakFattet) => {
+                                            this.props.hendelserUpdated.push(v);
+                                            this.updateAndSendFiksDigisosSokerJson();
+                                        }}
+                                    />
+
+                                    <FilreferanseLager/>
+
+                                    {/* Kan gjøres slik for at testcafe skal kunne sette riktig backend url*/}
+                                    <div style={{display: "none"}}>
+                                        Backend url
+                                        <Panel>
+                                            <Input id={"asdf"} label={'url'}/>
+                                        </Panel>
+                                    </div>
+
+                                    {/*<Modal*/}
+                                    {/*    isOpen={loaderOn}*/}
+                                    {/*    contentLabel=""*/}
+                                    {/*    onRequestClose={() => console.warn("aksjdn")}*/}
+                                    {/*    closeButton={false}*/}
+                                    {/*    shouldCloseOnOverlayClick={false}*/}
+                                    {/*    className={"modal-style-override"}*/}
+                                    {/*>*/}
+                                    {/*    <div className="application-spinner">*/}
+                                    {/*        /!*<div style={{padding:'2rem 2.5rem'}}>Innhold her</div>*!/*/}
+                                    {/*        /!*<NavFrontendSpinner type="XXL"/>*!/*/}
+                                    {/*        <div className='sweet-loading pacmanloader'>*/}
+                                    {/*            <PacmanLoader*/}
+                                    {/*                css={override}*/}
+                                    {/*                sizeUnit={"px"}*/}
+                                    {/*                size={50}*/}
+                                    {/*                color={'#000'}*/}
+                                    {/*                loading={loaderOn}*/}
+                                    {/*            />*/}
+                                    {/*        </div>*/}
+                                    {/*    </div>*/}
+                                    {/*</Modal>*/}
+                                </>
+                            )}
+                            <Panel>
+                                <ReactJson src={fiksDigisosSokerJson}/>
+                            </Panel>
+                            {/*{loaderOn && this.notify()}*/}
+                            <ToastContainer containerId={'A'} autoClose={2000}/>
                         </div>
-                    </ReactModal>
-                    <div className='sweet-loading pacmanloader'>
-                        <PacmanLoader
-                            css={override}
-                            sizeUnit={"px"}
-                            size={50}
-                            color={'#000'}
-                            loading={loaderOn}
-                        />
+                        <ReactModal
+                            isOpen={this.state.systemPreferencesVisible}
+                            // style={{
+                            //     content: {
+                            //         color: "white",
+                            //         backgroundColor: "#121212"
+                            //     },
+                            //     overlay: {
+                            //         background: "transparent"
+                            //     }
+                            // }}
+                            shouldCloseOnEsc={true}
+                            shouldCloseOnOverlayClick={true}
+                        >
+                            <div className={"system-preferences"}>
+                                <button className={"btn btn-default"}
+                                        onClick={() => this.setState({systemPreferencesVisible: false})}>
+                                    <span className={"glyphicon glyphicon-remove"}/>
+                                </button>
+                                <BackendUrl/>
+                            </div>
+                        </ReactModal>
+                        <div className='sweet-loading pacmanloader'>
+                            <PacmanLoader
+                                css={override}
+                                sizeUnit={"px"}
+                                size={50}
+                                color={'#000'}
+                                loading={loaderOn}
+                            />
+                        </div>
                     </div>
                 </div>
             </div>

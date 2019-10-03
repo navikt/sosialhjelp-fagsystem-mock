@@ -1,7 +1,24 @@
 import {Reducer} from "redux";
 import {BackendUrls, Filreferanselager, V2Action, V2ActionTypeKeys, V2Model} from "./v2Types";
-import {FiksDigisosSokerJson, FilreferanseType, soknadsStatus} from "../../types/hendelseTypes";
-import {generateFilreferanseId} from "../../utils/utilityFunctions";
+import {
+    FiksDigisosSokerJson,
+    FilreferanseType,
+    HendelseType,
+    SaksStatus,
+    SaksStatusType,
+    SoknadsStatus,
+    SoknadsStatusType
+} from "../../types/hendelseTypes";
+import {
+    generateFilreferanseId,
+    getNow,
+    getSoknadByFiksDigisosId,
+    updateSoknadInSoknader
+} from "../../utils/utilityFunctions";
+import {soknadMockData} from "../../pages/parts/soknadsOversiktPanel/soknadsoversikt-mockdata";
+import {Soknad} from "../../types/additionalTypes";
+import {array} from "fp-ts/lib/Array";
+import {fromTraversable, Lens, Prism, Traversal} from "monocle-ts/es6";
 
 
 const minimal: FiksDigisosSokerJson = {
@@ -14,18 +31,18 @@ const minimal: FiksDigisosSokerJson = {
             },
             hendelser: [
                 {
-                    type: "soknadsStatus",
-                    hendelsestidspunkt: "2018-10-04T13:37:00.134Z",
-                    status: "MOTTATT"
-                } as soknadsStatus
-                // // FIXME: Husk å fjern denne. Lagt til kun for å lettere utvikle vedtakFattet.
+                    type: HendelseType.SoknadsStatus,
+                    hendelsestidspunkt: getNow(),
+                    status: SoknadsStatusType.MOTTATT
+                } as SoknadsStatus
+                // // FIXME: Husk å fjern denne. Lagt til kun for å lettere utvikle VedtakFattet.
                 // {
-                //     "type": "saksStatus",
+                //     "type": "SaksStatus",
                 //     "hendelsestidspunkt": "2019-09-06T10:03:18:169Z",
                 //     "status": "UNDER_BEHANDLING",
                 //     "referanse": "SAK1",
                 //     "tittel": "Nødhjelp"
-                // } as saksStatus
+                // } as SaksStatus
             ]
         }
     },
@@ -61,7 +78,20 @@ export const initialV2Model: V2Model = {
         q: backendUrlsQTemplate
     },
     backendUrlTypeToUse: "local",
-    filreferanselager: initialFilreferanselager
+    filreferanselager: initialFilreferanselager,
+
+    // V3
+    soknader: soknadMockData.map(s => s) as Soknad[],
+
+    // Visnings
+    thememode: 'light',
+    visNySakModal: false,
+    visEndreNavKontorModal: false,
+    visSystemSettingsModal: false,
+
+    // Aktive ting
+    aktivSoknad: '001',
+    aktivSakIndex: 0
 };
 
 const v2Reducer: Reducer<V2Model, V2Action> = (
@@ -104,9 +134,139 @@ const v2Reducer: Reducer<V2Model, V2Action> = (
                 filreferanselager: filreferanselagerUpdated
             }
         }
+
+        // Visnings ting
+        case V2ActionTypeKeys.SWITCH_TO_LIGHT_MODE: {return {...state, thememode: 'light'}}
+        case V2ActionTypeKeys.SWITCH_TO_DARK_MODE: {return {...state, thememode: 'dark'}}
+        case V2ActionTypeKeys.VIS_NY_SAK_MODAL: {return {...state, visNySakModal: true}}
+        case V2ActionTypeKeys.SKJUL_NY_SAK_MODAL: {return {...state, visNySakModal: false}}
+        case V2ActionTypeKeys.VIS_ENDRE_NAV_KONTOR_MODAL: {return {...state, visEndreNavKontorModal: true}}
+        case V2ActionTypeKeys.SKJUL_ENDRE_NAV_KONTOR_MODAL: {return {...state, visEndreNavKontorModal: false}}
+        case V2ActionTypeKeys.VIS_SYSTEM_SETTINGS_MODAL: {return {...state, visSystemSettingsModal: true}}
+        case V2ActionTypeKeys.SKJUL_SYSTEM_SETTINGS_MODAL: {return {...state, visSystemSettingsModal: false}}
+
+        // Aktive ting
+        case V2ActionTypeKeys.SET_AKTIV_SOKNAD: {return {...state, aktivSoknad: action.fiksDigisosId}}
+        case V2ActionTypeKeys.SET_AKTIV_SAK: {return {...state, aktivSakIndex: action.saksIndex}}
+
+
+        case V2ActionTypeKeys.SET_SOKNADS_STATUS: {
+            const {soknadsStatus} = action;
+            const soknad: Soknad | undefined = getSoknadByFiksDigisosId(state.soknader, state.aktivSoknad);
+            if (soknad){
+                const soknadUpdated: Soknad = {...soknad};
+                soknadUpdated.soknadsStatus = soknadsStatus;
+                const soknaderUpdated = updateSoknadInSoknader(soknadUpdated, state.soknader);
+                return {...state, soknader: soknaderUpdated}
+            }
+            return state;
+        }
+
+        // Nye ting
+        case V2ActionTypeKeys.NY_SAKS_STATUS: {
+            const {saksStatus} = action;
+            const aktivSoknad: Soknad | undefined = getSoknadByFiksDigisosId(state.soknader, state.aktivSoknad);
+            if (aktivSoknad) {
+
+
+                const sakerUpdated: SaksStatus[] = aktivSoknad.saker.map(s => s);
+                sakerUpdated.push(saksStatus);
+
+
+                const soknadUpdated: Soknad = {...aktivSoknad};
+                soknadUpdated.saker = sakerUpdated;
+
+
+
+                const hendelserUpdated = aktivSoknad.fiksDigisosSokerJson.sak.soker.hendelser.map(h => h);
+                hendelserUpdated.push(saksStatus);
+                soknadUpdated.fiksDigisosSokerJson.sak.soker.hendelser = hendelserUpdated;
+
+                const soknaderUpdated = state.soknader.map((soknad: Soknad) => {
+                    if (soknad.fnr === soknadUpdated.fnr){
+                        return soknadUpdated
+                    }
+                    return soknad
+                });
+
+
+                return {...state, soknader: soknaderUpdated}
+            }
+            return {...state}
+        }
+
+        // Oppdatere ting (3 ekspempler på hvordan det kan gjøres
+        case V2ActionTypeKeys.SETT_NY_SAKS_STATUS: {
+            const {soknadFiksDigisosId, saksStatusReferanse, nySaksStatus} = action;
+
+            // Example 1: Standard
+            // return {
+            //     ...state,
+            //     soknader: {
+            //         ...state.soknader.map((s: Soknad) => {
+            //             if(s.fiksDigisosId === soknadFiksDigisosId){
+            //                 return {...s,
+            //                     saker: s.saker.map((sak: SaksStatus) => {
+            //                         if (sak.referanse === saksStatusReferanse){
+            //                             return { ...sak,
+            //                                 status: action.nySaksStatus
+            //                             }
+            //                         } else {
+            //                             return sak;
+            //                         }
+            //                     })
+            //                 }
+            //             } else {
+            //                 return s;
+            //             }
+            //         })
+            //     }
+            // };
+
+            // Example 2: fp-ts sin monocle-ts
+            const soknader: Lens<V2Model, Soknad[]> = Lens.fromProp<V2Model>()('soknader');
+            const soknadTraversal: Traversal<Soknad[], Soknad> = fromTraversable(array)<Soknad>();
+            const getSoknadPrism: (soknadFiksDigisosId: string) => Prism<Soknad, Soknad> = (soknadFiksDigisosId: string): Prism<Soknad, Soknad> => Prism.fromPredicate(soknad => soknad.fiksDigisosId === soknadFiksDigisosId);
+            const saker: Lens<Soknad, SaksStatus[]> = Lens.fromProp<Soknad>()('saker');
+            const sakerTraversal: Traversal<SaksStatus[], SaksStatus> = fromTraversable(array)<SaksStatus>();
+            const getSaksStatus: (saksStatusReferanse: string) => Prism<SaksStatus, SaksStatus> = (saksStatusReferanse: string): Prism<SaksStatus, SaksStatus> => Prism.fromPredicate(saksStatus => saksStatus.referanse === saksStatusReferanse);
+            const status: Lens<SaksStatus, SaksStatusType> = Lens.fromProp<SaksStatus>()('status');
+
+            const getSaksStatusStatusTraversal = (soknadFiksDigisosId: string, saksStatusReferanse: string): Traversal<V2Model, SaksStatusType> => {
+                return soknader
+                          .composeTraversal(soknadTraversal)
+                          .composePrism(getSoknadPrism(soknadFiksDigisosId))
+                          .composeLens(saker)
+                          .composeTraversal(sakerTraversal)
+                          .composePrism(getSaksStatus(saksStatusReferanse))
+                          .composeLens(status);
+            };
+
+            return getSaksStatusStatusTraversal(soknadFiksDigisosId, saksStatusReferanse).set(nySaksStatus)(state);
+
+            // debugger;
+            // // Example 3: With immer
+            // return produce(state, (draft: V2Model) => {
+            //     const soknadToUpdate = draft
+            //         .soknader
+            //         .find((soknad: Soknad) => soknad.fiksDigisosId === soknadFiksDigisosId);
+            //     if (soknadToUpdate){
+            //         const saksStatusToUpdate = soknadToUpdate
+            //             .saker
+            //             .find((sak: SaksStatus) => sak.referanse === saksStatusReferanse);
+            //         if (saksStatusToUpdate){
+            //             saksStatusToUpdate.status = nySaksStatus;
+            //         }
+            //     }
+            // })
+        }
         default:
             return state;
     }
 };
+
+
+
+
 
 export default v2Reducer

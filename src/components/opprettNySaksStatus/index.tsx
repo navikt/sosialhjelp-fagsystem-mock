@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {Panel} from "nav-frontend-paneler";
-import Hendelse, {HendelseType, saksStatus, SaksStatus} from "../../types/hendelseTypes";
+import Hendelse, {HendelseType, SaksStatus, SaksStatusType} from "../../types/hendelseTypes";
 import {Input, RadioPanelGruppe} from "nav-frontend-skjema";
 import {connect} from "react-redux";
 import {AppState} from "../../redux/reduxTypes";
@@ -8,7 +8,7 @@ import {getNow} from "../../utils/utilityFunctions";
 
 
 interface OwnProps {
-    onClick: (nySaksStatus: saksStatus) => void;
+    onClick: (nySaksStatus: SaksStatus) => void;
 }
 
 interface StateProps {
@@ -20,7 +20,7 @@ type Props = OwnProps & StateProps;
 interface saksStatusExtended {
     referanse: string;
     tittel: string;
-    status: SaksStatus | undefined;
+    status: SaksStatusType | undefined;
 }
 
 const initialNySaksStatusExtended: saksStatusExtended = {
@@ -71,12 +71,11 @@ class OpprettNySaksStatus extends React.Component<Props, State> {
         const validation: saksStatusValidation = validateSaksStatus(this.state.nySaksStatus, this.props.hendelser);
 
 
-        console.warn("Opprett !");
         if (validation.isValid &&
             nySaksStatus.status
         ) {
-            const saksStatus: saksStatus = {
-                type: HendelseType.saksStatus,
+            const saksStatus: SaksStatus = {
+                type: HendelseType.SaksStatus,
                 hendelsestidspunkt: getNow(),
                 referanse: nySaksStatus.referanse,
                 tittel: nySaksStatus.tittel,
@@ -158,29 +157,29 @@ class OpprettNySaksStatus extends React.Component<Props, State> {
                             name="saksStatus"
                             legend="Status på sak"
                             radios={[
-                                {label: 'Under behandling', value: SaksStatus.UNDER_BEHANDLING},
-                                {label: 'Ikke innsyn', value: SaksStatus.IKKE_INNSYN},
-                                {label: 'Behandler ikke', value: SaksStatus.BEHANDLES_IKKE},
-                                {label: 'Feilregistrert', value: SaksStatus.FEILREGISTRERT}
+                                {label: 'Under behandling', value: SaksStatusType.UNDER_BEHANDLING},
+                                {label: 'Ikke innsyn', value: SaksStatusType.IKKE_INNSYN},
+                                {label: 'Behandler ikke', value: SaksStatusType.BEHANDLES_IKKE},
+                                {label: 'Feilregistrert', value: SaksStatusType.FEILREGISTRERT}
                             ]}
                             checked={nySaksStatus.status}
                             onChange={(evt, value) => {
                                 const nySaksStatusUpdated = {...nySaksStatus};
                                 switch (value) {
                                     case "UNDER_BEHANDLING": {
-                                        nySaksStatusUpdated.status = SaksStatus.UNDER_BEHANDLING;
+                                        nySaksStatusUpdated.status = SaksStatusType.UNDER_BEHANDLING;
                                         break;
                                     }
                                     case "IKKE_INNSYN": {
-                                        nySaksStatusUpdated.status = SaksStatus.IKKE_INNSYN;
+                                        nySaksStatusUpdated.status = SaksStatusType.IKKE_INNSYN;
                                         break;
                                     }
                                     case "BEHANDLES_IKKE": {
-                                        nySaksStatusUpdated.status = SaksStatus.BEHANDLES_IKKE;
+                                        nySaksStatusUpdated.status = SaksStatusType.BEHANDLES_IKKE;
                                         break;
                                     }
                                     case "FEILREGISTRERT": {
-                                        nySaksStatusUpdated.status = SaksStatus.FEILREGISTRERT;
+                                        nySaksStatusUpdated.status = SaksStatusType.FEILREGISTRERT;
                                         break;
                                     }
                                 }
@@ -242,7 +241,7 @@ const validateSaksStatus = (sak: saksStatusExtended, hendelser: Hendelse[]): sak
 
 const referanseAlreadyExists = (ref: string, hendelser: Hendelse[]) => {
     const r: Hendelse | undefined = hendelser.find(h => {
-        if (h.type === HendelseType.saksStatus) {
+        if (h.type === HendelseType.SaksStatus) {
             return h.referanse === ref;
         }
         return false;

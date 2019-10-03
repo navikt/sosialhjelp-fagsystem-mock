@@ -7,7 +7,7 @@ import {
     isNDigits,
     mergeListsToLengthN
 } from "./utilityFunctions";
-import Hendelse, {FiksDigisosSokerJson, HendelseType, soknadsStatus, tildeltNavKontor} from "../types/hendelseTypes";
+import Hendelse, {FiksDigisosSokerJson, HendelseType, SoknadsStatus, TildeltNavKontor} from "../types/hendelseTypes";
 
 it('returnerer en liste med riktig komponenter', () => {
 
@@ -53,24 +53,24 @@ it('returns the last occurence of a hendelse type', () => {
                         "type": "soknadsStatus",
                         "hendelsestidspunkt": "2018-10-04T13:37:00.134Z",
                         "status": "MOTTATT"
-                    } as soknadsStatus,
+                    } as SoknadsStatus,
                     {
                         "type": "tildeltNavKontor",
                         "hendelsestidspunkt": "2018-10-04T13:42:00.134Z",
                         "navKontor": "0314"
-                    } as tildeltNavKontor,
+                    } as TildeltNavKontor,
                     {
                         "type": "soknadsStatus",
                         "hendelsestidspunkt": "2018-10-04T13:52:00.134Z",
                         "status": "UNDER_BEHANDLING"
-                    } as soknadsStatus
+                    } as SoknadsStatus
                 ]
             }
         },
         "type": "no.nav.digisos.digisos.soker.v1"
     };
 
-    expect(getLastHendelseOfType(fiksDigisosSokerJson, HendelseType.soknadsStatus)).toEqual(
+    expect(getLastHendelseOfType(fiksDigisosSokerJson, HendelseType.SoknadsStatus)).toEqual(
         {
             "type": "soknadsStatus",
             "hendelsestidspunkt": "2018-10-04T13:52:00.134Z",

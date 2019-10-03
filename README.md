@@ -38,3 +38,20 @@ Instead, it will copy all the configuration files and the transitive dependencie
 You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
 
 testest
+
+
+##
+
+{"$ref": "hendelse/soknadsStatus.json"},
+{"$ref": "hendelse/tildeltNavKontor.json"},
+
+{"$ref": "hendelse/saksStatus.json"},
+
+
+{"$ref": "hendelse/vedtakFattet.json"},
+
+{"$ref": "hendelse/dokumentasjonEtterspurt.json"},
+{"$ref": "hendelse/forelopigSvar.json"},
+{"$ref": "hendelse/utbetaling.json"},
+{"$ref": "hendelse/vilkar.json"},
+{"$ref": "hendelse/rammevedtak.json"}

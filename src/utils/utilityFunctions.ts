@@ -3,11 +3,13 @@ import Hendelse, {
     DokumentlagerExtended,
     FiksDigisosSokerJson, FilreferanseType,
     HendelseType,
-    saksStatus, Svarut,
+    SaksStatus, SaksStatusType, Svarut,
     SvarutExtended, Vedlegg,
-    vedtakFattet
+    VedtakFattet
 } from "../types/hendelseTypes";
-import {Filreferanselager} from "../redux/v2/v2Types";
+import {Filreferanselager, V2Model} from "../redux/v2/v2Types";
+import {Soknad} from "../types/additionalTypes";
+import {FsSoknad} from "../redux/v3/v3FsTypes";
 
 const tildeltNavKontorSchema = require('../digisos/hendelse/tildeltNavKontor');
 const soknadsStatusSchema = require('../digisos/hendelse/soknadsStatus');
@@ -44,15 +46,15 @@ export function mergeListsToLengthN<T> (
 
 export function getSchemaByHendelseType(type: any) {
     switch (type){
-        case HendelseType.tildeltNavKontor: return tildeltNavKontorSchema;
-        case HendelseType.soknadsStatus: return soknadsStatusSchema;
-        case HendelseType.vedtakFattet: return vedtakFattetSchema;
-        case HendelseType.dokumentasjonEtterspurt: return dokumentasjonEtterspurtSchema;
-        case HendelseType.forelopigSvar: return forelopigSvarSchema;
-        case HendelseType.saksStatus: return saksStatusSchema;
-        case HendelseType.utbetaling: return utbetalingSchema;
-        case HendelseType.vilkar: return vilkarSchema;
-        case HendelseType.rammevedtak: return rammevedtakSchema;
+        case HendelseType.TildeltNavKontor: return tildeltNavKontorSchema;
+        case HendelseType.SoknadsStatus: return soknadsStatusSchema;
+        case HendelseType.VedtakFattet: return vedtakFattetSchema;
+        case HendelseType.DokumentasjonEtterspurt: return dokumentasjonEtterspurtSchema;
+        case HendelseType.ForelopigSvar: return forelopigSvarSchema;
+        case HendelseType.SaksStatus: return saksStatusSchema;
+        case HendelseType.Utbetaling: return utbetalingSchema;
+        case HendelseType.Vilkar: return vilkarSchema;
+        case HendelseType.Rammevedtak: return rammevedtakSchema;
         default: return soknadsStatusSchema;
     }
 }
@@ -121,11 +123,11 @@ export const isNDigits = (value: string, n_digits: number): boolean => {
     return !!a
 };
 
-export const getAllSaksStatuser = (hendelser: Hendelse[]): saksStatus[] => {
+export const getAllSaksStatuser = (hendelser: Hendelse[]): SaksStatus[] => {
     return hendelser
         .filter((hendelse: Hendelse) => {
             switch (hendelse.type) {
-                case HendelseType.saksStatus: {
+                case HendelseType.SaksStatus: {
                     return true;
                 }
                 default: {
@@ -134,14 +136,14 @@ export const getAllSaksStatuser = (hendelser: Hendelse[]): saksStatus[] => {
             }
         })
         .map((saksStatusHendelse: Hendelse) => {
-            return saksStatusHendelse as saksStatus;
+            return saksStatusHendelse as SaksStatus;
         });
 };
 
 export const sakEksistererOgEtVedtakErIkkeFattet = (hendelser: Hendelse[], saksReferanse: string): boolean => {
-    const saksStatus: Hendelse | undefined = hendelser.find((hendelse) => hendelse.type === HendelseType.saksStatus && (hendelse as saksStatus).referanse === saksReferanse);
+    const saksStatus: Hendelse | undefined = hendelser.find((hendelse) => hendelse.type === HendelseType.SaksStatus && (hendelse as SaksStatus).referanse === saksReferanse);
     const vedtakForSaksStatus: Hendelse | undefined = hendelser.find((hendelse) => {
-        return hendelse.type === HendelseType.vedtakFattet && (hendelse as vedtakFattet).saksreferanse === saksReferanse;
+        return hendelse.type === HendelseType.VedtakFattet && (hendelse as VedtakFattet).saksreferanse === saksReferanse;
     });
 
     return !!(saksStatus && !vedtakForSaksStatus);
@@ -201,4 +203,45 @@ export const getFilreferanseExtended = (id: string, filreferanselager: Filrefera
     }
     return filreferanse;
 };
+
+export const getSoknadByFiksDigisosId = (soknader: Soknad[], fiksDigisosId: string) => {
+    return soknader.find(s => {
+        return s.fiksDigisosId === fiksDigisosId
+    })
+};
+
+export const getFsSoknadByFiksDigisosId = (soknader: FsSoknad[], fiksDigisosId: string) => {
+    return soknader.find(s => {
+        return s.fiksDigisosId === fiksDigisosId
+    })
+};
+
+export const getSaksStatusByReferanse = (soknad: Soknad, referanse: string) => {
+    return soknad.saker.find((sak: SaksStatus) => {
+        return sak.referanse === referanse;
+    })
+};
+
+export const updateSoknadInSoknader = (soknad: Soknad, soknader: Soknad[]) => {
+    return soknader.map((s) => {
+        if (s.fiksDigisosId === soknad.fiksDigisosId){
+            return soknad;
+        } else {
+            return s;
+        }
+    })
+};
+
+// export const asdf = (): V2Model => {
+//     const hendelserUpdated = soknadUpdated.fiksDigisosSokerJson.sak.soker.hendelser.map(h => h);
+//     hendelserUpdated.push(nySaksStatus);
+//     const soknaderUpdated = state.soknader.map((soknad: Soknad) => {
+//         if (soknad.fnr === soknadUpdated.fnr){
+//             return soknadUpdated
+//         }
+//         return soknad
+//     });
+//
+// };
+
 

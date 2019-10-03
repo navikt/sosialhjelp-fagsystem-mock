@@ -4,6 +4,9 @@ import {fetchPost} from "../../utils/restUtils";
 import {
     DokumentlagerExtended,
     FiksDigisosSokerJson,
+    SaksStatus,
+    SaksStatusType,
+    SoknadsStatusType,
     SvarutExtended
 } from "../../types/hendelseTypes";
 import {NotificationLevel} from "../../pages/V2";
@@ -90,5 +93,90 @@ export const leggTilNyFilILager = (nyFilreferanse: SvarutExtended | Dokumentlage
     return {
         type: V2ActionTypeKeys.LEGG_TIL_NY_FIL_I_LAGER,
         nyFilreferanse
+    }
+};
+
+export const switchToDarkMode = (): V2Action => {
+    return {
+        type: V2ActionTypeKeys.SWITCH_TO_DARK_MODE,
+    }
+};
+
+export const switchToLightMode = (): V2Action => {
+    return {
+        type: V2ActionTypeKeys.SWITCH_TO_LIGHT_MODE,
+    }
+};
+
+export const setAktivSoknad = (fiksDigisosId: string): V2Action => {
+    return {
+        type: V2ActionTypeKeys.SET_AKTIV_SOKNAD,
+        fiksDigisosId
+    }
+};
+
+export const visNySakModal = (): V2Action => {
+    return {
+        type: V2ActionTypeKeys.VIS_NY_SAK_MODAL
+    }
+};
+
+export const skjulNySakModal = (): V2Action => {
+    return {
+        type: V2ActionTypeKeys.SKJUL_NY_SAK_MODAL
+    }
+};
+
+export const setSoknadsStatus = (soknadsStatus: SoknadsStatusType): V2Action => {
+    return {
+        type: V2ActionTypeKeys.SET_SOKNADS_STATUS,
+        soknadsStatus
+    }
+};
+
+export const visEndreNavKontorModal = (): V2Action => {
+    return {
+        type: V2ActionTypeKeys.VIS_ENDRE_NAV_KONTOR_MODAL
+    }
+};
+
+export const skjulEndreNavKontorModal = (): V2Action => {
+    return {
+        type: V2ActionTypeKeys.SKJUL_ENDRE_NAV_KONTOR_MODAL
+    }
+};
+
+export const visSystemSettingsModal = () => {
+    return {
+        type: V2ActionTypeKeys.VIS_SYSTEM_SETTINGS_MODAL,
+    }
+};
+
+export const skjulSystemSettingsModal = () => {
+    return {
+        type: V2ActionTypeKeys.SKJUL_SYSTEM_SETTINGS_MODAL,
+    }
+};
+
+export const setAktivSak = (saksIndex: number): V2Action => {
+    return {
+        type: V2ActionTypeKeys.SET_AKTIV_SAK,
+        saksIndex: saksIndex
+    }
+};
+
+export const nySaksStatus = (saksStatus: SaksStatus): V2Action => {
+    return {
+        type: V2ActionTypeKeys.NY_SAKS_STATUS,
+        saksStatus: saksStatus
+    }
+};
+
+export const settNySaksStatus = (soknadFiksDigisosId: string, saksStatusReferanse: string, nySaksStatus: SaksStatusType): V2Action => {
+    return {
+        type: V2ActionTypeKeys.SETT_NY_SAKS_STATUS,
+        soknadFiksDigisosId,
+        saksStatusReferanse,
+        nySaksStatus
     }
 };

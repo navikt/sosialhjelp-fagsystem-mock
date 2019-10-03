@@ -9,6 +9,6 @@
  * Status på sak som vil resultere i et vedtak.
  */
 export type EnSakITilknytningTilSoknadenHarBlittOpprettetOgHarStatus = {
-  type?: "saksStatus";
+  type?: "SaksStatus";
   [k: string]: any;
 };
