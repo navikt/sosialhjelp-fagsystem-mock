@@ -98,9 +98,10 @@ const SaksTabView: React.FC<Props> = (props: Props) => {
 
     return (
         <div>
-            <Typography>
-                Tittel: {sak.tittel}.
-            </Typography>
+
+            <br/>
+            <br/>
+
             <Input value={tittel} onChange={(evt) => setTittel(evt.target.value)} />
             <Button onClick={() => {
 
@@ -109,29 +110,27 @@ const SaksTabView: React.FC<Props> = (props: Props) => {
                     const fsSoknad: FsSoknad | undefined = getFsSoknadByFiksDigisosId(fsSoknader, v2.aktivSoknad);
                     if (fsSoknad && tittel.length > 0){
                         dispatch(
-                                aiuuur(
+                            aiuuur(
+                                v2.aktivSoknad,
+                                fsSoknad.fiksDigisosSokerJson,
+                                v2,
+                                oppdaterFsSaksStatus(
                                     v2.aktivSoknad,
-                                    fsSoknad.fiksDigisosSokerJson,
-                                    v2,
-                                    oppdaterFsSaksStatus(
-                                        v2.aktivSoknad,
-                                        sak.referanse,
-                                        tittel,
-                                        sak.status
-                                    )
+                                    sak.referanse,
+                                    tittel,
+                                    sak.status
                                 )
+                            )
                         )
                     }
                 }
             } }>Oppdater tittel</Button>
-            <Typography>
-                Status: {sak.status}.
-            </Typography>
+
+            <br/>
+            <br/>
 
 
-            <Typography>Status på sak:</Typography>
             <Box className={classes.box}>
-
                 <SimpleSelect
                     onSelect={(value) => {
                         if (value === SaksStatusType.UNDER_BEHANDLING
@@ -139,8 +138,26 @@ const SaksTabView: React.FC<Props> = (props: Props) => {
                             || value === SaksStatusType.FEILREGISTRERT
                             || value === SaksStatusType.IKKE_INNSYN
                         ) {
-                            console.warn("SETTER NY SAKSSTATUS");
-                            dispatch(settNySaksStatus(props.v2.aktivSoknad, sak.referanse, value));
+
+                            const fsSoknader = v3.soknader;
+                            if (fsSoknader){
+                                const fsSoknad: FsSoknad | undefined = getFsSoknadByFiksDigisosId(fsSoknader, v2.aktivSoknad);
+                                if (fsSoknad && tittel.length > 0){
+                                    dispatch(
+                                        aiuuur(
+                                            v2.aktivSoknad,
+                                            fsSoknad.fiksDigisosSokerJson,
+                                            v2,
+                                            oppdaterFsSaksStatus(
+                                                v2.aktivSoknad,
+                                                sak.referanse,
+                                                sak.tittel,
+                                                value
+                                            )
+                                        )
+                                    )
+                                }
+                            }
                         }
                     }}
                     label={'Saksstatus'}
@@ -155,11 +172,17 @@ const SaksTabView: React.FC<Props> = (props: Props) => {
             </Box>
 
 
-
+            <br/>
             <Typography>Vilkår</Typography>
-
+            <br/>
             <Typography>Dokumentasjonskrav</Typography>
-            <Typography>asdfasdf</Typography>
+            <br/>
+            <Typography>Utbetalinger</Typography>
+            <br/>
+            <Typography>Vedtak</Typography>
+            <br/>
+            <Typography>Rammevedtak</Typography>
+            <br/>
         </div>
     );
 };

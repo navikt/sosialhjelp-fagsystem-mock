@@ -72,6 +72,7 @@ const BehandleSoknadPanel: React.FC<Props> = (props: Props) => {
                 </Paper>
 
                 <SoknadStatusView soknad={soknad}/>
+
                 <SaksOversiktView soknad={soknad}/>
             </div>
         );

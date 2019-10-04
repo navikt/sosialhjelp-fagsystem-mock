@@ -27,7 +27,7 @@ export const aiuuur = (
     actionToDispatchIfSuccess: AnyAction
 ): (dispatch: Dispatch<AnyAction>) => void => {
 
-    const backendUrl = v2.backendUrlTypeToUse;
+    const backendUrl = v2.backendUrlToUse;
 
     return (dispatch: Dispatch) => {
         dispatch(turnOnLoader());

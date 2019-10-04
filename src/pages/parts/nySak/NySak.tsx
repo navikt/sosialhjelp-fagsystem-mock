@@ -6,9 +6,12 @@ import {skjulNySakModal} from "../../../redux/v2/v2Actions";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import Fade from "@material-ui/core/Fade";
 import Backdrop from "@material-ui/core/Backdrop";
-import {nyFsSaksStatus} from "../../../redux/v3/v3Actions";
+import {aiuuur, nyFsSaksStatus, oppdaterFsSaksStatus} from "../../../redux/v3/v3Actions";
 import {V2Model} from "../../../redux/v2/v2Types";
 import {generateNyFsSaksStatus} from "../../../redux/v3/v3UtilityFunctions";
+import {FsSoknad} from "../../../redux/v3/v3FsTypes";
+import {getFsSoknadByFiksDigisosId} from "../../../utils/utilityFunctions";
+import {V3State} from "../../../redux/v3/v3Types";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -33,6 +36,7 @@ interface OwnProps {
 interface StoreProps {
     visNySakModal: boolean;
     v2: V2Model;
+    v3: V3State;
 }
 
 const initialTittel = '';
@@ -43,7 +47,7 @@ type Props = DispatchProps & OwnProps & StoreProps;
 const NySakModal: React.FC<Props> = (props: Props) => {
     const [tittel, setTittel] = useState(initialTittel);
     const classes = useStyles();
-    const {visNySakModal, dispatch} = props;
+    const {visNySakModal, dispatch, v2, v3} = props;
 
 
     return (
@@ -64,7 +68,20 @@ const NySakModal: React.FC<Props> = (props: Props) => {
                     <input onChange={(evt) => setTittel(evt.target.value)} />
                     <button onClick={() => {
                         if (tittel.length > 0){
-                            dispatch(nyFsSaksStatus(props.v2.aktivSoknad, generateNyFsSaksStatus(tittel)))
+                            const fsSoknader = v3.soknader;
+                            if (fsSoknader){
+                                const fsSoknad: FsSoknad | undefined = getFsSoknadByFiksDigisosId(fsSoknader, v2.aktivSoknad);
+                                if (fsSoknad && tittel.length > 0){
+                                    dispatch(
+                                        aiuuur(
+                                            v2.aktivSoknad,
+                                            fsSoknad.fiksDigisosSokerJson,
+                                            v2,
+                                            nyFsSaksStatus(v2.aktivSoknad, generateNyFsSaksStatus(tittel))
+                                        )
+                                    )
+                                }
+                            }
                         } else {
                             console.warn("Spesifiser en tittel.")
                         }
@@ -77,7 +94,8 @@ const NySakModal: React.FC<Props> = (props: Props) => {
 
 const mapStateToProps = (state: AppState) => ({
     visNySakModal: state.v2.visNySakModal,
-    v2: state.v2
+    v2: state.v2,
+    v3: state.v3
 });
 
 const mapDispatchToProps = (dispatch: any) => {

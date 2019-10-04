@@ -111,7 +111,7 @@ const SystemSettingsModal: React.FC<Props> = (props: Props) => {
 const mapStateToProps = (state: AppState) => ({
     visSystemSettingsModal: state.v2.visSystemSettingsModal,
     backendUrls: state.v2.backendUrls,
-    backendUrlToUse: state.v2.backendUrlTypeToUse
+    backendUrlToUse: state.v2.backendUrlToUse
 });
 
 const mapDispatchToProps = (dispatch: any) => {

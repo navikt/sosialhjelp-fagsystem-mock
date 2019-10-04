@@ -192,6 +192,7 @@ const SaksOversiktView: React.FC<Props> = (props: Props) => {
         } else {
             return (
                 <>
+                    <br/>
                     <Typography variant={"subtitle1"}>
                         Ingen saker er opprettet for denne søknaden ennå. Opprett en eller flere saker for å kunne gå videre med å behandle søknaden.
                     </Typography>

@@ -114,12 +114,12 @@ class V2 extends React.Component<Props, State> {
     private updateAndSendFiksDigisosSokerJson() {
 
         const {hendelserUpdated} = this.props;
-        const {backendUrlTypeToUse, backendUrls, fiksDigisosId, fiksDigisosSokerJson} = this.props.v2;
+        const {backendUrlToUse, backendUrls, fiksDigisosId, fiksDigisosSokerJson} = this.props.v2;
 
         const fiksDigisosSokerJsonUpdated: FiksDigisosSokerJson = JSON.parse(JSON.stringify(fiksDigisosSokerJson));
         fiksDigisosSokerJsonUpdated.sak.soker.hendelser = hendelserUpdated;
         // @ts-ignore
-        const currentBackendUrl = backendUrls[backendUrlTypeToUse];
+        const currentBackendUrl = backendUrls[backendUrlToUse];
         this.props.dispatch(sendFiksDigisosSokerJson(fiksDigisosId, fiksDigisosSokerJsonUpdated, currentBackendUrl, this.notifyA));
     }
 
@@ -148,11 +148,11 @@ class V2 extends React.Component<Props, State> {
             loaderOn,
             setFiksDigisosIdIsEnabled,
             backendUrls,
-            backendUrlTypeToUse
+            backendUrlToUse
         } = this.props.v2;
 
         // @ts-ignore
-        const currentBackendUrl = backendUrls[backendUrlTypeToUse];
+        const currentBackendUrl = backendUrls[backendUrlToUse];
 
 
         const lastSoknadsStatus: Hendelse | undefined = getLastHendelseOfType(fiksDigisosSokerJson, HendelseType.SoknadsStatus);

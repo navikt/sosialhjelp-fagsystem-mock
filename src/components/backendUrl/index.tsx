@@ -73,7 +73,7 @@ class BackendUrl extends React.Component<Props, State> {
 
 const mapStateToProps = (state: AppState) => ({
     backendUrls: state.v2.backendUrls,
-    backendUrlToUse: state.v2.backendUrlTypeToUse
+    backendUrlToUse: state.v2.backendUrlToUse
 });
 
 const mapDispatchToProps = (dispatch: any) => {
