@@ -210,7 +210,7 @@ export const getSoknadByFiksDigisosId = (soknader: Soknad[], fiksDigisosId: stri
     })
 };
 
-export const getFsSoknadByFiksDigisosId = (soknader: FsSoknad[], fiksDigisosId: string) => {
+export const getFsSoknadByFiksDigisosId = (soknader: FsSoknad[], fiksDigisosId: string): FsSoknad | undefined => {
     return soknader.find(s => {
         return s.fiksDigisosId === fiksDigisosId
     })

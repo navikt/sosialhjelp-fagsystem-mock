@@ -9,7 +9,7 @@ import {
 import {
     DokumentasjonEtterspurt, Dokumentasjonkrav, FiksDigisosSokerJson,
     ForelopigSvar, Rammevedtak,
-    SaksStatus,
+    SaksStatus, SaksStatusType,
     SoknadsStatus,
     TildeltNavKontor, Utbetaling, VedtakFattet, Vilkar
 } from "../../types/hendelseTypes";
@@ -20,7 +20,12 @@ import {V2Model} from "../v2/v2Types";
 import {FsSaksStatus} from "./v3FsTypes";
 
 
-export const aiuuur = (fiksDigisosId: string, fiksDigisosSokerJson: FiksDigisosSokerJson, v2: V2Model, actionToDispatchIfSuccess: AnyAction): (dispatch: Dispatch<AnyAction>) => void => {
+export const aiuuur = (
+    fiksDigisosId: string,
+    fiksDigisosSokerJson: FiksDigisosSokerJson,
+    v2: V2Model,
+    actionToDispatchIfSuccess: AnyAction
+): (dispatch: Dispatch<AnyAction>) => void => {
 
     const backendUrl = v2.backendUrlTypeToUse;
 
@@ -110,11 +115,18 @@ export const nyFsSaksStatus = (forFiksDigisosId: string, nyFsSaksStatus: FsSaksS
         nyFsSaksStatus
     }
 };
-export const oppdaterSaksStatus = (forFiksDigisosId: string, oppdatertFsSaksStatus: FsSaksStatus): OppdaterFsSaksStatus => {
+export const oppdaterFsSaksStatus = (
+    forFiksDigisosId: string,
+    forFsSaksStatusReferanse: string,
+    tittel: string,
+    status: SaksStatusType
+): OppdaterFsSaksStatus => {
     return {
         type: V3ActionTypeKeys.OPPDATER_FS_SAKS_STATUS,
         forFiksDigisosId,
-        oppdatertFsSaksStatus
+        forFsSaksStatusReferanse,
+        tittel,
+        status
     }
 };
 export const nyUtbetaling = (forFiksDigisosId: string, forSaksStatusReferanse: string, nyUtbetaling: Utbetaling): NyUtbetaling => {

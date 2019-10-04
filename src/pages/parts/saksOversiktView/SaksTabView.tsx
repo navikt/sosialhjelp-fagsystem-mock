@@ -13,6 +13,12 @@ import {createStyles} from "@material-ui/core";
 import SimpleSelect from "../simpleSelect/SimpleSelect";
 import {settNySaksStatus} from "../../../redux/v2/v2Actions";
 import {V2Model} from "../../../redux/v2/v2Types";
+import Input from "@material-ui/core/Input";
+import Button from "@material-ui/core/Button";
+import {aiuuur, oppdaterFsSaksStatus} from "../../../redux/v3/v3Actions";
+import {OppdaterFsSaksStatus, V3State} from "../../../redux/v3/v3Types";
+import {getFsSoknadByFiksDigisosId} from "../../../utils/utilityFunctions";
+import {FsSoknad} from "../../../redux/v3/v3FsTypes";
 
 const useStyles = makeStyles((theme) => {
     return createStyles({
@@ -71,30 +77,57 @@ interface OwnProps {
 }
 
 interface StoreProps {
-    v2: V2Model
+    v2: V2Model,
+    v3: V3State
 }
 
 interface State {
     input: string;
 }
 
-const initialState: State = {
-    input: ''
-};
+const initialState: string = 'Ny tittel på sak';
 
 type Props = DispatchProps & OwnProps & StoreProps;
 
 
 const SaksTabView: React.FC<Props> = (props: Props) => {
-    const [state, setState] = useState(initialState);
-    const {idx, sak, dispatch}  = props;
+    const [tittel, setTittel] = useState(initialState);
+    const {sak, dispatch, v2, v3}  = props;
     const classes = useStyles();
 
 
     return (
         <div>
-            <Typography>Tittel: {sak.tittel}. Status: {sak.status}.</Typography>
-            Aktiv sak index: {idx}
+            <Typography>
+                Tittel: {sak.tittel}.
+            </Typography>
+            <Input value={tittel} onChange={(evt) => setTittel(evt.target.value)} />
+            <Button onClick={() => {
+
+                const fsSoknader = v3.soknader;
+                if (fsSoknader){
+                    const fsSoknad: FsSoknad | undefined = getFsSoknadByFiksDigisosId(fsSoknader, v2.aktivSoknad);
+                    if (fsSoknad && tittel.length > 0){
+                        dispatch(
+                                aiuuur(
+                                    v2.aktivSoknad,
+                                    fsSoknad.fiksDigisosSokerJson,
+                                    v2,
+                                    oppdaterFsSaksStatus(
+                                        v2.aktivSoknad,
+                                        sak.referanse,
+                                        tittel,
+                                        sak.status
+                                    )
+                                )
+                        )
+                    }
+                }
+            } }>Oppdater tittel</Button>
+            <Typography>
+                Status: {sak.status}.
+            </Typography>
+
 
             <Typography>Status på sak:</Typography>
             <Box className={classes.box}>
@@ -126,14 +159,14 @@ const SaksTabView: React.FC<Props> = (props: Props) => {
             <Typography>Vilkår</Typography>
 
             <Typography>Dokumentasjonskrav</Typography>
-            <Typography></Typography>
+            <Typography>asdfasdf</Typography>
         </div>
     );
 };
 
 const mapStateToProps = (state: AppState) => ({
     v2: state.v2,
-    hendelserUpdated: JSON.parse(JSON.stringify(state.v2.fiksDigisosSokerJson.sak.soker.hendelser))
+    v3: state.v3,
 });
 
 const mapDispatchToProps = (dispatch: any) => {
