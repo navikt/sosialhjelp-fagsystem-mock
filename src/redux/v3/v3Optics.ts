@@ -37,8 +37,11 @@ export const oNavKontor = Lens.fromProp<FsSoknad>()('navKontor');
 // DokumentasjonEtterspurt
 export const oDokumentasjonEtterspurt = Lens.fromProp<FsSoknad>()('dokumentasjonEtterspurt');
 
+// ForelopigSvar
+export const oForelopigSvar = Lens.fromProp<FsSoknad>()('forelopigSvar');
+
 // sak
-export const fsSaker: Lens<FsSoknad, FsSaksStatus[]> = Lens.fromProp<FsSoknad>()('saker');
-export const fsSakerTraversal: Traversal<FsSaksStatus[], FsSaksStatus> = fromTraversable(array)<FsSaksStatus>();
-export const getFsSaksStatus = (referanse: string): Prism<FsSaksStatus, FsSaksStatus> => Prism.fromPredicate(fsSaksStatus => fsSaksStatus.referanse === referanse);
-export const fsSaksStatusStatus: Lens<FsSaksStatus, SaksStatusType> = Lens.fromProp<FsSaksStatus>()('status');
+export const oFsSaker: Lens<FsSoknad, FsSaksStatus[]> = Lens.fromProp<FsSoknad>()('saker');
+export const oFsSakerTraversal: Traversal<FsSaksStatus[], FsSaksStatus> = fromTraversable(array)<FsSaksStatus>();
+export const oGetFsSaksStatus = (referanse: string): Prism<FsSaksStatus, FsSaksStatus> => Prism.fromPredicate(fsSaksStatus => fsSaksStatus.referanse === referanse);
+export const oFsSaksStatusStatus: Lens<FsSaksStatus, SaksStatusType> = Lens.fromProp<FsSaksStatus>()('status');

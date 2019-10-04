@@ -13,6 +13,8 @@ import Grid from "@material-ui/core/Grid";
 import SystemSettingsModal from "./parts/systemSettings/SystemSettingsModal";
 import StatusSnackBarView from "./parts/statusSnackBar/StatusSnackBarView";
 import {V3State} from "../redux/v3/v3Types";
+import ReactJsonView from "./parts/reactJsonView/ReactJsonView";
+import {getFsSoknadByFiksDigisosId, getSoknadByFiksDigisosId} from "../utils/utilityFunctions";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -33,6 +35,11 @@ const useStyles = makeStyles((theme: Theme) =>
             paddingRight: 0
             // padding: theme.spacing(2, 2),
             // border: "1px dotted red"
+        },
+        colJson: {
+            position: 'absolute',
+            bottom: '1rem',
+            right: '1rem'
         }
     }),
 );
@@ -75,6 +82,10 @@ const V3: React.FC<Props> = (props: Props) => {
             <SystemSettingsModal />
 
             <StatusSnackBarView />
+
+            <div className={classes.colJson}>
+                <ReactJsonView json={getFsSoknadByFiksDigisosId(props.v3.soknader,props.v2.aktivSoknad)}/>
+            </div>
 
         </MuiThemeProvider>
     );

@@ -1,7 +1,8 @@
 import {
-    NyFsSoknad, NySaksStatus, NyttDokumentasjonkrav, NyttVilkar, NyUtbetaling,
+    NyFsSaksStatus,
+    NyFsSoknad, NyttDokumentasjonkrav, NyttVilkar, NyUtbetaling,
     OppdaterDokumentasjonEtterspurt, OppdaterDokumentasjonkrav, OppdaterForelopigSvar,
-    OppdaterNavKontor, OppdaterRammevedtak, OppdaterSaksStatus,
+    OppdaterNavKontor, OppdaterRammevedtak, OppdaterFsSaksStatus,
     OppdaterSoknadsStatus, OppdaterUtbetaling, OppdaterVedtakFattet, OppdaterVilkar,
     SlettFsSoknad, V3ActionTypeKeys
 } from "./v3Types";
@@ -16,6 +17,7 @@ import {AnyAction, Dispatch} from "redux";
 import {fetchPost} from "../../utils/restUtils";
 import {setFiksDigisosSokerJson, turnOffLoader, turnOnLoader} from "../v2/v2Actions";
 import {V2Model} from "../v2/v2Types";
+import {FsSaksStatus} from "./v3FsTypes";
 
 
 export const aiuuur = (fiksDigisosId: string, fiksDigisosSokerJson: FiksDigisosSokerJson, v2: V2Model, actionToDispatchIfSuccess: AnyAction): (dispatch: Dispatch<AnyAction>) => void => {
@@ -101,24 +103,25 @@ export const oppdaterForelopigSvar = (forFiksDigisosId: string, nyttForelopigSva
         nyttForelopigSvar
     }
 };
-export const nySaksStatus = (forFiksDigisosId: string, nySaksStatus: SaksStatus): NySaksStatus => {
+export const nyFsSaksStatus = (forFiksDigisosId: string, nyFsSaksStatus: FsSaksStatus): NyFsSaksStatus => {
     return {
-        type: V3ActionTypeKeys.NY_SAKS_STATUS,
+        type: V3ActionTypeKeys.NY_FS_SAKS_STATUS,
         forFiksDigisosId,
-        nySaksStatus
+        nyFsSaksStatus
     }
 };
-export const oppdaterSaksStatus = (forFiksDigisosId: string, oppdatertSaksStatus: SaksStatus): OppdaterSaksStatus => {
+export const oppdaterSaksStatus = (forFiksDigisosId: string, oppdatertFsSaksStatus: FsSaksStatus): OppdaterFsSaksStatus => {
     return {
-        type: V3ActionTypeKeys.OPPDATER_SAKS_STATUS,
+        type: V3ActionTypeKeys.OPPDATER_FS_SAKS_STATUS,
         forFiksDigisosId,
-        oppdatertSaksStatus
+        oppdatertFsSaksStatus
     }
 };
-export const nyUtbetaling = (forFiksDigisosId: string, nyUtbetaling: Utbetaling): NyUtbetaling => {
+export const nyUtbetaling = (forFiksDigisosId: string, forSaksStatusReferanse: string, nyUtbetaling: Utbetaling): NyUtbetaling => {
     return {
         type: V3ActionTypeKeys.NY_UTBETALING,
         forFiksDigisosId,
+        forSaksStatusReferanse,
         nyUtbetaling
     }
 };

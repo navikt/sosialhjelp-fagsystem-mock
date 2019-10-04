@@ -16,7 +16,7 @@ import {setAktivSak, visNySakModal} from "../../../redux/v2/v2Actions";
 import NySakModal from "../nySak/NySak";
 import {SaksStatus} from "../../../types/hendelseTypes";
 import SaksTabView from "./SaksTabView";
-import {FsSoknad} from "../../../redux/v3/v3FsTypes";
+import {FsSaksStatus, FsSoknad} from "../../../redux/v3/v3FsTypes";
 
 
 interface TabPanelProps {
@@ -154,12 +154,12 @@ const SaksOversiktView: React.FC<Props> = (props: Props) => {
     const insertSaksOversikt = () => {
 
         if (soknad.saker.length > 0){
-            const listTabs = soknad.saker.map((sak: SaksStatus) => {
+            const listTabs = soknad.saker.map((sak: FsSaksStatus) => {
                 return (
                     <Tab label={sak.tittel} />
                 )
             });
-            const listTabPanels = soknad.saker.map((sak: SaksStatus, idx) => {
+            const listTabPanels = soknad.saker.map((sak: FsSaksStatus, idx) => {
                 return(
                     <TabPanel value={aktivSakIndex} index={idx} dir={theme.direction}>
                         <SaksTabView idx={idx} sak={sak} />

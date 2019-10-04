@@ -2,12 +2,13 @@ import React, {useState} from 'react';
 import {AppState, DispatchProps} from "../../../redux/reduxTypes";
 import {connect} from "react-redux";
 import {createStyles, Modal, Theme} from "@material-ui/core";
-import {nySaksStatus, skjulNySakModal, visNySakModal} from "../../../redux/v2/v2Actions";
+import {skjulNySakModal} from "../../../redux/v2/v2Actions";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import Fade from "@material-ui/core/Fade";
 import Backdrop from "@material-ui/core/Backdrop";
-import OpprettNySaksStatus from "../../../components/opprettNySaksStatus";
-import {SaksStatus} from "../../../types/hendelseTypes";
+import {nyFsSaksStatus} from "../../../redux/v3/v3Actions";
+import {V2Model} from "../../../redux/v2/v2Types";
+import {generateNyFsSaksStatus} from "../../../redux/v3/v3UtilityFunctions";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -31,21 +32,16 @@ interface OwnProps {
 
 interface StoreProps {
     visNySakModal: boolean;
+    v2: V2Model;
 }
 
-interface State {
-    input: string;
-}
-
-const initialState: State = {
-    input: ''
-};
+const initialTittel = '';
 
 type Props = DispatchProps & OwnProps & StoreProps;
 
 
 const NySakModal: React.FC<Props> = (props: Props) => {
-    const [state, setState] = useState(initialState);
+    const [tittel, setTittel] = useState(initialTittel);
     const classes = useStyles();
     const {visNySakModal, dispatch} = props;
 
@@ -65,9 +61,14 @@ const NySakModal: React.FC<Props> = (props: Props) => {
         >
             <Fade in={visNySakModal}>
                 <div className={classes.paper}>
-                    <OpprettNySaksStatus onClick={(saksStatus: SaksStatus) => {
-                        dispatch(nySaksStatus(saksStatus))
-                    }}/>
+                    <input onChange={(evt) => setTittel(evt.target.value)} />
+                    <button onClick={() => {
+                        if (tittel.length > 0){
+                            dispatch(nyFsSaksStatus(props.v2.aktivSoknad, generateNyFsSaksStatus(tittel)))
+                        } else {
+                            console.warn("Spesifiser en tittel.")
+                        }
+                    }}>Opprett</button>
                 </div>
             </Fade>
         </Modal>
@@ -75,7 +76,8 @@ const NySakModal: React.FC<Props> = (props: Props) => {
 };
 
 const mapStateToProps = (state: AppState) => ({
-    visNySakModal: state.v2.visNySakModal
+    visNySakModal: state.v2.visNySakModal,
+    v2: state.v2
 });
 
 const mapDispatchToProps = (dispatch: any) => {

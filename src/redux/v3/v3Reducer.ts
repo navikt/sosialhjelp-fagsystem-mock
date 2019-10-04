@@ -2,9 +2,10 @@ import {Reducer} from "redux";
 import {V3Action, V3ActionTypeKeys, V3State} from "./v3Types";
 import {getV3InitialState} from "./v3InitialState";
 import {getInitialFsSoknad} from "./v3InitialFsSoknad";
-import {FsSoknad} from "./v3FsTypes";
-import {oGetSoknad, oHendelser, oNavKontor} from "./v3Optics";
+import {FsSaksStatus, FsSoknad} from "./v3FsTypes";
+import {oDokumentasjonEtterspurt, oForelopigSvar, oFsSaker, oGetSoknad, oHendelser, oNavKontor} from "./v3Optics";
 import Hendelse from "../../types/hendelseTypes";
+import {fsSaksStatusToSaksStatus} from "./v3UtilityFunctions";
 
 
 const v3Reducer: Reducer<V3State, V3Action> = (
@@ -33,8 +34,6 @@ const v3Reducer: Reducer<V3State, V3Action> = (
             }
         }
         case V3ActionTypeKeys.OPPDATER_SOKNADS_STATUS: {
-
-
             const {forFiksDigisosId, nySoknadsStatus} = action;
 
             return {
@@ -75,35 +74,45 @@ const v3Reducer: Reducer<V3State, V3Action> = (
                 .composeLens(oHendelser)
                 .modify((a: Hendelse[]) => [...a, nyttNavKontor])(s1);
         }
-
         case V3ActionTypeKeys.OPPDATER_DOKUMENTASJON_ETTERSPURT: {
             const {forFiksDigisosId, nyDokumentasjonEtterspurt} = action;
 
-            return state;
+            const s1 = oGetSoknad(forFiksDigisosId)
+                .composeLens(oDokumentasjonEtterspurt)
+                .set(nyDokumentasjonEtterspurt)(state);
+            return oGetSoknad(forFiksDigisosId)
+                .composeLens(oHendelser)
+                .modify((a: Hendelse[]) => [...a, nyDokumentasjonEtterspurt])(s1);
         }
         case V3ActionTypeKeys.OPPDATER_FORELOPIG_SVAR: {
-            const {} = action;
+            const {forFiksDigisosId, nyttForelopigSvar} = action;
 
-            return {
-                ...state
-            }
+            const s1 = oGetSoknad(forFiksDigisosId)
+                .composeLens(oForelopigSvar)
+                .set(nyttForelopigSvar)(state);
+            return oGetSoknad(forFiksDigisosId)
+                .composeLens(oHendelser)
+                .modify((a: Hendelse[]) => [...a, nyttForelopigSvar])(s1);
         }
-        case V3ActionTypeKeys.NY_SAKS_STATUS: {
-            const {} = action;
+        case V3ActionTypeKeys.NY_FS_SAKS_STATUS: {
+            const {forFiksDigisosId, nyFsSaksStatus} = action;
 
-            return {
-                ...state
-            }
+            const s1 = oGetSoknad(forFiksDigisosId)
+                .composeLens(oFsSaker)
+                .modify((s: FsSaksStatus[]) => [...s, nyFsSaksStatus])(state);
+            return oGetSoknad(forFiksDigisosId)
+                .composeLens(oHendelser)
+                .modify((a: Hendelse[]) => [...a, fsSaksStatusToSaksStatus(nyFsSaksStatus)])(s1)
         }
-        case V3ActionTypeKeys.OPPDATER_SAKS_STATUS: {
-            const {} = action;
+        case V3ActionTypeKeys.OPPDATER_FS_SAKS_STATUS: {
+            const {forFiksDigisosId, oppdatertFsSaksStatus} = action;
 
             return {
                 ...state
             }
         }
         case V3ActionTypeKeys.NY_UTBETALING: {
-            const {} = action;
+            const {forFiksDigisosId, nyUtbetaling} = action;
 
             return {
                 ...state

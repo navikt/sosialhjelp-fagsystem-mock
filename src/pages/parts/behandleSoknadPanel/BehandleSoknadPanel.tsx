@@ -68,9 +68,7 @@ const BehandleSoknadPanel: React.FC<Props> = (props: Props) => {
                         </Typography>
                         <TildeldeltNavkontorView soknad={soknad} />
                     </div>
-                    <div className={classes.colJson}>
-                        <ReactJsonView json={soknad.fiksDigisosSokerJson}/>
-                    </div>
+
                 </Paper>
 
                 <SoknadStatusView soknad={soknad}/>

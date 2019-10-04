@@ -1,7 +1,7 @@
 FROM node as node-builder
 ADD / /source
 WORKDIR /source
-ENV CI=true
+ENV CI=false
 RUN npm ci && npm run test && npm run build
 
 FROM navikt/pus-decorator

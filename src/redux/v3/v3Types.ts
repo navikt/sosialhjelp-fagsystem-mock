@@ -4,7 +4,7 @@ import {
     SoknadsStatus,
     TildeltNavKontor, Utbetaling, VedtakFattet, Vilkar
 } from "../../types/hendelseTypes";
-import {FsSoknad} from "./v3FsTypes";
+import {FsSaksStatus, FsSoknad} from "./v3FsTypes";
 
 
 export interface V3State {
@@ -23,8 +23,8 @@ export enum V3ActionTypeKeys {
     OPPDATER_FORELOPIG_SVAR = "v3/OPPDATER_FORELOPIG_SVAR",
 
     // saker
-    NY_SAKS_STATUS = "v3/NY_SAKS_STATUS",
-    OPPDATER_SAKS_STATUS = "v3/OPPDATER_SAKS_STATUS",
+    NY_FS_SAKS_STATUS = "v3/NY_FS_SAKS_STATUS",
+    OPPDATER_FS_SAKS_STATUS = "v3/OPPDATER_SAKS_STATUS",
 
     NY_UTBETALING = "v3/NY_UTBETALING",
     OPPDATER_UTBETALING = "v3/OPPDATER_UTBETALING",
@@ -46,8 +46,8 @@ export type V3Action
     | OppdaterNavKontor
     | OppdaterDokumentasjonEtterspurt
     | OppdaterForelopigSvar
-    | NySaksStatus
-    | OppdaterSaksStatus
+    | NyFsSaksStatus
+    | OppdaterFsSaksStatus
     | NyUtbetaling
     | OppdaterUtbetaling
     | NyttDokumentasjonkrav
@@ -87,19 +87,20 @@ export interface OppdaterForelopigSvar {
     forFiksDigisosId: string;
     nyttForelopigSvar: ForelopigSvar;
 }
-export interface NySaksStatus {
-    type: V3ActionTypeKeys.NY_SAKS_STATUS;
+export interface NyFsSaksStatus {
+    type: V3ActionTypeKeys.NY_FS_SAKS_STATUS;
     forFiksDigisosId: string;
-    nySaksStatus: SaksStatus;
+    nyFsSaksStatus: FsSaksStatus;
 }
-export interface OppdaterSaksStatus {
-    type: V3ActionTypeKeys.OPPDATER_SAKS_STATUS;
+export interface OppdaterFsSaksStatus {
+    type: V3ActionTypeKeys.OPPDATER_FS_SAKS_STATUS;
     forFiksDigisosId: string;
-    oppdatertSaksStatus: SaksStatus;
+    oppdatertFsSaksStatus: FsSaksStatus;
 }
 export interface NyUtbetaling {
     type: V3ActionTypeKeys.NY_UTBETALING;
     forFiksDigisosId: string;
+    forSaksStatusReferanse: string;
     nyUtbetaling: Utbetaling;
 }
 export interface OppdaterUtbetaling {
