@@ -13,7 +13,7 @@ export interface V2Model {
     loaderOn: boolean;
     setFiksDigisosIdIsEnabled: boolean;
     backendUrls: BackendUrls;
-    backendUrlToUse: string;
+    backendUrlTypeToUse: string;
     filreferanselager: Filreferanselager;
     thememode: PaletteType;
 

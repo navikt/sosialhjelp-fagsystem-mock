@@ -23,7 +23,6 @@ import Hendelse, {
 } from "../types/hendelseTypes";
 import {getLastHendelseOfType, getNow} from "../utils/utilityFunctions";
 import TildelNyttNavKontor from "../components/tildelNyttNavKontor";
-import BackendUrl from "../components/backendUrl";
 import {toast, ToastContainer} from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import {PacmanLoader} from "react-spinners";
@@ -114,7 +113,7 @@ class V2 extends React.Component<Props, State> {
     private updateAndSendFiksDigisosSokerJson() {
 
         const {hendelserUpdated} = this.props;
-        const {backendUrlToUse, backendUrls, fiksDigisosId, fiksDigisosSokerJson} = this.props.v2;
+        const {fiksDigisosId, fiksDigisosSokerJson} = this.props.v2;
 
         const fiksDigisosSokerJsonUpdated: FiksDigisosSokerJson = JSON.parse(JSON.stringify(fiksDigisosSokerJson));
         fiksDigisosSokerJsonUpdated.sak.soker.hendelser = hendelserUpdated;
@@ -147,8 +146,6 @@ class V2 extends React.Component<Props, State> {
             fiksDigisosSokerJson,
             loaderOn,
             setFiksDigisosIdIsEnabled,
-            backendUrls,
-            backendUrlToUse
         } = this.props.v2;
 
         // @ts-ignore
@@ -341,7 +338,6 @@ class V2 extends React.Component<Props, State> {
                                         onClick={() => this.setState({systemPreferencesVisible: false})}>
                                     <span className={"glyphicon glyphicon-remove"}/>
                                 </button>
-                                <BackendUrl/>
                             </div>
                         </ReactModal>
                         <div className='sweet-loading pacmanloader'>
