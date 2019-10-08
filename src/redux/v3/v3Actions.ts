@@ -9,7 +9,7 @@ import {
 import {
     DokumentasjonEtterspurt, Dokumentasjonkrav, FiksDigisosSokerJson,
     ForelopigSvar, Rammevedtak,
-    SaksStatus,
+    SaksStatus, SaksStatusType,
     SoknadsStatus,
     TildeltNavKontor, Utbetaling, VedtakFattet, Vilkar
 } from "../../types/hendelseTypes";
@@ -29,7 +29,7 @@ export const aiuuur = (fiksDigisosId: string, fiksDigisosSokerJson: FiksDigisosS
         // const url = getDigisosApiControllerPath();
         const queryParam = `?fiksDigisosId=${fiksDigisosId}`;
         fetchPost(`${backendUrl}${queryParam}`, JSON.stringify(fiksDigisosSokerJson)).then((response: any) => {
-            dispatch(setFiksDigisosSokerJson(fiksDigisosSokerJson));
+            dispatch(setFiksDigisosSokerJson(fiksDigisosSokerJson)); // gammel
             dispatch(actionToDispatchIfSuccess);
             setTimeout(() => {
                 dispatch(turnOffLoader());
@@ -110,11 +110,12 @@ export const nyFsSaksStatus = (forFiksDigisosId: string, nyFsSaksStatus: FsSaksS
         nyFsSaksStatus
     }
 };
-export const oppdaterSaksStatus = (forFiksDigisosId: string, oppdatertFsSaksStatus: FsSaksStatus): OppdaterFsSaksStatus => {
+export const oppdaterSaksStatus = (forFiksDigisosId: string, saksStatusReferanse: string, nySaksStatus: SaksStatus): OppdaterFsSaksStatus => {
     return {
         type: V3ActionTypeKeys.OPPDATER_FS_SAKS_STATUS,
         forFiksDigisosId,
-        oppdatertFsSaksStatus
+        saksStatusReferanse,
+        nySaksStatus
     }
 };
 export const nyUtbetaling = (forFiksDigisosId: string, forSaksStatusReferanse: string, nyUtbetaling: Utbetaling): NyUtbetaling => {

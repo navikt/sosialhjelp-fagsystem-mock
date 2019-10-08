@@ -15,6 +15,7 @@ import StatusSnackBarView from "./parts/statusSnackBar/StatusSnackBarView";
 import {V3State} from "../redux/v3/v3Types";
 import ReactJsonView from "./parts/reactJsonView/ReactJsonView";
 import {getFsSoknadByFiksDigisosId, getSoknadByFiksDigisosId} from "../utils/utilityFunctions";
+import {FsSoknad} from "../redux/v3/v3FsTypes";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -98,7 +99,7 @@ const V3: React.FC<Props> = (props: Props) => {
 const mapStateToProps = (state: AppState) => ({
     v2: state.v2,
     v3: state.v3,
-    hendelserUpdated: JSON.parse(JSON.stringify(state.v2.fiksDigisosSokerJson.sak.soker.hendelser))
+    hendelserUpdated: JSON.parse(JSON.stringify(state.v2.fiksDigisosSokerJson.sak.soker.hendelser)) // brukes ikke
 });
 
 const mapDispatchToProps = (dispatch: any) => {

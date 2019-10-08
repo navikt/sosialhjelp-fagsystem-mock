@@ -2,17 +2,14 @@ import React, {useState} from 'react';
 import {AppState, DispatchProps} from "../../../redux/reduxTypes";
 import {connect} from "react-redux";
 import Typography from "@material-ui/core/Typography";
-import {SaksStatus, SaksStatusType} from "../../../types/hendelseTypes";
-import FormControl from "@material-ui/core/FormControl";
-import RadioGroup from "@material-ui/core/RadioGroup";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Radio from "@material-ui/core/Radio";
+import {HendelseType, SaksStatus, SaksStatusType} from "../../../types/hendelseTypes";
 import Box from "@material-ui/core/Box";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import {createStyles} from "@material-ui/core";
 import SimpleSelect from "../simpleSelect/SimpleSelect";
-import {settNySaksStatus} from "../../../redux/v2/v2Actions";
 import {V2Model} from "../../../redux/v2/v2Types";
+import {oppdaterSaksStatus} from "../../../redux/v3/v3Actions";
+import {getNow} from "../../../utils/utilityFunctions";
 
 const useStyles = makeStyles((theme) => {
     return createStyles({
@@ -107,7 +104,14 @@ const SaksTabView: React.FC<Props> = (props: Props) => {
                             || value === SaksStatusType.IKKE_INNSYN
                         ) {
                             console.warn("SETTER NY SAKSSTATUS");
-                            dispatch(settNySaksStatus(props.v2.aktivSoknad, sak.referanse, value));
+                            const nySaksStatus: SaksStatus = {
+                                type: HendelseType.SaksStatus,
+                                hendelsestidspunkt: getNow(),
+                                status: value,
+                                referanse: sak.referanse,
+                                tittel: sak.tittel
+                            };
+                            dispatch(oppdaterSaksStatus(props.v2.aktivSoknad, sak.referanse, nySaksStatus));
                         }
                     }}
                     label={'Saksstatus'}
@@ -133,7 +137,6 @@ const SaksTabView: React.FC<Props> = (props: Props) => {
 
 const mapStateToProps = (state: AppState) => ({
     v2: state.v2,
-    hendelserUpdated: JSON.parse(JSON.stringify(state.v2.fiksDigisosSokerJson.sak.soker.hendelser))
 });
 
 const mapDispatchToProps = (dispatch: any) => {

@@ -1,6 +1,6 @@
 import {
     DokumentasjonEtterspurt, Dokumentasjonkrav,
-    ForelopigSvar, Rammevedtak, SaksStatus,
+    ForelopigSvar, Rammevedtak, SaksStatus, SaksStatusType,
     SoknadsStatus,
     TildeltNavKontor, Utbetaling, VedtakFattet, Vilkar
 } from "../../types/hendelseTypes";
@@ -95,7 +95,8 @@ export interface NyFsSaksStatus {
 export interface OppdaterFsSaksStatus {
     type: V3ActionTypeKeys.OPPDATER_FS_SAKS_STATUS;
     forFiksDigisosId: string;
-    oppdatertFsSaksStatus: FsSaksStatus;
+    saksStatusReferanse: string;
+    nySaksStatus: SaksStatus;
 }
 export interface NyUtbetaling {
     type: V3ActionTypeKeys.NY_UTBETALING;
