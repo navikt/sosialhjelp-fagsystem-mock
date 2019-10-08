@@ -20,16 +20,22 @@ import {V2Model} from "../v2/v2Types";
 import {FsSaksStatus} from "./v3FsTypes";
 
 
-export const aiuuur = (fiksDigisosId: string, fiksDigisosSokerJson: FiksDigisosSokerJson, v2: V2Model, actionToDispatchIfSuccess: AnyAction): (dispatch: Dispatch<AnyAction>) => void => {
+export const aiuuur = (
+    fiksDigisosId: string,
+    fiksDigisosSokerJson: FiksDigisosSokerJson,
+    v2: V2Model,
+    actionToDispatchIfSuccess: AnyAction
+): (dispatch: Dispatch<AnyAction>) => void => {
 
-    const backendUrl = v2.backendUrlTypeToUse;
+    // @ts-ignore
+    const backendUrl = v2.backendUrls[v2.backendUrlTypeToUse];
 
     return (dispatch: Dispatch) => {
         dispatch(turnOnLoader());
         // const url = getDigisosApiControllerPath();
         const queryParam = `?fiksDigisosId=${fiksDigisosId}`;
         fetchPost(`${backendUrl}${queryParam}`, JSON.stringify(fiksDigisosSokerJson)).then((response: any) => {
-            dispatch(setFiksDigisosSokerJson(fiksDigisosSokerJson)); // gammel
+            dispatch(setFiksDigisosSokerJson(fiksDigisosSokerJson));
             dispatch(actionToDispatchIfSuccess);
             setTimeout(() => {
                 dispatch(turnOffLoader());
@@ -110,12 +116,18 @@ export const nyFsSaksStatus = (forFiksDigisosId: string, nyFsSaksStatus: FsSaksS
         nyFsSaksStatus
     }
 };
-export const oppdaterSaksStatus = (forFiksDigisosId: string, saksStatusReferanse: string, nySaksStatus: SaksStatus): OppdaterFsSaksStatus => {
+export const oppdaterFsSaksStatus = (
+    forFiksDigisosId: string,
+    forFsSaksStatusReferanse: string,
+    tittel: string,
+    status: SaksStatusType
+): OppdaterFsSaksStatus => {
     return {
         type: V3ActionTypeKeys.OPPDATER_FS_SAKS_STATUS,
         forFiksDigisosId,
-        saksStatusReferanse,
-        nySaksStatus
+        forFsSaksStatusReferanse,
+        tittel,
+        status
     }
 };
 export const nyUtbetaling = (forFiksDigisosId: string, forSaksStatusReferanse: string, nyUtbetaling: Utbetaling): NyUtbetaling => {

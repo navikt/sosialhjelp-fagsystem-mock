@@ -79,9 +79,9 @@ const V3: React.FC<Props> = (props: Props) => {
                 </Grid>
             </div>
 
-            {/* FIXME: Ta i bruk denne senere.*/}
             <SystemSettingsModal />
 
+            {/* FIXME: Ta i bruk denne senere.*/}
             <StatusSnackBarView />
 
             <div className={classes.colJson}>

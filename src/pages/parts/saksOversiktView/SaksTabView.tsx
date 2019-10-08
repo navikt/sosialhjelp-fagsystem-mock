@@ -2,14 +2,18 @@ import React, {useState} from 'react';
 import {AppState, DispatchProps} from "../../../redux/reduxTypes";
 import {connect} from "react-redux";
 import Typography from "@material-ui/core/Typography";
-import {HendelseType, SaksStatus, SaksStatusType} from "../../../types/hendelseTypes";
+import {SaksStatus, SaksStatusType} from "../../../types/hendelseTypes";
 import Box from "@material-ui/core/Box";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import {createStyles} from "@material-ui/core";
 import SimpleSelect from "../simpleSelect/SimpleSelect";
 import {V2Model} from "../../../redux/v2/v2Types";
-import {oppdaterSaksStatus} from "../../../redux/v3/v3Actions";
-import {getNow} from "../../../utils/utilityFunctions";
+import Input from "@material-ui/core/Input";
+import Button from "@material-ui/core/Button";
+import {aiuuur, oppdaterFsSaksStatus} from "../../../redux/v3/v3Actions";
+import {OppdaterFsSaksStatus, V3State} from "../../../redux/v3/v3Types";
+import {getFsSoknadByFiksDigisosId} from "../../../utils/utilityFunctions";
+import {FsSoknad} from "../../../redux/v3/v3FsTypes";
 
 const useStyles = makeStyles((theme) => {
     return createStyles({
@@ -68,34 +72,60 @@ interface OwnProps {
 }
 
 interface StoreProps {
-    v2: V2Model
+    v2: V2Model,
+    v3: V3State
 }
 
 interface State {
     input: string;
 }
 
-const initialState: State = {
-    input: ''
-};
+const initialState: string = 'Ny tittel på sak';
 
 type Props = DispatchProps & OwnProps & StoreProps;
 
 
 const SaksTabView: React.FC<Props> = (props: Props) => {
-    const [state, setState] = useState(initialState);
-    const {idx, sak, dispatch}  = props;
+    const [tittel, setTittel] = useState(initialState);
+    const {sak, dispatch, v2, v3}  = props;
     const classes = useStyles();
 
 
     return (
         <div>
-            <Typography>Tittel: {sak.tittel}. Status: {sak.status}.</Typography>
-            Aktiv sak index: {idx}
 
-            <Typography>Status på sak:</Typography>
+            <br/>
+            <br/>
+
+            <Input value={tittel} onChange={(evt) => setTittel(evt.target.value)} />
+            <Button onClick={() => {
+
+                const fsSoknader = v3.soknader;
+                if (fsSoknader){
+                    const fsSoknad: FsSoknad | undefined = getFsSoknadByFiksDigisosId(fsSoknader, v2.aktivSoknad);
+                    if (fsSoknad && tittel.length > 0){
+                        dispatch(
+                            aiuuur(
+                                v2.aktivSoknad,
+                                fsSoknad.fiksDigisosSokerJson,
+                                v2,
+                                oppdaterFsSaksStatus(
+                                    v2.aktivSoknad,
+                                    sak.referanse,
+                                    tittel,
+                                    sak.status
+                                )
+                            )
+                        )
+                    }
+                }
+            } }>Oppdater tittel</Button>
+
+            <br/>
+            <br/>
+
+
             <Box className={classes.box}>
-
                 <SimpleSelect
                     onSelect={(value) => {
                         if (value === SaksStatusType.UNDER_BEHANDLING
@@ -103,15 +133,26 @@ const SaksTabView: React.FC<Props> = (props: Props) => {
                             || value === SaksStatusType.FEILREGISTRERT
                             || value === SaksStatusType.IKKE_INNSYN
                         ) {
-                            console.warn("SETTER NY SAKSSTATUS");
-                            const nySaksStatus: SaksStatus = {
-                                type: HendelseType.SaksStatus,
-                                hendelsestidspunkt: getNow(),
-                                status: value,
-                                referanse: sak.referanse,
-                                tittel: sak.tittel
-                            };
-                            dispatch(oppdaterSaksStatus(props.v2.aktivSoknad, sak.referanse, nySaksStatus));
+
+                            const fsSoknader = v3.soknader;
+                            if (fsSoknader){
+                                const fsSoknad: FsSoknad | undefined = getFsSoknadByFiksDigisosId(fsSoknader, v2.aktivSoknad);
+                                if (fsSoknad && tittel.length > 0){
+                                    dispatch(
+                                        aiuuur(
+                                            v2.aktivSoknad,
+                                            fsSoknad.fiksDigisosSokerJson,
+                                            v2,
+                                            oppdaterFsSaksStatus(
+                                                v2.aktivSoknad,
+                                                sak.referanse,
+                                                sak.tittel,
+                                                value
+                                            )
+                                        )
+                                    )
+                                }
+                            }
                         }
                     }}
                     label={'Saksstatus'}
@@ -126,17 +167,24 @@ const SaksTabView: React.FC<Props> = (props: Props) => {
             </Box>
 
 
-
+            <br/>
             <Typography>Vilkår</Typography>
-
+            <br/>
             <Typography>Dokumentasjonskrav</Typography>
-            <Typography></Typography>
+            <br/>
+            <Typography>Utbetalinger</Typography>
+            <br/>
+            <Typography>Vedtak</Typography>
+            <br/>
+            <Typography>Rammevedtak</Typography>
+            <br/>
         </div>
     );
 };
 
 const mapStateToProps = (state: AppState) => ({
     v2: state.v2,
+    v3: state.v3,
 });
 
 const mapDispatchToProps = (dispatch: any) => {

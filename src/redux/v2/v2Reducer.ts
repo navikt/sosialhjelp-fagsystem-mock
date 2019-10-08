@@ -77,7 +77,7 @@ export const initialV2Model: V2Model = {
         digisostest: backendUrlsDigisostestTemplate,
         q: backendUrlsQTemplate
     },
-    backendUrlTypeToUse: "local",
+    backendUrlTypeToUse: 'local',
     filreferanselager: initialFilreferanselager,
 
     // V3

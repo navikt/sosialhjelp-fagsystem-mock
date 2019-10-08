@@ -41,7 +41,13 @@ export const oDokumentasjonEtterspurt = Lens.fromProp<FsSoknad>()('dokumentasjon
 export const oForelopigSvar = Lens.fromProp<FsSoknad>()('forelopigSvar');
 
 // sak
-export const oFsSaker: Lens<FsSoknad, FsSaksStatus[]> = Lens.fromProp<FsSoknad>()('saker');
-export const oFsSakerTraversal: Traversal<FsSaksStatus[], FsSaksStatus> = fromTraversable(array)<FsSaksStatus>();
-export const oGetFsSaksStatus = (referanse: string): Prism<FsSaksStatus, FsSaksStatus> => Prism.fromPredicate(fsSaksStatus => fsSaksStatus.referanse === referanse);
-export const oFsSaksStatusStatus: Lens<FsSaksStatus, SaksStatusType> = Lens.fromProp<FsSaksStatus>()('status');
+export const oFsSaker = Lens.fromProp<FsSoknad>()('saker');
+export const oFsSakerTraversal = fromTraversable(array)<FsSaksStatus>();
+export const oFsSaksStatusPrism = (referanse: string): Prism<FsSaksStatus, FsSaksStatus> => Prism.fromPredicate(fsSaksStatus => fsSaksStatus.referanse === referanse);
+export const oFsSaksStatusStatus = Lens.fromProp<FsSaksStatus>()('status');
+
+export const oGetFsSaksStatus = (forFsSaksStatusReferanse: string) => {
+    return oFsSaker
+        .composeTraversal(oFsSakerTraversal)
+        .composePrism(oFsSaksStatusPrism(forFsSaksStatusReferanse))
+};

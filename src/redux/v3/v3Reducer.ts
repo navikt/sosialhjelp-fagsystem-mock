@@ -6,15 +6,16 @@ import {FsSaksStatus, FsSoknad} from "./v3FsTypes";
 import {
     oDokumentasjonEtterspurt,
     oForelopigSvar,
-    oFsSaker, oFsSakerTraversal, oFsSaksStatusStatus,
-    oFsSoknaderTraversal, oGetFsSaksStatus,
+    oFsSaker,
     oGetSoknad,
     oHendelser,
-    oNavKontor
+    oNavKontor,
+    oGetFsSaksStatus, oFsSaksStatusStatus
 } from "./v3Optics";
-import Hendelse, {SaksStatusType} from "../../types/hendelseTypes";
+import Hendelse from "../../types/hendelseTypes";
 import {fsSaksStatusToSaksStatus} from "./v3UtilityFunctions";
-
+import {Lens, fromTraversable, Prism, Traversal} from "monocle-ts/es6";
+import {array} from "fp-ts/es6/Array";
 
 const v3Reducer: Reducer<V3State, V3Action> = (
     state: V3State = getV3InitialState(),
@@ -113,18 +114,13 @@ const v3Reducer: Reducer<V3State, V3Action> = (
                 .modify((a: Hendelse[]) => [...a, fsSaksStatusToSaksStatus(nyFsSaksStatus)])(s1)
         }
         case V3ActionTypeKeys.OPPDATER_FS_SAKS_STATUS: {
-            const {forFiksDigisosId, saksStatusReferanse, nySaksStatus} = action;
-
-            const s1 = oGetSoknad(forFiksDigisosId)
-                .composeLens(oFsSaker)
-                .composeTraversal(oFsSakerTraversal)
-                .composePrism(oGetFsSaksStatus(saksStatusReferanse))
-                .composeLens(oFsSaksStatusStatus)
-                .set(nySaksStatus.status)(state);
+            const {forFiksDigisosId, forFsSaksStatusReferanse, tittel, status} = action;
 
             return oGetSoknad(forFiksDigisosId)
-                .composeLens(oHendelser)
-                .modify((a: Hendelse[]) => [...a, nySaksStatus])(s1);
+                .composeLens(Lens.fromProp<FsSoknad>()('saker'))
+                .composeTraversal(fromTraversable(array)<FsSaksStatus>())
+                .composePrism(Prism.fromPredicate((s: FsSaksStatus) => s.referanse === forFsSaksStatusReferanse))
+                .modify((fsSaksStatus: FsSaksStatus) => {return {...fsSaksStatus, tittel, status}})(state);
         }
         case V3ActionTypeKeys.NY_UTBETALING: {
             const {forFiksDigisosId, nyUtbetaling} = action;

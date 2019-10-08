@@ -43,7 +43,7 @@ interface OwnProps {
 interface StoreProps {
     visSystemSettingsModal: boolean;
     backendUrls: BackendUrls;
-    backendUrlToUse: string;
+    backendUrlTypeToUse: string;
 }
 
 interface State {
@@ -60,19 +60,17 @@ type Props = DispatchProps & OwnProps & StoreProps;
 const SystemSettingsModal: React.FC<Props> = (props: Props) => {
     const [state, setState] = useState(initialState);
     const classes = useStyles();
-    const {visSystemSettingsModal, dispatch, backendUrls, backendUrlToUse} = props;
+    const {visSystemSettingsModal, dispatch, backendUrls, backendUrlTypeToUse} = props;
 
     const radios = Object.keys(backendUrls).map((backendUrlType: string, index: number) => {
         // @ts-ignore
         const url = backendUrls[backendUrlType];
         return (
             <FormControlLabel
-                value={url}
-                control={<Radio/>} label={backendUrlType}
-            >
-                <p>{backendUrlType}</p>
-                <p>{url}</p>
-            </FormControlLabel>
+                value={backendUrlType}
+                control={<Radio/>}
+                label={backendUrlType + " " + url}
+            />
         );
     });
 
@@ -92,12 +90,17 @@ const SystemSettingsModal: React.FC<Props> = (props: Props) => {
         >
             <Fade in={visSystemSettingsModal}>
                 <div className={classes.paper}>
-                    <Typography>BackendUrl</Typography>
-
                     <FormControl component="fieldset" className={classes.formControl}>
-                        <FormLabel component="legend">Status på sak</FormLabel>
-                        <RadioGroup aria-label="soknadsStatus" name="soknadsStatus1" value={backendUrlToUse}
-                                    onChange={(event, value) => dispatch(setBackendUrlTypeToUse(value))}
+                        <FormLabel component="legend">Url til backend</FormLabel>
+                        <RadioGroup
+                            aria-label="backend url"
+                            name="Url til backend"
+                            value={backendUrlTypeToUse}
+                            onChange={
+                                (event, value) => {
+                                    console.warn("value: " + value);
+                                    dispatch(setBackendUrlTypeToUse(value))
+                                }}
                         >
                             {radios}
                         </RadioGroup>
@@ -111,7 +114,7 @@ const SystemSettingsModal: React.FC<Props> = (props: Props) => {
 const mapStateToProps = (state: AppState) => ({
     visSystemSettingsModal: state.v2.visSystemSettingsModal,
     backendUrls: state.v2.backendUrls,
-    backendUrlToUse: state.v2.backendUrlTypeToUse
+    backendUrlTypeToUse: state.v2.backendUrlTypeToUse
 });
 
 const mapDispatchToProps = (dispatch: any) => {
