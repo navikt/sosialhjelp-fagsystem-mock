@@ -10,7 +10,6 @@ import makeStyles from "@material-ui/core/styles/makeStyles";
 import Backdrop from "@material-ui/core/Backdrop/Backdrop";
 import Fade from "@material-ui/core/Fade";
 import {BackendUrls} from "../../../redux/v2/v2Types";
-import Typography from "@material-ui/core/Typography";
 import FormControl from "@material-ui/core/FormControl";
 import FormLabel from "@material-ui/core/FormLabel";
 import RadioGroup from "@material-ui/core/RadioGroup";
@@ -44,6 +43,7 @@ interface StoreProps {
     visSystemSettingsModal: boolean;
     backendUrls: BackendUrls;
     backendUrlTypeToUse: string;
+    oppdaterDigisosSakUrl: string;
 }
 
 interface State {
@@ -60,16 +60,16 @@ type Props = DispatchProps & OwnProps & StoreProps;
 const SystemSettingsModal: React.FC<Props> = (props: Props) => {
     const [state, setState] = useState(initialState);
     const classes = useStyles();
-    const {visSystemSettingsModal, dispatch, backendUrls, backendUrlTypeToUse} = props;
+    const {visSystemSettingsModal, dispatch, backendUrls, backendUrlTypeToUse, oppdaterDigisosSakUrl} = props;
 
     const radios = Object.keys(backendUrls).map((backendUrlType: string, index: number) => {
         // @ts-ignore
-        const url = backendUrls[backendUrlType];
+        const backendUrl = backendUrls[backendUrlType];
         return (
             <FormControlLabel
                 value={backendUrlType}
                 control={<Radio/>}
-                label={backendUrlType + " " + url}
+                label={backendUrlType + " " + backendUrl + oppdaterDigisosSakUrl}
             />
         );
     });
@@ -114,7 +114,8 @@ const SystemSettingsModal: React.FC<Props> = (props: Props) => {
 const mapStateToProps = (state: AppState) => ({
     visSystemSettingsModal: state.v2.visSystemSettingsModal,
     backendUrls: state.v2.backendUrls,
-    backendUrlTypeToUse: state.v2.backendUrlTypeToUse
+    backendUrlTypeToUse: state.v2.backendUrlTypeToUse,
+    oppdaterDigisosSakUrl: state.v2.oppdaterDigisosSakUrl
 });
 
 const mapDispatchToProps = (dispatch: any) => {

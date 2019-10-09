@@ -18,6 +18,7 @@ import {fetchPost} from "../../utils/restUtils";
 import {setFiksDigisosSokerJson, turnOffLoader, turnOnLoader} from "../v2/v2Actions";
 import {V2Model} from "../v2/v2Types";
 import {FsSaksStatus} from "./v3FsTypes";
+import {NavKontor} from "../../types/additionalTypes";
 
 
 export const aiuuur = (
@@ -29,14 +30,57 @@ export const aiuuur = (
 
     // @ts-ignore
     const backendUrl = v2.backendUrls[v2.backendUrlTypeToUse];
+    const oppdaterDigisosSakUrl = v2.oppdaterDigisosSakUrl;
 
     return (dispatch: Dispatch) => {
         dispatch(turnOnLoader());
         // const url = getDigisosApiControllerPath();
         const queryParam = `?fiksDigisosId=${fiksDigisosId}`;
-        fetchPost(`${backendUrl}${queryParam}`, JSON.stringify(fiksDigisosSokerJson)).then((response: any) => {
+        fetchPost(`${backendUrl}${oppdaterDigisosSakUrl}${queryParam}`, JSON.stringify(fiksDigisosSokerJson)).then((response: any) => {
             dispatch(setFiksDigisosSokerJson(fiksDigisosSokerJson));
             dispatch(actionToDispatchIfSuccess);
+            setTimeout(() => {
+                dispatch(turnOffLoader());
+
+            }, 1000);
+
+        }).catch((reason) => {
+            switch (reason.message) {
+                case "Not Found": {
+                    console.warn("Got 404. Specify a valid backend url...");
+                    setTimeout(() => {
+                        dispatch(turnOffLoader());
+                    }, 1000);
+                    break;
+                }
+                case "Failed to fetch": {
+                    console.warn("Got 404. Specify a valid backend url...");
+                    setTimeout(() => {
+                        dispatch(turnOffLoader());
+                    }, 1000);
+                    break;
+                }
+                default: {
+                    console.warn("Unhandled reason with message: " + reason.message);
+                }
+            }
+        });
+    }
+};
+
+export const zeruuus = (
+    navKontorListe: NavKontor[],
+    v2: V2Model
+): (dispatch: Dispatch<AnyAction>) => void => {
+
+    // @ts-ignore
+    const backendUrl = v2.backendUrls[v2.backendUrlTypeToUse];
+    const nyNavEnhetUrl = v2.nyNavEnhetUrl;
+    console.log(backendUrl + nyNavEnhetUrl)
+
+    return (dispatch: Dispatch) => {
+        dispatch(turnOnLoader());
+        fetchPost(`${backendUrl}${nyNavEnhetUrl}`, JSON.stringify(navKontorListe)).then((response: any) => {
             setTimeout(() => {
                 dispatch(turnOffLoader());
 

@@ -14,6 +14,8 @@ export interface V2Model {
     setFiksDigisosIdIsEnabled: boolean;
     backendUrls: BackendUrls;
     backendUrlTypeToUse: string;
+    oppdaterDigisosSakUrl: string;
+    nyNavEnhetUrl: string;
     filreferanselager: Filreferanselager;
     thememode: PaletteType;
 

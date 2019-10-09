@@ -63,9 +63,9 @@ const initialFilreferanselager: Filreferanselager = {
     ]
 };
 
-export const backendUrlsLocalTemplate: string = "http://localhost:8080/sosialhjelp/innsyn-api/api/v1/digisosapi/oppdaterDigisosSak";
-export const backendUrlsDigisostestTemplate: string = "https://www.digisos-test.com/sosialhjelp/login-api/innsyn-api/api/v1/digisosapi/oppdaterDigisosSak";
-export const backendUrlsQTemplate: string = "https://www-q1.nav.no/sosialhjelp/innsyn/innsyn-api/api/v1/digisosapi/oppdaterDigisosSak";
+export const backendUrlsLocalTemplate: string = "http://localhost:8080/sosialhjelp/innsyn-api";
+export const backendUrlsDigisostestTemplate: string = "https://www.digisos-test.com/sosialhjelp/login-api/innsyn-api";
+export const backendUrlsQTemplate: string = "https://www-q1.nav.no/sosialhjelp/innsyn/innsyn-api";
 
 export const initialV2Model: V2Model = {
     fiksDigisosId: "1337",
@@ -78,6 +78,8 @@ export const initialV2Model: V2Model = {
         q: backendUrlsQTemplate
     },
     backendUrlTypeToUse: 'local',
+    oppdaterDigisosSakUrl: '/api/v1/digisosapi/oppdaterDigisosSak',
+    nyNavEnhetUrl: '/api/woldena/nyNavEnhet',
     filreferanselager: initialFilreferanselager,
 
     // V3

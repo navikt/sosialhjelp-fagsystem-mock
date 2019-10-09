@@ -6,12 +6,13 @@ import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
-import {aiuuur, oppdaterNavKontor} from "../../../redux/v3/v3Actions";
+import {aiuuur, oppdaterNavKontor, zeruuus} from "../../../redux/v3/v3Actions";
 import Hendelse, {HendelseType, TildeltNavKontor} from "../../../types/hendelseTypes";
 import {getNow} from "../../../utils/utilityFunctions";
 import {V2Model} from "../../../redux/v2/v2Types";
 import {oHendelser} from "../../../redux/v3/v3Optics";
 import {FsSoknad} from "../../../redux/v3/v3FsTypes";
+import {NavKontor} from "../../../types/additionalTypes";
 
 
 const useStyles = makeStyles(theme => ({
@@ -43,8 +44,25 @@ type Props = DispatchProps & OwnProps & StoreProps;
 const EndreNavKontorModal: React.FC<Props> = (props: Props) => {
     const [navKontor, setNavKontor] = useState('');
     const classes = useStyles();
-    const {dispatch, soknad} = props;
+    const {dispatch, soknad, v2} = props;
 
+    const navKontor0: NavKontor = {
+        id: 1208,
+        name: "NAV Årstad"
+    };
+    const navKontor1: NavKontor = {
+        id: 1209,
+        name: "NAV Bergenhus"
+    };
+    const navKontor2: NavKontor = {
+        id: 1210,
+        name: "NAV Ytrebygda"
+    };
+    const navKontorListe = [navKontor0, navKontor1, navKontor2];
+
+    const menuItems = navKontorListe.map((navKontor: NavKontor) => {
+        return (<MenuItem value={navKontor.id}>{navKontor.name}</MenuItem>)
+    });
 
     return (
         <form className={classes.root} autoComplete="off">
@@ -63,6 +81,7 @@ const EndreNavKontorModal: React.FC<Props> = (props: Props) => {
                         };
 
                         const soknadUpdated = oHendelser.modify((a: Hendelse[]) => [...a, nyHendelse])(soknad);
+                        dispatch(zeruuus(navKontorListe, v2));
 
                         dispatch(
                             aiuuur(
@@ -78,9 +97,7 @@ const EndreNavKontorModal: React.FC<Props> = (props: Props) => {
                         id: 'age-simple',
                     }}
                 >
-                    <MenuItem value={"1209"}>NAV Bergenhus</MenuItem>
-                    <MenuItem value={"1208"}>NAV Årstad</MenuItem>
-                    <MenuItem value={"0315"}>NAV Grünerløkka</MenuItem>
+                    {menuItems}
                 </Select>
             </FormControl>
         </form>
