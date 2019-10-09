@@ -127,6 +127,18 @@ export const skjulNySakModal = (): V2Action => {
     }
 };
 
+export const visNyDokumentasjonEtterspurtModal = (): V2Action => {
+    return {
+        type: V2ActionTypeKeys.VIS_NY_DOKUMENTASJON_ETTERSPURT_MODAL
+    }
+};
+
+export const skjulNyDokumentasjonEtterspurtModal = (): V2Action => {
+    return {
+        type: V2ActionTypeKeys.SKJUL_NY_DOKUMENTASJON_ETTERSPURT_MODAL
+    }
+};
+
 export const setSoknadsStatus = (soknadsStatus: SoknadsStatusType): V2Action => {
     return {
         type: V2ActionTypeKeys.SET_SOKNADS_STATUS,

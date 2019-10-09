@@ -33,7 +33,7 @@ const TildeldeltNavkontorView: React.FC<Props> = (props: Props) => {
         <div className={useStyles().root}>
             <Typography variant={"subtitle1"}>
                 Tildel navkontor:
-                <EndreNavKontorModal />
+                <EndreNavKontorModal soknad={soknad}/>
             </Typography>
         </div>
     );

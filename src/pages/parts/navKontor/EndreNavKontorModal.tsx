@@ -6,10 +6,12 @@ import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
-import {oppdaterNavKontor} from "../../../redux/v3/v3Actions";
-import {HendelseType, TildeltNavKontor} from "../../../types/hendelseTypes";
+import {aiuuur, oppdaterNavKontor} from "../../../redux/v3/v3Actions";
+import Hendelse, {HendelseType, TildeltNavKontor} from "../../../types/hendelseTypes";
 import {getNow} from "../../../utils/utilityFunctions";
 import {V2Model} from "../../../redux/v2/v2Types";
+import {oHendelser} from "../../../redux/v3/v3Optics";
+import {FsSoknad} from "../../../redux/v3/v3FsTypes";
 
 
 const useStyles = makeStyles(theme => ({
@@ -28,21 +30,20 @@ const useStyles = makeStyles(theme => ({
 }));
 
 interface OwnProps {
+    soknad: FsSoknad
 }
 
 interface StoreProps {
     v2: V2Model
 }
 
-const initialNavKontor = '';
-
 type Props = DispatchProps & OwnProps & StoreProps;
 
 
 const EndreNavKontorModal: React.FC<Props> = (props: Props) => {
-    const [navKontor, setNavKontor] = useState(initialNavKontor);
+    const [navKontor, setNavKontor] = useState('');
     const classes = useStyles();
-    const {dispatch} = props;
+    const {dispatch, soknad} = props;
 
 
     return (
@@ -54,12 +55,23 @@ const EndreNavKontorModal: React.FC<Props> = (props: Props) => {
                     onChange={(evt) => {
                         let navKontorEnhetsNr = evt.target.value as string;
                         setNavKontor(navKontorEnhetsNr);
-                        const nyttNavkKontor: TildeltNavKontor = {
+
+                        const nyHendelse: TildeltNavKontor = {
                             type: HendelseType.TildeltNavKontor,
                             hendelsestidspunkt: getNow(),
                             navKontor: navKontorEnhetsNr
                         };
-                        dispatch(oppdaterNavKontor(props.v2.aktivSoknad, nyttNavkKontor));
+
+                        const soknadUpdated = oHendelser.modify((a: Hendelse[]) => [...a, nyHendelse])(soknad);
+
+                        dispatch(
+                            aiuuur(
+                                soknad.fiksDigisosId,
+                                soknadUpdated.fiksDigisosSokerJson,
+                                props.v2,
+                                oppdaterNavKontor(soknad.fiksDigisosId, nyHendelse)
+                            )
+                        )
                     }}
                     inputProps={{
                         name: 'tildeltNavKontor',

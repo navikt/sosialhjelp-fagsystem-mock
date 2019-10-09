@@ -20,7 +20,8 @@ const useStyles = makeStyles(theme => ({
         // backgroundColor: 'white',
     },
     paper: {
-        padding: theme.spacing(1, 1)
+        margin: theme.spacing(2, 0),
+        padding: theme.spacing(3, 2),
     },
     col: {
 

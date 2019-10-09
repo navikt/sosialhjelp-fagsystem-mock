@@ -21,6 +21,7 @@ export interface V2Model {
     soknader: Soknad[];
 
     visNySakModal: boolean;
+    visNyDokumentasjonEtterspurtModal: boolean;
     visEndreNavKontorModal: boolean;
     visSystemSettingsModal: boolean;
 
@@ -53,6 +54,8 @@ export type V2Action
     | SwitchToLightMode
     | VisNySakModal
     | SkjulNySakModal
+    | VisNyDokumentasjonEtterspurtModal
+    | SkjulNyDokumentasjonEtterspurtModal
     | SetSoknadsStatus
     | VisEndreNavKontorModal
     | SkjulEndreNavKontorModal
@@ -79,6 +82,8 @@ export enum V2ActionTypeKeys {
     // Visnings ting
     VIS_NY_SAK_MODAL = "v2/VIS_NY_SAK_MODAL",
     SKJUL_NY_SAK_MODAL = "v2/SKJUL_NY_SAK_MODAL",
+    VIS_NY_DOKUMENTASJON_ETTERSPURT_MODAL = "v2/VIS_NY_DOKUMENTASJON_ETTERSPURT_MODAL",
+    SKJUL_NY_DOKUMENTASJON_ETTERSPURT_MODAL = "v2/SKJUL_NY_DOKUMENTASJON_ETTERSPURT_MODAL",
     SET_SOKNADS_STATUS = "v2/SET_SOKNADS_STATUS",
     VIS_ENDRE_NAV_KONTOR_MODAL = "v2/VIS_ENDRE_NAV_KONTOR_MODAL",
     SKJUL_ENDRE_NAV_KONTOR_MODAL = "v2/SKJUL_ENDRE_NAV_KONTOR_MODAL",
@@ -149,6 +154,14 @@ export interface VisNySakModal {
 
 export interface SkjulNySakModal {
     type: V2ActionTypeKeys.SKJUL_NY_SAK_MODAL;
+}
+
+export interface VisNyDokumentasjonEtterspurtModal {
+    type: V2ActionTypeKeys.VIS_NY_DOKUMENTASJON_ETTERSPURT_MODAL;
+}
+
+export interface SkjulNyDokumentasjonEtterspurtModal {
+    type: V2ActionTypeKeys.SKJUL_NY_DOKUMENTASJON_ETTERSPURT_MODAL;
 }
 
 export interface SetSoknadsStatus {

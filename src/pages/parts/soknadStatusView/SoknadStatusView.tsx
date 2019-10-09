@@ -17,6 +17,8 @@ import {aiuuur, oppdaterSoknadsStatus} from "../../../redux/v3/v3Actions";
 import {getNow} from "../../../utils/utilityFunctions";
 import {V2Model} from "../../../redux/v2/v2Types";
 import {oHendelser} from "../../../redux/v3/v3Optics";
+import {visNyDokumentasjonEtterspurtModal} from "../../../redux/v2/v2Actions";
+import NyDokumentasjonEtterspurtModal from "../dokumentasjonEtterspurt/NyDokumentasjonEtterspurt";
 
 
 const useStyles = makeStyles((theme) => {
@@ -77,19 +79,10 @@ interface StoreProps {
     v2: V2Model
 }
 
-interface State {
-    input: string;
-}
-
-const initialState: State = {
-    input: ''
-};
-
 type Props = DispatchProps & OwnProps & StoreProps;
 
 
 const SoknadStatusView: React.FC<Props> = (props: Props) => {
-    const [state, setState] = useState(initialState);
     const classes = useStyles();
     const {dispatch, soknad} = props;
 
@@ -103,7 +96,7 @@ const SoknadStatusView: React.FC<Props> = (props: Props) => {
         return (
             <Box className={classes.addbox}>
                 <Fab aria-label={fab.label} className={fab.className} color={fab.color}
-                     onClick={() => console.warn("Be om mer dokumentasjon")}>
+                     onClick={() => dispatch(visNyDokumentasjonEtterspurtModal())}>
                     {fab.icon}
                 </Fab>
                 <Typography>
@@ -173,6 +166,7 @@ const SoknadStatusView: React.FC<Props> = (props: Props) => {
                         <Typography>Lag et foreløpig svar hvis foreksempel saksbehandlingstiden tar lengre tid enn
                             forventet.</Typography>
                     </Box>
+                    <NyDokumentasjonEtterspurtModal/>
                 </div>
             </Paper>
         </div>

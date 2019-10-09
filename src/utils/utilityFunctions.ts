@@ -70,38 +70,23 @@ export const getLastHendelseOfType = (fiksDigisosSokerJson: FiksDigisosSokerJson
 export function getNow(): string {
     const time = new Date().getTime();
     const date = new Date(time);
-
-//    "2018-10-04T13:37:00.134Z"
-
-    const year = date.getFullYear();
-    const month = addZeroInFrontAndToString(date.getMonth() + 1);
-    const day = addZeroInFrontAndToString(date.getDay() + 1);
-    const hour = addZeroInFrontAndToString(date.getHours());
-    const minutes = addZeroInFrontAndToString(date.getMinutes());
-    const seconds = addZeroInFrontAndToString(date.getSeconds());
-    const millis = fixMillisecondsThreeDigits(date.getMilliseconds());
-
-    if (millis.toString().length === 3 ){
-        return `${year}-${month}-${day}T${hour}:${minutes}:${seconds}:${millis}Z`
-    } else {
-        throw Error("Length of millis is not 3. Fix the getNow() function!")
-    }
+    return date.toISOString();
 }
 
 export function formatDate(date: Date): string {
-    const year = date.getFullYear();
-    const month = addZeroInFrontAndToString(date.getMonth() + 1);
-    const day = addZeroInFrontAndToString(date.getDate());
-    const hour = addZeroInFrontAndToString(date.getHours());
-    const minutes = addZeroInFrontAndToString(date.getMinutes());
-    const seconds = addZeroInFrontAndToString(date.getSeconds());
-    const millis = fixMillisecondsThreeDigits(date.getMilliseconds());
+        const year = date.getFullYear();
+        const month = addZeroInFrontAndToString(date.getMonth() + 1);
+        const day = addZeroInFrontAndToString(date.getDate());
+        const hour = addZeroInFrontAndToString(date.getHours());
+        const minutes = addZeroInFrontAndToString(date.getMinutes());
+        const seconds = addZeroInFrontAndToString(date.getSeconds());
+        const millis = fixMillisecondsThreeDigits(date.getMilliseconds());
 
-    if (millis.toString().length === 3 ){
-        return `${year}-${month}-${day}T${hour}:${minutes}:${seconds}:${millis}Z`
-    } else {
-        throw Error("Length of millis is not 3. Fix the getNow() function!")
-    }
+        if (millis.toString().length === 3 ){
+            return `${year}-${month}-${day}T${hour}:${minutes}:${seconds}:${millis}Z`
+        } else {
+            throw Error("Length of millis is not 3. Fix the getNow() function!")
+        }
 }
 
 export const addZeroInFrontAndToString = (number: number): string => {
