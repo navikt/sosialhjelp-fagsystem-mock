@@ -82,18 +82,19 @@ export interface Utbetaling {
     hendelsestidspunkt: string; // f eks "2018-10-08T21:47:00.134Z"
     utbetalingsreferanse: string; // unik string ref
     saksreferanse: string; // "Referanse utbetalingen skal tilknyttes til (samme som i vedtak fattet og saksstatus)"
-    rammevedtaksreferanse: string // "Settes dersom utbetalingen er en del av et rammevedtak"
-    status: UtbetalingStatus;
-    belop: number; // belop i kr
-    beskrivelse: string; // "Stønaden utbetalingen gjelder for (livsopphold, strøm etc.)"
-    forfallsdato: string; // "pattern": "^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$"
-    stonadstype: string; // Grupperingsnøkkel
-    utbetalingsdato: string; // "pattern": "^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$"
-    fom: string; // DATO
-    tom: string; // DATO
-    mottaker: string; // "Mottaker (søker eller annen mottaker), fnummer, orgnummer, eller navn"
-    kontonummer: string; //"Mottakers kontonummer, bank i Norge, blir bare vist dersom mottaker er brukeren", "^[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]$"
-    utbetalingsmetode: string; // "Utbetalingsmetode, eks kontooverføring, kontantkort"
+    rammevedtaksreferanse: string|null; // "Settes dersom utbetalingen er en del av et rammevedtak"
+    status: UtbetalingStatus|null;
+    belop: number|null; // belop i kr
+    beskrivelse: string|null; // "Stønaden utbetalingen gjelder for (livsopphold, strøm etc.)"
+    forfallsdato: string|null; // "pattern": "^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$"
+    stonadstype: string|null; // Grupperingsnøkkel
+    utbetalingsdato: string|null; // "pattern": "^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$"
+    fom: string|null; // DATO
+    tom: string|null; // DATO
+    annenMottaker: boolean|null; // "Om en annen mottaker enn brukeren skal ha pengene"
+    mottaker: string|null; // "Mottaker (søker eller annen mottaker), fnummer, orgnummer, eller navn"
+    kontonummer: string|null; //"Mottakers kontonummer, bank i Norge, blir bare vist dersom mottaker er brukeren", "^[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]$"
+    utbetalingsmetode: string|null; // "Utbetalingsmetode, eks kontooverføring, kontantkort"
 }
 //saksreferanse
 export interface VedtakFattet {

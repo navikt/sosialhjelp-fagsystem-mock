@@ -7,7 +7,7 @@ import makeStyles from "@material-ui/core/styles/makeStyles";
 import Fade from "@material-ui/core/Fade";
 import Backdrop from "@material-ui/core/Backdrop";
 import {aiuuur, nyFsSaksStatus, oppdaterFsSaksStatus} from "../../../redux/v3/v3Actions";
-import {V2Model} from "../../../redux/v2/v2Types";
+import {SkjulNySakModal, V2Model} from "../../../redux/v2/v2Types";
 import {generateNyFsSaksStatus} from "../../../redux/v3/v3UtilityFunctions";
 import {FsSoknad} from "../../../redux/v3/v3FsTypes";
 import {getFsSoknadByFiksDigisosId} from "../../../utils/utilityFunctions";
@@ -82,6 +82,7 @@ const NySakModal: React.FC<Props> = (props: Props) => {
                                     )
                                 }
                             }
+                            dispatch(skjulNySakModal());
                         } else {
                             console.warn("Spesifiser en tittel.")
                         }

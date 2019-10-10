@@ -213,7 +213,7 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
                                 format="MM/dd/yyyy"
                                 margin="normal"
                                 id="date-picker-inline"
-                                label="Date picker inline"
+                                label="Innsendelsesfrist"
                                 open={datePickerIsOpen}
                                 onOpen={() => setDatePickerIsOpen(true)}
                                 onClose={() => setDatePickerIsOpen(false)}

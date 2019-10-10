@@ -86,18 +86,12 @@ const SoknadStatusView: React.FC<Props> = (props: Props) => {
     const classes = useStyles();
     const {dispatch, soknad} = props;
 
-    const fabAdd = () => {
-        const fab = {
-            color: 'primary' as 'primary',
-            className: classes.fab,
-            icon: <AddIcon/>,
-            label: 'Add',
-        };
+    const addNyDokumentasjonEtterpurtButton = () => {
         return (
             <Box className={classes.addbox}>
-                <Fab aria-label={fab.label} className={fab.className} color={fab.color}
+                <Fab aria-label='Add' className={classes.fab} color='primary'
                      onClick={() => dispatch(visNyDokumentasjonEtterspurtModal())}>
-                    {fab.icon}
+                    <AddIcon/>
                 </Fab>
                 <Typography>
                     Etterspør mer dokumentasjon
@@ -157,7 +151,7 @@ const SoknadStatusView: React.FC<Props> = (props: Props) => {
                     <Box className={classes.horizontalBox}>
                         <Typography variant={"h5"}>Dokumentasjon som er etterspurt</Typography>
                         {/*<IconButton>*/}
-                        {fabAdd()}
+                        {addNyDokumentasjonEtterpurtButton()}
                         {/*</IconButton>*/}
                     </Box>
                     <Box className={classes.horizontalBox}>

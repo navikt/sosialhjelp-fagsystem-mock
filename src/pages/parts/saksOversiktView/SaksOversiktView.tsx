@@ -106,43 +106,11 @@ const SaksOversiktView: React.FC<Props> = (props: Props) => {
         dispatch(setAktivSak(index));
     }
 
-    // const transitionDuration = {
-    //     enter: theme.transitions.duration.enteringScreen,
-    //     exit: theme.transitions.duration.leavingScreen,
-    // };
-    //
-    // const fabs = [
-    //     {
-    //         color: 'primary' as 'primary',
-    //         className: classes.fab,
-    //         icon: <AddIcon/>,
-    //         label: 'Add',
-    //     },
-    //     {
-    //         color: 'secondary' as 'secondary',
-    //         className: classes.fab,
-    //         icon: <EditIcon/>,
-    //         label: 'Edit',
-    //     },
-    //     {
-    //         color: 'inherit' as 'inherit',
-    //         className: clsx(classes.fab, classes.fabGreen),
-    //         icon: <UpIcon/>,
-    //         label: 'Expand',
-    //     },
-    // ];
-
-    const fabAdd = () => {
-        const fab = {
-            color: 'primary' as 'primary',
-            className: classes.fab,
-            icon: <AddIcon/>,
-            label: 'Add',
-        };
+    const addNySakButton = () => {
         return (
             <Box className={classes.addbox}>
-                <Fab aria-label={fab.label} className={fab.className} color={fab.color} onClick={() => dispatch(visNySakModal())}>
-                    {fab.icon}
+                <Fab aria-label='Add' className={classes.fab} color='primary' onClick={() => dispatch(visNySakModal())}>
+                    <AddIcon/>
                 </Fab>
                 <Typography>
                     Opprett sak
@@ -162,7 +130,7 @@ const SaksOversiktView: React.FC<Props> = (props: Props) => {
             const listTabPanels = soknad.saker.map((sak: FsSaksStatus, idx) => {
                 return(
                     <TabPanel value={aktivSakIndex} index={idx} dir={theme.direction}>
-                        <SaksTabView idx={idx} sak={sak} />
+                        <SaksTabView idx={idx} sak={sak} soknad={soknad} />
                     </TabPanel>
                 )
             });
@@ -208,7 +176,7 @@ const SaksOversiktView: React.FC<Props> = (props: Props) => {
                 <Typography variant={"h5"}>
                     Saksoversikt:
                 </Typography>
-                { fabAdd() }
+                { addNySakButton() }
 
                 { insertSaksOversikt() }
                 <NySakModal />

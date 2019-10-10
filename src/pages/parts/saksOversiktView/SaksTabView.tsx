@@ -57,8 +57,7 @@ const useStyles = makeStyles((theme) => {
 
         },
         fab: {
-            marginRight: theme.spacing(1),
-            color: 'inherit'
+            marginRight: theme.spacing(1)
         },
         horizontalWrapper: {
             display: 'flex',
@@ -72,7 +71,8 @@ const useStyles = makeStyles((theme) => {
 
 interface OwnProps {
     idx: number,
-    sak: SaksStatus
+    sak: SaksStatus,
+    soknad: FsSoknad
 }
 
 interface StoreProps {
@@ -91,21 +91,15 @@ type Props = DispatchProps & OwnProps & StoreProps;
 
 const SaksTabView: React.FC<Props> = (props: Props) => {
     const [tittel, setTittel] = useState(initialState);
-    const {sak, dispatch, v2, v3}  = props;
+    const {sak, dispatch, v2, v3, soknad}  = props;
     const classes = useStyles();
 
-    const utbAdd = () => {
-        const fab = {
-            color: 'primary' as 'primary',
-            className: classes.fab,
-            icon: <AddIcon/>,
-            label: 'Add',
-        };
+    const addNyUtbetalingButton = () => {
         return (
             <Box className={classes.addbox}>
-                <Fab aria-label={fab.label} className={fab.className} color={fab.color}
+                <Fab aria-label="add" className={classes.fab} color="primary"
                      onClick={() => dispatch(visNyUtbetalingModal())}>
-                    {fab.icon}
+                    <AddIcon/>
                 </Fab>
                 <Typography>
                     Legg til ny utbetaling
@@ -195,10 +189,10 @@ const SaksTabView: React.FC<Props> = (props: Props) => {
             <br/>
             <Typography>Dokumentasjonskrav</Typography>
             <br/>
-            <Typography>Utbetalinger</Typography>
+            <Typography>Utbetaling</Typography>
 
-            {utbAdd()}
-            <NyUtbetalingModal/>
+            {addNyUtbetalingButton()}
+            <NyUtbetalingModal sak={sak} soknad={soknad}/>
             <br/>
             <Typography>Vedtak</Typography>
             <br/>
