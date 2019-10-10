@@ -133,6 +133,18 @@ export const visNyDokumentasjonEtterspurtModal = (): V2Action => {
     }
 };
 
+export const visNyUtbetalingModal = (): V2Action => {
+    return {
+        type: V2ActionTypeKeys.VIS_NY_UTBETALING_MODAL
+    }
+};
+
+export const skjulNyUtbetalingModal = (): V2Action => {
+    return {
+        type: V2ActionTypeKeys.SKJUL_NY_UTBETALING_MODAL
+    }
+};
+
 export const skjulNyDokumentasjonEtterspurtModal = (): V2Action => {
     return {
         type: V2ActionTypeKeys.SKJUL_NY_DOKUMENTASJON_ETTERSPURT_MODAL

@@ -14,6 +14,10 @@ import {aiuuur, oppdaterFsSaksStatus} from "../../../redux/v3/v3Actions";
 import {OppdaterFsSaksStatus, V3State} from "../../../redux/v3/v3Types";
 import {getFsSoknadByFiksDigisosId} from "../../../utils/utilityFunctions";
 import {FsSoknad} from "../../../redux/v3/v3FsTypes";
+import AddIcon from '@material-ui/icons/Add';
+import Fab from "@material-ui/core/Fab";
+import {visNyDokumentasjonEtterspurtModal, visNyUtbetalingModal} from "../../../redux/v2/v2Actions";
+import NyUtbetalingModal from "../utbetaling/NyUtbetaling";
 
 const useStyles = makeStyles((theme) => {
     return createStyles({
@@ -90,6 +94,25 @@ const SaksTabView: React.FC<Props> = (props: Props) => {
     const {sak, dispatch, v2, v3}  = props;
     const classes = useStyles();
 
+    const utbAdd = () => {
+        const fab = {
+            color: 'primary' as 'primary',
+            className: classes.fab,
+            icon: <AddIcon/>,
+            label: 'Add',
+        };
+        return (
+            <Box className={classes.addbox}>
+                <Fab aria-label={fab.label} className={fab.className} color={fab.color}
+                     onClick={() => dispatch(visNyUtbetalingModal())}>
+                    {fab.icon}
+                </Fab>
+                <Typography>
+                    Legg til ny utbetaling
+                </Typography>
+            </Box>
+        )
+    };
 
     return (
         <div>
@@ -173,6 +196,9 @@ const SaksTabView: React.FC<Props> = (props: Props) => {
             <Typography>Dokumentasjonskrav</Typography>
             <br/>
             <Typography>Utbetalinger</Typography>
+
+            {utbAdd()}
+            <NyUtbetalingModal/>
             <br/>
             <Typography>Vedtak</Typography>
             <br/>

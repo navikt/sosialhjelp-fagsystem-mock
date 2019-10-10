@@ -89,6 +89,7 @@ export const initialV2Model: V2Model = {
     thememode: 'light',
     visNySakModal: false,
     visNyDokumentasjonEtterspurtModal: false,
+    visNyUtbetalingModal: false,
     visEndreNavKontorModal: false,
     visSystemSettingsModal: false,
 
@@ -145,6 +146,8 @@ const v2Reducer: Reducer<V2Model, V2Action> = (
         case V2ActionTypeKeys.SKJUL_NY_SAK_MODAL: {return {...state, visNySakModal: false}}
         case V2ActionTypeKeys.VIS_NY_DOKUMENTASJON_ETTERSPURT_MODAL: {return {...state, visNyDokumentasjonEtterspurtModal: true}}
         case V2ActionTypeKeys.SKJUL_NY_DOKUMENTASJON_ETTERSPURT_MODAL: {return {...state, visNyDokumentasjonEtterspurtModal: false}}
+        case V2ActionTypeKeys.VIS_NY_UTBETALING_MODAL: {return {...state, visNyUtbetalingModal: true}}
+        case V2ActionTypeKeys.SKJUL_NY_UTBETALING_MODAL: {return {...state, visNyUtbetalingModal: false}}
         case V2ActionTypeKeys.VIS_ENDRE_NAV_KONTOR_MODAL: {return {...state, visEndreNavKontorModal: true}}
         case V2ActionTypeKeys.SKJUL_ENDRE_NAV_KONTOR_MODAL: {return {...state, visEndreNavKontorModal: false}}
         case V2ActionTypeKeys.VIS_SYSTEM_SETTINGS_MODAL: {return {...state, visSystemSettingsModal: true}}

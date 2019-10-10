@@ -12,7 +12,7 @@ import {
     oNavKontor,
     oGetFsSaksStatus, oFsSaksStatusStatus
 } from "./v3Optics";
-import Hendelse from "../../types/hendelseTypes";
+import Hendelse, {Utbetaling} from "../../types/hendelseTypes";
 import {fsSaksStatusToSaksStatus} from "./v3UtilityFunctions";
 import {Lens, fromTraversable, Prism, Traversal} from "monocle-ts/es6";
 import {array} from "fp-ts/es6/Array";
