@@ -166,7 +166,7 @@ const SoknadStatusView: React.FC<Props> = (props: Props) => {
                         <Typography>Lag et foreløpig svar hvis foreksempel saksbehandlingstiden tar lengre tid enn
                             forventet.</Typography>
                     </Box>
-                    <NyDokumentasjonEtterspurtModal/>
+                    <NyDokumentasjonEtterspurtModal soknad={soknad}/>
                 </div>
             </Paper>
         </div>

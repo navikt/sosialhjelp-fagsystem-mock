@@ -68,9 +68,7 @@ export const getLastHendelseOfType = (fiksDigisosSokerJson: FiksDigisosSokerJson
 };
 
 export function getNow(): string {
-    const time = new Date().getTime();
-    const date = new Date(time);
-    return date.toISOString();
+    return new Date().toISOString();
 }
 
 export function formatDate(date: Date): string {

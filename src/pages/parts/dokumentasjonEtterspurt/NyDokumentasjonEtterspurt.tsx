@@ -16,8 +16,12 @@ import Fab from "@material-ui/core/Fab";
 import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/core/Box";
 import AddIcon from '@material-ui/icons/Add';
-import {Dokument} from "../../../types/hendelseTypes";
+import Hendelse, {Dokument, DokumentasjonEtterspurt, HendelseType} from "../../../types/hendelseTypes";
 import Grid from "@material-ui/core/Grid";
+import {getNow} from "../../../utils/utilityFunctions";
+import {aiuuur, oppdaterDokumentasjonEtterspurt} from "../../../redux/v3/v3Actions";
+import {FsSoknad} from "../../../redux/v3/v3FsTypes";
+import {oHendelser} from "../../../redux/v3/v3Optics";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -58,6 +62,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 
 interface OwnProps {
+    soknad: FsSoknad
 }
 
 interface StoreProps {
@@ -74,29 +79,66 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
     const [tilleggsinformasjon, setTilleggsinformasjon] = useState('');
     const initialDokumentListe: Dokument[] = [];
     const [dokumentListe, setDokumentListe] = useState(initialDokumentListe);
-    const initialDate = new Date().setDate(new Date().getDate() + 7);
-    const [innsendelsesfrist, setInnsendelsesfrist] = React.useState(initialDate);
+    const [datePickerIsOpen, setDatePickerIsOpen] = useState(false);
+    let initialDate = new Date();
+    initialDate.setDate(new Date().getDate() + 7); // En uke fram i tid
+    initialDate.setHours(12);
+    const [innsendelsesfrist, setInnsendelsesfrist] = useState(initialDate);
     const classes = useStyles();
-    const {visNyDokumentasjonEtterspurtModal, dispatch, v2, v3} = props;
+    const {visNyDokumentasjonEtterspurtModal, dispatch, v2, soknad, v3} = props;
+    const filreferanselager = v2.filreferanselager;
 
     const leggTilDokument = () => {
         const nyttDokument: Dokument = {
             dokumenttype: dokumenttype,
             tilleggsinformasjon: tilleggsinformasjon,
-            innsendelsesfrist: innsendelsesfrist.toString()
+            innsendelsesfrist: innsendelsesfrist.toISOString()
         };
         dokumentListe.push(nyttDokument);
         setDokumentListe(dokumentListe);
-        setDokumenttype('')
-        setTilleggsinformasjon('')
-        setInnsendelsesfrist(initialDate)
+        setDokumenttype('');
+        setTilleggsinformasjon('');
+        setInnsendelsesfrist(initialDate);
+    };
+
+    const sendDokumentasjonEtterspurt = () => {
+        const nyHendelse: DokumentasjonEtterspurt = {
+            type: HendelseType.DokumentasjonEtterspurt,
+            hendelsestidspunkt: getNow(),
+            forvaltningsbrev: {
+                referanse: {
+                    type: filreferanselager.dokumentlager[0].type,
+                    id: filreferanselager.dokumentlager[0].id
+                }
+            },
+            vedlegg: [],
+            dokumenter: dokumentListe
+        };
+
+        const soknadUpdated = oHendelser.modify((a: Hendelse[]) => [...a, nyHendelse])(soknad);
+
+        dispatch(
+            aiuuur(
+                soknad.fiksDigisosId,
+                soknadUpdated.fiksDigisosSokerJson,
+                v2,
+                oppdaterDokumentasjonEtterspurt(soknad.fiksDigisosId, nyHendelse)
+            )
+        );
+
+        setDokumentListe([]);
+        setDokumenttype('');
+        setTilleggsinformasjon('');
+        setInnsendelsesfrist(initialDate);
+
+        dispatch(dispatch(skjulNyDokumentasjonEtterspurtModal()));
     };
 
     function getAnies() {
         return <Grid container direction="column" justify="flex-start" alignItems="flex-start" spacing={3}>
-            {dokumentListe.map((dokument: Dokument) => {
+            {dokumentListe.map((dokument: Dokument, index) => {
                 return (
-                    <Grid item xs={12} zeroMinWidth>
+                    <Grid item key={'krav: ' + index} xs={12} zeroMinWidth>
                         <Box className={classes.krav}>
                             <TextField
                                 id="outlined-name"
@@ -116,9 +158,9 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
                             />
                             <TextField
                                 id="outlined-name"
-                                label="Innsendelsesfrist"
+                                label="Innsendelsesfrist (UTC)"
                                 className={classes.textField}
-                                value={dokument.innsendelsesfrist}
+                                value={dokument.innsendelsesfrist.substring(0, dokument.innsendelsesfrist.search('T'))}
                                 margin="normal"
                                 variant="outlined"
                             />
@@ -139,7 +181,7 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
                 timeout: 500,
             }}
             open={visNyDokumentasjonEtterspurtModal}
-            onClose={() => props.dispatch(skjulNyDokumentasjonEtterspurtModal())}
+            onClose={() => dispatch(skjulNyDokumentasjonEtterspurtModal())}
         >
             <Fade in={visNyDokumentasjonEtterspurtModal}>
                 <div className={classes.paper}>
@@ -152,6 +194,7 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
                             onChange={(evt) => setDokumenttype(evt.target.value)}
                             margin="normal"
                             variant="outlined"
+                            autoComplete="off"
                         />
                         <TextField
                             id="outlined-name"
@@ -161,6 +204,7 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
                             onChange={(evt) => setTilleggsinformasjon(evt.target.value)}
                             margin="normal"
                             variant="outlined"
+                            autoComplete="off"
                         />
                         <MuiPickersUtilsProvider utils={DateFnsUtils}>
                             <KeyboardDatePicker
@@ -170,8 +214,14 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
                                 margin="normal"
                                 id="date-picker-inline"
                                 label="Date picker inline"
+                                open={datePickerIsOpen}
+                                onOpen={() => setDatePickerIsOpen(true)}
+                                onClose={() => setDatePickerIsOpen(false)}
                                 value={innsendelsesfrist}
-                                onChange={(date: any) => setInnsendelsesfrist(date)}
+                                onChange={(date: any) => {
+                                    setInnsendelsesfrist(date);
+                                    setDatePickerIsOpen(false);
+                                }}
                                 KeyboardButtonProps={{
                                     'aria-label': 'change date',
                                 }}
@@ -186,8 +236,16 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
                         <Typography>
                             Legg til dokumentkrav
                         </Typography>
+                        <Fab size="small" aria-label="add" className={classes.fab} color="primary" onClick={() => {
+                            sendDokumentasjonEtterspurt();
+                        }}>
+                            <AddIcon/>
+                        </Fab>
+                        <Typography>
+                            Send DokumentasjonEtterspurt
+                        </Typography>
                     </Box>
-                    {(dokumentListe.length == 0) && <div>Ingen elementer lagt til</div>}
+                    {(dokumentListe.length == 0) && <div>Ingen dokumenter lagt til</div>}
                     {getAnies()}
                 </div>
             </Fade>
