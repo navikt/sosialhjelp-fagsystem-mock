@@ -24,6 +24,7 @@ export interface V2Model {
 
     visNySakModal: boolean;
     visNyDokumentasjonEtterspurtModal: boolean;
+    visNyUtbetalingModal: boolean;
     visEndreNavKontorModal: boolean;
     visSystemSettingsModal: boolean;
 
@@ -57,7 +58,9 @@ export type V2Action
     | VisNySakModal
     | SkjulNySakModal
     | VisNyDokumentasjonEtterspurtModal
+    | VisNyUtbetalingModal
     | SkjulNyDokumentasjonEtterspurtModal
+    | SkjulNyUtbetalingModal
     | SetSoknadsStatus
     | VisEndreNavKontorModal
     | SkjulEndreNavKontorModal
@@ -86,6 +89,8 @@ export enum V2ActionTypeKeys {
     SKJUL_NY_SAK_MODAL = "v2/SKJUL_NY_SAK_MODAL",
     VIS_NY_DOKUMENTASJON_ETTERSPURT_MODAL = "v2/VIS_NY_DOKUMENTASJON_ETTERSPURT_MODAL",
     SKJUL_NY_DOKUMENTASJON_ETTERSPURT_MODAL = "v2/SKJUL_NY_DOKUMENTASJON_ETTERSPURT_MODAL",
+    VIS_NY_UTBETALING_MODAL = "v2/VIS_NY_UTBETALINGMODAL_MODAL",
+    SKJUL_NY_UTBETALING_MODAL = "v2/SKJUL_NY_UTBETALINGMODAL_MODAL",
     SET_SOKNADS_STATUS = "v2/SET_SOKNADS_STATUS",
     VIS_ENDRE_NAV_KONTOR_MODAL = "v2/VIS_ENDRE_NAV_KONTOR_MODAL",
     SKJUL_ENDRE_NAV_KONTOR_MODAL = "v2/SKJUL_ENDRE_NAV_KONTOR_MODAL",
@@ -160,6 +165,14 @@ export interface SkjulNySakModal {
 
 export interface VisNyDokumentasjonEtterspurtModal {
     type: V2ActionTypeKeys.VIS_NY_DOKUMENTASJON_ETTERSPURT_MODAL;
+}
+
+export interface VisNyUtbetalingModal {
+    type: V2ActionTypeKeys.VIS_NY_UTBETALING_MODAL;
+}
+
+export interface SkjulNyUtbetalingModal {
+    type: V2ActionTypeKeys.SKJUL_NY_UTBETALING_MODAL;
 }
 
 export interface SkjulNyDokumentasjonEtterspurtModal {
