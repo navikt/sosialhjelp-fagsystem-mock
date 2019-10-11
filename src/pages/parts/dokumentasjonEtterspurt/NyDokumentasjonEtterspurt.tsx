@@ -242,7 +242,7 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
                             <AddIcon/>
                         </Fab>
                         <Typography>
-                            Send DokumentasjonEtterspurt
+                            Etterspør dokumentasjon
                         </Typography>
                     </Box>
                     {(dokumentListe.length == 0) && <div>Ingen dokumenter lagt til</div>}

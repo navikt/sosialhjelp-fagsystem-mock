@@ -124,7 +124,7 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
     const [kontonummerLabelPlaceholder, setKontonummerLabelPlaceholder] = useState("Kontonummer (Ikke satt)");
     const [utbetalingsmetode, setUtbetalingsmetode] = useState<string|null>(null);
     const [forfallsdatoDatePickerIsOpen, setForfallsdatoDatePickerIsOpen] = useState(false);
-    const [utbetalingDatePickerIsOpen, setUtbetalingDatePickerIsOpen] = useState(false);
+    const [utbetalingsdatoDatePickerIsOpen, setUtbetalingsdatoDatePickerIsOpen] = useState(false);
     const [fomDatePickerIsOpen, setFomDatePickerIsOpen] = useState(false);
     const [tomDatePickerIsOpen, setTomDatePickerIsOpen] = useState(false);
 
@@ -159,7 +159,7 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
         setKontonummerLabelPlaceholder("Kontonummer (Ikke satt)");
         setUtbetalingsmetode(null);
         setForfallsdatoDatePickerIsOpen(false);
-        setUtbetalingDatePickerIsOpen(false);
+        setUtbetalingsdatoDatePickerIsOpen(false);
         setFomDatePickerIsOpen(false);
         setTomDatePickerIsOpen(false);
     }
@@ -233,11 +233,84 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
         setKontonummerLabelPlaceholder("Kontonummer");
         setUtbetalingsmetode("Buttcoin");
         setForfallsdatoDatePickerIsOpen(false);
-        setUtbetalingDatePickerIsOpen(false);
+        setUtbetalingsdatoDatePickerIsOpen(false);
         setFomDatePickerIsOpen(false);
         setTomDatePickerIsOpen(false);
     };
 
+
+    function getTextFieldGridWithDynamicShrink(label: string, value: any, setter: any, shrink: boolean, shrinkSetter: any) {
+        return <Grid item key={label} xs={6} zeroMinWidth>
+            <TextField
+                id="outlined-name"
+                label={label}
+                className={classes.textField}
+                value={value}
+                onChange={(evt) => {
+                    setter(evt.target.value);
+                    shrinkSetter(true);
+                }}
+                onFocus={() => shrinkSetter(true)}
+                onBlur={() => {
+                    if (value == null || value.length < 1) {
+                        shrinkSetter(false);
+                    }
+                }}
+                InputLabelProps={{
+                    shrink: shrink,
+                }}
+                margin="normal"
+                variant="filled"
+                autoComplete="off"
+            />
+        </Grid>;
+    }
+
+    function getTextFieldGrid(label: string, value: any, setter: any, inputType: string) {
+        return <Grid item key={label} xs={6} zeroMinWidth>
+            <TextField
+                id="outlined-name"
+                label={label}
+                className={classes.textField}
+                value={value}
+                onChange={(evt) => setter(evt.target.value)}
+                type={inputType}
+                InputLabelProps={{
+                    shrink: true,
+                }}
+                margin="normal"
+                variant="filled"
+                autoComplete="off"
+            />
+        </Grid>;
+    }
+
+    function getKeyboardDatePickerGrid(label: string, value: any, setValue: any, isOpen: boolean, setIsOpen: any) {
+        return <Grid item key={"grid: " + label} xs={6} zeroMinWidth>
+            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                <KeyboardDatePicker
+                    className={classes.otherField}
+                    disableToolbar
+                    variant="inline"
+                    format="MM/dd/yyyy"
+                    margin="normal"
+                    id={label}
+                    label={label}
+                    open={isOpen}
+                    onOpen={() => setIsOpen(true)}
+                    onClose={() => setIsOpen(false)}
+                    value={value}
+                    onChange={(date: any) => {
+                        setValue(date);
+                        setIsOpen(false);
+                    }}
+                    KeyboardButtonProps={{
+                        'aria-label': 'change date',
+                    }}
+                />
+            </MuiPickersUtilsProvider>
+        </Grid>;
+    }
 
     return (
         <Modal
@@ -258,253 +331,82 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
             <Fade in={visNyUtbetalingModal}>
                 <div className={classes.papertowel}>
                     <div className={classes.paperback}>
-                    <Grid container spacing={3} justify="center" alignItems="center">
-                        <Grid item key={'Utbetalingsreferanse'} xs={6} zeroMinWidth>
-                            <TextField
-                                id="outlined-name"
-                                label="Utbetalingsreferanse"
-                                className={classes.textField}
-                                value={utbetalingsreferanse}
-                                onChange={(evt) => setUtbetalingsreferanse(evt.target.value)}
-                                margin="normal"
-                                variant="filled"
-                                autoComplete="off"
-                            />
-                        </Grid>
-                        <Grid item key={'Rammevedtaksreferanse'} xs={6} zeroMinWidth>
-                            <TextField
-                                id="outlined-name"
-                                label="Rammevedtaksreferanse"
-                                className={classes.textField}
-                                value={rammevedtaksreferanse}
-                                onChange={(evt) => setRammevedtaksreferanse(evt.target.value)}
-                                margin="normal"
-                                variant="filled"
-                                autoComplete="off"
-                            />
-                        </Grid>
-                        <Grid item key={'Status'} xs={6} zeroMinWidth>
-                            <FormControl className={classes.formControl}>
-                                <InputLabel htmlFor="age-simple">Status</InputLabel>
-                                <Select
-                                    value={status}
-                                    onChange={(evt) => setStatus(evt.target.value as UtbetalingStatus)}
-                                    inputProps={{
-                                        name: 'setStatus',
-                                        id: 'status',
+                        <Grid container spacing={3} justify="center" alignItems="center">
+                            {getTextFieldGrid("Utbetalingsreferanse", utbetalingsreferanse, setUtbetalingsreferanse, "text")}
+                            {getTextFieldGrid("Rammevedtaksreferanse", rammevedtaksreferanse, setRammevedtaksreferanse, "text")}
+                            <Grid item key={'Status'} xs={6} zeroMinWidth>
+                                <FormControl className={classes.formControl}>
+                                    <InputLabel htmlFor="age-simple" shrink={true}>Status</InputLabel>
+                                    <Select
+                                        value={status}
+                                        onChange={(evt) => setStatus(evt.target.value as UtbetalingStatus)}
+                                        inputProps={{
+                                            name: 'setStatus',
+                                            id: 'status',
+                                        }}
+                                    >
+                                        <MenuItem value={UtbetalingStatus.PLANLAGT_UTBETALING}>Planlagt
+                                            Utbetaling</MenuItem>
+                                        <MenuItem value={UtbetalingStatus.UTBETALT}>Utbetalt</MenuItem>
+                                        <MenuItem value={UtbetalingStatus.STOPPET}>Stoppet</MenuItem>
+                                        <MenuItem value={UtbetalingStatus.ANNULLERT}>Annulert</MenuItem>
+                                    </Select>
+                                </FormControl>
+                            </Grid>
+                            {getTextFieldGrid("Beløp", belop, setBelop, "number")}
+                            {getTextFieldGrid("Beskrivelse", beskrivelse, setBeskrivelse, "text")}
+                            {getKeyboardDatePickerGrid("Forfallsdato", forfallsdato, setForfallsdato, forfallsdatoDatePickerIsOpen, setForfallsdatoDatePickerIsOpen)}
+                            {getTextFieldGrid("Stønadstype", stonadstype, setStonadstype, "text")}
+                            {getKeyboardDatePickerGrid("Utbetalingsdato", utbetalingsdato, setUtbetalingsdato, utbetalingsdatoDatePickerIsOpen, setUtbetalingsdatoDatePickerIsOpen)}
+                            {getKeyboardDatePickerGrid("fom", fom, setFom, fomDatePickerIsOpen, setFomDatePickerIsOpen)}
+                            {getKeyboardDatePickerGrid("tom", tom, setTom, tomDatePickerIsOpen, setTomDatePickerIsOpen)}
+                            <Grid item key={'Annen mottaker'} xs={6} zeroMinWidth>
+                                <Typography variant={"subtitle1"} className={classes.otherField}>
+                                    {"Annen mottaker:  "}
+                                    <ButtonGroup
+                                        color="primary"
+                                        aria-label="full-width contained primary button group"
+                                    >
+                                        <Button variant={annenMottakerTrueVariant} onClick={() => {
+                                            setAnnenMottaker(true);
+                                            setAnnenMottakerTrueVariant('contained');
+                                            setAnnenMottakerFalseVariant('text');
+                                        }}>True</Button>
+                                        <Button variant={annenMottakerFalseVariant} onClick={() => {
+                                            setAnnenMottaker(false);
+                                            setAnnenMottakerTrueVariant('text');
+                                            setAnnenMottakerFalseVariant('contained');
+                                        }}>False</Button>
+                                    </ButtonGroup>
+                                </Typography>
+                            </Grid>
+                            {getTextFieldGrid("Mottaker", mottaker, setMottaker, "text")}
+                            <Grid item key={'Kontonummer'} xs={6} zeroMinWidth>
+                                <TextField
+                                    id="filled-number"
+                                    label={kontonummerLabelPlaceholder}
+                                    onChange={(evt) => {
+                                        if (evt.target.value.length == 11) {
+                                            setKontonummer(evt.target.value);
+                                            setKontonummerLabelPlaceholder("Kontonummer");
+                                        } else {
+                                            setKontonummer(null);
+                                            setKontonummerLabelPlaceholder("Kontonummer (Ikke satt)");
+                                        }
                                     }}
-                                >
-                                    <MenuItem value={UtbetalingStatus.PLANLAGT_UTBETALING}>Planlagt Utbetaling</MenuItem>
-                                    <MenuItem value={UtbetalingStatus.UTBETALT}>Utbetalt</MenuItem>
-                                    <MenuItem value={UtbetalingStatus.STOPPET}>Stoppet</MenuItem>
-                                    <MenuItem value={UtbetalingStatus.ANNULLERT}>Annulert</MenuItem>
-                                </Select>
-                            </FormControl>
-                        </Grid>
-                        <Grid item key={'Belop'} xs={6} zeroMinWidth>
-                            <TextField
-                                id="filled-number"
-                                label="Beløp"
-                                value={belop}
-                                onChange={(evt) => setBelop(Number(evt.target.value))}
-                                type="number"
-                                className={classes.textField}
-                                InputLabelProps={{
-                                    shrink: true,
-                                }}
-                                autoComplete="off"
-                                margin="normal"
-                                variant="filled"
-                            />
-                        </Grid>
-                        <Grid item key={'Beskrivelse'} xs={6} zeroMinWidth>
-                            <TextField
-                                id="outlined-name"
-                                label="Beskrivelse"
-                                className={classes.textField}
-                                value={beskrivelse}
-                                onChange={(evt) => setBeskrivelse(evt.target.value)}
-                                margin="normal"
-                                variant="filled"
-                                autoComplete="off"
-                            />
-                        </Grid>
-                        <Grid item key={'Forfallsdato'} xs={6} zeroMinWidth>
-                            <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                                <KeyboardDatePicker
-                                    className={classes.otherField}
-                                    disableToolbar
-                                    variant="inline"
-                                    format="MM/dd/yyyy"
+                                    type="number"
+                                    className={classes.textField}
+                                    value={kontonummer}
+                                    InputLabelProps={{
+                                        shrink: true,
+                                    }}
+                                    autoComplete="off"
                                     margin="normal"
-                                    id="Forfallsdato"
-                                    label="Forfallsdato"
-                                    open={forfallsdatoDatePickerIsOpen}
-                                    onOpen={() => setForfallsdatoDatePickerIsOpen(true)}
-                                    onClose={() => setForfallsdatoDatePickerIsOpen(false)}
-                                    value={forfallsdato}
-                                    onChange={(date: any) => {
-                                        setForfallsdato(date);
-                                        setForfallsdatoDatePickerIsOpen(false);
-                                    }}
-                                    KeyboardButtonProps={{
-                                        'aria-label': 'change date',
-                                    }}
+                                    variant="filled"
                                 />
-                            </MuiPickersUtilsProvider>
+                            </Grid>
+                            {getTextFieldGrid("Utbetalingsmetode", utbetalingsmetode, setUtbetalingsmetode, "text")}
                         </Grid>
-                        <Grid item key={'Stonadstype'} xs={6} zeroMinWidth>
-                            <TextField
-                                id="outlined-name"
-                                label="Stønadstype"
-                                className={classes.textField}
-                                value={stonadstype}
-                                onChange={(evt) => setStonadstype(evt.target.value)}
-                                margin="normal"
-                                variant="filled"
-                                autoComplete="off"
-                            />
-                        </Grid>
-                        <Grid item key={'Utbetalingsdato'} xs={6} zeroMinWidth>
-                            <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                                <KeyboardDatePicker
-                                    className={classes.otherField}
-                                    disableToolbar
-                                    variant="inline"
-                                    format="MM/dd/yyyy"
-                                    margin="normal"
-                                    id="Utbetalingsdato"
-                                    label="Utbetalingsdato"
-                                    open={utbetalingDatePickerIsOpen}
-                                    onOpen={() => setUtbetalingDatePickerIsOpen(true)}
-                                    onClose={() => setUtbetalingDatePickerIsOpen(false)}
-                                    value={utbetalingsdato}
-                                    onChange={(date: any) => {
-                                        setUtbetalingsdato(date);
-                                        setUtbetalingDatePickerIsOpen(false);
-                                    }}
-                                    KeyboardButtonProps={{
-                                        'aria-label': 'change date',
-                                    }}
-                                />
-                            </MuiPickersUtilsProvider>
-                        </Grid>
-                        <Grid item key={'fom'} xs={6} zeroMinWidth>
-                            <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                                <KeyboardDatePicker
-                                    className={classes.otherField}
-                                    disableToolbar
-                                    variant="inline"
-                                    format="MM/dd/yyyy"
-                                    margin="normal"
-                                    id="fom"
-                                    label="fom"
-                                    open={fomDatePickerIsOpen}
-                                    onOpen={() => setFomDatePickerIsOpen(true)}
-                                    onClose={() => setFomDatePickerIsOpen(false)}
-                                    value={fom}
-                                    onChange={(date: any) => {
-                                        setFom(date);
-                                        setFomDatePickerIsOpen(false);
-                                    }}
-                                    KeyboardButtonProps={{
-                                        'aria-label': 'change date',
-                                    }}
-                                />
-                            </MuiPickersUtilsProvider>
-                        </Grid>
-                        <Grid item key={'tom'} xs={6} zeroMinWidth>
-                            <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                                <KeyboardDatePicker
-                                    className={classes.otherField}
-                                    disableToolbar
-                                    variant="inline"
-                                    format="MM/dd/yyyy"
-                                    margin="normal"
-                                    id="tom"
-                                    label="tom"
-                                    open={tomDatePickerIsOpen}
-                                    onOpen={() => setTomDatePickerIsOpen(true)}
-                                    onClose={() => setTomDatePickerIsOpen(false)}
-                                    value={tom}
-                                    onChange={(date: any) => {
-                                        setTom(date);
-                                        setTomDatePickerIsOpen(false);
-                                    }}
-                                    KeyboardButtonProps={{
-                                        'aria-label': 'change date',
-                                    }}
-                                />
-                            </MuiPickersUtilsProvider>
-                        </Grid>
-                        <Grid item key={'Stonadstype'} xs={6} zeroMinWidth>
-                            <Typography variant={"subtitle1"} className={classes.otherField}>
-                                {"Annen mottaker:  "}
-                                <ButtonGroup
-                                    color="primary"
-                                    aria-label="full-width contained primary button group"
-                                >
-                                    <Button variant={annenMottakerTrueVariant} onClick={() => {
-                                        setAnnenMottaker(true);
-                                        setAnnenMottakerTrueVariant('contained');
-                                        setAnnenMottakerFalseVariant('text');
-                                    }}>True</Button>
-                                    <Button variant={annenMottakerFalseVariant} onClick={() => {
-                                        setAnnenMottaker(false);
-                                        setAnnenMottakerTrueVariant('text');
-                                        setAnnenMottakerFalseVariant('contained');
-                                    }}>False</Button>
-                                </ButtonGroup>
-                            </Typography>
-                        </Grid>
-                        <Grid item key={'Mottaker'} xs={6} zeroMinWidth>
-                            <TextField
-                                id="outlined-name"
-                                label="Mottaker"
-                                className={classes.textField}
-                                value={mottaker}
-                                onChange={(evt) => setMottaker(evt.target.value)}
-                                margin="normal"
-                                variant="filled"
-                                autoComplete="off"
-                            />
-                        </Grid>
-                        <Grid item key={'Kontonummer'} xs={6} zeroMinWidth>
-                            <TextField
-                                id="filled-number"
-                                label={kontonummerLabelPlaceholder}
-                                onChange={(evt) => {
-                                    if (evt.target.value.length == 11) {
-                                        setKontonummer(evt.target.value);
-                                        setKontonummerLabelPlaceholder("Kontonummer");
-                                    } else {
-                                        setKontonummer(null);
-                                        setKontonummerLabelPlaceholder("Kontonummer (Ikke satt)");
-                                    }
-                                }}
-                                type="number"
-                                className={classes.textField}
-                                InputLabelProps={{
-                                    shrink: true,
-                                }}
-                                autoComplete="off"
-                                margin="normal"
-                                variant="filled"
-                            />
-                        </Grid>
-                        <Grid item key={'Utbetalingsmetode'} xs={6} zeroMinWidth>
-                            <TextField
-                                id="outlined-name"
-                                label="Utbetalingsmetode"
-                                className={classes.textField}
-                                value={utbetalingsmetode}
-                                onChange={(evt) => setUtbetalingsmetode(evt.target.value)}
-                                margin="normal"
-                                variant="filled"
-                                autoComplete="off"
-                            />
-                        </Grid>
-                    </Grid>
                     </div>
                     <div className={classes.paperboys}>
                         <Typography className={classes.finalButtons}>
@@ -513,7 +415,7 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
                             }}>
                                 <AddIcon/>
                             </Fab>
-                            Lag en standard utbetaling
+                            Fyll ut alle felter
                         </Typography>
                         <Typography className={classes.finalButtons}>
                             <Fab size="small" aria-label="add" className={classes.fab} color="primary" onClick={() => {
@@ -521,7 +423,7 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
                             }}>
                                 <AddIcon/>
                             </Fab>
-                            Send Utbetaling
+                            Legg til utbetaling
                         </Typography>
                     </div>
                 </div>
