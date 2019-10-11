@@ -13,7 +13,7 @@ import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
 import Hendelse, {HendelseType, SaksStatus, Utbetaling, UtbetalingStatus} from "../../../types/hendelseTypes";
 import {oHendelser} from "../../../redux/v3/v3Optics";
-import {aiuuur, oppdaterUtbetaling} from "../../../redux/v3/v3Actions";
+import {aiuuur, nyUtbetaling} from "../../../redux/v3/v3Actions";
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
 import DateFnsUtils from "@date-io/date-fns";
@@ -192,7 +192,7 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
                 soknad.fiksDigisosId,
                 soknadUpdated.fiksDigisosSokerJson,
                 v2,
-                oppdaterUtbetaling(soknad.fiksDigisosId, nyHendelse)
+                nyUtbetaling(soknad.fiksDigisosId, sak.referanse, nyHendelse)
             )
         );
 
@@ -209,10 +209,10 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
         defaultUtbetalingsdato.setDate(new Date().getDate() + 7); // En uke fram i tid
         defaultUtbetalingsdato.setHours(12);
         let defaultFomDato = new Date();
-        defaultFomDato.setDate(new Date().getDate() - 7); // En uke fram i tid
+        defaultFomDato.setDate(new Date().getDate() - 7); // En uke tilbake i tid
         defaultFomDato.setHours(12);
         let defaultTomDato = new Date();
-        defaultTomDato.setDate(new Date().getDate() + 14); // En uke fram i tid
+        defaultTomDato.setDate(new Date().getDate() + 14); // To uker fram i tid
         defaultTomDato.setHours(12);
 
         setUtbetalingsreferanse(generateFilreferanseId());
@@ -227,7 +227,7 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
         setTom(defaultTomDato);
         setAnnenMottaker(false);
         setAnnenMottakerTrueVariant('text');
-        setAnnenMottakerFalseVariant('text');
+        setAnnenMottakerFalseVariant('contained');
         setMottaker("Jim Raynor");
         setKontonummer("12345678903");
         setKontonummerLabelPlaceholder("Kontonummer");
@@ -342,7 +342,7 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
                                     open={forfallsdatoDatePickerIsOpen}
                                     onOpen={() => setForfallsdatoDatePickerIsOpen(true)}
                                     onClose={() => setForfallsdatoDatePickerIsOpen(false)}
-                                    value={utbetalingsdato}
+                                    value={forfallsdato}
                                     onChange={(date: any) => {
                                         setForfallsdato(date);
                                         setForfallsdatoDatePickerIsOpen(false);
@@ -426,7 +426,7 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
                                     open={tomDatePickerIsOpen}
                                     onOpen={() => setTomDatePickerIsOpen(true)}
                                     onClose={() => setTomDatePickerIsOpen(false)}
-                                    value={utbetalingsdato}
+                                    value={tom}
                                     onChange={(date: any) => {
                                         setTom(date);
                                         setTomDatePickerIsOpen(false);

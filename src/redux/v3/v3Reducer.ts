@@ -10,7 +10,7 @@ import {
     oGetSoknad,
     oHendelser,
     oNavKontor,
-    oGetFsSaksStatus, oFsSaksStatusStatus
+    oGetFsSaksStatus, oFsSaksStatusStatus, oFsSakerTraversal, oFsSaksStatusPrism, oFsSaksStatusUtbetalinger
 } from "./v3Optics";
 import Hendelse, {Utbetaling} from "../../types/hendelseTypes";
 import {fsSaksStatusToSaksStatus} from "./v3UtilityFunctions";
@@ -117,17 +117,24 @@ const v3Reducer: Reducer<V3State, V3Action> = (
             const {forFiksDigisosId, forFsSaksStatusReferanse, tittel, status} = action;
 
             return oGetSoknad(forFiksDigisosId)
-                .composeLens(Lens.fromProp<FsSoknad>()('saker'))
-                .composeTraversal(fromTraversable(array)<FsSaksStatus>())
+                .composeLens(oFsSaker)
+                .composeTraversal(oFsSakerTraversal)
                 .composePrism(Prism.fromPredicate((s: FsSaksStatus) => s.referanse === forFsSaksStatusReferanse))
                 .modify((fsSaksStatus: FsSaksStatus) => {return {...fsSaksStatus, tittel, status}})(state);
         }
         case V3ActionTypeKeys.NY_UTBETALING: {
             const {forFiksDigisosId, nyUtbetaling} = action;
 
-            return {
-                ...state
-            }
+            const s1 = oGetSoknad(forFiksDigisosId)
+                .composeLens(oFsSaker)
+                .composeTraversal(oFsSakerTraversal)
+                .composePrism(oFsSaksStatusPrism(nyUtbetaling.saksreferanse))
+                .composeLens(oFsSaksStatusUtbetalinger)
+                .modify((utbetalinger: Utbetaling[]) => [...utbetalinger, nyUtbetaling])(state);
+
+            return oGetSoknad(forFiksDigisosId)
+                .composeLens(oHendelser)
+                .modify((a: Hendelse[]) => [...a, nyUtbetaling])(s1);
         }
         case V3ActionTypeKeys.OPPDATER_UTBETALING: {
             const {} = action;

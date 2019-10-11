@@ -46,6 +46,8 @@ export const oFsSakerTraversal = fromTraversable(array)<FsSaksStatus>();
 export const oFsSaksStatusPrism = (referanse: string): Prism<FsSaksStatus, FsSaksStatus> => Prism.fromPredicate(fsSaksStatus => fsSaksStatus.referanse === referanse);
 export const oFsSaksStatusStatus = Lens.fromProp<FsSaksStatus>()('status');
 
+export const oFsSaksStatusUtbetalinger = Lens.fromProp<FsSaksStatus>()('utbetalinger');
+
 export const oGetFsSaksStatus = (forFsSaksStatusReferanse: string) => {
     return oFsSaker
         .composeTraversal(oFsSakerTraversal)
