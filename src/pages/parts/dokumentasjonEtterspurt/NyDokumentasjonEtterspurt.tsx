@@ -79,6 +79,7 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
     const [tilleggsinformasjon, setTilleggsinformasjon] = useState('');
     const initialDokumentListe: Dokument[] = [];
     const [dokumentListe, setDokumentListe] = useState(initialDokumentListe);
+    const [visFeilmelding, setVisFeilmelding] = useState(false);
     const [datePickerIsOpen, setDatePickerIsOpen] = useState(false);
     let initialDate = new Date();
     initialDate.setDate(new Date().getDate() + 7); // En uke fram i tid
@@ -134,7 +135,7 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
         dispatch(dispatch(skjulNyDokumentasjonEtterspurtModal()));
     };
 
-    function getAnies() {
+    function visAlleDokumenter() {
         return <Grid container direction="column" justify="flex-start" alignItems="flex-start" spacing={3}>
             {dokumentListe.map((dokument: Dokument, index) => {
                 return (
@@ -142,7 +143,7 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
                         <Box className={classes.krav}>
                             <TextField
                                 id="outlined-name"
-                                label="DokumentType"
+                                label="Dokumenttype"
                                 className={classes.textField}
                                 value={dokument.dokumenttype}
                                 margin="normal"
@@ -188,12 +189,21 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
                     <Box className={classes.addbox}>
                         <TextField
                             id="outlined-name"
-                            label="DokumentType"
+                            label="Dokumenttype"
                             className={classes.textField}
                             value={dokumenttype}
-                            onChange={(evt) => setDokumenttype(evt.target.value)}
+                            required={true}
+                            error={visFeilmelding}
+                            onChange={(evt) => {
+                                setDokumenttype(evt.target.value);
+                                if (evt.target.value.length == 0) {
+                                    setVisFeilmelding(true);
+                                } else {
+                                    setVisFeilmelding(false);
+                                }
+                            }}
                             margin="normal"
-                            variant="outlined"
+                            variant="filled"
                             autoComplete="off"
                         />
                         <TextField
@@ -203,7 +213,7 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
                             value={tilleggsinformasjon}
                             onChange={(evt) => setTilleggsinformasjon(evt.target.value)}
                             margin="normal"
-                            variant="outlined"
+                            variant="filled"
                             autoComplete="off"
                         />
                         <MuiPickersUtilsProvider utils={DateFnsUtils}>
@@ -229,7 +239,11 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
                         </MuiPickersUtilsProvider>
 
                         <Fab size="small" aria-label="add" className={classes.fab} color="primary" onClick={() => {
-                            leggTilDokument();
+                            if (dokumenttype === '') {
+                                setVisFeilmelding(true);
+                            } else {
+                                leggTilDokument();
+                            }
                         }}>
                             <AddIcon/>
                         </Fab>
@@ -245,8 +259,8 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
                             Etterspør dokumentasjon
                         </Typography>
                     </Box>
-                    {(dokumentListe.length == 0) && <div>Ingen dokumenter lagt til</div>}
-                    {getAnies()}
+                    {(dokumentListe.length == 0) && <Typography>Ingen dokumenter lagt til</Typography>}
+                    {visAlleDokumenter()}
                 </div>
             </Fade>
         </Modal>

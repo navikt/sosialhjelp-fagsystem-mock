@@ -127,6 +127,7 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
     const [utbetalingsdatoDatePickerIsOpen, setUtbetalingsdatoDatePickerIsOpen] = useState(false);
     const [fomDatePickerIsOpen, setFomDatePickerIsOpen] = useState(false);
     const [tomDatePickerIsOpen, setTomDatePickerIsOpen] = useState(false);
+    const [visFeilmelding, setVisFeilmelding] = useState(false);
 
 
     const classes = useStyles();
@@ -236,6 +237,7 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
         setUtbetalingsdatoDatePickerIsOpen(false);
         setFomDatePickerIsOpen(false);
         setTomDatePickerIsOpen(false);
+        setVisFeilmelding(false);
     };
 
 
@@ -266,14 +268,25 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
         </Grid>;
     }
 
-    function getTextFieldGrid(label: string, value: any, setter: any, inputType: string) {
+    function getTextFieldGrid(label: string, value: any, setValue: any, inputType: string, required: boolean) {
         return <Grid item key={label} xs={6} zeroMinWidth>
             <TextField
                 id="outlined-name"
                 label={label}
                 className={classes.textField}
                 value={value}
-                onChange={(evt) => setter(evt.target.value)}
+                required={required}
+                error={required && visFeilmelding}
+                onChange={(evt) => {
+                    setValue(evt.target.value);
+                    if (required) {
+                        if (evt.target.value.length == 0) {
+                            setVisFeilmelding(true);
+                        } else {
+                            setVisFeilmelding(false);
+                        }
+                    }
+                }}
                 type={inputType}
                 InputLabelProps={{
                     shrink: true,
@@ -332,8 +345,8 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
                 <div className={classes.papertowel}>
                     <div className={classes.paperback}>
                         <Grid container spacing={3} justify="center" alignItems="center">
-                            {getTextFieldGrid("Utbetalingsreferanse", utbetalingsreferanse, setUtbetalingsreferanse, "text")}
-                            {getTextFieldGrid("Rammevedtaksreferanse", rammevedtaksreferanse, setRammevedtaksreferanse, "text")}
+                            {getTextFieldGrid("Utbetalingsreferanse", utbetalingsreferanse, setUtbetalingsreferanse, "text", true)}
+                            {getTextFieldGrid("Rammevedtaksreferanse", rammevedtaksreferanse, setRammevedtaksreferanse, "text", false)}
                             <Grid item key={'Status'} xs={6} zeroMinWidth>
                                 <FormControl className={classes.formControl}>
                                     <InputLabel htmlFor="age-simple" shrink={true}>Status</InputLabel>
@@ -353,10 +366,10 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
                                     </Select>
                                 </FormControl>
                             </Grid>
-                            {getTextFieldGrid("Beløp", belop, setBelop, "number")}
-                            {getTextFieldGrid("Beskrivelse", beskrivelse, setBeskrivelse, "text")}
+                            {getTextFieldGrid("Beløp", belop, setBelop, "number", false)}
+                            {getTextFieldGrid("Beskrivelse", beskrivelse, setBeskrivelse, "text", false)}
                             {getKeyboardDatePickerGrid("Forfallsdato", forfallsdato, setForfallsdato, forfallsdatoDatePickerIsOpen, setForfallsdatoDatePickerIsOpen)}
-                            {getTextFieldGrid("Stønadstype", stonadstype, setStonadstype, "text")}
+                            {getTextFieldGrid("Stønadstype", stonadstype, setStonadstype, "text", false)}
                             {getKeyboardDatePickerGrid("Utbetalingsdato", utbetalingsdato, setUtbetalingsdato, utbetalingsdatoDatePickerIsOpen, setUtbetalingsdatoDatePickerIsOpen)}
                             {getKeyboardDatePickerGrid("fom", fom, setFom, fomDatePickerIsOpen, setFomDatePickerIsOpen)}
                             {getKeyboardDatePickerGrid("tom", tom, setTom, tomDatePickerIsOpen, setTomDatePickerIsOpen)}
@@ -380,7 +393,7 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
                                     </ButtonGroup>
                                 </Typography>
                             </Grid>
-                            {getTextFieldGrid("Mottaker", mottaker, setMottaker, "text")}
+                            {getTextFieldGrid("Mottaker", mottaker, setMottaker, "text", false)}
                             <Grid item key={'Kontonummer'} xs={6} zeroMinWidth>
                                 <TextField
                                     id="filled-number"
@@ -405,7 +418,7 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
                                     variant="filled"
                                 />
                             </Grid>
-                            {getTextFieldGrid("Utbetalingsmetode", utbetalingsmetode, setUtbetalingsmetode, "text")}
+                            {getTextFieldGrid("Utbetalingsmetode", utbetalingsmetode, setUtbetalingsmetode, "text", false)}
                         </Grid>
                     </div>
                     <div className={classes.paperboys}>
@@ -419,7 +432,9 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
                         </Typography>
                         <Typography className={classes.finalButtons}>
                             <Fab size="small" aria-label="add" className={classes.fab} color="primary" onClick={() => {
-                                sendUtbetaling();
+                                if (!visFeilmelding) {
+                                    sendUtbetaling();
+                                }
                             }}>
                                 <AddIcon/>
                             </Fab>
