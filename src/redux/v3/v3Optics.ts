@@ -3,7 +3,7 @@ import {Lens, fromTraversable, Prism, Traversal} from "monocle-ts/es6";
 
 import {V3State} from "./v3Types";
 import {FsSaksStatus, FsSoknad} from "./v3FsTypes";
-import Hendelse, {SaksStatusType} from "../../types/hendelseTypes";
+import Hendelse, {SaksStatusType, Utbetaling} from "../../types/hendelseTypes";
 
 
 
@@ -47,6 +47,9 @@ export const oFsSaksStatusPrism = (referanse: string): Prism<FsSaksStatus, FsSak
 export const oFsSaksStatusStatus = Lens.fromProp<FsSaksStatus>()('status');
 
 export const oFsSaksStatusUtbetalinger = Lens.fromProp<FsSaksStatus>()('utbetalinger');
+export const oFsSaksStatusUtbetalingerTraversal = fromTraversable(array)<Utbetaling>();
+export const oFsUtbetalingPrism = (referanse: string): Prism<Utbetaling, Utbetaling> => Prism.fromPredicate(utbetaling => utbetaling.utbetalingsreferanse === referanse);
+
 
 export const oGetFsSaksStatus = (forFsSaksStatusReferanse: string) => {
     return oFsSaker

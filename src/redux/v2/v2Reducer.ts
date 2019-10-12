@@ -95,7 +95,8 @@ export const initialV2Model: V2Model = {
 
     // Aktive ting
     aktivSoknad: '001',
-    aktivSakIndex: 0
+    aktivSakIndex: 0,
+    aktivUtbetaling: null
 };
 
 const v2Reducer: Reducer<V2Model, V2Action> = (
@@ -155,6 +156,7 @@ const v2Reducer: Reducer<V2Model, V2Action> = (
 
         // Aktive ting
         case V2ActionTypeKeys.SET_AKTIV_SOKNAD: {return {...state, aktivSoknad: action.fiksDigisosId}}
+        case V2ActionTypeKeys.SET_AKTIV_UTBETALING: {return {...state, aktivUtbetaling: action.referanse}}
         case V2ActionTypeKeys.SET_AKTIV_SAK: {return {...state, aktivSakIndex: action.saksIndex}}
 
 

@@ -54,9 +54,9 @@ const SimpleSelect: React.FC<Props> = (props: Props) => {
         setLabelWidth(inputLabel.current!.offsetWidth);
     }, []);
 
-    const menuItems = values.map((value) => {
+    const menuItems = values.map((value, idx) => {
        return (
-           <MenuItem value={value.value}>{value.label}</MenuItem>
+           <MenuItem key={"simpleSelect: " + idx} value={value.value}>{value.label}</MenuItem>
        )
     });
 
@@ -75,11 +75,8 @@ const SimpleSelect: React.FC<Props> = (props: Props) => {
                         }
                     }}
                     labelWidth={labelWidth}
-                    inputProps={{
-                        name: {label},
-                    }}
                 >
-                    <MenuItem value="">
+                    <MenuItem key={"simpleSelect: none"} value="">
                         <em>None</em>
                     </MenuItem>
                     { menuItems }

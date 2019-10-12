@@ -2,22 +2,51 @@ import React, {useState} from 'react';
 import {AppState, DispatchProps} from "../../../redux/reduxTypes";
 import {connect} from "react-redux";
 import Typography from "@material-ui/core/Typography";
-import {SaksStatus, SaksStatusType} from "../../../types/hendelseTypes";
+import {SaksStatusType, Utbetaling} from "../../../types/hendelseTypes";
 import Box from "@material-ui/core/Box";
 import makeStyles from "@material-ui/core/styles/makeStyles";
-import {createStyles} from "@material-ui/core";
+import {createStyles, useTheme} from "@material-ui/core";
 import SimpleSelect from "../simpleSelect/SimpleSelect";
 import {V2Model} from "../../../redux/v2/v2Types";
 import Input from "@material-ui/core/Input";
 import Button from "@material-ui/core/Button";
 import {aiuuur, oppdaterFsSaksStatus} from "../../../redux/v3/v3Actions";
-import {OppdaterFsSaksStatus, V3State} from "../../../redux/v3/v3Types";
+import {V3State} from "../../../redux/v3/v3Types";
 import {getFsSoknadByFiksDigisosId} from "../../../utils/utilityFunctions";
-import {FsSoknad} from "../../../redux/v3/v3FsTypes";
+import {FsSaksStatus, FsSoknad} from "../../../redux/v3/v3FsTypes";
 import AddIcon from '@material-ui/icons/Add';
 import Fab from "@material-ui/core/Fab";
-import {visNyDokumentasjonEtterspurtModal, visNyUtbetalingModal} from "../../../redux/v2/v2Actions";
+import {visNyUtbetalingModal} from "../../../redux/v2/v2Actions";
 import NyUtbetalingModal from "../utbetaling/NyUtbetaling";
+import Tab from "@material-ui/core/Tab";
+import AppBar from "@material-ui/core/AppBar/AppBar";
+import Tabs from "@material-ui/core/Tabs";
+import SwipeableViews from "react-swipeable-views";
+import UtbetalingTabView from "./UtbetalingTabView";
+
+interface TabPanelProps {
+    children?: React.ReactNode;
+    dir?: string;
+    index: any;
+    value: any;
+}
+
+function TabPanel(props: TabPanelProps) {
+    const {children, value, index, ...other} = props;
+
+    return (
+        <Typography
+            component="div"
+            role="tabpanel"
+            hidden={value !== index}
+            id={`action-tabpanel-${index}`}
+            aria-labelledby={`action-tab-${index}`}
+            {...other}
+        >
+            <Box p={3}>{children}</Box>
+        </Typography>
+    );
+}
 
 const useStyles = makeStyles((theme) => {
     return createStyles({
@@ -71,7 +100,7 @@ const useStyles = makeStyles((theme) => {
 
 interface OwnProps {
     idx: number,
-    sak: SaksStatus,
+    sak: FsSaksStatus,
     soknad: FsSoknad
 }
 
@@ -91,8 +120,10 @@ type Props = DispatchProps & OwnProps & StoreProps;
 
 const SaksTabView: React.FC<Props> = (props: Props) => {
     const [tittel, setTittel] = useState(initialState);
+    const [aktivUtbetalingIdx, setAktivUtbetalingIdx] = useState(0);
     const {sak, dispatch, v2, v3, soknad}  = props;
     const classes = useStyles();
+    const theme = useTheme();
 
     const addNyUtbetalingButton = () => {
         return (
@@ -108,6 +139,50 @@ const SaksTabView: React.FC<Props> = (props: Props) => {
         )
     };
 
+    const insertUtbetalingsOversikt = () => {
+
+        if (sak.utbetalinger.length > 0){
+            const listTabs = sak.utbetalinger.map((utbetaling: Utbetaling, idx) => {
+                return (
+                    <Tab key={"utbetalingTab: " + utbetaling.utbetalingsreferanse} label={"Utbetaling " + (idx + 1)} />
+                )
+            });
+            const listTabPanels = sak.utbetalinger.map((utbetaling: Utbetaling, idx) => {
+                return(
+                    <TabPanel key={"utbetalingTabPanel: " + utbetaling.utbetalingsreferanse} value={aktivUtbetalingIdx} index={idx} dir={theme.direction}>
+                        <UtbetalingTabView utbetaling={utbetaling}/>
+                    </TabPanel>
+                )
+            });
+            return (
+                <>
+                    <AppBar position="static" color="default">
+                        <Tabs
+                            value={aktivUtbetalingIdx}
+                            onChange={(event: unknown, newValue: number) => setAktivUtbetalingIdx(newValue)}
+                            indicatorColor="primary"
+                            textColor="primary"
+                            variant="fullWidth"
+                            aria-label="action tabs example"
+                        >
+                            { listTabs }
+                        </Tabs>
+                    </AppBar>
+                    <SwipeableViews
+                        axis={theme.direction === 'rtl' ? 'x-reverse' : 'x'}
+                        index={aktivUtbetalingIdx}
+                        onChangeIndex={(newValue: number) => setAktivUtbetalingIdx(newValue)}
+                    >
+                        { listTabPanels}
+                    </SwipeableViews>
+                </>
+            );
+        } else {
+            return;
+        }
+    };
+
+
     return (
         <div>
 
@@ -120,6 +195,7 @@ const SaksTabView: React.FC<Props> = (props: Props) => {
                 const fsSoknader = v3.soknader;
                 if (fsSoknader){
                     const fsSoknad: FsSoknad | undefined = getFsSoknadByFiksDigisosId(fsSoknader, v2.aktivSoknad);
+                    console.log(sak.referanse);
                     if (fsSoknad && tittel.length > 0){
                         dispatch(
                             aiuuur(
@@ -192,7 +268,8 @@ const SaksTabView: React.FC<Props> = (props: Props) => {
             <Typography>Utbetaling</Typography>
 
             {addNyUtbetalingButton()}
-            <NyUtbetalingModal sak={sak} soknad={soknad}/>
+            <br/>
+            {insertUtbetalingsOversikt()}
             <br/>
             <Typography>Vedtak</Typography>
             <br/>

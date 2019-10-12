@@ -67,6 +67,7 @@ const SystemSettingsModal: React.FC<Props> = (props: Props) => {
         const backendUrl = backendUrls[backendUrlType];
         return (
             <FormControlLabel
+                key={"urlLabel: " + backendUrlType}
                 value={backendUrlType}
                 control={<Radio/>}
                 label={backendUrlType + " " + backendUrl + oppdaterDigisosSakUrl}

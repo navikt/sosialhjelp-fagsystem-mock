@@ -2,18 +2,23 @@ import React, {useState} from 'react';
 import {AppState, DispatchProps} from "../../../redux/reduxTypes";
 import {connect} from "react-redux";
 import {createStyles, Modal, Theme} from "@material-ui/core";
-import {skjulNyUtbetalingModal} from "../../../redux/v2/v2Actions";
+import {setAktivUtbetaling, skjulNyUtbetalingModal} from "../../../redux/v2/v2Actions";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import Fade from "@material-ui/core/Fade";
 import Backdrop from "@material-ui/core/Backdrop";
 import {V2Model} from "../../../redux/v2/v2Types";
-import {generateFilreferanseId, getNow} from "../../../utils/utilityFunctions";
+import {
+    generateFilreferanseId,
+    getFsSaksStatusByIdx,
+    getNow,
+    getUtbetalingByUtbetalingsreferanse
+} from "../../../utils/utilityFunctions";
 import {V3State} from "../../../redux/v3/v3Types";
 import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
-import Hendelse, {HendelseType, SaksStatus, Utbetaling, UtbetalingStatus} from "../../../types/hendelseTypes";
+import Hendelse, {HendelseType, Utbetaling, UtbetalingStatus} from "../../../types/hendelseTypes";
 import {oHendelser} from "../../../redux/v3/v3Optics";
-import {aiuuur, nyUtbetaling} from "../../../redux/v3/v3Actions";
+import {aiuuur, nyUtbetaling, oppdaterUtbetaling} from "../../../redux/v3/v3Actions";
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
 import DateFnsUtils from "@date-io/date-fns";
@@ -92,14 +97,15 @@ const useStyles = makeStyles((theme: Theme) =>
 
 
 interface OwnProps {
-    soknad: FsSoknad,
-    sak: SaksStatus
+    soknad: FsSoknad
 }
 
 interface StoreProps {
     visNyUtbetalingModal: boolean;
     v2: V2Model;
     v3: V3State;
+    aktivSakIndex: number | undefined;
+    aktivUtbetaling: string | undefined | null;
 }
 
 type Props = DispatchProps & OwnProps & StoreProps;
@@ -131,7 +137,7 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
 
 
     const classes = useStyles();
-    const {visNyUtbetalingModal, dispatch, v2, v3, soknad, sak} = props;
+    const {visNyUtbetalingModal, dispatch, v2, v3, soknad, aktivSakIndex, aktivUtbetaling} = props;
 
     const getDateStringOrNull = (date: Date|null) => {
         if (date == null) {
@@ -163,9 +169,12 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
         setUtbetalingsdatoDatePickerIsOpen(false);
         setFomDatePickerIsOpen(false);
         setTomDatePickerIsOpen(false);
+        setVisFeilmelding(false);
+        dispatch(setAktivUtbetaling(null));
     }
 
     const sendUtbetaling = () => {
+        const sak = getFsSaksStatusByIdx(soknad.saker, aktivSakIndex);
         const nyHendelse: Utbetaling = {
             type: HendelseType.Utbetaling,
             hendelsestidspunkt: getNow(),
@@ -182,20 +191,31 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
             tom: getDateStringOrNull(tom),
             annenMottaker: annenMottaker,
             mottaker: mottaker,
-            kontonummer: kontonummer,
+            kontonummer: kontonummer && kontonummer.length == 11 ? kontonummer : null,
             utbetalingsmetode: utbetalingsmetode,
         };
 
         const soknadUpdated = oHendelser.modify((a: Hendelse[]) => [...a, nyHendelse])(soknad);
 
-        dispatch(
-            aiuuur(
-                soknad.fiksDigisosId,
-                soknadUpdated.fiksDigisosSokerJson,
-                v2,
-                nyUtbetaling(soknad.fiksDigisosId, sak.referanse, nyHendelse)
-            )
-        );
+        if (aktivUtbetaling == null) {
+            dispatch(
+                aiuuur(
+                    soknad.fiksDigisosId,
+                    soknadUpdated.fiksDigisosSokerJson,
+                    v2,
+                    nyUtbetaling(soknad.fiksDigisosId, sak.referanse, nyHendelse)
+                )
+            );
+        } else {
+            dispatch(
+                aiuuur(
+                    soknad.fiksDigisosId,
+                    soknadUpdated.fiksDigisosSokerJson,
+                    v2,
+                    oppdaterUtbetaling(soknad.fiksDigisosId, nyHendelse)
+                )
+            );
+        }
 
         resetStateValues();
 
@@ -240,7 +260,45 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
         setVisFeilmelding(false);
     };
 
+    function getDatoFromAktivBetaling(dato: string|null) {
+        let gammelForfallsdato: Date | null = null;
+        if (dato == null) {
+            gammelForfallsdato = null;
+        } else {
+            gammelForfallsdato = new Date(dato);
+            gammelForfallsdato.setHours(12);
+        }
+        return gammelForfallsdato;
+    }
 
+    const fyllInnAktivUtbetaling = () => {
+        if (aktivUtbetaling) {
+            console.log(aktivSakIndex);
+            const sak = getFsSaksStatusByIdx(soknad.saker, aktivSakIndex);
+            let utbetaling = getUtbetalingByUtbetalingsreferanse(sak.utbetalinger, aktivUtbetaling);
+            if (utbetaling){
+                setUtbetalingsreferanse(utbetaling.utbetalingsreferanse);
+                setRammevedtaksreferanse(utbetaling.rammevedtaksreferanse);
+                setStatus(utbetaling.status);
+                setBelop(utbetaling.belop);
+                setBeskrivelse(utbetaling.beskrivelse);
+                setForfallsdato(getDatoFromAktivBetaling(utbetaling.forfallsdato));
+                setStonadstype(utbetaling.stonadstype);
+                setUtbetalingsdato(getDatoFromAktivBetaling(utbetaling.utbetalingsdato));
+                setFom(getDatoFromAktivBetaling(utbetaling.fom));
+                setTom(getDatoFromAktivBetaling(utbetaling.tom));
+                setAnnenMottaker(utbetaling.annenMottaker);
+                setAnnenMottakerTrueVariant(utbetaling.annenMottaker == null || !utbetaling.annenMottaker ? 'text' : 'contained');
+                setAnnenMottakerFalseVariant(utbetaling.annenMottaker == null || utbetaling.annenMottaker ? 'text' : 'contained');
+                setMottaker(utbetaling.mottaker);
+                setKontonummer(utbetaling.kontonummer);
+                setKontonummerLabelPlaceholder(utbetaling.kontonummer == null ? "Kontonummer (Ikke satt)" : "Kontonummer");
+                setUtbetalingsmetode(utbetaling.utbetalingsmetode);
+            }
+        }
+    };
+
+    // Ser mer fancy ut, men vanskeligere å forstå og man må lage shrinksettere til alle teksttfelter
     function getTextFieldGridWithDynamicShrink(label: string, value: any, setter: any, shrink: boolean, shrinkSetter: any) {
         return <Grid item key={label} xs={6} zeroMinWidth>
             <TextField
@@ -269,12 +327,12 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
     }
 
     function getTextFieldGrid(label: string, value: any, setValue: any, inputType: string, required: boolean) {
-        return <Grid item key={label} xs={6} zeroMinWidth>
+        return <Grid item key={'Grid: ' + label} xs={6} zeroMinWidth>
             <TextField
                 id="outlined-name"
                 label={label}
                 className={classes.textField}
-                value={value}
+                value={value ? value : ''}
                 required={required}
                 error={required && visFeilmelding}
                 onChange={(evt) => {
@@ -336,6 +394,7 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
                 timeout: 500,
             }}
             open={visNyUtbetalingModal}
+            onRendered={() => fyllInnAktivUtbetaling()}
             onClose={() => {
                 resetStateValues();
                 props.dispatch(skjulNyUtbetalingModal());
@@ -345,13 +404,26 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
                 <div className={classes.papertowel}>
                     <div className={classes.paperback}>
                         <Grid container spacing={3} justify="center" alignItems="center">
-                            {getTextFieldGrid("Utbetalingsreferanse", utbetalingsreferanse, setUtbetalingsreferanse, "text", true)}
+                            {(aktivUtbetaling == null) ?
+                                getTextFieldGrid("Utbetalingsreferanse", utbetalingsreferanse, setUtbetalingsreferanse, "text", true)
+                                : (<Grid item key={'Grid: Utbetalingsreferanse'} xs={6} zeroMinWidth>
+                                        <TextField
+                                        disabled
+                                        id="Utbetalingsreferanse-disabled"
+                                        label="Utbetalingsreferanse"
+                                        className={classes.textField}
+                                        required={true}
+                                        defaultValue={utbetalingsreferanse}
+                                        margin="normal"
+                                        variant="filled"
+                                    />
+                                </Grid>)}
                             {getTextFieldGrid("Rammevedtaksreferanse", rammevedtaksreferanse, setRammevedtaksreferanse, "text", false)}
                             <Grid item key={'Status'} xs={6} zeroMinWidth>
                                 <FormControl className={classes.formControl}>
                                     <InputLabel htmlFor="age-simple" shrink={true}>Status</InputLabel>
                                     <Select
-                                        value={status}
+                                        value={status ? status : ''}
                                         onChange={(evt) => setStatus(evt.target.value as UtbetalingStatus)}
                                         inputProps={{
                                             name: 'setStatus',
@@ -399,17 +471,16 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
                                     id="filled-number"
                                     label={kontonummerLabelPlaceholder}
                                     onChange={(evt) => {
+                                        setKontonummer(evt.target.value);
                                         if (evt.target.value.length == 11) {
-                                            setKontonummer(evt.target.value);
                                             setKontonummerLabelPlaceholder("Kontonummer");
                                         } else {
-                                            setKontonummer(null);
                                             setKontonummerLabelPlaceholder("Kontonummer (Ikke satt)");
                                         }
                                     }}
                                     type="number"
                                     className={classes.textField}
-                                    value={kontonummer}
+                                    value={kontonummer ? kontonummer : ''}
                                     InputLabelProps={{
                                         shrink: true,
                                     }}
@@ -422,14 +493,16 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
                         </Grid>
                     </div>
                     <div className={classes.paperboys}>
-                        <Typography className={classes.finalButtons}>
-                            <Fab size="small" aria-label="add" className={classes.fab} color="primary" onClick={() => {
-                                setDefaultUtbetaling();
-                            }}>
-                                <AddIcon/>
-                            </Fab>
-                            Fyll ut alle felter
-                        </Typography>
+                        {(aktivUtbetaling == null) &&
+                            <Typography className={classes.finalButtons}>
+                                <Fab size="small" aria-label="add" className={classes.fab} color="primary" onClick={() => {
+                                    setDefaultUtbetaling();
+                                }}>
+                                    <AddIcon/>
+                                </Fab>
+                                Fyll ut alle felter
+                            </Typography>
+                        }
                         <Typography className={classes.finalButtons}>
                             <Fab size="small" aria-label="add" className={classes.fab} color="primary" onClick={() => {
                                 if (!visFeilmelding) {
@@ -438,7 +511,7 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
                             }}>
                                 <AddIcon/>
                             </Fab>
-                            Legg til utbetaling
+                            {(aktivUtbetaling == null ? "Legg til utbetaling" : "Endre utbetaling")}
                         </Typography>
                     </div>
                 </div>
@@ -450,7 +523,9 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
 const mapStateToProps = (state: AppState) => ({
     visNyUtbetalingModal: state.v2.visNyUtbetalingModal,
     v2: state.v2,
-    v3: state.v3
+    v3: state.v3,
+    aktivSakIndex: state.v2.aktivSakIndex,
+    aktivUtbetaling: state.v2.aktivUtbetaling
 });
 
 const mapDispatchToProps = (dispatch: any) => {

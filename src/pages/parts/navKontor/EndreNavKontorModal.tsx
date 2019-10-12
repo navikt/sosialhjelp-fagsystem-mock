@@ -61,7 +61,7 @@ const EndreNavKontorModal: React.FC<Props> = (props: Props) => {
     const navKontorListe = [navKontor0, navKontor1, navKontor2];
 
     const menuItems = navKontorListe.map((navKontor: NavKontor) => {
-        return (<MenuItem value={navKontor.id}>{navKontor.name}</MenuItem>)
+        return (<MenuItem key={"navKontorItem: " + navKontor.id} value={navKontor.id}>{navKontor.name}</MenuItem>)
     });
 
     return (

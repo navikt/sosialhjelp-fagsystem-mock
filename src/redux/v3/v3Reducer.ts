@@ -10,7 +10,12 @@ import {
     oGetSoknad,
     oHendelser,
     oNavKontor,
-    oGetFsSaksStatus, oFsSaksStatusStatus, oFsSakerTraversal, oFsSaksStatusPrism, oFsSaksStatusUtbetalinger
+    oGetFsSaksStatus,
+    oFsSaksStatusStatus,
+    oFsSakerTraversal,
+    oFsSaksStatusPrism,
+    oFsSaksStatusUtbetalinger,
+    oFsSaksStatusUtbetalingerTraversal, oFsUtbetalingPrism
 } from "./v3Optics";
 import Hendelse, {Utbetaling} from "../../types/hendelseTypes";
 import {fsSaksStatusToSaksStatus} from "./v3UtilityFunctions";
@@ -137,11 +142,20 @@ const v3Reducer: Reducer<V3State, V3Action> = (
                 .modify((a: Hendelse[]) => [...a, nyUtbetaling])(s1);
         }
         case V3ActionTypeKeys.OPPDATER_UTBETALING: {
-            const {} = action;
+            const {forFiksDigisosId, oppdatertUtbetaling} = action;
 
-            return {
-                ...state
-            }
+            const s1 = oGetSoknad(forFiksDigisosId)
+                .composeLens(oFsSaker)
+                .composeTraversal(oFsSakerTraversal)
+                .composePrism(oFsSaksStatusPrism(oppdatertUtbetaling.saksreferanse))
+                .composeLens(oFsSaksStatusUtbetalinger)
+                .composeTraversal(oFsSaksStatusUtbetalingerTraversal)
+                .composePrism(oFsUtbetalingPrism(oppdatertUtbetaling.utbetalingsreferanse))
+                .set(oppdatertUtbetaling)(state);
+
+            return oGetSoknad(forFiksDigisosId)
+                .composeLens(oHendelser)
+                .modify((a: Hendelse[]) => [...a, oppdatertUtbetaling])(s1);
         }
         case V3ActionTypeKeys.NYTT_DOKUMENTASJONKRAV: {
             const {} = action;

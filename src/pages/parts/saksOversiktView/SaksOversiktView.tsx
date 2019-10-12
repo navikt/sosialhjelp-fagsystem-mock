@@ -17,6 +17,7 @@ import NySakModal from "../nySak/NySak";
 import {SaksStatus} from "../../../types/hendelseTypes";
 import SaksTabView from "./SaksTabView";
 import {FsSaksStatus, FsSoknad} from "../../../redux/v3/v3FsTypes";
+import NyUtbetalingModal from "../utbetaling/NyUtbetaling";
 
 
 interface TabPanelProps {
@@ -124,12 +125,12 @@ const SaksOversiktView: React.FC<Props> = (props: Props) => {
         if (soknad.saker.length > 0){
             const listTabs = soknad.saker.map((sak: FsSaksStatus) => {
                 return (
-                    <Tab label={sak.tittel} />
+                    <Tab key={"tab: " + sak.referanse} label={sak.tittel} />
                 )
             });
             const listTabPanels = soknad.saker.map((sak: FsSaksStatus, idx) => {
                 return(
-                    <TabPanel value={aktivSakIndex} index={idx} dir={theme.direction}>
+                    <TabPanel key={"tabPanel: " + sak.referanse} value={aktivSakIndex} index={idx} dir={theme.direction}>
                         <SaksTabView idx={idx} sak={sak} soknad={soknad} />
                     </TabPanel>
                 )
@@ -180,6 +181,8 @@ const SaksOversiktView: React.FC<Props> = (props: Props) => {
 
                 { insertSaksOversikt() }
                 <NySakModal />
+                {(soknad.saker.length > 0) && <NyUtbetalingModal soknad={soknad}/>
+                }
             </Paper>
         </div>
     );

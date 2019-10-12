@@ -5,7 +5,6 @@ import makeStyles from "@material-ui/core/styles/makeStyles";
 import ListItemText from "@material-ui/core/ListItemText";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
-import {Soknad} from "../../../types/additionalTypes";
 import {Typography} from "@material-ui/core";
 import Paper from "@material-ui/core/Paper";
 import {setAktivSoknad} from "../../../redux/v2/v2Actions";
@@ -47,7 +46,8 @@ const SoknadsOversiktPanel: React.FC<Props> = (props: Props) => {
     const getSoknadListItems = (soknader: FsSoknad[]): JSX.Element[] => {
         return soknader.map((soknad: FsSoknad) => {
             return (
-                <ListItem selected={ soknad.fiksDigisosId === aktivSoknad} button divider onClick={() => props.dispatch(setAktivSoknad(soknad.fiksDigisosId))}>
+                <ListItem key={"SoknadItem: " + soknad.navn} selected={ soknad.fiksDigisosId === aktivSoknad} button divider
+                          onClick={() => props.dispatch(setAktivSoknad(soknad.fiksDigisosId))}>
                     <ListItemText primary={soknad.navn} />
                 </ListItem>
             )

@@ -131,6 +131,7 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
         setDokumenttype('');
         setTilleggsinformasjon('');
         setInnsendelsesfrist(initialDate);
+        setVisFeilmelding(false);
 
         dispatch(dispatch(skjulNyDokumentasjonEtterspurtModal()));
     };

@@ -115,6 +115,13 @@ export const setAktivSoknad = (fiksDigisosId: string): V2Action => {
     }
 };
 
+export const setAktivUtbetaling = (referanse: string | null): V2Action => {
+    return {
+        type: V2ActionTypeKeys.SET_AKTIV_UTBETALING,
+        referanse
+    }
+};
+
 export const visNySakModal = (): V2Action => {
     return {
         type: V2ActionTypeKeys.VIS_NY_SAK_MODAL

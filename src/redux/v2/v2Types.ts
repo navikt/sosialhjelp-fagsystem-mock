@@ -30,6 +30,7 @@ export interface V2Model {
 
     aktivSoknad: string; // fiksDigisosId
     aktivSakIndex: number | undefined; // sakReferanse
+    aktivUtbetaling: string | undefined | null; // utbetalingsreferanse
 }
 
 export interface BackendUrls {
@@ -68,6 +69,7 @@ export type V2Action
     | SkjulSystemSettingsModal
     | SetAktivSoknad
     | SetAktivSak
+    | SetAktivUtbetaling
     | NySaksStatus
     | SettNySaksStatus
 
@@ -99,6 +101,7 @@ export enum V2ActionTypeKeys {
     // Aktive ting
     SET_AKTIV_SAK = "v2/SET_AKTIV_SAK",
     SET_AKTIV_SOKNAD = "v2/SET_AKTIV_SOKNAD",
+    SET_AKTIV_UTBETALING = "v2/SET_AKTIV_UTBETALING",
     NY_SAKS_STATUS = "v2/NY_SAKS_STATUS",
     SETT_NY_SAKS_STATUS = "v2/SETT_NY_SAKS_STATUS"
 }
@@ -209,6 +212,11 @@ export interface SetAktivSoknad {
 export interface SetAktivSak {
     type: V2ActionTypeKeys.SET_AKTIV_SAK;
     saksIndex: number
+}
+
+export interface SetAktivUtbetaling {
+    type: V2ActionTypeKeys.SET_AKTIV_UTBETALING;
+    referanse: string | null
 }
 
 // Nye ting

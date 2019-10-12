@@ -4,12 +4,14 @@ import Hendelse, {
     FiksDigisosSokerJson, FilreferanseType,
     HendelseType,
     SaksStatus, SaksStatusType, Svarut,
-    SvarutExtended, Vedlegg,
+    SvarutExtended, Utbetaling, Vedlegg,
     VedtakFattet
 } from "../types/hendelseTypes";
 import {Filreferanselager, V2Model} from "../redux/v2/v2Types";
 import {Soknad} from "../types/additionalTypes";
-import {FsSoknad} from "../redux/v3/v3FsTypes";
+import {FsSaksStatus, FsSoknad} from "../redux/v3/v3FsTypes";
+import {generateNyFsSaksStatus} from "../redux/v3/v3UtilityFunctions";
+import {instanceOf} from "prop-types";
 
 const tildeltNavKontorSchema = require('../digisos/hendelse/tildeltNavKontor');
 const soknadsStatusSchema = require('../digisos/hendelse/soknadsStatus');
@@ -196,6 +198,25 @@ export const getSoknadByFiksDigisosId = (soknader: Soknad[], fiksDigisosId: stri
 export const getFsSoknadByFiksDigisosId = (soknader: FsSoknad[], fiksDigisosId: string): FsSoknad | undefined => {
     return soknader.find(s => {
         return s.fiksDigisosId === fiksDigisosId
+    })
+};
+
+export const getFsSaksStatusByReferanse = (saker: FsSaksStatus[], saksreferanse: string): FsSaksStatus | undefined => {
+    return saker.find(s => {
+        return s.referanse === saksreferanse
+    })
+};
+
+export const getFsSaksStatusByIdx = (saker: FsSaksStatus[], idx: number|undefined): FsSaksStatus => {
+    if (typeof idx == 'undefined' || saker.length == 0) {
+        return generateNyFsSaksStatus("");
+    }
+    return saker[idx];
+};
+
+export const getUtbetalingByUtbetalingsreferanse = (utbetalinger: Utbetaling[], referanse: string): Utbetaling | undefined => {
+    return utbetalinger.find(s => {
+        return s.utbetalingsreferanse === referanse
     })
 };
 
