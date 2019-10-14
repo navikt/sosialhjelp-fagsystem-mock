@@ -19,6 +19,7 @@ import {soknadMockData} from "../../pages/parts/soknadsOversiktPanel/soknadsover
 import {Soknad} from "../../types/additionalTypes";
 import {array} from "fp-ts/lib/Array";
 import {fromTraversable, Lens, Prism, Traversal} from "monocle-ts/es6";
+import {visSystemSettingsModal} from "./v2Actions";
 
 
 const minimal: FiksDigisosSokerJson = {
@@ -57,6 +58,7 @@ const initialFilreferanselager: Filreferanselager = {
         {type: FilreferanseType.svarut, id: generateFilreferanseId(), nr: 4, tittel: "01 - vedtak - asdf - svarut"},
     ],
     dokumentlager: [
+        {type: FilreferanseType.dokumentlager, id: "12v915rd-l1b9-8xn7-z539-afuvtami0oc6", tittel: "Test_PDF"},
         {type: FilreferanseType.dokumentlager, id: generateFilreferanseId(), tittel: "01 - qwer - dokumentalger"},
         {type: FilreferanseType.dokumentlager, id: generateFilreferanseId(), tittel: "02 - asdf - dokumentlager"},
         {type: FilreferanseType.dokumentlager, id: generateFilreferanseId(), tittel: "03 - zxcv - dokumentlager"},
@@ -92,6 +94,7 @@ export const initialV2Model: V2Model = {
     visNyUtbetalingModal: false,
     visEndreNavKontorModal: false,
     visSystemSettingsModal: false,
+    visSnackbar: false,
 
     // Aktive ting
     aktivSoknad: '001',
@@ -153,6 +156,8 @@ const v2Reducer: Reducer<V2Model, V2Action> = (
         case V2ActionTypeKeys.SKJUL_ENDRE_NAV_KONTOR_MODAL: {return {...state, visEndreNavKontorModal: false}}
         case V2ActionTypeKeys.VIS_SYSTEM_SETTINGS_MODAL: {return {...state, visSystemSettingsModal: true}}
         case V2ActionTypeKeys.SKJUL_SYSTEM_SETTINGS_MODAL: {return {...state, visSystemSettingsModal: false}}
+        case V2ActionTypeKeys.VIS_SNACKBAR: {return {...state, visSnackbar: true}}
+        case V2ActionTypeKeys.SKJUL_SNACKBAR: {return {...state, visSnackbar: false}}
 
         // Aktive ting
         case V2ActionTypeKeys.SET_AKTIV_SOKNAD: {return {...state, aktivSoknad: action.fiksDigisosId}}
@@ -240,9 +245,9 @@ const v2Reducer: Reducer<V2Model, V2Action> = (
             const saker: Lens<Soknad, SaksStatus[]> = Lens.fromProp<Soknad>()('saker');
             const sakerTraversal: Traversal<SaksStatus[], SaksStatus> = fromTraversable(array)<SaksStatus>();
             const getSaksStatus: (saksStatusReferanse: string) => Prism<SaksStatus, SaksStatus> = (saksStatusReferanse: string): Prism<SaksStatus, SaksStatus> => Prism.fromPredicate(saksStatus => saksStatus.referanse === saksStatusReferanse);
-            const status: Lens<SaksStatus, SaksStatusType> = Lens.fromProp<SaksStatus>()('status');
+            const status: Lens<SaksStatus, SaksStatusType|null> = Lens.fromProp<SaksStatus>()('status');
 
-            const getSaksStatusStatusTraversal = (soknadFiksDigisosId: string, saksStatusReferanse: string): Traversal<V2Model, SaksStatusType> => {
+            const getSaksStatusStatusTraversal = (soknadFiksDigisosId: string, saksStatusReferanse: string): Traversal<V2Model, SaksStatusType|null> => {
                 return soknader
                           .composeTraversal(soknadTraversal)
                           .composePrism(getSoknadPrism(soknadFiksDigisosId))

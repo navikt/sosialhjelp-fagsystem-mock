@@ -8,10 +8,12 @@ import Fade from "@material-ui/core/Fade";
 import Backdrop from "@material-ui/core/Backdrop";
 import {aiuuur, nyFsSaksStatus, oppdaterFsSaksStatus} from "../../../redux/v3/v3Actions";
 import {SkjulNySakModal, V2Model} from "../../../redux/v2/v2Types";
-import {generateNyFsSaksStatus} from "../../../redux/v3/v3UtilityFunctions";
+import {fsSaksStatusToSaksStatus, generateNyFsSaksStatus} from "../../../redux/v3/v3UtilityFunctions";
 import {FsSoknad} from "../../../redux/v3/v3FsTypes";
 import {getFsSoknadByFiksDigisosId} from "../../../utils/utilityFunctions";
 import {V3State} from "../../../redux/v3/v3Types";
+import {oHendelser} from "../../../redux/v3/v3Optics";
+import Hendelse from "../../../types/hendelseTypes";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -71,15 +73,21 @@ const NySakModal: React.FC<Props> = (props: Props) => {
                             const fsSoknader = v3.soknader;
                             if (fsSoknader){
                                 const fsSoknad: FsSoknad | undefined = getFsSoknadByFiksDigisosId(fsSoknader, v2.aktivSoknad);
-                                if (fsSoknad && tittel.length > 0){
-                                    dispatch(
-                                        aiuuur(
-                                            v2.aktivSoknad,
-                                            fsSoknad.fiksDigisosSokerJson,
-                                            v2,
-                                            nyFsSaksStatus(v2.aktivSoknad, generateNyFsSaksStatus(tittel))
+                                if (fsSoknad) {
+                                    const fsSaksStatus = generateNyFsSaksStatus(tittel);
+                                    const nyHendelse = fsSaksStatusToSaksStatus(fsSaksStatus);
+                                    const soknadUpdated = oHendelser.modify((a: Hendelse[]) => [...a, nyHendelse])(fsSoknad);
+
+                                    if (fsSoknad && tittel.length > 0){
+                                        dispatch(
+                                            aiuuur(
+                                                v2.aktivSoknad,
+                                                soknadUpdated.fiksDigisosSokerJson,
+                                                v2,
+                                                nyFsSaksStatus(v2.aktivSoknad, fsSaksStatus)
+                                            )
                                         )
-                                    )
+                                    }
                                 }
                             }
                             dispatch(skjulNySakModal());

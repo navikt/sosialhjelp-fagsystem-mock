@@ -27,6 +27,7 @@ export interface V2Model {
     visNyUtbetalingModal: boolean;
     visEndreNavKontorModal: boolean;
     visSystemSettingsModal: boolean;
+    visSnackbar: boolean;
 
     aktivSoknad: string; // fiksDigisosId
     aktivSakIndex: number | undefined; // sakReferanse
@@ -67,6 +68,8 @@ export type V2Action
     | SkjulEndreNavKontorModal
     | VisSystemSettingsModal
     | SkjulSystemSettingsModal
+    | VisSnackbar
+    | SkjulSnackbar
     | SetAktivSoknad
     | SetAktivSak
     | SetAktivUtbetaling
@@ -98,6 +101,8 @@ export enum V2ActionTypeKeys {
     SKJUL_ENDRE_NAV_KONTOR_MODAL = "v2/SKJUL_ENDRE_NAV_KONTOR_MODAL",
     VIS_SYSTEM_SETTINGS_MODAL = "v2/VIS_SYSTEM_SETTINGS_MODAL",
     SKJUL_SYSTEM_SETTINGS_MODAL = "v2/SKJUL_SYSTEM_SETTINGS_MODAL",
+    VIS_SNACKBAR = "v2/VIS_SNACKBAR",
+    SKJUL_SNACKBAR = "v2/SKJUL_SNACKBAR",
     // Aktive ting
     SET_AKTIV_SAK = "v2/SET_AKTIV_SAK",
     SET_AKTIV_SOKNAD = "v2/SET_AKTIV_SOKNAD",
@@ -201,6 +206,14 @@ export interface VisSystemSettingsModal {
 
 export interface SkjulSystemSettingsModal {
     type: V2ActionTypeKeys.SKJUL_SYSTEM_SETTINGS_MODAL,
+}
+
+export interface VisSnackbar {
+    type: V2ActionTypeKeys.VIS_SNACKBAR,
+}
+
+export interface SkjulSnackbar {
+    type: V2ActionTypeKeys.SKJUL_SNACKBAR,
 }
 
 // Aktive ting

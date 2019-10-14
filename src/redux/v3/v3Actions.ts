@@ -15,7 +15,7 @@ import {
 } from "../../types/hendelseTypes";
 import {AnyAction, Dispatch} from "redux";
 import {fetchPost} from "../../utils/restUtils";
-import {setFiksDigisosSokerJson, turnOffLoader, turnOnLoader} from "../v2/v2Actions";
+import {setFiksDigisosSokerJson, skjulSnackbar, turnOffLoader, turnOnLoader, visSnackbar} from "../v2/v2Actions";
 import {V2Model} from "../v2/v2Types";
 import {FsSaksStatus} from "./v3FsTypes";
 import {NavKontor} from "../../types/additionalTypes";
@@ -38,6 +38,9 @@ export const aiuuur = (
         const queryParam = `?fiksDigisosId=${fiksDigisosId}`;
         fetchPost(`${backendUrl}${oppdaterDigisosSakUrl}${queryParam}`, JSON.stringify(fiksDigisosSokerJson)).then((response: any) => {
             dispatch(setFiksDigisosSokerJson(fiksDigisosSokerJson));
+            if (v2.fiksDigisosSokerJson.sak.soker.hendelser.length < fiksDigisosSokerJson.sak.soker.hendelser.length) {
+                dispatch(visSnackbar());
+            }
             dispatch(actionToDispatchIfSuccess);
             setTimeout(() => {
                 dispatch(turnOffLoader());
@@ -76,7 +79,6 @@ export const zeruuus = (
     // @ts-ignore
     const backendUrl = v2.backendUrls[v2.backendUrlTypeToUse];
     const nyNavEnhetUrl = v2.nyNavEnhetUrl;
-    console.log(backendUrl + nyNavEnhetUrl)
 
     return (dispatch: Dispatch) => {
         dispatch(turnOnLoader());
@@ -164,7 +166,7 @@ export const oppdaterFsSaksStatus = (
     forFiksDigisosId: string,
     forFsSaksStatusReferanse: string,
     tittel: string,
-    status: SaksStatusType
+    status: SaksStatusType|null
 ): OppdaterFsSaksStatus => {
     return {
         type: V3ActionTypeKeys.OPPDATER_FS_SAKS_STATUS,

@@ -97,7 +97,7 @@ export interface OppdaterFsSaksStatus {
     forFiksDigisosId: string;
     forFsSaksStatusReferanse: string;
     tittel: string;
-    status: SaksStatusType;
+    status: SaksStatusType|null;
 }
 export interface NyUtbetaling {
     type: V3ActionTypeKeys.NY_UTBETALING;

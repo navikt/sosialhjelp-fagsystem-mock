@@ -21,7 +21,7 @@ export const generateNyFsSaksStatus = (tittel: string): FsSaksStatus => {
         hendelsestidspunkt: getNow(),
         referanse: generateFilreferanseId(),
         tittel,
-        status: SaksStatusType.UNDER_BEHANDLING,
+        status: null,
         utbetalinger: [],
         vedtakFattet: undefined,
         rammevedtak: undefined,

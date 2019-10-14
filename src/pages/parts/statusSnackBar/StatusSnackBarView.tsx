@@ -11,6 +11,11 @@ import Snackbar from '@material-ui/core/Snackbar';
 import SnackbarContent from '@material-ui/core/SnackbarContent';
 import WarningIcon from '@material-ui/icons/Warning';
 import {makeStyles, Theme} from '@material-ui/core/styles';
+import {AppState, DispatchProps} from "../../../redux/reduxTypes";
+import {V2Model} from "../../../redux/v2/v2Types";
+import {V3State} from "../../../redux/v3/v3Types";
+import {connect} from "react-redux";
+import {skjulSnackbar} from "../../../redux/v2/v2Actions";
 
 const variantIcon = {
     success: CheckCircleIcon,
@@ -19,7 +24,7 @@ const variantIcon = {
     info: InfoIcon,
 };
 
-const useStyles1 = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles((theme: Theme) => ({
     success: {
         backgroundColor: green[600],
     },
@@ -45,15 +50,23 @@ const useStyles1 = makeStyles((theme: Theme) => ({
     },
 }));
 
-export interface Props {
+interface StoreProps {
+    visSnackbar: boolean;
+    v2: V2Model;
+    v3: V3State;
+}
+
+export interface InterfaceProps {
     className?: string;
     message?: string;
     onClose?: () => void;
     variant: keyof typeof variantIcon;
 }
 
-function MySnackbarContentWrapper(props: Props) {
-    const classes = useStyles1();
+type Props = DispatchProps & InterfaceProps & StoreProps;
+
+function MySnackbarContentWrapper(props: InterfaceProps) {
+    const classes = useStyles();
     const {className, message, onClose, variant, ...other} = props;
     const Icon = variantIcon[variant];
 
@@ -78,75 +91,51 @@ function MySnackbarContentWrapper(props: Props) {
 }
 
 
-const useStyles2 = makeStyles((theme: Theme) => ({
-    margin: {
-        margin: theme.spacing(1),
-    },
-}));
-
-type State = boolean;
-
-const initialState: State = false;
-
-const StatusSnackBarView: React.FC = () => {
-    const classes = useStyles2();
-    const [open, setOpen] = React.useState(initialState);
-
-    function handleClick() {
-        setOpen(true);
-    }
+const StatusSnackBarView: React.FC<Props> = (props: Props) => {
+    const {visSnackbar, dispatch} = props;
 
     function handleClose(event?: SyntheticEvent, reason?: string) {
         if (reason === 'clickaway') {
             return;
         }
 
-        setOpen(false);
+        dispatch(skjulSnackbar());
     }
 
     return (
         <div>
-            <Button variant="outlined" className={classes.margin} onClick={handleClick}>
-                Open success snackbar
-            </Button>
             <Snackbar
                 anchorOrigin={{
                     vertical: 'bottom',
                     horizontal: 'left',
                 }}
-                open={open}
-                autoHideDuration={6000}
+                open={visSnackbar}
+                autoHideDuration={2000}
                 onClose={handleClose}
             >
                 <MySnackbarContentWrapper
                     onClose={handleClose}
                     variant="success"
-                    message="This is a success message!"
+                    message="En hendelse er registrert i innsyn"
                 />
             </Snackbar>
-            {/*<MySnackbarContentWrapper*/}
-            {/*    variant="error"*/}
-            {/*    className={classes.margin}*/}
-            {/*    message="This is an error message!"*/}
-            {/*/>*/}
-            {/*<MySnackbarContentWrapper*/}
-            {/*    variant="warning"*/}
-            {/*    className={classes.margin}*/}
-            {/*    message="This is a warning message!"*/}
-            {/*/>*/}
-            {/*<MySnackbarContentWrapper*/}
-            {/*    variant="info"*/}
-            {/*    className={classes.margin}*/}
-            {/*    message="This is an information message!"*/}
-            {/*/>*/}
-            {/*<MySnackbarContentWrapper*/}
-            {/*    variant="success"*/}
-            {/*    className={classes.margin}*/}
-            {/*    message="This is a success message!"*/}
-            {/*/>*/}
         </div>
     );
-}
+};
 
+const mapStateToProps = (state: AppState) => ({
+    visSnackbar: state.v2.visSnackbar,
+    v2: state.v2,
+    v3: state.v3
+});
 
-export default StatusSnackBarView
+const mapDispatchToProps = (dispatch: any) => {
+    return {
+        dispatch
+    }
+};
+
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(StatusSnackBarView)

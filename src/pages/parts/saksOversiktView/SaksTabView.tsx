@@ -2,13 +2,11 @@ import React, {useState} from 'react';
 import {AppState, DispatchProps} from "../../../redux/reduxTypes";
 import {connect} from "react-redux";
 import Typography from "@material-ui/core/Typography";
-import {SaksStatusType, Utbetaling} from "../../../types/hendelseTypes";
+import {Utbetaling} from "../../../types/hendelseTypes";
 import Box from "@material-ui/core/Box";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import {createStyles, useTheme} from "@material-ui/core";
-import SimpleSelect from "../simpleSelect/SimpleSelect";
 import {V2Model} from "../../../redux/v2/v2Types";
-import Input from "@material-ui/core/Input";
 import Button from "@material-ui/core/Button";
 import {aiuuur, oppdaterFsSaksStatus} from "../../../redux/v3/v3Actions";
 import {V3State} from "../../../redux/v3/v3Types";
@@ -17,12 +15,14 @@ import {FsSaksStatus, FsSoknad} from "../../../redux/v3/v3FsTypes";
 import AddIcon from '@material-ui/icons/Add';
 import Fab from "@material-ui/core/Fab";
 import {visNyUtbetalingModal} from "../../../redux/v2/v2Actions";
-import NyUtbetalingModal from "../utbetaling/NyUtbetaling";
 import Tab from "@material-ui/core/Tab";
 import AppBar from "@material-ui/core/AppBar/AppBar";
 import Tabs from "@material-ui/core/Tabs";
 import SwipeableViews from "react-swipeable-views";
 import UtbetalingTabView from "./UtbetalingTabView";
+import TextField from "@material-ui/core/TextField";
+import EndreSaksstatusModal from "./EndreSaksstatusModal";
+import VedtakFattetModal from "./VedtakFattetModal";
 
 interface TabPanelProps {
     children?: React.ReactNode;
@@ -70,8 +70,8 @@ const useStyles = makeStyles((theme) => {
             marginLeft: theme.spacing(2)
         },
         box: {
-            marginTop: theme.spacing(1),
-            padding: theme.spacing(1),
+            marginTop: theme.spacing(3),
+            position: 'relative',
         },
         formControl: {
             margin: theme.spacing(3)
@@ -83,7 +83,6 @@ const useStyles = makeStyles((theme) => {
             justifyContent: 'flex-start',
             alignItems: 'center',
             color: 'inherit'
-
         },
         fab: {
             marginRight: theme.spacing(1)
@@ -93,7 +92,11 @@ const useStyles = makeStyles((theme) => {
             flexDirection: 'column'
         },
         horizontalBox: {
-            // display: 'inline-block'
+            display: 'inline',
+            position: 'relative',
+        },
+        tittelButton: {
+            margin: theme.spacing(2, 1),
         }
     });
 });
@@ -113,13 +116,11 @@ interface State {
     input: string;
 }
 
-const initialState: string = 'Ny tittel på sak';
-
 type Props = DispatchProps & OwnProps & StoreProps;
 
 
 const SaksTabView: React.FC<Props> = (props: Props) => {
-    const [tittel, setTittel] = useState(initialState);
+    const [tittel, setTittel] = useState('');
     const [aktivUtbetalingIdx, setAktivUtbetalingIdx] = useState(0);
     const {sak, dispatch, v2, v3, soknad}  = props;
     const classes = useStyles();
@@ -132,9 +133,7 @@ const SaksTabView: React.FC<Props> = (props: Props) => {
                      onClick={() => dispatch(visNyUtbetalingModal())}>
                     <AddIcon/>
                 </Fab>
-                <Typography>
-                    Legg til ny utbetaling
-                </Typography>
+                <Typography>Legg til ny utbetaling</Typography>
             </Box>
         )
     };
@@ -185,12 +184,17 @@ const SaksTabView: React.FC<Props> = (props: Props) => {
 
     return (
         <div>
-
             <br/>
-            <br/>
-
-            <Input value={tittel} onChange={(evt) => setTittel(evt.target.value)} />
-            <Button onClick={() => {
+            <TextField
+                id="outlined-name"
+                label={'Ny tittel på sak'}
+                value={tittel}
+                onChange={(evt) => setTittel(evt.target.value)}
+                margin="dense"
+                variant="filled"
+                autoComplete="off"
+            />
+            <Button className={classes.tittelButton} variant="contained" onClick={() => {
 
                 const fsSoknader = v3.soknader;
                 if (fsSoknader){
@@ -215,50 +219,12 @@ const SaksTabView: React.FC<Props> = (props: Props) => {
             } }>Oppdater tittel</Button>
 
             <br/>
-            <br/>
-
-
             <Box className={classes.box}>
-                <SimpleSelect
-                    onSelect={(value) => {
-                        if (value === SaksStatusType.UNDER_BEHANDLING
-                            || value === SaksStatusType.BEHANDLES_IKKE
-                            || value === SaksStatusType.FEILREGISTRERT
-                            || value === SaksStatusType.IKKE_INNSYN
-                        ) {
-
-                            const fsSoknader = v3.soknader;
-                            if (fsSoknader){
-                                const fsSoknad: FsSoknad | undefined = getFsSoknadByFiksDigisosId(fsSoknader, v2.aktivSoknad);
-                                if (fsSoknad && tittel.length > 0){
-                                    dispatch(
-                                        aiuuur(
-                                            v2.aktivSoknad,
-                                            fsSoknad.fiksDigisosSokerJson,
-                                            v2,
-                                            oppdaterFsSaksStatus(
-                                                v2.aktivSoknad,
-                                                sak.referanse,
-                                                sak.tittel,
-                                                value
-                                            )
-                                        )
-                                    )
-                                }
-                            }
-                        }
-                    }}
-                    label={'Saksstatus'}
-                    selected={sak.status}
-                    values={[
-                        {value: SaksStatusType.UNDER_BEHANDLING, label: "Under behandling"},
-                        {value: SaksStatusType.IKKE_INNSYN, label: "Ikke innsyn"},
-                        {value: SaksStatusType.FEILREGISTRERT, label: "Feilregistrert"},
-                        {value: SaksStatusType.BEHANDLES_IKKE, label: "Behandles ikke"}
-                    ]}
-                />
+                <Typography variant={"subtitle1"}>
+                    Endre saksstatus:
+                    <EndreSaksstatusModal soknad={soknad} sak={sak}/>
+                </Typography>
             </Box>
-
 
             <br/>
             <Typography>Vilkår</Typography>
@@ -270,8 +236,8 @@ const SaksTabView: React.FC<Props> = (props: Props) => {
             {addNyUtbetalingButton()}
             <br/>
             {insertUtbetalingsOversikt()}
-            <br/>
             <Typography>Vedtak</Typography>
+            <VedtakFattetModal soknad={soknad} sak={sak}/>
             <br/>
             <Typography>Rammevedtak</Typography>
             <br/>

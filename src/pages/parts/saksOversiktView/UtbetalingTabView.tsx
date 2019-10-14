@@ -1,7 +1,7 @@
 import React from 'react';
 import {AppState, DispatchProps} from "../../../redux/reduxTypes";
 import {connect} from "react-redux";
-import {Utbetaling} from "../../../types/hendelseTypes";
+import {Utbetaling, UtbetalingStatus} from "../../../types/hendelseTypes";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import {createStyles} from "@material-ui/core";
 import {V2Model} from "../../../redux/v2/v2Types";
@@ -57,10 +57,6 @@ interface StoreProps {
     v3: V3State
 }
 
-interface State {
-    input: string;
-}
-
 type Props = DispatchProps & OwnProps & StoreProps;
 
 
@@ -69,6 +65,9 @@ const UtbetalingTabView: React.FC<Props> = (props: Props) => {
     const classes = useStyles();
 
     const makeTableRow = (type:string, value:any) => {
+        if (typeof value === "boolean") {
+            value = value ? "Ja" : "Nei";
+        }
         return <TableRow key={type}>
             <TableCell component="th" scope="row">
                 {type}
@@ -79,6 +78,26 @@ const UtbetalingTabView: React.FC<Props> = (props: Props) => {
                 }
         </TableRow>
     };
+
+    const makeTableRowOfStatus = (type:string, value:UtbetalingStatus|null) => {
+        let status = '';
+        if (value != null) {
+            status = value.toString();
+            status = status.toLowerCase();
+            status = status[0].toUpperCase() + status.slice(1);
+            status = status.replace('_', ' ');
+        }
+        return <TableRow key={type}>
+            <TableCell component="th" scope="row">
+                {type}
+            </TableCell>
+            {value != null ?
+                <TableCell align="right">{status.toString()}</TableCell> :
+                <TableCell variant={'footer'} align="right">Ikke utfylt</TableCell>
+            }
+        </TableRow>
+    };
+
 
     return (
         <div className={classes.root}>
@@ -93,11 +112,11 @@ const UtbetalingTabView: React.FC<Props> = (props: Props) => {
                     <TableBody>
                         {makeTableRow("Utbetalingsreferanse", utbetaling.utbetalingsreferanse)}
                         {makeTableRow("Rammevedtaksreferanse", utbetaling.rammevedtaksreferanse)}
-                        {makeTableRow("Status", utbetaling.status)}
+                        {makeTableRowOfStatus("Status", utbetaling.status)}
                         {makeTableRow("Beløp", utbetaling.belop)}
                         {makeTableRow("Beskrivelse", utbetaling.beskrivelse)}
                         {makeTableRow("Forfallsdato", utbetaling.forfallsdato)}
-                        {makeTableRow("Stonadstype", utbetaling.stonadstype)}
+                        {makeTableRow("Stønadstype", utbetaling.stonadstype)}
                         {makeTableRow("Utbetalingsdato", utbetaling.utbetalingsdato)}
                         {makeTableRow("fom", utbetaling.fom)}
                         {makeTableRow("tom", utbetaling.tom)}

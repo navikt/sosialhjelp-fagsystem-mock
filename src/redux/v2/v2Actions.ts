@@ -189,6 +189,18 @@ export const skjulSystemSettingsModal = () => {
     }
 };
 
+export const visSnackbar = () => {
+    return {
+        type: V2ActionTypeKeys.VIS_SNACKBAR,
+    }
+};
+
+export const skjulSnackbar = () => {
+    return {
+        type: V2ActionTypeKeys.SKJUL_SNACKBAR,
+    }
+};
+
 export const setAktivSak = (saksIndex: number): V2Action => {
     return {
         type: V2ActionTypeKeys.SET_AKTIV_SAK,

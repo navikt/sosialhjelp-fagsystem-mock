@@ -73,7 +73,7 @@ export interface SaksStatus {
     hendelsestidspunkt: string;
     referanse: string; // FIXME: Lag generator function. Ikke la bru
     tittel: string;
-    status: SaksStatusType;
+    status: SaksStatusType|null;
 }
 
 // saksreferanse
@@ -101,7 +101,7 @@ export interface VedtakFattet {
     type: HendelseType.VedtakFattet;
     hendelsestidspunkt: string;
     saksreferanse: string;
-    utfall: { utfall: Utfall };
+    utfall: { utfall: Utfall|null };
     vedtaksfil: { referanse: Svarut | Dokumentlager};
     vedlegg: Vedlegg[]
 }

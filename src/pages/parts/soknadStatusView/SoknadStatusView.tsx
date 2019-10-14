@@ -5,7 +5,13 @@ import {createStyles, Paper} from "@material-ui/core";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import FormControl from "@material-ui/core/FormControl";
 import RadioGroup from "@material-ui/core/RadioGroup";
-import Hendelse, {HendelseType, SoknadsStatus, SoknadsStatusType} from "../../../types/hendelseTypes";
+import Hendelse, {
+    ForelopigSvar,
+    Forvaltningsbrev,
+    HendelseType,
+    SoknadsStatus,
+    SoknadsStatusType, Vedlegg
+} from "../../../types/hendelseTypes";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Radio from "@material-ui/core/Radio";
 import Typography from "@material-ui/core/Typography";
@@ -13,7 +19,12 @@ import AddIcon from '@material-ui/icons/Add';
 import Box from "@material-ui/core/Box";
 import Fab from "@material-ui/core/Fab";
 import {FsSoknad} from "../../../redux/v3/v3FsTypes";
-import {aiuuur, oppdaterSoknadsStatus} from "../../../redux/v3/v3Actions";
+import {
+    aiuuur,
+    oppdaterDokumentasjonEtterspurt,
+    oppdaterForelopigSvar,
+    oppdaterSoknadsStatus
+} from "../../../redux/v3/v3Actions";
 import {getNow} from "../../../utils/utilityFunctions";
 import {V2Model} from "../../../redux/v2/v2Types";
 import {oHendelser} from "../../../redux/v3/v3Optics";
@@ -84,18 +95,54 @@ type Props = DispatchProps & OwnProps & StoreProps;
 
 const SoknadStatusView: React.FC<Props> = (props: Props) => {
     const classes = useStyles();
-    const {dispatch, soknad} = props;
+    const {dispatch, soknad, v2} = props;
+    const [antallForelopigSvar, setAntallForelopigSvar] = useState(0);
+    const filreferanselager = v2.filreferanselager;
 
-    const addNyDokumentasjonEtterpurtButton = () => {
+    const addNyDokumentasjonEtterspurtButton = () => {
         return (
             <Box className={classes.addbox}>
                 <Fab aria-label='Add' className={classes.fab} color='primary'
                      onClick={() => dispatch(visNyDokumentasjonEtterspurtModal())}>
                     <AddIcon/>
                 </Fab>
-                <Typography>
-                    Etterspør mer dokumentasjon
-                </Typography>
+                <Typography>Etterspør mer dokumentasjon</Typography>
+            </Box>
+        )
+    };
+
+    const addNyttForelopigSvarButton = () => {
+        return (
+            <Box className={classes.addbox}>
+                <Fab aria-label='Add' className={classes.fab} color='primary'
+                     onClick={() => {
+                         const nyHendelse: ForelopigSvar = {
+                             type: HendelseType.ForelopigSvar,
+                             hendelsestidspunkt: getNow(),
+                             forvaltningsbrev: {
+                                 referanse: {
+                                     type: filreferanselager.dokumentlager[0].type,
+                                     id: filreferanselager.dokumentlager[0].id
+                                 }
+                             },
+                             vedlegg: []
+                         };
+
+                         const soknadUpdated = oHendelser.modify((a: Hendelse[]) => [...a, nyHendelse])(soknad);
+
+                         dispatch(
+                             aiuuur(
+                                 soknad.fiksDigisosId,
+                                 soknadUpdated.fiksDigisosSokerJson,
+                                 v2,
+                                 oppdaterForelopigSvar(soknad.fiksDigisosId, nyHendelse)
+                             )
+                         );
+                         setAntallForelopigSvar(antallForelopigSvar + 1);
+                     }}>
+                    <AddIcon/>
+                </Fab>
+                <Typography>Foreløpig svar</Typography>
             </Box>
         )
     };
@@ -150,15 +197,16 @@ const SoknadStatusView: React.FC<Props> = (props: Props) => {
                 <div className={classes.horizontalWrapper}>
                     <Box className={classes.horizontalBox}>
                         <Typography variant={"h5"}>Dokumentasjon som er etterspurt</Typography>
-                        {/*<IconButton>*/}
-                        {addNyDokumentasjonEtterpurtButton()}
-                        {/*</IconButton>*/}
+                        {addNyDokumentasjonEtterspurtButton()}
                     </Box>
                     <Box className={classes.horizontalBox}>
                         <Typography variant={'h5'}>Foreløpig svar</Typography>
-                        <Typography>Foreløpig svar</Typography>
-                        <Typography>Lag et foreløpig svar hvis foreksempel saksbehandlingstiden tar lengre tid enn
-                            forventet.</Typography>
+                        {addNyttForelopigSvarButton()}
+                        <Typography>{antallForelopigSvar == 0 ?
+                            "Lag et foreløpig svar hvis for eksempel\nsaksbehandlingstiden tar lengre tid enn forventet.".split("\n").map((i, key) => {
+                                return <div key={key}>{i}</div>;
+                            }) :
+                            "Antall foreløpig svar lagt til: " + antallForelopigSvar}</Typography>
                     </Box>
                     <NyDokumentasjonEtterspurtModal soknad={soknad}/>
                 </div>

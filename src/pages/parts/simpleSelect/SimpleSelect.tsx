@@ -12,8 +12,8 @@ import makeStyles from "@material-ui/core/styles/makeStyles";
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         root: {
-            display: 'flex',
-            flexWrap: 'wrap',
+            display: 'inline',
+            position: 'relative',
         },
         formControl: {
             margin: theme.spacing(1),
