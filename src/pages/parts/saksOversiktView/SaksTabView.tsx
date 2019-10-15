@@ -239,7 +239,7 @@ const SaksTabView: React.FC<Props> = (props: Props) => {
             {addNyUtbetalingButton()}
             <br/>
             {insertUtbetalingsOversikt()}
-            <Typography>Vedtak</Typography>
+            <Typography>Vedtak fattet</Typography>
             <VedtakFattetModal soknad={soknad} sak={sak}/>
             <br/>
             <Typography>Rammevedtak</Typography>

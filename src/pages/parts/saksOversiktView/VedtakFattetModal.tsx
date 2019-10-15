@@ -66,7 +66,7 @@ const VedtakFattetModal: React.FC<Props> = (props: Props) => {
         <Box className={classes.addbox}>
             <form className={classes.root} autoComplete="off">
                 <FormControl className={classes.formControl}>
-                    <InputLabel htmlFor="age-simple">Vedtak fattet</InputLabel>
+                    <InputLabel htmlFor="age-simple">Utfall</InputLabel>
                     <Select
                         value={vedtakFattetUtfall ? vedtakFattetUtfall : ''}
                         onChange={(evt) => {
