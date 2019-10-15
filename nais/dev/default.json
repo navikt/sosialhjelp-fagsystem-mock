@@ -1,7 +1,0 @@
-{
-  "namespace": "default",
-  "ingresses": [
-    "https://sosialhjelp-fagsystem-mock.nais.oera-q.local/sosialhjelp/fagsystem-mock",
-    "https://www-q0.nav.no/sosialhjelp/fagsystem-mock"
-  ]
-}
