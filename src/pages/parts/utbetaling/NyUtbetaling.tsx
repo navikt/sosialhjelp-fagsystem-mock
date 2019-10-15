@@ -22,7 +22,7 @@ import {aiuuur, nyUtbetaling, oppdaterUtbetaling} from "../../../redux/v3/v3Acti
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
 import DateFnsUtils from "@date-io/date-fns";
-import {KeyboardDatePicker, MuiPickersUtilsProvider} from "@material-ui/pickers";
+import {DatePicker, KeyboardDatePicker, MuiPickersUtilsProvider} from "@material-ui/pickers";
 import Typography from "@material-ui/core/Typography";
 import ButtonGroup from "@material-ui/core/ButtonGroup";
 import Button from "@material-ui/core/Button";
@@ -132,6 +132,17 @@ const initialUtbetaling: Utbetaling = {
 
 const getShortDateISOString = (date: Date) => date.toISOString().substring(0, date.toISOString().search('T'));
 
+const formatDateString = (date: string|null) => {
+    if (date == null || date == 'Invalid Date') {
+        return null;
+    } else {
+        let dateNumber = Date.parse(date);
+        let newDate = new Date(dateNumber);
+        newDate.setHours(12);
+        return getShortDateISOString(newDate);
+    }
+};
+
 let date = new Date();
 date.setDate(new Date().getDate() + 7); // En uke fram i tid
 date.setHours(12);
@@ -201,6 +212,11 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
         nyHendelse.hendelsestidspunkt = getNow();
         nyHendelse.saksreferanse = sak.referanse;
         nyHendelse.kontonummer = modalUtbetaling.kontonummer && modalUtbetaling.kontonummer.length == 11 ? modalUtbetaling.kontonummer : null;
+        console.log(nyHendelse.forfallsdato == 'Invalid Date');
+        nyHendelse.forfallsdato = formatDateString(nyHendelse.forfallsdato);
+        nyHendelse.utbetalingsdato = formatDateString(nyHendelse.utbetalingsdato);
+        nyHendelse.fom = formatDateString(nyHendelse.fom);
+        nyHendelse.tom = formatDateString(nyHendelse.tom);
 
         const soknadUpdated = oHendelser.modify((a: Hendelse[]) => [...a, nyHendelse])(soknad);
 
@@ -256,7 +272,7 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
         }
     };
 
-    function getTextFieldGrid2(label: string, value: any, setValue: (v: any) => any, inputType: string = 'text', required: boolean = false) {
+    function getTextFieldGrid(label: string, value: any, setValue: (v: any) => any, inputType: string = 'text', required: boolean = false) {
         return <Grid item key={'Grid: ' + label} xs={6} zeroMinWidth>
             <TextField
                 id="outlined-name"
@@ -286,7 +302,7 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
         </Grid>;
     }
 
-    function getKeyboardDatePickerGrid2(label: string, value: any, setValue: (v: string) => any, isOpen: boolean, setIsOpen: any) {
+    function getKeyboardDatePickerGrid(label: string, value: any, setValue: (v: string) => any, isOpen: boolean, setIsOpen: any) {
         return <Grid item key={"grid: " + label} xs={6} zeroMinWidth>
             <MuiPickersUtilsProvider utils={DateFnsUtils}>
                 <KeyboardDatePicker
@@ -302,7 +318,7 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
                     onClose={() => setIsOpen(false)}
                     value={value}
                     onChange={(date: any) => {
-                        setValue(date.toISOString().substring(0, date.toISOString().search('T')));
+                        setValue(date);
                         setIsOpen(false);
                     }}
                     KeyboardButtonProps={{
@@ -335,7 +351,7 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
                     <div className={classes.paperback}>
                         <Grid container spacing={3} justify="center" alignItems="center">
                             {(aktivUtbetaling == null) ?
-                                getTextFieldGrid2("Utbetalingsreferanse", modalUtbetaling.utbetalingsreferanse, (verdi: string) => {
+                                getTextFieldGrid("Utbetalingsreferanse", modalUtbetaling.utbetalingsreferanse, (verdi: string) => {
                                     setModalUtbetaling({...modalUtbetaling, utbetalingsreferanse: verdi})
                                 }, "text", true)
                                 : (<Grid item key={'Grid: Utbetalingsreferanse'} xs={6} zeroMinWidth>
@@ -350,7 +366,7 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
                                         variant="filled"
                                     />
                                 </Grid>)}
-                            {getTextFieldGrid2("Rammevedtaksreferanse", modalUtbetaling.rammevedtaksreferanse,
+                            {getTextFieldGrid("Rammevedtaksreferanse", modalUtbetaling.rammevedtaksreferanse,
                                 (verdi: string) => setModalUtbetaling({...modalUtbetaling, rammevedtaksreferanse: verdi}))}
                             <Grid item key={'Status'} xs={6} zeroMinWidth>
                                 <FormControl className={classes.formControl}>
@@ -371,18 +387,18 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
                                     </Select>
                                 </FormControl>
                             </Grid>
-                            {getTextFieldGrid2("Beløp", modalUtbetaling.belop, (verdi: number) => {
+                            {getTextFieldGrid("Beløp", modalUtbetaling.belop, (verdi: number) => {
                                 setModalUtbetaling({...modalUtbetaling, belop: verdi})
                             })}
-                            {getTextFieldGrid2("Beskrivelse", modalUtbetaling.beskrivelse, (verdi: string) => setModalUtbetaling({...modalUtbetaling, beskrivelse: verdi}))}
-                            {getKeyboardDatePickerGrid2("Forfallsdato", modalUtbetaling.forfallsdato, (verdi: string) => setModalUtbetaling({...modalUtbetaling, forfallsdato: verdi}),
+                            {getTextFieldGrid("Beskrivelse", modalUtbetaling.beskrivelse, (verdi: string) => setModalUtbetaling({...modalUtbetaling, beskrivelse: verdi}))}
+                            {getKeyboardDatePickerGrid("Forfallsdato", modalUtbetaling.forfallsdato, (verdi: string) => setModalUtbetaling({...modalUtbetaling, forfallsdato: verdi}),
                                 forfallsdatoDatePickerIsOpen, setForfallsdatoDatePickerIsOpen)}
-                            {getTextFieldGrid2("Stønadstype", modalUtbetaling.stonadstype, (verdi: string) => setModalUtbetaling({...modalUtbetaling, stonadstype: verdi}))}
-                            {getKeyboardDatePickerGrid2("Utbetalingsdato", modalUtbetaling.utbetalingsdato, (verdi: string) => setModalUtbetaling({...modalUtbetaling, utbetalingsdato: verdi}),
+                            {getTextFieldGrid("Stønadstype", modalUtbetaling.stonadstype, (verdi: string) => setModalUtbetaling({...modalUtbetaling, stonadstype: verdi}))}
+                            {getKeyboardDatePickerGrid("Utbetalingsdato", modalUtbetaling.utbetalingsdato, (verdi: string) => setModalUtbetaling({...modalUtbetaling, utbetalingsdato: verdi}),
                                 utbetalingsdatoDatePickerIsOpen, setUtbetalingsdatoDatePickerIsOpen)}
-                            {getKeyboardDatePickerGrid2("fom", modalUtbetaling.fom, (verdi: string) => setModalUtbetaling({...modalUtbetaling, fom: verdi}),
+                            {getKeyboardDatePickerGrid("fom", modalUtbetaling.fom, (verdi: string) => setModalUtbetaling({...modalUtbetaling, fom: verdi}),
                                 fomDatePickerIsOpen, setFomDatePickerIsOpen)}
-                            {getKeyboardDatePickerGrid2("tom", modalUtbetaling.tom, (verdi: string) => setModalUtbetaling({...modalUtbetaling, tom: verdi}),
+                            {getKeyboardDatePickerGrid("tom", modalUtbetaling.tom, (verdi: string) => setModalUtbetaling({...modalUtbetaling, tom: verdi}),
                                 tomDatePickerIsOpen, setTomDatePickerIsOpen)}
                             <Grid item key={'Annen mottaker'} xs={6} zeroMinWidth>
                                 <Typography variant={"subtitle1"} className={classes.otherField}>
@@ -404,7 +420,7 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
                                     </ButtonGroup>
                                 </Typography>
                             </Grid>
-                            {getTextFieldGrid2("Mottaker", modalUtbetaling.mottaker, (verdi: string) => setModalUtbetaling({...modalUtbetaling, mottaker: verdi}))}
+                            {getTextFieldGrid("Mottaker", modalUtbetaling.mottaker, (verdi: string) => setModalUtbetaling({...modalUtbetaling, mottaker: verdi}))}
                             <Grid item key={'Kontonummer'} xs={6} zeroMinWidth>
                                 <TextField
                                     id="filled-number"
@@ -428,7 +444,7 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
                                     variant="filled"
                                 />
                             </Grid>
-                            {getTextFieldGrid2("Utbetalingsmetode", modalUtbetaling.utbetalingsmetode, (verdi: string) => setModalUtbetaling({...modalUtbetaling, utbetalingsmetode: verdi}))}
+                            {getTextFieldGrid("Utbetalingsmetode", modalUtbetaling.utbetalingsmetode, (verdi: string) => setModalUtbetaling({...modalUtbetaling, utbetalingsmetode: verdi}))}
                         </Grid>
                     </div>
                     <div className={classes.paperboys}>
