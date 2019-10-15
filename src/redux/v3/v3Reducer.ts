@@ -126,7 +126,7 @@ const v3Reducer: Reducer<V3State, V3Action> = (
             const s1 = oGetSoknad(forFiksDigisosId)
                 .composeLens(oFsSaker)
                 .composeTraversal(oFsSakerTraversal)
-                .composePrism(Prism.fromPredicate((s: FsSaksStatus) => s.referanse === oppdatertSaksstatus.referanse))
+                .composePrism(oFsSaksStatusPrism(oppdatertSaksstatus.referanse))
                 .modify((fsSaksStatus: FsSaksStatus) => {return {...fsSaksStatus, tittel, status}})(state);
 
             return oGetSoknad(forFiksDigisosId)
@@ -178,11 +178,18 @@ const v3Reducer: Reducer<V3State, V3Action> = (
             }
         }
         case V3ActionTypeKeys.OPPDATER_VEDTAK_FATTET: {
-            const {} = action;
+            const {forFiksDigisosId, oppdatertVedtakFattet} = action;
 
-            return {
-                ...state
-            }
+            const s1 = oGetSoknad(forFiksDigisosId)
+                .composeLens(oFsSaker)
+                .composeTraversal(oFsSakerTraversal)
+                .composePrism(oFsSaksStatusPrism(oppdatertVedtakFattet.saksreferanse))
+                .modify((fsSaksStatus: FsSaksStatus) => {return {...fsSaksStatus, oppdatertVedtakFattet}})(state);
+
+            return oGetSoknad(forFiksDigisosId)
+                .composeLens(oHendelser)
+                .modify((a: Hendelse[]) => [...a, oppdatertVedtakFattet])(s1)
+
         }
         case V3ActionTypeKeys.OPPDATER_RAMMEVEDTAK: {
             const {} = action;
