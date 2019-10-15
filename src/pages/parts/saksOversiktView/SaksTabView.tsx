@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import {AppState, DispatchProps} from "../../../redux/reduxTypes";
 import {connect} from "react-redux";
 import Typography from "@material-ui/core/Typography";
-import {Utbetaling} from "../../../types/hendelseTypes";
+import Hendelse, {HendelseType, SaksStatus, Utbetaling} from "../../../types/hendelseTypes";
 import Box from "@material-ui/core/Box";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import {createStyles, useTheme} from "@material-ui/core";
@@ -10,7 +10,7 @@ import {V2Model} from "../../../redux/v2/v2Types";
 import Button from "@material-ui/core/Button";
 import {aiuuur, oppdaterFsSaksStatus} from "../../../redux/v3/v3Actions";
 import {V3State} from "../../../redux/v3/v3Types";
-import {getFsSoknadByFiksDigisosId} from "../../../utils/utilityFunctions";
+import {getFsSoknadByFiksDigisosId, getNow} from "../../../utils/utilityFunctions";
 import {FsSaksStatus, FsSoknad} from "../../../redux/v3/v3FsTypes";
 import AddIcon from '@material-ui/icons/Add';
 import Fab from "@material-ui/core/Fab";
@@ -23,6 +23,7 @@ import UtbetalingTabView from "./UtbetalingTabView";
 import TextField from "@material-ui/core/TextField";
 import EndreSaksstatusModal from "./EndreSaksstatusModal";
 import VedtakFattetModal from "./VedtakFattetModal";
+import {oHendelser} from "../../../redux/v3/v3Optics";
 
 interface TabPanelProps {
     children?: React.ReactNode;
@@ -195,26 +196,28 @@ const SaksTabView: React.FC<Props> = (props: Props) => {
                 autoComplete="off"
             />
             <Button className={classes.tittelButton} variant="contained" onClick={() => {
+                if (tittel.length > 0){
+                    const nyHendelse: SaksStatus = {
+                        type: HendelseType.SaksStatus,
+                        hendelsestidspunkt: getNow(),
+                        referanse: sak.referanse,
+                        tittel: tittel,
+                        status: sak.status
+                    };
 
-                const fsSoknader = v3.soknader;
-                if (fsSoknader){
-                    const fsSoknad: FsSoknad | undefined = getFsSoknadByFiksDigisosId(fsSoknader, v2.aktivSoknad);
-                    console.log(sak.referanse);
-                    if (fsSoknad && tittel.length > 0){
-                        dispatch(
-                            aiuuur(
+                    const soknadUpdated = oHendelser.modify((a: Hendelse[]) => [...a, nyHendelse])(soknad);
+
+                    dispatch(
+                        aiuuur(
+                            v2.aktivSoknad,
+                            soknadUpdated.fiksDigisosSokerJson,
+                            v2,
+                            oppdaterFsSaksStatus(
                                 v2.aktivSoknad,
-                                fsSoknad.fiksDigisosSokerJson,
-                                v2,
-                                oppdaterFsSaksStatus(
-                                    v2.aktivSoknad,
-                                    sak.referanse,
-                                    tittel,
-                                    sak.status
-                                )
+                                nyHendelse
                             )
                         )
-                    }
+                    )
                 }
             } }>Oppdater tittel</Button>
 

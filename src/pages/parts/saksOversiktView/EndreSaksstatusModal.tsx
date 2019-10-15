@@ -75,9 +75,7 @@ const EndreSaksstatusModal: React.FC<Props> = (props: Props) => {
                                     v2,
                                     oppdaterFsSaksStatus(
                                         v2.aktivSoknad,
-                                        sak.referanse,
-                                        sak.tittel,
-                                        value
+                                        nyHendelse
                                     )
                                 )
                             )

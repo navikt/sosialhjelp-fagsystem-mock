@@ -17,7 +17,7 @@ import {
     oFsSaksStatusUtbetalinger,
     oFsSaksStatusUtbetalingerTraversal, oFsUtbetalingPrism
 } from "./v3Optics";
-import Hendelse, {Utbetaling} from "../../types/hendelseTypes";
+import Hendelse, {SaksStatus, SaksStatusType, Utbetaling} from "../../types/hendelseTypes";
 import {fsSaksStatusToSaksStatus} from "./v3UtilityFunctions";
 import {Lens, fromTraversable, Prism, Traversal} from "monocle-ts/es6";
 import {array} from "fp-ts/es6/Array";
@@ -119,13 +119,19 @@ const v3Reducer: Reducer<V3State, V3Action> = (
                 .modify((a: Hendelse[]) => [...a, fsSaksStatusToSaksStatus(nyFsSaksStatus)])(s1)
         }
         case V3ActionTypeKeys.OPPDATER_FS_SAKS_STATUS: {
-            const {forFiksDigisosId, forFsSaksStatusReferanse, tittel, status} = action;
+            const {forFiksDigisosId, oppdatertSaksstatus} = action;
+            const tittel: string = oppdatertSaksstatus.tittel;
+            const status: SaksStatusType | null = oppdatertSaksstatus.status;
 
-            return oGetSoknad(forFiksDigisosId)
+            const s1 = oGetSoknad(forFiksDigisosId)
                 .composeLens(oFsSaker)
                 .composeTraversal(oFsSakerTraversal)
-                .composePrism(Prism.fromPredicate((s: FsSaksStatus) => s.referanse === forFsSaksStatusReferanse))
+                .composePrism(Prism.fromPredicate((s: FsSaksStatus) => s.referanse === oppdatertSaksstatus.referanse))
                 .modify((fsSaksStatus: FsSaksStatus) => {return {...fsSaksStatus, tittel, status}})(state);
+
+            return oGetSoknad(forFiksDigisosId)
+                .composeLens(oHendelser)
+                .modify((a: Hendelse[]) => [...a, oppdatertSaksstatus])(s1)
         }
         case V3ActionTypeKeys.NY_UTBETALING: {
             const {forFiksDigisosId, nyUtbetaling} = action;

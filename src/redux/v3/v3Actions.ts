@@ -164,16 +164,12 @@ export const nyFsSaksStatus = (forFiksDigisosId: string, nyFsSaksStatus: FsSaksS
 };
 export const oppdaterFsSaksStatus = (
     forFiksDigisosId: string,
-    forFsSaksStatusReferanse: string,
-    tittel: string,
-    status: SaksStatusType|null
+    oppdatertSaksstatus: SaksStatus,
 ): OppdaterFsSaksStatus => {
     return {
         type: V3ActionTypeKeys.OPPDATER_FS_SAKS_STATUS,
         forFiksDigisosId,
-        forFsSaksStatusReferanse,
-        tittel,
-        status
+        oppdatertSaksstatus
     }
 };
 export const nyUtbetaling = (forFiksDigisosId: string, forSaksStatusReferanse: string, nyUtbetaling: Utbetaling): NyUtbetaling => {
