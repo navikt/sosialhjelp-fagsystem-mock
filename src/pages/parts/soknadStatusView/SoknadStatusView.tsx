@@ -5,13 +5,7 @@ import {createStyles, Paper} from "@material-ui/core";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import FormControl from "@material-ui/core/FormControl";
 import RadioGroup from "@material-ui/core/RadioGroup";
-import Hendelse, {
-    ForelopigSvar,
-    Forvaltningsbrev,
-    HendelseType,
-    SoknadsStatus,
-    SoknadsStatusType, Vedlegg
-} from "../../../types/hendelseTypes";
+import Hendelse, {ForelopigSvar, HendelseType, SoknadsStatus, SoknadsStatusType} from "../../../types/hendelseTypes";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Radio from "@material-ui/core/Radio";
 import Typography from "@material-ui/core/Typography";
@@ -19,12 +13,7 @@ import AddIcon from '@material-ui/icons/Add';
 import Box from "@material-ui/core/Box";
 import Fab from "@material-ui/core/Fab";
 import {FsSoknad} from "../../../redux/v3/v3FsTypes";
-import {
-    aiuuur,
-    oppdaterDokumentasjonEtterspurt,
-    oppdaterForelopigSvar,
-    oppdaterSoknadsStatus
-} from "../../../redux/v3/v3Actions";
+import {aiuuur, oppdaterForelopigSvar, oppdaterSoknadsStatus} from "../../../redux/v3/v3Actions";
 import {getNow} from "../../../utils/utilityFunctions";
 import {V2Model} from "../../../redux/v2/v2Types";
 import {oHendelser} from "../../../redux/v3/v3Optics";

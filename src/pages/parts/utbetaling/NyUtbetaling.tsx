@@ -22,7 +22,7 @@ import {aiuuur, nyUtbetaling, oppdaterUtbetaling} from "../../../redux/v3/v3Acti
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
 import DateFnsUtils from "@date-io/date-fns";
-import {DatePicker, KeyboardDatePicker, MuiPickersUtilsProvider} from "@material-ui/pickers";
+import {KeyboardDatePicker, MuiPickersUtilsProvider} from "@material-ui/pickers";
 import Typography from "@material-ui/core/Typography";
 import ButtonGroup from "@material-ui/core/ButtonGroup";
 import Button from "@material-ui/core/Button";
@@ -226,7 +226,7 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
                     soknad.fiksDigisosId,
                     soknadUpdated.fiksDigisosSokerJson,
                     v2,
-                    nyUtbetaling(soknad.fiksDigisosId, sak.referanse, nyHendelse)
+                    nyUtbetaling(soknad.fiksDigisosId, nyHendelse)
                 )
             );
         } else {
@@ -246,7 +246,7 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
     };
 
     const setDefaultUtbetaling = () => {
-        setModalUtbetaling(defaultUtbetaling);
+        setModalUtbetaling({...defaultUtbetaling, utbetalingsreferanse: generateFilreferanseId()});
 
         setAnnenMottakerTrueVariant('text');
         setAnnenMottakerFalseVariant('contained');
@@ -379,8 +379,7 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
                                             id: 'status',
                                         }}
                                     >
-                                        <MenuItem value={UtbetalingStatus.PLANLAGT_UTBETALING}>Planlagt
-                                            Utbetaling</MenuItem>
+                                        <MenuItem value={UtbetalingStatus.PLANLAGT_UTBETALING}>Planlagt Utbetaling</MenuItem>
                                         <MenuItem value={UtbetalingStatus.UTBETALT}>Utbetalt</MenuItem>
                                         <MenuItem value={UtbetalingStatus.STOPPET}>Stoppet</MenuItem>
                                         <MenuItem value={UtbetalingStatus.ANNULLERT}>Annulert</MenuItem>

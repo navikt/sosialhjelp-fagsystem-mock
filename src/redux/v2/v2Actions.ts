@@ -122,6 +122,13 @@ export const setAktivUtbetaling = (referanse: string | null): V2Action => {
     }
 };
 
+export const setAktivtVilkar = (referanse: string | null): V2Action => {
+    return {
+        type: V2ActionTypeKeys.SET_AKTIVT_VILKAR,
+        referanse
+    }
+};
+
 export const visNySakModal = (): V2Action => {
     return {
         type: V2ActionTypeKeys.VIS_NY_SAK_MODAL
@@ -149,6 +156,18 @@ export const visNyUtbetalingModal = (): V2Action => {
 export const skjulNyUtbetalingModal = (): V2Action => {
     return {
         type: V2ActionTypeKeys.SKJUL_NY_UTBETALING_MODAL
+    }
+};
+
+export const visNyVilkarModal = (): V2Action => {
+    return {
+        type: V2ActionTypeKeys.VIS_NY_VILKAR_MODAL
+    }
+};
+
+export const skjulNyVilkarModal = (): V2Action => {
+    return {
+        type: V2ActionTypeKeys.SKJUL_NY_VILKAR_MODAL
     }
 };
 

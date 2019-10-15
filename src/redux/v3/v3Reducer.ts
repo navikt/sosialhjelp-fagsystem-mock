@@ -15,9 +15,9 @@ import {
     oFsSakerTraversal,
     oFsSaksStatusPrism,
     oFsSaksStatusUtbetalinger,
-    oFsSaksStatusUtbetalingerTraversal, oFsUtbetalingPrism
+    oFsSaksStatusUtbetalingerTraversal, oFsUtbetalingPrism, oFsVilkar, oFsVilkarPrism, oFsVilkarTraversal
 } from "./v3Optics";
-import Hendelse, {SaksStatus, SaksStatusType, Utbetaling} from "../../types/hendelseTypes";
+import Hendelse, {SaksStatus, SaksStatusType, Utbetaling, Vilkar} from "../../types/hendelseTypes";
 import {fsSaksStatusToSaksStatus} from "./v3UtilityFunctions";
 import {Lens, fromTraversable, Prism, Traversal} from "monocle-ts/es6";
 import {array} from "fp-ts/es6/Array";
@@ -199,18 +199,28 @@ const v3Reducer: Reducer<V3State, V3Action> = (
             }
         }
         case V3ActionTypeKeys.NYTT_VILKAR: {
-            const {} = action;
+            const {forFiksDigisosId, nyttVilkar} = action;
 
-            return {
-                ...state
-            }
+            const s1 = oGetSoknad(forFiksDigisosId)
+                .composeLens(oFsVilkar)
+                .modify((vilkarListe: Vilkar[]) => [...vilkarListe, nyttVilkar])(state);
+
+            return oGetSoknad(forFiksDigisosId)
+                .composeLens(oHendelser)
+                .modify((a: Hendelse[]) => [...a, nyttVilkar])(s1);
         }
         case V3ActionTypeKeys.OPPDATER_VILKAR: {
-            const {} = action;
+            const {forFiksDigisosId, oppdatertVilkar} = action;
 
-            return {
-                ...state
-            }
+            const s1 = oGetSoknad(forFiksDigisosId)
+                .composeLens(oFsVilkar)
+                .composeTraversal(oFsVilkarTraversal)
+                .composePrism(oFsVilkarPrism(oppdatertVilkar.vilkarreferanse))
+                .set(oppdatertVilkar)(state);
+
+            return oGetSoknad(forFiksDigisosId)
+                .composeLens(oHendelser)
+                .modify((a: Hendelse[]) => [...a, oppdatertVilkar])(s1);
         }
         default: {
             return state;

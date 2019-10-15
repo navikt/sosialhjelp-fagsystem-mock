@@ -172,11 +172,10 @@ export const oppdaterFsSaksStatus = (
         oppdatertSaksstatus
     }
 };
-export const nyUtbetaling = (forFiksDigisosId: string, forSaksStatusReferanse: string, nyUtbetaling: Utbetaling): NyUtbetaling => {
+export const nyUtbetaling = (forFiksDigisosId: string, nyUtbetaling: Utbetaling): NyUtbetaling => {
     return {
         type: V3ActionTypeKeys.NY_UTBETALING,
         forFiksDigisosId,
-        forSaksStatusReferanse,
         nyUtbetaling
     }
 };

@@ -100,7 +100,6 @@ export interface OppdaterFsSaksStatus {
 export interface NyUtbetaling {
     type: V3ActionTypeKeys.NY_UTBETALING;
     forFiksDigisosId: string;
-    forSaksStatusReferanse: string;
     nyUtbetaling: Utbetaling;
 }
 export interface OppdaterUtbetaling {

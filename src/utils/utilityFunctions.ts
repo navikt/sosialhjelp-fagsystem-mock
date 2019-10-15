@@ -5,7 +5,7 @@ import Hendelse, {
     HendelseType,
     SaksStatus, SaksStatusType, Svarut,
     SvarutExtended, Utbetaling, Vedlegg,
-    VedtakFattet
+    VedtakFattet, Vilkar
 } from "../types/hendelseTypes";
 import {Filreferanselager, V2Model} from "../redux/v2/v2Types";
 import {Soknad} from "../types/additionalTypes";
@@ -217,6 +217,12 @@ export const getFsSaksStatusByIdx = (saker: FsSaksStatus[], idx: number|undefine
 export const getUtbetalingByUtbetalingsreferanse = (utbetalinger: Utbetaling[], referanse: string): Utbetaling | undefined => {
     return utbetalinger.find(s => {
         return s.utbetalingsreferanse === referanse
+    })
+};
+
+export const getVilkarByVilkarreferanse = (vilkar: Vilkar[], referanse: string): Vilkar | undefined => {
+    return vilkar.find(s => {
+        return s.vilkarreferanse === referanse
     })
 };
 

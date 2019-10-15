@@ -10,6 +10,7 @@ import {FsSoknad} from "../../../redux/v3/v3FsTypes";
 import Typography from "@material-ui/core/Typography";
 import ReactJsonView from "../reactJsonView/ReactJsonView";
 import TildeldeltNavkontorView from "../navKontor/TildeltNavKontorView";
+import VilkarOgDokumentasjonskravOversiktView from "../vilkar/VilkarOgDokumentasjonskravOversiktView";
 
 
 const useStyles = makeStyles(theme => ({
@@ -75,6 +76,8 @@ const BehandleSoknadPanel: React.FC<Props> = (props: Props) => {
                 <SoknadStatusView soknad={soknad}/>
 
                 <SaksOversiktView soknad={soknad}/>
+
+                <VilkarOgDokumentasjonskravOversiktView soknad={soknad}/>
             </div>
         );
     }

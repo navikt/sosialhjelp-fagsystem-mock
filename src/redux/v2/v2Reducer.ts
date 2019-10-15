@@ -92,6 +92,7 @@ export const initialV2Model: V2Model = {
     visNySakModal: false,
     visNyDokumentasjonEtterspurtModal: false,
     visNyUtbetalingModal: false,
+    visNyVilkarModal: false,
     visEndreNavKontorModal: false,
     visSystemSettingsModal: false,
     visSnackbar: false,
@@ -99,7 +100,8 @@ export const initialV2Model: V2Model = {
     // Aktive ting
     aktivSoknad: '001',
     aktivSakIndex: 0,
-    aktivUtbetaling: null
+    aktivUtbetaling: null,
+    aktivtVilkar: null
 };
 
 const v2Reducer: Reducer<V2Model, V2Action> = (
@@ -152,6 +154,8 @@ const v2Reducer: Reducer<V2Model, V2Action> = (
         case V2ActionTypeKeys.SKJUL_NY_DOKUMENTASJON_ETTERSPURT_MODAL: {return {...state, visNyDokumentasjonEtterspurtModal: false}}
         case V2ActionTypeKeys.VIS_NY_UTBETALING_MODAL: {return {...state, visNyUtbetalingModal: true}}
         case V2ActionTypeKeys.SKJUL_NY_UTBETALING_MODAL: {return {...state, visNyUtbetalingModal: false}}
+        case V2ActionTypeKeys.VIS_NY_VILKAR_MODAL: {return {...state, visNyVilkarModal: true}}
+        case V2ActionTypeKeys.SKJUL_NY_VILKAR_MODAL: {return {...state, visNyVilkarModal: false}}
         case V2ActionTypeKeys.VIS_ENDRE_NAV_KONTOR_MODAL: {return {...state, visEndreNavKontorModal: true}}
         case V2ActionTypeKeys.SKJUL_ENDRE_NAV_KONTOR_MODAL: {return {...state, visEndreNavKontorModal: false}}
         case V2ActionTypeKeys.VIS_SYSTEM_SETTINGS_MODAL: {return {...state, visSystemSettingsModal: true}}
@@ -162,6 +166,7 @@ const v2Reducer: Reducer<V2Model, V2Action> = (
         // Aktive ting
         case V2ActionTypeKeys.SET_AKTIV_SOKNAD: {return {...state, aktivSoknad: action.fiksDigisosId}}
         case V2ActionTypeKeys.SET_AKTIV_UTBETALING: {return {...state, aktivUtbetaling: action.referanse}}
+        case V2ActionTypeKeys.SET_AKTIVT_VILKAR: {return {...state, aktivtVilkar: action.referanse}}
         case V2ActionTypeKeys.SET_AKTIV_SAK: {return {...state, aktivSakIndex: action.saksIndex}}
 
 

@@ -109,29 +109,30 @@ export interface VedtakFattet {
 export interface Rammevedtak {
     type: HendelseType.Rammevedtak;
     hendelsestidspunkt: string;
-    rammevedtaksreferanse: string;
-    saksreferanse: string;
-    beskrivelse: string;
-    belop: string;
-    fom: string;
-    tom: string;
+    rammevedtaksreferanse: string|null;
+    saksreferanse: string|null;
+    beskrivelse: string|null;
+    belop: string|null;
+    fom: string|null;
+    tom: string|null;
 }
 // utbetalingsref
 export interface Vilkar {
     type: HendelseType.Vilkar;
     hendelsestidspunkt: string;
-    utbetalingsreferanse: string[];
-    beskrivelse: string;
-    status: VilkarStatus;
+    vilkarreferanse: string;
+    utbetalingsreferanse: string[]|null;
+    beskrivelse: string|null;
+    status: VilkarStatus|null;
 }
 // utbetalingsref
 export interface Dokumentasjonkrav {
     type: HendelseType.Dokumentasjonkrav;
     hendelsestidspunkt: string;
     dokumentasjonkravreferanse: string;
-    utbetalingsreferanse: string[], // Array med hvilke utbetalinger som venter på at dette kravet blir oppfylt
-    beskrivelse: string, // beskrivelse av hva som må gjøres
-    status: VilkarStatus
+    utbetalingsreferanse: string[]|null, // Array med hvilke utbetalinger som venter på at dette kravet blir oppfylt
+    beskrivelse: string|null, // beskrivelse av hva som må gjøres
+    status: VilkarStatus|null
 }
 
 

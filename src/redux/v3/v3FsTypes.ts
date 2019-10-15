@@ -27,6 +27,8 @@ export interface FsSoknad {
     navKontor: TildeltNavKontor | undefined; // If undefined => vis knapp for "send til annet Nav kontor"
     dokumentasjonEtterspurt: DokumentasjonEtterspurt | undefined; // If undefined => vis knapp for "Etterspør dokumentasjon"
     forelopigSvar: ForelopigSvar | undefined; // If undefined => vis knapp for "Opprett og send foreløpig svar"
+    vilkar: Vilkar[];
+    dokumentasjonskrav: Dokumentasjonkrav[];
     saker: FsSaksStatus[];
 
     // hendelseJson, den som skal shippes avgårde
