@@ -6,8 +6,12 @@ metadata:
   labels:
     team: digisos
 spec:
-  image: docker.pkg.github.com/navikt/sosialhjelp-fagsystem-mock/sosialhjelp-fagsystem-mock:{{version}}
+  image: docker.pkg.github.com/navikt/sosialhjelp-woldena-tm/sosialhjelp-woldena-tm:{{version}}
   port: 8080
+  ingresses:
+{{#each ingresses}}
+    - "{{this}}"
+{{/each}}
   liveness:
     path: /sosialhjelp/fagsystem-mock/internal/isAlive
     initialDelay: 20
