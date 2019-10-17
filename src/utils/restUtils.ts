@@ -49,7 +49,7 @@ export enum REST_STATUS {
 const getHeaders = (): Headers => {
     const headersRecord: Record<string, string> = {
         "Content-Type": "application/json",
-        "X-XSRF-TOKEN": getCookie("XSRF-TOKEN-SOKNAD-API"),
+        "NAV_CSRF_PROTECTION": getCookie("NAV_CSRF_PROTECTION"),
         "Accept": "application/json, text/plain, */*"
     };
     return new Headers(headersRecord)
