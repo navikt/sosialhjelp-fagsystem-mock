@@ -49,7 +49,6 @@ export enum REST_STATUS {
 const getHeaders = (): Headers => {
     const headersRecord: Record<string, string> = {
         "Content-Type": "application/json",
-        "NAV_CSRF_PROTECTION": getCookie("NAV_CSRF_PROTECTION"),
         "Accept": "application/json, text/plain, */*"
     };
     return new Headers(headersRecord)
@@ -111,19 +110,3 @@ export function fetchDelete(urlPath: string) {
     };
     return fetch(getApiBaseUrl() + urlPath, OPTIONS).then(sjekkStatuskode);
 }
-
-export function getCookie(name: string) {
-    const value = "; " + document.cookie;
-    const parts = value.split("; " + name + "=");
-    if (parts.length === 2) {
-        let partsPopped: string | undefined = parts.pop();
-        if (partsPopped){
-            const partsPoppedSplitAndShift = partsPopped.split(";").shift();
-            return  partsPoppedSplitAndShift ? partsPoppedSplitAndShift : "null"
-        } else {
-            return "null"
-        }
-    } else {
-        return "null";
-    }
-};

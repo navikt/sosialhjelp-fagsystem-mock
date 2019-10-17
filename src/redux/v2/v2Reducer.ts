@@ -67,8 +67,8 @@ const initialFilreferanselager: Filreferanselager = {
 
 export const backendUrlsLocalTemplate: string = "http://localhost:8080/sosialhjelp/innsyn-api";
 export const backendUrlsDigisostestTemplate: string = "https://www.digisos-test.com/sosialhjelp/login-api/innsyn-api";
-export const backendUrlsQTemplate: string = "https://www-q1.nav.no/sosialhjelp/innsyn/innsyn-api";
-export const backendUrlsQ0Template: string = "https://www-q0.nav.no/sosialhjelp/innsyn/innsyn-api";
+export const backendUrlsQTemplate: string = "https://www-q1.nav.no/sosialhjelp/innsyn-api";
+export const backendUrlsQ0Template: string = "https://www-q0.nav.no/sosialhjelp/innsyn-api";
 
 export const initialV2Model: V2Model = {
     fiksDigisosId: "1337",
