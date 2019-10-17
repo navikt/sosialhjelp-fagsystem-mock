@@ -49,8 +49,8 @@ export enum REST_STATUS {
 const getHeaders = (): Headers => {
     const headersRecord: Record<string, string> = {
         "Content-Type": "application/json",
-        "Accept": "application/json, text/plain, */*",
-        "Origin": "http://localhost:3000"
+        "X-XSRF-TOKEN": getCookie("XSRF-TOKEN-SOKNAD-API"),
+        "Accept": "application/json, text/plain, */*"
     };
     return new Headers(headersRecord)
 };
@@ -59,7 +59,7 @@ export const serverRequest = (method: string, urlPath: string, body: string|null
     const OPTIONS: RequestInit = {
         headers: getHeaders(),
         method,
-        body: body ? body : undefined
+        body: body ? body : null
     };
 
     return new Promise((resolve, reject) => {
@@ -112,3 +112,18 @@ export function fetchDelete(urlPath: string) {
     return fetch(getApiBaseUrl() + urlPath, OPTIONS).then(sjekkStatuskode);
 }
 
+export function getCookie(name: string) {
+    const value = "; " + document.cookie;
+    const parts = value.split("; " + name + "=");
+    if (parts.length === 2) {
+        let partsPopped: string | undefined = parts.pop();
+        if (partsPopped){
+            const partsPoppedSplitAndShift = partsPopped.split(";").shift();
+            return  partsPoppedSplitAndShift ? partsPoppedSplitAndShift : "null"
+        } else {
+            return "null"
+        }
+    } else {
+        return "null";
+    }
+};
