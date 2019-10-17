@@ -39,7 +39,8 @@ export interface V2Model {
 export interface BackendUrls {
     local: string,
     digisostest: string,
-    q: string
+    q0: string,
+    q1: string
 }
 
 export interface Filreferanselager {
