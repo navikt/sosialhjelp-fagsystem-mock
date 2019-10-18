@@ -1,8 +1,10 @@
 name: Build
 on:
   push:
+    branches:
+      - '**' # Build all branches
     tags-ignore:
-      - '**' # Don't rebuild on tags
+      - '**' # Don't build any tags
 
 jobs:
   build:
