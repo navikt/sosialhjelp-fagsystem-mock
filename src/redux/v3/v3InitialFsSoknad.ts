@@ -23,7 +23,7 @@ export const getInitialFsSoknad = (
         dokumentasjonEtterspurt: undefined,
         forelopigSvar: undefined,
         vilkar: [],
-        dokumentasjonskrav: [],
+        dokumentasjonkrav: [],
         saker: [],
         fiksDigisosSokerJson: {
             sak: {

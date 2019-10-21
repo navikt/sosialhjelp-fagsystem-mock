@@ -1,4 +1,5 @@
 import Hendelse, {
+    Dokumentasjonkrav,
     Dokumentlager,
     DokumentlagerExtended,
     FiksDigisosSokerJson, FilreferanseType,
@@ -223,6 +224,12 @@ export const getUtbetalingByUtbetalingsreferanse = (utbetalinger: Utbetaling[], 
 export const getVilkarByVilkarreferanse = (vilkar: Vilkar[], referanse: string): Vilkar | undefined => {
     return vilkar.find(s => {
         return s.vilkarreferanse === referanse
+    })
+};
+
+export const getDokumentasjonkravByDokumentasjonkravreferanse = (dokumentasjonkrav: Dokumentasjonkrav[], referanse: string): Dokumentasjonkrav | undefined => {
+    return dokumentasjonkrav.find(s => {
+        return s.dokumentasjonkravreferanse === referanse
     })
 };
 

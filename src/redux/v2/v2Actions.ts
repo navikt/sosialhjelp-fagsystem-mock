@@ -129,6 +129,13 @@ export const setAktivtVilkar = (referanse: string | null): V2Action => {
     }
 };
 
+export const setAktivtDokumentasjonkrav = (referanse: string | null): V2Action => {
+    return {
+        type: V2ActionTypeKeys.SET_AKTIVT_DOKUMENTASJONKRAV,
+        referanse
+    }
+};
+
 export const visNySakModal = (): V2Action => {
     return {
         type: V2ActionTypeKeys.VIS_NY_SAK_MODAL
@@ -168,6 +175,18 @@ export const visNyVilkarModal = (): V2Action => {
 export const skjulNyVilkarModal = (): V2Action => {
     return {
         type: V2ActionTypeKeys.SKJUL_NY_VILKAR_MODAL
+    }
+};
+
+export const visNyDokumentasjonkravModal = (): V2Action => {
+    return {
+        type: V2ActionTypeKeys.VIS_NY_DOKUMENTASJONKRAV_MODAL
+    }
+};
+
+export const skjulNyDokumentasjonkravModal = (): V2Action => {
+    return {
+        type: V2ActionTypeKeys.SKJUL_NY_DOKUMENTASJONKRAV_MODAL
     }
 };
 

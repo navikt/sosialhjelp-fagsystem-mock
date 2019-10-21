@@ -28,7 +28,7 @@ export interface FsSoknad {
     dokumentasjonEtterspurt: DokumentasjonEtterspurt | undefined; // If undefined => vis knapp for "Etterspør dokumentasjon"
     forelopigSvar: ForelopigSvar | undefined; // If undefined => vis knapp for "Opprett og send foreløpig svar"
     vilkar: Vilkar[];
-    dokumentasjonskrav: Dokumentasjonkrav[];
+    dokumentasjonkrav: Dokumentasjonkrav[];
     saker: FsSaksStatus[];
 
     // hendelseJson, den som skal shippes avgårde

@@ -2,18 +2,18 @@ import React, {useState} from 'react';
 import {AppState, DispatchProps} from "../../../redux/reduxTypes";
 import {connect} from "react-redux";
 import {createStyles, Modal, Theme} from "@material-ui/core";
-import {setAktivtVilkar, skjulNyVilkarModal} from "../../../redux/v2/v2Actions";
+import {setAktivtDokumentasjonkrav, skjulNyDokumentasjonkravModal} from "../../../redux/v2/v2Actions";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import Fade from "@material-ui/core/Fade";
 import Backdrop from "@material-ui/core/Backdrop";
 import {V2Model} from "../../../redux/v2/v2Types";
-import {generateFilreferanseId, getNow, getVilkarByVilkarreferanse} from "../../../utils/utilityFunctions";
+import {generateFilreferanseId, getNow, getDokumentasjonkravByDokumentasjonkravreferanse} from "../../../utils/utilityFunctions";
 import {V3State} from "../../../redux/v3/v3Types";
 import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
-import Hendelse, {HendelseType, Vilkar, VilkarStatus} from "../../../types/hendelseTypes";
+import Hendelse, {HendelseType, Dokumentasjonkrav, DokumentasjonkravStatus} from "../../../types/hendelseTypes";
 import {oHendelser} from "../../../redux/v3/v3Optics";
-import {aiuuur, nyttVilkar, oppdaterVilkar} from "../../../redux/v3/v3Actions";
+import {aiuuur, nyttDokumentasjonkrav, oppdaterDokumentasjonkrav} from "../../../redux/v3/v3Actions";
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
 import Typography from "@material-ui/core/Typography";
@@ -105,30 +105,30 @@ interface OwnProps {
 }
 
 interface StoreProps {
-    visNyVilkarModal: boolean;
+    visNyDokumentasjonkravModal: boolean;
     v2: V2Model;
     v3: V3State;
-    aktivtVilkar: string | undefined | null;
+    aktivtDokumentasjonkrav: string | undefined | null;
 }
 
 type Props = DispatchProps & OwnProps & StoreProps;
 
-const initialVilkar: Vilkar = {
-    type: HendelseType.Vilkar,
+const initialDokumentasjonkrav: Dokumentasjonkrav = {
+    type: HendelseType.Dokumentasjonkrav,
     hendelsestidspunkt: '',
-    vilkarreferanse: generateFilreferanseId(),
+    dokumentasjonkravreferanse: generateFilreferanseId(),
     utbetalingsreferanse: null,
     beskrivelse: null,
     status: null,
 };
 
-const defaultVilkar: Vilkar = {
-    type: HendelseType.Vilkar,
+const defaultDokumentasjonkrav: Dokumentasjonkrav = {
+    type: HendelseType.Dokumentasjonkrav,
     hendelsestidspunkt: '',
-    vilkarreferanse: generateFilreferanseId(),
+    dokumentasjonkravreferanse: generateFilreferanseId(),
     utbetalingsreferanse: [],
     beskrivelse: 'Du må kjøpe flere kort til MTG',
-    status: VilkarStatus.IKKE_OPPFYLT,
+    status: DokumentasjonkravStatus.IKKE_OPPFYLT,
 };
 
 const ITEM_HEIGHT = 48;
@@ -142,34 +142,36 @@ const MenuProps = {
     },
 };
 
-const NyttVilkarModal: React.FC<Props> = (props: Props) => {
-    const [modalVilkar, setModalVilkar] = useState<Vilkar>(initialVilkar);
+const NyttDokumentasjonkravModal: React.FC<Props> = (props: Props) => {
+    const [modalDokumentasjonkrav, setModalDokumentasjonkrav] = useState<Dokumentasjonkrav>(initialDokumentasjonkrav);
     const [visFeilmelding, setVisFeilmelding] = useState(false);
     const theme = useTheme();
 
     const classes = useStyles();
-    const {visNyVilkarModal, dispatch, v2, v3, soknad, aktivtVilkar} = props;
+    const {visNyDokumentasjonkravModal, dispatch, v2, v3, soknad, aktivtDokumentasjonkrav} = props;
 
     function resetStateValues() {
-        setModalVilkar({...initialVilkar, vilkarreferanse: generateFilreferanseId()});
+        setModalDokumentasjonkrav({...initialDokumentasjonkrav, dokumentasjonkravreferanse: generateFilreferanseId()});
         setVisFeilmelding(false);
 
-        dispatch(setAktivtVilkar(null));
+        dispatch(setAktivtDokumentasjonkrav(null));
     }
 
-    const sendVilkar = () => {
-        const nyHendelse: Vilkar = {...modalVilkar};
+    const sendDokumentasjonkrav = () => {
+        const nyHendelse: Dokumentasjonkrav = {...modalDokumentasjonkrav};
         nyHendelse.hendelsestidspunkt = getNow();
 
         const soknadUpdated = oHendelser.modify((a: Hendelse[]) => [...a, nyHendelse])(soknad);
+        console.log(soknadUpdated);
+        console.log(aktivtDokumentasjonkrav);
 
-        if (aktivtVilkar == null) {
+        if (aktivtDokumentasjonkrav == null) {
             dispatch(
                 aiuuur(
                     soknad.fiksDigisosId,
                     soknadUpdated.fiksDigisosSokerJson,
                     v2,
-                    nyttVilkar(soknad.fiksDigisosId, nyHendelse)
+                    nyttDokumentasjonkrav(soknad.fiksDigisosId, nyHendelse)
                 )
             );
         } else {
@@ -178,18 +180,18 @@ const NyttVilkarModal: React.FC<Props> = (props: Props) => {
                     soknad.fiksDigisosId,
                     soknadUpdated.fiksDigisosSokerJson,
                     v2,
-                    oppdaterVilkar(soknad.fiksDigisosId, nyHendelse)
+                    oppdaterDokumentasjonkrav(soknad.fiksDigisosId, nyHendelse)
                 )
             );
         }
 
         resetStateValues();
 
-        dispatch(dispatch(skjulNyVilkarModal()));
+        dispatch(dispatch(skjulNyDokumentasjonkravModal()));
     };
 
-    const setDefaultVilkar = () => {
-        setModalVilkar({...defaultVilkar, vilkarreferanse: generateFilreferanseId()});
+    const setDefaultDokumentasjonkrav = () => {
+        setModalDokumentasjonkrav({...defaultDokumentasjonkrav, dokumentasjonkravreferanse: generateFilreferanseId()});
 
         setVisFeilmelding(false);
     };
@@ -202,11 +204,11 @@ const NyttVilkarModal: React.FC<Props> = (props: Props) => {
         return referanser;
     };
 
-    const fyllInnAktivtVilkar = () => {
-        if (aktivtVilkar) {
-            let vilkar = getVilkarByVilkarreferanse(soknad.vilkar, aktivtVilkar);
-            if (vilkar){
-                setModalVilkar(vilkar);
+    const fyllInnAktivtDokumentasjonkrav = () => {
+        if (aktivtDokumentasjonkrav) {
+            let dokumentasjonkrav = getDokumentasjonkravByDokumentasjonkravreferanse(soknad.dokumentasjonkrav, aktivtDokumentasjonkrav);
+            if (dokumentasjonkrav){
+                setModalDokumentasjonkrav(dokumentasjonkrav);
             }
         }
     };
@@ -250,29 +252,29 @@ const NyttVilkarModal: React.FC<Props> = (props: Props) => {
             BackdropProps={{
                 timeout: 500,
             }}
-            open={visNyVilkarModal}
-            onRendered={() => fyllInnAktivtVilkar()}
+            open={visNyDokumentasjonkravModal}
+            onRendered={() => fyllInnAktivtDokumentasjonkrav()}
             onClose={() => {
                 resetStateValues();
-                props.dispatch(skjulNyVilkarModal());
+                props.dispatch(skjulNyDokumentasjonkravModal());
             }}
         >
-            <Fade in={visNyVilkarModal}>
+            <Fade in={visNyDokumentasjonkravModal}>
                 <div className={classes.papertowel}>
                     <div className={classes.paperback}>
                         <Grid container spacing={3} justify="center" alignItems="center">
-                            {(aktivtVilkar == null) ?
-                                getTextFieldGrid("Vilkårreferanse", modalVilkar.vilkarreferanse, (verdi: string) => {
-                                    setModalVilkar({...modalVilkar, vilkarreferanse: verdi})
+                            {(aktivtDokumentasjonkrav == null) ?
+                                getTextFieldGrid("Dokumentasjonkravreferanse", modalDokumentasjonkrav.dokumentasjonkravreferanse, (verdi: string) => {
+                                    setModalDokumentasjonkrav({...modalDokumentasjonkrav, dokumentasjonkravreferanse: verdi})
                                 }, true)
-                                : (<Grid item key={'Grid: Vilkarreferanse'} xs={6} zeroMinWidth>
+                                : (<Grid item key={'Grid: Dokumentasjonkravreferanse'} xs={6} zeroMinWidth>
                                     <TextField
                                         disabled
-                                        id="Vilkarreferanse-disabled"
-                                        label="Vilkårreferanse"
+                                        id="Dokumentasjonkravreferanse-disabled"
+                                        label="Dokumentasjonkravreferanse"
                                         className={classes.textField}
                                         required={true}
-                                        defaultValue={modalVilkar.vilkarreferanse}
+                                        defaultValue={modalDokumentasjonkrav.dokumentasjonkravreferanse}
                                         margin="normal"
                                         variant="filled"
                                     />
@@ -282,9 +284,9 @@ const NyttVilkarModal: React.FC<Props> = (props: Props) => {
                                     <InputLabel htmlFor="age-simple" shrink={true}>Utbetalingsreferanse</InputLabel>
                                     <Select
                                         multiple
-                                        value={modalVilkar.utbetalingsreferanse ? modalVilkar.utbetalingsreferanse : []}
+                                        value={modalDokumentasjonkrav.utbetalingsreferanse ? modalDokumentasjonkrav.utbetalingsreferanse : []}
                                         onChange={(event: any) => {
-                                            setModalVilkar({...modalVilkar, utbetalingsreferanse: event.target.value as string[]})
+                                            setModalDokumentasjonkrav({...modalDokumentasjonkrav, utbetalingsreferanse: event.target.value as string[]})
                                         }}
                                         input={<Input id="select-multiple-chip" />}
                                         renderValue={selected => (
@@ -299,7 +301,7 @@ const NyttVilkarModal: React.FC<Props> = (props: Props) => {
                                         {getAllUtbetalingsreferanser().map(referanse => (
                                             <MenuItem
                                                 key={referanse} value={referanse}
-                                                style={getStyles(referanse, modalVilkar.utbetalingsreferanse ? modalVilkar.utbetalingsreferanse : [], theme)}>
+                                                style={getStyles(referanse, modalDokumentasjonkrav.utbetalingsreferanse ? modalDokumentasjonkrav.utbetalingsreferanse : [], theme)}>
                                                 {referanse}
                                             </MenuItem>
                                         ))}
@@ -307,31 +309,31 @@ const NyttVilkarModal: React.FC<Props> = (props: Props) => {
                                 </FormControl>
                             </Grid>
 
-                            {getTextFieldGrid("Beskrivelse", modalVilkar.beskrivelse, (verdi: string) => setModalVilkar({...modalVilkar, beskrivelse: verdi}))}
+                            {getTextFieldGrid("Beskrivelse", modalDokumentasjonkrav.beskrivelse, (verdi: string) => setModalDokumentasjonkrav({...modalDokumentasjonkrav, beskrivelse: verdi}))}
 
                             <Grid item key={'Status'} xs={6} zeroMinWidth>
                                 <FormControl className={classes.formControl}>
                                     <InputLabel htmlFor="age-simple" shrink={true}>Status</InputLabel>
                                     <Select
-                                        value={modalVilkar.status ? modalVilkar.status : ''}
-                                        onChange={(evt) => setModalVilkar({...modalVilkar, status: evt.target.value as VilkarStatus})}
+                                        value={modalDokumentasjonkrav.status ? modalDokumentasjonkrav.status : ''}
+                                        onChange={(evt) => setModalDokumentasjonkrav({...modalDokumentasjonkrav, status: evt.target.value as DokumentasjonkravStatus})}
                                         inputProps={{
                                             name: 'setStatus',
                                             id: 'status',
                                         }}
                                     >
-                                        <MenuItem value={VilkarStatus.OPPFYLT}>Oppfylt</MenuItem>
-                                        <MenuItem value={VilkarStatus.IKKE_OPPFYLT}>Ikke oppfylt</MenuItem>
+                                        <MenuItem value={DokumentasjonkravStatus.OPPFYLT}>Oppfylt</MenuItem>
+                                        <MenuItem value={DokumentasjonkravStatus.IKKE_OPPFYLT}>Ikke oppfylt</MenuItem>
                                     </Select>
                                 </FormControl>
                             </Grid>
                         </Grid>
                     </div>
                     <div className={classes.paperboys}>
-                        {(aktivtVilkar == null) &&
+                        {(aktivtDokumentasjonkrav == null) &&
                         <Typography className={classes.finalButtons}>
                             <Fab size="small" aria-label="add" className={classes.fab} color="primary" onClick={() => {
-                                setDefaultVilkar();
+                                setDefaultDokumentasjonkrav();
                             }}>
                                 <AddIcon/>
                             </Fab>
@@ -341,12 +343,12 @@ const NyttVilkarModal: React.FC<Props> = (props: Props) => {
                         <Typography className={classes.finalButtons}>
                             <Fab size="small" aria-label="add" className={classes.fab} color="primary" onClick={() => {
                                 if (!visFeilmelding) {
-                                    sendVilkar();
+                                    sendDokumentasjonkrav();
                                 }
                             }}>
                                 <AddIcon/>
                             </Fab>
-                            {(aktivtVilkar == null ? "Legg til vilkår" : "Endre vilkår")}
+                            {(aktivtDokumentasjonkrav == null ? "Legg til dokumentasjonkrav" : "Endre dokumentasjonkrav")}
                         </Typography>
                     </div>
                 </div>
@@ -356,10 +358,10 @@ const NyttVilkarModal: React.FC<Props> = (props: Props) => {
 };
 
 const mapStateToProps = (state: AppState) => ({
-    visNyVilkarModal: state.v2.visNyVilkarModal,
+    visNyDokumentasjonkravModal: state.v2.visNyDokumentasjonkravModal,
     v2: state.v2,
     v3: state.v3,
-    aktivtVilkar: state.v2.aktivtVilkar
+    aktivtDokumentasjonkrav: state.v2.aktivtDokumentasjonkrav
 });
 
 const mapDispatchToProps = (dispatch: any) => {
@@ -371,4 +373,4 @@ const mapDispatchToProps = (dispatch: any) => {
 export default connect(
     mapStateToProps,
     mapDispatchToProps
-)(NyttVilkarModal);
+)(NyttDokumentasjonkravModal);

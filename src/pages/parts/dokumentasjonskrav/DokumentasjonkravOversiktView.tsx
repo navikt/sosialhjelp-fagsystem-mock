@@ -9,14 +9,13 @@ import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
 import Fab from '@material-ui/core/Fab';
 import AddIcon from '@material-ui/icons/Add';
-import {green} from '@material-ui/core/colors';
 import Box from '@material-ui/core/Box';
 import {Paper} from "@material-ui/core";
-import {visNyVilkarModal} from "../../../redux/v2/v2Actions";
+import {visNyDokumentasjonkravModal} from "../../../redux/v2/v2Actions";
 import {FsSoknad} from "../../../redux/v3/v3FsTypes";
-import VilkarTabView from "./VilkarTabView";
-import {Vilkar} from "../../../types/hendelseTypes";
-import NyttVilkarModal from "./NyttVilkarModal";
+import DokumentasjonkravTabView from "./DokumentasjonkravTabView";
+import {Dokumentasjonkrav} from "../../../types/hendelseTypes";
+import NyttDokumentasjonkravModal from "./NyttDokumentasjonkravModal";
 
 
 interface TabPanelProps {
@@ -53,18 +52,6 @@ const useStyles = makeStyles((theme: Theme) =>
         },
         fab: {
             marginRight: theme.spacing(1),
-            // position: 'absolute',
-            // bottom: theme.spacing(5),
-            // top: theme.spacing(2),
-            // marginBottom: theme.spacing(4),
-            // right: theme.spacing(2),
-        },
-        fabGreen: {
-            color: theme.palette.common.white,
-            backgroundColor: green[500],
-            '&:hover': {
-                backgroundColor: green[600],
-            },
         },
         paper: {
             padding: theme.spacing(2, 2),
@@ -83,7 +70,6 @@ const useStyles = makeStyles((theme: Theme) =>
 
 
 interface StoreProps {
-    aktivSakIndex: number | undefined;
 }
 
 interface OwnProps {
@@ -93,39 +79,39 @@ interface OwnProps {
 type Props = DispatchProps & StoreProps & OwnProps;
 
 
-const VilkarOgDokumentasjonskravOversiktView: React.FC<Props> = (props: Props) => {
+const DokumentasjonkravOversiktView: React.FC<Props> = (props: Props) => {
     const classes = useStyles();
     const theme = useTheme();
-    const {soknad, dispatch, aktivSakIndex} = props;
-    const [aktivtVilkarIdx, setAktivtVilkarIdx] = useState(0);
+    const {soknad, dispatch} = props;
+    const [aktivtDokumentasjonkravIdx, setAktivtDokumentasjonkravIdx] = useState(0);
 
-    const addNyttVilkarButton = () => {
+    const addNyttDokumentasjonkravButton = () => {
         return (
             <Box className={classes.addbox}>
                 <Typography>
                     <Fab aria-label="add" className={classes.fab} color="primary" onClick={() => {
-                        dispatch(visNyVilkarModal());
+                        dispatch(visNyDokumentasjonkravModal());
                     }}>
                         <AddIcon/>
                     </Fab>
-                    Nytt Vilkar
+                    Nytt dokumentasjonkrav
                 </Typography>
             </Box>
         )
     };
 
-    const insertVilkarOversikt = () => {
+    const insertDokumentasjonkravOversikt = () => {
 
-        if (soknad.vilkar.length > 0){
-            const listTabs = soknad.vilkar.map((vilkar: Vilkar, idx) => {
+        if (soknad.dokumentasjonkrav.length > 0){
+            const listTabs = soknad.dokumentasjonkrav.map((dokumentasjonkrav: Dokumentasjonkrav, idx) => {
                 return (
-                    <Tab key={"tab: " + vilkar.vilkarreferanse} label={"Vilkår " + (idx + 1)} />
+                    <Tab key={"tab: " + dokumentasjonkrav.dokumentasjonkravreferanse} label={"Dokumentasjonkrav " + (idx + 1)} />
                 )
             });
-            const listTabPanels = soknad.vilkar.map((vilkar: Vilkar, idx) => {
+            const listTabPanels = soknad.dokumentasjonkrav.map((dokumentasjonkrav: Dokumentasjonkrav, idx) => {
                 return(
-                    <TabPanel key={"tabPanel: " + vilkar.vilkarreferanse} value={aktivtVilkarIdx} index={idx} dir={theme.direction}>
-                        <VilkarTabView vilkar={vilkar} />
+                    <TabPanel key={"tabPanel: " + dokumentasjonkrav.dokumentasjonkravreferanse} value={aktivtDokumentasjonkravIdx} index={idx} dir={theme.direction}>
+                        <DokumentasjonkravTabView dokumentasjonkrav={dokumentasjonkrav} />
                     </TabPanel>
                 )
             });
@@ -133,8 +119,8 @@ const VilkarOgDokumentasjonskravOversiktView: React.FC<Props> = (props: Props) =
                 <>
                     <AppBar position="static" color="default">
                         <Tabs
-                            value={aktivtVilkarIdx}
-                            onChange={(event: unknown, newValue: number) => setAktivtVilkarIdx(newValue)}
+                            value={aktivtDokumentasjonkravIdx}
+                            onChange={(event: unknown, newValue: number) => setAktivtDokumentasjonkravIdx(newValue)}
                             indicatorColor="primary"
                             textColor="primary"
                             variant="fullWidth"
@@ -145,8 +131,8 @@ const VilkarOgDokumentasjonskravOversiktView: React.FC<Props> = (props: Props) =
                     </AppBar>
                     <SwipeableViews
                         axis={theme.direction === 'rtl' ? 'x-reverse' : 'x'}
-                        index={aktivtVilkarIdx}
-                        onChangeIndex={(newValue: number) => setAktivtVilkarIdx(newValue)}
+                        index={aktivtDokumentasjonkravIdx}
+                        onChangeIndex={(newValue: number) => setAktivtDokumentasjonkravIdx(newValue)}
                     >
                         { listTabPanels}
                     </SwipeableViews>
@@ -157,7 +143,7 @@ const VilkarOgDokumentasjonskravOversiktView: React.FC<Props> = (props: Props) =
                 <>
                     <br/>
                     <Typography variant={"subtitle1"}>
-                        Ingen vilkår er opprettet for denne søknaden ennå.
+                        Ingen dokumentasjonkrav er opprettet for denne søknaden ennå.
                     </Typography>
                 </>
             )
@@ -168,11 +154,11 @@ const VilkarOgDokumentasjonskravOversiktView: React.FC<Props> = (props: Props) =
     return (
         <div className={classes.root}>
             <Paper className={classes.paper}>
-                <Typography variant={"h5"}>Vilkår</Typography>
-                {addNyttVilkarButton()}
+                <Typography variant={"h5"}>Dokumentasjonkrav</Typography>
+                {addNyttDokumentasjonkravButton()}
 
-                { insertVilkarOversikt() }
-                <NyttVilkarModal soknad={soknad}/>
+                { insertDokumentasjonkravOversikt() }
+                <NyttDokumentasjonkravModal soknad={soknad}/>
             </Paper>
         </div>
     );
@@ -191,4 +177,4 @@ const mapDispatchToProps = (dispatch: any) => {
 export default connect(
     mapStateToProps,
     mapDispatchToProps
-)(VilkarOgDokumentasjonskravOversiktView);
+)(DokumentasjonkravOversiktView);

@@ -132,13 +132,18 @@ export interface Dokumentasjonkrav {
     dokumentasjonkravreferanse: string;
     utbetalingsreferanse: string[]|null, // Array med hvilke utbetalinger som venter på at dette kravet blir oppfylt
     beskrivelse: string|null, // beskrivelse av hva som må gjøres
-    status: VilkarStatus|null
+    status: DokumentasjonkravStatus|null
 }
 
 
 // --------
 
 export enum VilkarStatus {
+    OPPFYLT = "OPPFYLT",
+    IKKE_OPPFYLT = "IKKE_OPPFYLT"
+}
+
+export enum DokumentasjonkravStatus {
     OPPFYLT = "OPPFYLT",
     IKKE_OPPFYLT = "IKKE_OPPFYLT"
 }

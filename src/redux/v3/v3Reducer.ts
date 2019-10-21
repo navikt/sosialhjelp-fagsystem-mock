@@ -6,21 +6,24 @@ import {FsSaksStatus, FsSoknad} from "./v3FsTypes";
 import {
     oDokumentasjonEtterspurt,
     oForelopigSvar,
+    oFsDokumentasjonkrav,
+    oFsDokumentasjonkravPrism,
+    oFsDokumentasjonkravTraversal,
     oFsSaker,
-    oGetSoknad,
-    oHendelser,
-    oNavKontor,
-    oGetFsSaksStatus,
-    oFsSaksStatusStatus,
     oFsSakerTraversal,
     oFsSaksStatusPrism,
     oFsSaksStatusUtbetalinger,
-    oFsSaksStatusUtbetalingerTraversal, oFsUtbetalingPrism, oFsVilkar, oFsVilkarPrism, oFsVilkarTraversal
+    oFsSaksStatusUtbetalingerTraversal,
+    oFsUtbetalingPrism,
+    oFsVilkar,
+    oFsVilkarPrism,
+    oFsVilkarTraversal,
+    oGetSoknad,
+    oHendelser,
+    oNavKontor
 } from "./v3Optics";
-import Hendelse, {SaksStatus, SaksStatusType, Utbetaling, Vilkar} from "../../types/hendelseTypes";
+import Hendelse, {Dokumentasjonkrav, SaksStatusType, Utbetaling, Vilkar} from "../../types/hendelseTypes";
 import {fsSaksStatusToSaksStatus} from "./v3UtilityFunctions";
-import {Lens, fromTraversable, Prism, Traversal} from "monocle-ts/es6";
-import {array} from "fp-ts/es6/Array";
 
 const v3Reducer: Reducer<V3State, V3Action> = (
     state: V3State = getV3InitialState(),
@@ -176,18 +179,28 @@ const v3Reducer: Reducer<V3State, V3Action> = (
                 .modify((a: Hendelse[]) => [...a, oppdatertUtbetaling])(s1);
         }
         case V3ActionTypeKeys.NYTT_DOKUMENTASJONKRAV: {
-            const {} = action;
+            const {forFiksDigisosId, nyttDokumentasjonkrav} = action;
 
-            return {
-                ...state
-            }
+            const s1 = oGetSoknad(forFiksDigisosId)
+                .composeLens(oFsDokumentasjonkrav)
+                .modify((dokumentasjonkravListe: Dokumentasjonkrav[]) => [...dokumentasjonkravListe, nyttDokumentasjonkrav])(state);
+
+            return oGetSoknad(forFiksDigisosId)
+                .composeLens(oHendelser)
+                .modify((a: Hendelse[]) => [...a, nyttDokumentasjonkrav])(s1);
         }
         case V3ActionTypeKeys.OPPDATER_DOKUMENTASJONKRAV: {
-            const {} = action;
+            const {forFiksDigisosId, oppdatertDokumentasjonkrav} = action;
 
-            return {
-                ...state
-            }
+            const s1 = oGetSoknad(forFiksDigisosId)
+                .composeLens(oFsDokumentasjonkrav)
+                .composeTraversal(oFsDokumentasjonkravTraversal)
+                .composePrism(oFsDokumentasjonkravPrism(oppdatertDokumentasjonkrav.dokumentasjonkravreferanse))
+                .set(oppdatertDokumentasjonkrav)(state);
+
+            return oGetSoknad(forFiksDigisosId)
+                .composeLens(oHendelser)
+                .modify((a: Hendelse[]) => [...a, oppdatertDokumentasjonkrav])(s1);
         }
         case V3ActionTypeKeys.OPPDATER_VEDTAK_FATTET: {
             const {forFiksDigisosId, oppdatertVedtakFattet} = action;

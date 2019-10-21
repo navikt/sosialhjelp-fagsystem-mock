@@ -3,14 +3,14 @@ import {AppState, DispatchProps} from "../../../redux/reduxTypes";
 import {connect} from "react-redux";
 import SaksOversiktView from "../saksOversiktView/SaksOversiktView";
 import makeStyles from "@material-ui/core/styles/makeStyles";
-import {getFsSoknadByFiksDigisosId, getSoknadByFiksDigisosId} from "../../../utils/utilityFunctions";
+import {getFsSoknadByFiksDigisosId} from "../../../utils/utilityFunctions";
 import Paper from "@material-ui/core/Paper";
 import SoknadStatusView from "../soknadStatusView/SoknadStatusView";
 import {FsSoknad} from "../../../redux/v3/v3FsTypes";
 import Typography from "@material-ui/core/Typography";
-import ReactJsonView from "../reactJsonView/ReactJsonView";
 import TildeldeltNavkontorView from "../navKontor/TildeltNavKontorView";
-import VilkarOgDokumentasjonskravOversiktView from "../vilkar/VilkarOgDokumentasjonskravOversiktView";
+import VilkarOversiktView from "../vilkar/VilkarOversiktView";
+import DokumentasjonkravOversiktView from "../dokumentasjonskrav/DokumentasjonkravOversiktView";
 
 
 const useStyles = makeStyles(theme => ({
@@ -80,7 +80,9 @@ const BehandleSoknadPanel: React.FC<Props> = (props: Props) => {
 
                 <SaksOversiktView soknad={soknad}/>
 
-                <VilkarOgDokumentasjonskravOversiktView soknad={soknad}/>
+                <VilkarOversiktView soknad={soknad}/>
+
+                <DokumentasjonkravOversiktView soknad={soknad}/>
             </div>
         );
     }
