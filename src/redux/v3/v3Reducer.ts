@@ -118,6 +118,18 @@ const v3Reducer: Reducer<V3State, V3Action> = (
                 .composeLens(oHendelser)
                 .modify((a: Hendelse[]) => [...a, fsSaksStatusToSaksStatus(nyFsSaksStatus)])(s1)
         }
+        case V3ActionTypeKeys.OPPDATER_FIKS_ID: {
+            const {forFiksDigisosId, nyFiksId} = action;
+            return {
+                ...state,
+                soknader: state.soknader.map((s: FsSoknad) => {
+                    if (s.fiksDigisosId === forFiksDigisosId) {
+                        s.fiksDigisosId = nyFiksId;
+                    }
+                    return s;
+                })
+            }
+        }
         case V3ActionTypeKeys.OPPDATER_FS_SAKS_STATUS: {
             const {forFiksDigisosId, oppdatertSaksstatus} = action;
             const tittel: string = oppdatertSaksstatus.tittel;

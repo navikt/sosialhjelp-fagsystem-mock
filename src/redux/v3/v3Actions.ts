@@ -4,7 +4,7 @@ import {
     OppdaterDokumentasjonEtterspurt, OppdaterDokumentasjonkrav, OppdaterForelopigSvar,
     OppdaterNavKontor, OppdaterRammevedtak, OppdaterFsSaksStatus,
     OppdaterSoknadsStatus, OppdaterUtbetaling, OppdaterVedtakFattet, OppdaterVilkar,
-    SlettFsSoknad, V3ActionTypeKeys
+    SlettFsSoknad, V3ActionTypeKeys, OppdaterFiksId
 } from "./v3Types";
 import {
     DokumentasjonEtterspurt, Dokumentasjonkrav, FiksDigisosSokerJson,
@@ -15,7 +15,14 @@ import {
 } from "../../types/hendelseTypes";
 import {AnyAction, Dispatch} from "redux";
 import {fetchPost} from "../../utils/restUtils";
-import {setFiksDigisosSokerJson, skjulSnackbar, turnOffLoader, turnOnLoader, visSnackbar} from "../v2/v2Actions";
+import {
+    setAktivSak, setAktivSoknad,
+    setFiksDigisosSokerJson,
+    skjulSnackbar,
+    turnOffLoader,
+    turnOnLoader,
+    visSnackbar
+} from "../v2/v2Actions";
 import {V2Model} from "../v2/v2Types";
 import {FsSaksStatus} from "./v3FsTypes";
 import {NavKontor} from "../../types/additionalTypes";
@@ -38,6 +45,10 @@ export const aiuuur = (
         const queryParam = `?fiksDigisosId=${fiksDigisosId}`;
         fetchPost(`${backendUrl}${oppdaterDigisosSakUrl}${queryParam}`, JSON.stringify(fiksDigisosSokerJson)).then((response: any) => {
             dispatch(setFiksDigisosSokerJson(fiksDigisosSokerJson));
+            let fiksId = response.fiksDigisosId
+            dispatch(
+                oppdaterFixId(fiksDigisosId, fiksId.toString()));
+            dispatch(setAktivSoknad(fiksId.toString()));
             if (v2.fiksDigisosSokerJson.sak.soker.hendelser.length < fiksDigisosSokerJson.sak.soker.hendelser.length) {
                 dispatch(visSnackbar());
             }
@@ -141,6 +152,15 @@ export const oppdaterNavKontor = (forFiksDigisosId: string, nyttNavKontor: Tilde
         nyttNavKontor
     }
 };
+
+export const oppdaterFixId = (forFiksDigisosId: string, nyFiksId: string): OppdaterFiksId => {
+    return {
+        type: V3ActionTypeKeys.OPPDATER_FIKS_ID,
+        forFiksDigisosId,
+        nyFiksId
+    }
+};
+
 export const oppdaterDokumentasjonEtterspurt = (forFiksDigisosId: string, nyDokumentasjonEtterspurt: DokumentasjonEtterspurt): OppdaterDokumentasjonEtterspurt => {
     return {
         type: V3ActionTypeKeys.OPPDATER_DOKUMENTASJON_ETTERSPURT,
@@ -148,6 +168,7 @@ export const oppdaterDokumentasjonEtterspurt = (forFiksDigisosId: string, nyDoku
         nyDokumentasjonEtterspurt
     }
 };
+
 export const oppdaterForelopigSvar = (forFiksDigisosId: string, nyttForelopigSvar: ForelopigSvar): OppdaterForelopigSvar => {
     return {
         type: V3ActionTypeKeys.OPPDATER_FORELOPIG_SVAR,

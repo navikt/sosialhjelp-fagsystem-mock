@@ -19,6 +19,7 @@ export enum V3ActionTypeKeys {
     // søknad
     OPPDATER_SOKNADS_STATUS = "v3/OPPDATER_SOKNADS_STATUS",
     OPPDATER_NAV_KONTOR = "v3/OPPDATER_NAV_KONTOR",
+    OPPDATER_FIKS_ID = "v3/OPPDATER_FIKS_ID",
     OPPDATER_DOKUMENTASJON_ETTERSPURT = "v3/OPPDATER_DOKUMENTASJON_ETTERSPURT",
     OPPDATER_FORELOPIG_SVAR = "v3/OPPDATER_FORELOPIG_SVAR",
 
@@ -56,6 +57,7 @@ export type V3Action
     | OppdaterRammevedtak
     | NyttVilkar
     | OppdaterVilkar
+    | OppdaterFiksId
 
 export interface NyFsSoknad {
     type: V3ActionTypeKeys.NY_SOKNAD;
@@ -63,75 +65,96 @@ export interface NyFsSoknad {
     nyttFnr: string;
     nyttNavn: string;
 }
+
 export interface SlettFsSoknad {
     type: V3ActionTypeKeys.SLETT_SOKNAD;
     forFiksDigisosId: string;
 }
+
 export interface OppdaterSoknadsStatus {
     type: V3ActionTypeKeys.OPPDATER_SOKNADS_STATUS;
     forFiksDigisosId: string;
     nySoknadsStatus: SoknadsStatus;
 }
+
 export interface OppdaterNavKontor {
     type: V3ActionTypeKeys.OPPDATER_NAV_KONTOR;
     forFiksDigisosId: string;
     nyttNavKontor: TildeltNavKontor;
 }
+
+export interface OppdaterFiksId {
+    type: V3ActionTypeKeys.OPPDATER_FIKS_ID;
+    forFiksDigisosId: string;
+    nyFiksId: string;
+}
+
 export interface OppdaterDokumentasjonEtterspurt {
     type: V3ActionTypeKeys.OPPDATER_DOKUMENTASJON_ETTERSPURT;
     forFiksDigisosId: string;
     nyDokumentasjonEtterspurt: DokumentasjonEtterspurt;
 }
+
 export interface OppdaterForelopigSvar {
     type: V3ActionTypeKeys.OPPDATER_FORELOPIG_SVAR;
     forFiksDigisosId: string;
     nyttForelopigSvar: ForelopigSvar;
 }
+
 export interface NyFsSaksStatus {
     type: V3ActionTypeKeys.NY_FS_SAKS_STATUS;
     forFiksDigisosId: string;
     nyFsSaksStatus: FsSaksStatus;
 }
+
 export interface OppdaterFsSaksStatus {
     type: V3ActionTypeKeys.OPPDATER_FS_SAKS_STATUS;
     forFiksDigisosId: string;
     oppdatertSaksstatus: SaksStatus;
 }
+
 export interface NyUtbetaling {
     type: V3ActionTypeKeys.NY_UTBETALING;
     forFiksDigisosId: string;
     nyUtbetaling: Utbetaling;
 }
+
 export interface OppdaterUtbetaling {
     type: V3ActionTypeKeys.OPPDATER_UTBETALING;
     forFiksDigisosId: string;
     oppdatertUtbetaling: Utbetaling;
 }
+
 export interface NyttDokumentasjonkrav {
     type: V3ActionTypeKeys.NYTT_DOKUMENTASJONKRAV;
     forFiksDigisosId: string;
     nyttDokumentasjonkrav: Dokumentasjonkrav;
 }
+
 export interface OppdaterDokumentasjonkrav {
     type: V3ActionTypeKeys.OPPDATER_DOKUMENTASJONKRAV;
     forFiksDigisosId: string;
     oppdatertDokumentasjonkrav: Dokumentasjonkrav;
 }
+
 export interface OppdaterVedtakFattet {
     type: V3ActionTypeKeys.OPPDATER_VEDTAK_FATTET;
     forFiksDigisosId: string;
     oppdatertVedtakFattet: VedtakFattet;
 }
+
 export interface OppdaterRammevedtak {
     type: V3ActionTypeKeys.OPPDATER_RAMMEVEDTAK;
     forFiksDigisosId: string;
     oppdatertRammeVedtak: Rammevedtak;
 }
+
 export interface NyttVilkar {
     type: V3ActionTypeKeys.NYTT_VILKAR;
     forFiksDigisosId: string;
     nyttVilkar: Vilkar;
 }
+
 export interface OppdaterVilkar {
     type: V3ActionTypeKeys.OPPDATER_VILKAR;
     forFiksDigisosId: string;
