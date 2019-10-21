@@ -68,6 +68,9 @@ const BehandleSoknadPanel: React.FC<Props> = (props: Props) => {
                         <Typography variant={"subtitle1"}>
                             Navn på søker: {soknad.navn}
                         </Typography>
+                        <Typography variant={"subtitle1"}>
+                            FiksDigisosId: {soknad.fiksDigisosId}
+                        </Typography>
                         <TildeldeltNavkontorView soknad={soknad} />
                     </div>
 
