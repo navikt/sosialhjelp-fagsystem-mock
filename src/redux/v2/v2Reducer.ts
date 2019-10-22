@@ -19,6 +19,7 @@ import {soknadMockData} from "../../pages/parts/soknadsOversiktPanel/soknadsover
 import {Soknad} from "../../types/additionalTypes";
 import {array} from "fp-ts/lib/Array";
 import {fromTraversable, Lens, Prism, Traversal} from "monocle-ts/es6";
+import produce from "immer";
 
 
 const minimal: FiksDigisosSokerJson = {
@@ -277,19 +278,19 @@ const v2Reducer: Reducer<V2Model, V2Action> = (
 
             // debugger;
             // // Example 3: With immer
-            // return produce(state, (draft: V2Model) => {
-            //     const soknadToUpdate = draft
-            //         .soknader
-            //         .find((soknad: Soknad) => soknad.fiksDigisosId === soknadFiksDigisosId);
-            //     if (soknadToUpdate){
-            //         const saksStatusToUpdate = soknadToUpdate
-            //             .saker
-            //             .find((sak: SaksStatus) => sak.referanse === saksStatusReferanse);
-            //         if (saksStatusToUpdate){
-            //             saksStatusToUpdate.status = nySaksStatus;
-            //         }
-            //     }
-            // })
+            return produce(state, (draft: V2Model) => {
+                const soknadToUpdate = draft
+                    .soknader
+                    .find((soknad: Soknad) => soknad.fiksDigisosId === soknadFiksDigisosId);
+                if (soknadToUpdate){
+                    const saksStatusToUpdate = soknadToUpdate
+                        .saker
+                        .find((sak: SaksStatus) => sak.referanse === saksStatusReferanse);
+                    if (saksStatusToUpdate){
+                        saksStatusToUpdate.status = nySaksStatus;
+                    }
+                }
+            })
         }
         default:
             return state;

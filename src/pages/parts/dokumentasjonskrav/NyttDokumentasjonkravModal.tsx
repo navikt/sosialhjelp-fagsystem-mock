@@ -7,7 +7,12 @@ import makeStyles from "@material-ui/core/styles/makeStyles";
 import Fade from "@material-ui/core/Fade";
 import Backdrop from "@material-ui/core/Backdrop";
 import {V2Model} from "../../../redux/v2/v2Types";
-import {generateFilreferanseId, getNow, getDokumentasjonkravByDokumentasjonkravreferanse} from "../../../utils/utilityFunctions";
+import {
+    generateFilreferanseId,
+    getNow,
+    getDokumentasjonkravByDokumentasjonkravreferanse,
+    getAllUtbetalingsreferanser, getSakTittelOgNrFraUtbetalingsreferanse
+} from "../../../utils/utilityFunctions";
 import {V3State} from "../../../redux/v3/v3Types";
 import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
@@ -193,15 +198,12 @@ const NyttDokumentasjonkravModal: React.FC<Props> = (props: Props) => {
     const setDefaultDokumentasjonkrav = () => {
         setModalDokumentasjonkrav({...defaultDokumentasjonkrav, dokumentasjonkravreferanse: generateFilreferanseId()});
 
+        const alleUtbetalingsreferanser = getAllUtbetalingsreferanser(soknad);
+        if (alleUtbetalingsreferanser.length > 0) {
+            setModalDokumentasjonkrav({...defaultDokumentasjonkrav, utbetalingsreferanse: [alleUtbetalingsreferanser[0]]});
+        }
+
         setVisFeilmelding(false);
-    };
-
-    const getAllUtbetalingsreferanser = () => {
-        let referanser: string[] = [];
-
-        soknad.saker.map(sak => (sak.utbetalinger.map(utbetaling => (referanser.push(utbetaling.utbetalingsreferanse)))));
-
-        return referanser;
     };
 
     const fyllInnAktivtDokumentasjonkrav = () => {
@@ -298,11 +300,11 @@ const NyttDokumentasjonkravModal: React.FC<Props> = (props: Props) => {
                                         )}
                                         MenuProps={MenuProps}
                                     >
-                                        {getAllUtbetalingsreferanser().map(referanse => (
+                                        {getAllUtbetalingsreferanser(soknad).map(referanse => (
                                             <MenuItem
                                                 key={referanse} value={referanse}
                                                 style={getStyles(referanse, modalDokumentasjonkrav.utbetalingsreferanse ? modalDokumentasjonkrav.utbetalingsreferanse : [], theme)}>
-                                                {referanse}
+                                                {referanse + ' ' + getSakTittelOgNrFraUtbetalingsreferanse(soknad, referanse)}
                                             </MenuItem>
                                         ))}
                                     </Select>

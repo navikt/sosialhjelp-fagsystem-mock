@@ -11,7 +11,7 @@ import {
     formatDateString,
     generateFilreferanseId,
     getNow,
-    getRammevedtakByRammevedtaksreferanse,
+    getRammevedtakByRammevedtaksreferanse, getSakTittelFraSaksreferanse,
     getShortDateISOString
 } from "../../../utils/utilityFunctions";
 import {V3State} from "../../../redux/v3/v3Types";
@@ -207,6 +207,10 @@ const NyttRammevedtakModal: React.FC<Props> = (props: Props) => {
     const setDefaultRammevedtak = () => {
         setModalRammevedtak({...defaultRammevedtak, rammevedtaksreferanse: generateFilreferanseId()});
 
+        if (soknad.saker.length > 0) {
+            setModalRammevedtak({...defaultRammevedtak, saksreferanse: soknad.saker[0].referanse});
+        }
+
         setFomDatePickerIsOpen(false);
         setTomDatePickerIsOpen(false);
         setVisFeilmelding(false);
@@ -327,7 +331,7 @@ const NyttRammevedtakModal: React.FC<Props> = (props: Props) => {
                                         }}
                                     >
                                         {soknad.saker.map(sak => (
-                                            <MenuItem key={sak.referanse} value={sak.referanse}>{sak.referanse}</MenuItem>
+                                            <MenuItem key={sak.referanse} value={sak.referanse}>{sak.referanse + ' ' + getSakTittelFraSaksreferanse(soknad, sak.referanse)}</MenuItem>
                                         ))}
                                     </Select>
                                 </FormControl>

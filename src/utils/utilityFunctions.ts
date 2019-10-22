@@ -87,6 +87,39 @@ export function getNow(): string {
     return new Date().toISOString();
 }
 
+export const getAllUtbetalingsreferanser = (soknad: FsSoknad) => {
+    let referanser: string[] = [];
+
+    soknad.saker.map(sak => (sak.utbetalinger.map(utbetaling => (referanser.push(utbetaling.utbetalingsreferanse)))));
+
+    return referanser;
+};
+
+export const getSakTittelOgNrFraUtbetalingsreferanse = (soknad: FsSoknad, referanse: string) => {
+    let tittel = '';
+
+    soknad.saker.map(sak => {sak.utbetalinger.map((utbetaling, idx) => {
+        if (utbetaling.utbetalingsreferanse == referanse) {
+            tittel = '(sak: ' + sak.tittel + ', utbetaling: ' + (idx + 1) + ')';
+        }
+    });
+    });
+
+    return tittel;
+};
+
+export const getSakTittelFraSaksreferanse = (soknad: FsSoknad, referanse: string) => {
+    let tittel = '';
+
+    soknad.saker.map(sak => {
+        if (sak.referanse == referanse) {
+            tittel = '(sak: ' + sak.tittel + ')';
+        }
+    });
+
+    return tittel;
+};
+
 export function formatDate(date: Date): string {
         const year = date.getFullYear();
         const month = addZeroInFrontAndToString(date.getMonth() + 1);

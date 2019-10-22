@@ -138,7 +138,7 @@ const VilkarTabView: React.FC<Props> = (props: Props) => {
                     </TableHead>
                     {(vilkar.utbetalingsreferanse != null && vilkar.utbetalingsreferanse.length > 1) &&
                     <TableBody>
-                        {makeTableRow("Vilkårreferanse", vilkar.vilkarreferanse)}
+                        {makeTableRow("Vilkårreferanse *", vilkar.vilkarreferanse)}
 
                         <TableRow key={"Utbetalingsreferanse"}>
                             <TableCell rowSpan={vilkar.utbetalingsreferanse.length} component="th" scope="row">{"Utbetalingsreferanse"}</TableCell>
