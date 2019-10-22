@@ -29,6 +29,7 @@ export interface FsSoknad {
     forelopigSvar: ForelopigSvar | undefined; // If undefined => vis knapp for "Opprett og send foreløpig svar"
     vilkar: Vilkar[];
     dokumentasjonkrav: Dokumentasjonkrav[];
+    rammevedtak: Rammevedtak[];
     saker: FsSaksStatus[];
 
     // hendelseJson, den som skal shippes avgårde

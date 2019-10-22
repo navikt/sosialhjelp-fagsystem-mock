@@ -3,7 +3,7 @@ import Hendelse, {
     Dokumentlager,
     DokumentlagerExtended,
     FiksDigisosSokerJson, FilreferanseType,
-    HendelseType,
+    HendelseType, Rammevedtak,
     SaksStatus, SaksStatusType, Svarut,
     SvarutExtended, Utbetaling, Vedlegg,
     VedtakFattet, Vilkar
@@ -68,6 +68,19 @@ export const getLastHendelseOfType = (fiksDigisosSokerJson: FiksDigisosSokerJson
     const hendelser: Hendelse[] = fiksDigisosSokerJson.sak.soker.hendelser;
     const hendelserCopied: Hendelse[] = hendelser.slice();
     return hendelserCopied.reverse().find((hendelse: Hendelse) => hendelse.type === hendelseType);
+};
+
+export const getShortDateISOString = (date: Date) => date.toISOString().substring(0, date.toISOString().search('T'));
+
+export const formatDateString = (date: string|null) => {
+    if (date == null || date == 'Invalid Date') {
+        return null;
+    } else {
+        let dateNumber = Date.parse(date);
+        let newDate = new Date(dateNumber);
+        newDate.setHours(12);
+        return getShortDateISOString(newDate);
+    }
 };
 
 export function getNow(): string {
@@ -230,6 +243,12 @@ export const getVilkarByVilkarreferanse = (vilkar: Vilkar[], referanse: string):
 export const getDokumentasjonkravByDokumentasjonkravreferanse = (dokumentasjonkrav: Dokumentasjonkrav[], referanse: string): Dokumentasjonkrav | undefined => {
     return dokumentasjonkrav.find(s => {
         return s.dokumentasjonkravreferanse === referanse
+    })
+};
+
+export const getRammevedtakByRammevedtaksreferanse = (rammevedtak: Rammevedtak[], referanse: string): Rammevedtak | undefined => {
+    return rammevedtak.find(s => {
+        return s.rammevedtaksreferanse === referanse
     })
 };
 

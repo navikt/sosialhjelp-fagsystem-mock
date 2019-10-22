@@ -109,10 +109,10 @@ export interface VedtakFattet {
 export interface Rammevedtak {
     type: HendelseType.Rammevedtak;
     hendelsestidspunkt: string;
-    rammevedtaksreferanse: string|null;
+    rammevedtaksreferanse: string;
     saksreferanse: string|null;
     beskrivelse: string|null;
-    belop: string|null;
+    belop: number|null;
     fom: string|null;
     tom: string|null;
 }

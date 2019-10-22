@@ -8,9 +8,10 @@ import Fade from "@material-ui/core/Fade";
 import Backdrop from "@material-ui/core/Backdrop";
 import {V2Model} from "../../../redux/v2/v2Types";
 import {
+    formatDateString,
     generateFilreferanseId,
     getFsSaksStatusByIdx,
-    getNow,
+    getNow, getShortDateISOString,
     getUtbetalingByUtbetalingsreferanse
 } from "../../../utils/utilityFunctions";
 import {V3State} from "../../../redux/v3/v3Types";
@@ -128,19 +129,6 @@ const initialUtbetaling: Utbetaling = {
     mottaker: null,
     kontonummer: null,
     utbetalingsmetode: null,
-};
-
-const getShortDateISOString = (date: Date) => date.toISOString().substring(0, date.toISOString().search('T'));
-
-const formatDateString = (date: string|null) => {
-    if (date == null || date == 'Invalid Date') {
-        return null;
-    } else {
-        let dateNumber = Date.parse(date);
-        let newDate = new Date(dateNumber);
-        newDate.setHours(12);
-        return getShortDateISOString(newDate);
-    }
 };
 
 let date = new Date();

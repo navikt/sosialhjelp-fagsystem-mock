@@ -24,6 +24,7 @@ export const getInitialFsSoknad = (
         forelopigSvar: undefined,
         vilkar: [],
         dokumentasjonkrav: [],
+        rammevedtak: [],
         saker: [],
         fiksDigisosSokerJson: {
             sak: {

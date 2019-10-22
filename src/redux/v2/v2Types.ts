@@ -27,6 +27,7 @@ export interface V2Model {
     visNyUtbetalingModal: boolean;
     visNyVilkarModal: boolean;
     visNyDokumentasjonkravModal: boolean;
+    visNyRammevedtakModal: boolean;
     visEndreNavKontorModal: boolean;
     visSystemSettingsModal: boolean;
     visSnackbar: boolean;
@@ -36,6 +37,7 @@ export interface V2Model {
     aktivUtbetaling: string | undefined | null; // utbetalingsreferanse
     aktivtVilkar: string | undefined | null; // vilkarreferanse
     aktivtDokumentasjonkrav: string | undefined | null; // dokumentasjonkravreferanse
+    aktivtRammevedtak: string | undefined | null; // rammevedtakreferanse
 }
 
 export interface BackendUrls {
@@ -72,6 +74,8 @@ export type V2Action
     | SkjulNyVilkarModal
     | VisNyDokumentasjonkravModal
     | SkjulNyDokumentasjonkravModal
+    | VisNyRammevedtakModal
+    | SkjulNyRammevedtakModal
     | SetSoknadsStatus
     | VisEndreNavKontorModal
     | SkjulEndreNavKontorModal
@@ -84,6 +88,7 @@ export type V2Action
     | SetAktivUtbetaling
     | SetAktivtVilkar
     | SetAktivtDokumentasjonkrav
+    | SetAktivtRammevedtak
     | NySaksStatus
     | SettNySaksStatus
 
@@ -111,6 +116,8 @@ export enum V2ActionTypeKeys {
     SKJUL_NY_VILKAR_MODAL = "v2/SKJUL_NY_VILKAR_MODAL",
     VIS_NY_DOKUMENTASJONKRAV_MODAL = "v2/VIS_NY_DOKUMENTASJONKRAV_MODAL",
     SKJUL_NY_DOKUMENTASJONKRAV_MODAL = "v2/SKJUL_NY_DOKUMENTASJONKRAV_MODAL",
+    VIS_NY_RAMMEVEDTAK_MODAL = "v2/VIS_NY_RAMMEVEDTAK_MODAL",
+    SKJUL_NY_RAMMEVEDTAK_MODAL = "v2/SKJUL_NY_RAMMEVEDTAK_MODAL",
     SET_SOKNADS_STATUS = "v2/SET_SOKNADS_STATUS",
     VIS_ENDRE_NAV_KONTOR_MODAL = "v2/VIS_ENDRE_NAV_KONTOR_MODAL",
     SKJUL_ENDRE_NAV_KONTOR_MODAL = "v2/SKJUL_ENDRE_NAV_KONTOR_MODAL",
@@ -124,6 +131,7 @@ export enum V2ActionTypeKeys {
     SET_AKTIV_UTBETALING = "v2/SET_AKTIV_UTBETALING",
     SET_AKTIVT_VILKAR = "v2/SET_AKTIVT_VILKAR",
     SET_AKTIVT_DOKUMENTASJONKRAV = "v2/SET_AKTIVT_DOKUMENTASJONKRAV",
+    SET_AKTIVT_RAMMEVEDTAK = "v2/SET_AKTIVT_RAMMEVEDTAK",
     NY_SAKS_STATUS = "v2/NY_SAKS_STATUS",
     SETT_NY_SAKS_STATUS = "v2/SETT_NY_SAKS_STATUS"
 }
@@ -216,6 +224,14 @@ export interface SkjulNyDokumentasjonkravModal {
     type: V2ActionTypeKeys.SKJUL_NY_DOKUMENTASJONKRAV_MODAL;
 }
 
+export interface VisNyRammevedtakModal {
+    type: V2ActionTypeKeys.VIS_NY_RAMMEVEDTAK_MODAL;
+}
+
+export interface SkjulNyRammevedtakModal {
+    type: V2ActionTypeKeys.SKJUL_NY_RAMMEVEDTAK_MODAL;
+}
+
 export interface SkjulNyDokumentasjonEtterspurtModal {
     type: V2ActionTypeKeys.SKJUL_NY_DOKUMENTASJON_ETTERSPURT_MODAL;
 }
@@ -272,6 +288,11 @@ export interface SetAktivtVilkar {
 
 export interface SetAktivtDokumentasjonkrav {
     type: V2ActionTypeKeys.SET_AKTIVT_DOKUMENTASJONKRAV;
+    referanse: string | null
+}
+
+export interface SetAktivtRammevedtak {
+    type: V2ActionTypeKeys.SET_AKTIVT_RAMMEVEDTAK;
     referanse: string | null
 }
 

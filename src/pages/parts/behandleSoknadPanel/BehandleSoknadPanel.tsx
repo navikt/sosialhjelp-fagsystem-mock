@@ -11,6 +11,7 @@ import Typography from "@material-ui/core/Typography";
 import TildeldeltNavkontorView from "../navKontor/TildeltNavKontorView";
 import VilkarOversiktView from "../vilkar/VilkarOversiktView";
 import DokumentasjonkravOversiktView from "../dokumentasjonskrav/DokumentasjonkravOversiktView";
+import RammevedtakOversiktView from "../rammevedtak/RammevedtakOversiktView";
 
 
 const useStyles = makeStyles(theme => ({
@@ -83,6 +84,8 @@ const BehandleSoknadPanel: React.FC<Props> = (props: Props) => {
                 <VilkarOversiktView soknad={soknad}/>
 
                 <DokumentasjonkravOversiktView soknad={soknad}/>
+
+                <RammevedtakOversiktView soknad={soknad}/>
             </div>
         );
     }

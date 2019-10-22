@@ -4,7 +4,7 @@ import {
     OppdaterDokumentasjonEtterspurt, OppdaterDokumentasjonkrav, OppdaterForelopigSvar,
     OppdaterNavKontor, OppdaterRammevedtak, OppdaterFsSaksStatus,
     OppdaterSoknadsStatus, OppdaterUtbetaling, OppdaterVedtakFattet, OppdaterVilkar,
-    SlettFsSoknad, V3ActionTypeKeys, OppdaterFiksId
+    SlettFsSoknad, V3ActionTypeKeys, OppdaterFiksId, NyttRammevedtak
 } from "./v3Types";
 import {
     DokumentasjonEtterspurt, Dokumentasjonkrav, FiksDigisosSokerJson,
@@ -228,11 +228,18 @@ export const oppdaterVedtakFattet = (forFiksDigisosId: string, oppdatertVedtakFa
         oppdatertVedtakFattet
     }
 };
-export const oppdaterRammevedtak = (forFiksDigisosId: string, oppdatertRammeVedtak: Rammevedtak): OppdaterRammevedtak => {
+export const nyttRammevedtak = (forFiksDigisosId: string, nyttRammevedtak: Rammevedtak): NyttRammevedtak => {
+    return {
+        type: V3ActionTypeKeys.NYTT_RAMMEVEDTAK,
+        forFiksDigisosId,
+        nyttRammevedtak
+    }
+};
+export const oppdaterRammevedtak = (forFiksDigisosId: string, oppdatertRammevedtak: Rammevedtak): OppdaterRammevedtak => {
     return {
         type: V3ActionTypeKeys.OPPDATER_RAMMEVEDTAK,
         forFiksDigisosId,
-        oppdatertRammeVedtak
+        oppdatertRammevedtak
     }
 };
 export const nyttVilkar = (forFiksDigisosId: string, nyttVilkar: Vilkar): NyttVilkar => {

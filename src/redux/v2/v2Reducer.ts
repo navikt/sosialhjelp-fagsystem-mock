@@ -19,7 +19,6 @@ import {soknadMockData} from "../../pages/parts/soknadsOversiktPanel/soknadsover
 import {Soknad} from "../../types/additionalTypes";
 import {array} from "fp-ts/lib/Array";
 import {fromTraversable, Lens, Prism, Traversal} from "monocle-ts/es6";
-import {visSystemSettingsModal} from "./v2Actions";
 
 
 const minimal: FiksDigisosSokerJson = {
@@ -83,7 +82,7 @@ export const initialV2Model: V2Model = {
     },
     backendUrlTypeToUse: 'local',
     oppdaterDigisosSakUrl: '/api/v1/digisosapi/oppdaterDigisosSak',
-    nyNavEnhetUrl: '/api/woldena/nyNavEnhet',
+    nyNavEnhetUrl: '/api/v1/mock/nyNavEnhet',
     filreferanselager: initialFilreferanselager,
 
     // V3
@@ -96,6 +95,7 @@ export const initialV2Model: V2Model = {
     visNyUtbetalingModal: false,
     visNyVilkarModal: false,
     visNyDokumentasjonkravModal: false,
+    visNyRammevedtakModal: false,
     visEndreNavKontorModal: false,
     visSystemSettingsModal: false,
     visSnackbar: false,
@@ -105,7 +105,8 @@ export const initialV2Model: V2Model = {
     aktivSakIndex: 0,
     aktivUtbetaling: null,
     aktivtVilkar: null,
-    aktivtDokumentasjonkrav: null
+    aktivtDokumentasjonkrav: null,
+    aktivtRammevedtak: null
 };
 
 const v2Reducer: Reducer<V2Model, V2Action> = (
@@ -162,6 +163,8 @@ const v2Reducer: Reducer<V2Model, V2Action> = (
         case V2ActionTypeKeys.SKJUL_NY_VILKAR_MODAL: {return {...state, visNyVilkarModal: false}}
         case V2ActionTypeKeys.VIS_NY_DOKUMENTASJONKRAV_MODAL: {return {...state, visNyDokumentasjonkravModal: true}}
         case V2ActionTypeKeys.SKJUL_NY_DOKUMENTASJONKRAV_MODAL: {return {...state, visNyDokumentasjonkravModal: false}}
+        case V2ActionTypeKeys.VIS_NY_RAMMEVEDTAK_MODAL: {return {...state, visNyRammevedtakModal: true}}
+        case V2ActionTypeKeys.SKJUL_NY_RAMMEVEDTAK_MODAL: {return {...state, visNyRammevedtakModal: false}}
         case V2ActionTypeKeys.VIS_ENDRE_NAV_KONTOR_MODAL: {return {...state, visEndreNavKontorModal: true}}
         case V2ActionTypeKeys.SKJUL_ENDRE_NAV_KONTOR_MODAL: {return {...state, visEndreNavKontorModal: false}}
         case V2ActionTypeKeys.VIS_SYSTEM_SETTINGS_MODAL: {return {...state, visSystemSettingsModal: true}}
@@ -174,6 +177,7 @@ const v2Reducer: Reducer<V2Model, V2Action> = (
         case V2ActionTypeKeys.SET_AKTIV_UTBETALING: {return {...state, aktivUtbetaling: action.referanse}}
         case V2ActionTypeKeys.SET_AKTIVT_VILKAR: {return {...state, aktivtVilkar: action.referanse}}
         case V2ActionTypeKeys.SET_AKTIVT_DOKUMENTASJONKRAV: {return {...state, aktivtDokumentasjonkrav: action.referanse}}
+        case V2ActionTypeKeys.SET_AKTIVT_RAMMEVEDTAK: {return {...state, aktivtRammevedtak: action.referanse}}
         case V2ActionTypeKeys.SET_AKTIV_SAK: {return {...state, aktivSakIndex: action.saksIndex}}
 
 

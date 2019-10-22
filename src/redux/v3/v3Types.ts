@@ -34,7 +34,8 @@ export enum V3ActionTypeKeys {
     OPPDATER_DOKUMENTASJONKRAV = "v3/OPPDATER_DOKUMENTASJONSKRAV",
 
     OPPDATER_VEDTAK_FATTET = "v3/OPPDATER_VEDTAK_FATTET",
-    OPPDATER_RAMMEVEDTAK = "v3/OPPDATER_RAMME_VEDTAK",
+    NYTT_RAMMEVEDTAK = "v3/NYTT_RAMMEVEDTAK",
+    OPPDATER_RAMMEVEDTAK = "v3/OPPDATER_RAMMEVEDTAK",
     NYTT_VILKAR = "v3/NYTT_VILKAR",
     OPPDATER_VILKAR = "v3/OPPDATER_VILKAR",
 
@@ -54,6 +55,7 @@ export type V3Action
     | NyttDokumentasjonkrav
     | OppdaterDokumentasjonkrav
     | OppdaterVedtakFattet
+    | NyttRammevedtak
     | OppdaterRammevedtak
     | NyttVilkar
     | OppdaterVilkar
@@ -143,10 +145,16 @@ export interface OppdaterVedtakFattet {
     oppdatertVedtakFattet: VedtakFattet;
 }
 
+export interface NyttRammevedtak {
+    type: V3ActionTypeKeys.NYTT_RAMMEVEDTAK;
+    forFiksDigisosId: string;
+    nyttRammevedtak: Rammevedtak;
+}
+
 export interface OppdaterRammevedtak {
     type: V3ActionTypeKeys.OPPDATER_RAMMEVEDTAK;
     forFiksDigisosId: string;
-    oppdatertRammeVedtak: Rammevedtak;
+    oppdatertRammevedtak: Rammevedtak;
 }
 
 export interface NyttVilkar {

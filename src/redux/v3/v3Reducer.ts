@@ -8,7 +8,7 @@ import {
     oForelopigSvar,
     oFsDokumentasjonkrav,
     oFsDokumentasjonkravPrism,
-    oFsDokumentasjonkravTraversal,
+    oFsDokumentasjonkravTraversal, oFsRammevedtak, oFsRammevedtakPrism, oFsRammevedtakTraversal,
     oFsSaker,
     oFsSakerTraversal,
     oFsSaksStatusPrism,
@@ -22,7 +22,7 @@ import {
     oHendelser,
     oNavKontor
 } from "./v3Optics";
-import Hendelse, {Dokumentasjonkrav, SaksStatusType, Utbetaling, Vilkar} from "../../types/hendelseTypes";
+import Hendelse, {Dokumentasjonkrav, Rammevedtak, SaksStatusType, Utbetaling, Vilkar} from "../../types/hendelseTypes";
 import {fsSaksStatusToSaksStatus} from "./v3UtilityFunctions";
 
 const v3Reducer: Reducer<V3State, V3Action> = (
@@ -216,12 +216,29 @@ const v3Reducer: Reducer<V3State, V3Action> = (
                 .modify((a: Hendelse[]) => [...a, oppdatertVedtakFattet])(s1)
 
         }
-        case V3ActionTypeKeys.OPPDATER_RAMMEVEDTAK: {
-            const {} = action;
+        case V3ActionTypeKeys.NYTT_RAMMEVEDTAK: {
+            const {forFiksDigisosId, nyttRammevedtak} = action;
 
-            return {
-                ...state
-            }
+            const s1 = oGetSoknad(forFiksDigisosId)
+                .composeLens(oFsRammevedtak)
+                .modify((rammevedtakListe: Rammevedtak[]) => [...rammevedtakListe, nyttRammevedtak])(state);
+
+            return oGetSoknad(forFiksDigisosId)
+                .composeLens(oHendelser)
+                .modify((a: Hendelse[]) => [...a, nyttRammevedtak])(s1);
+        }
+        case V3ActionTypeKeys.OPPDATER_RAMMEVEDTAK: {
+            const {forFiksDigisosId, oppdatertRammevedtak} = action;
+
+            const s1 = oGetSoknad(forFiksDigisosId)
+                .composeLens(oFsRammevedtak)
+                .composeTraversal(oFsRammevedtakTraversal)
+                .composePrism(oFsRammevedtakPrism(oppdatertRammevedtak.rammevedtaksreferanse))
+                .set(oppdatertRammevedtak)(state);
+
+            return oGetSoknad(forFiksDigisosId)
+                .composeLens(oHendelser)
+                .modify((a: Hendelse[]) => [...a, oppdatertRammevedtak])(s1);
         }
         case V3ActionTypeKeys.NYTT_VILKAR: {
             const {forFiksDigisosId, nyttVilkar} = action;

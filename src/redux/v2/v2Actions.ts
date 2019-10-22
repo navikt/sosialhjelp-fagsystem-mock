@@ -136,6 +136,13 @@ export const setAktivtDokumentasjonkrav = (referanse: string | null): V2Action =
     }
 };
 
+export const setAktivtRammevedtak = (referanse: string | null): V2Action => {
+    return {
+        type: V2ActionTypeKeys.SET_AKTIVT_RAMMEVEDTAK,
+        referanse
+    }
+};
+
 export const visNySakModal = (): V2Action => {
     return {
         type: V2ActionTypeKeys.VIS_NY_SAK_MODAL
@@ -187,6 +194,18 @@ export const visNyDokumentasjonkravModal = (): V2Action => {
 export const skjulNyDokumentasjonkravModal = (): V2Action => {
     return {
         type: V2ActionTypeKeys.SKJUL_NY_DOKUMENTASJONKRAV_MODAL
+    }
+};
+
+export const visNyRammevedtakModal = (): V2Action => {
+    return {
+        type: V2ActionTypeKeys.VIS_NY_RAMMEVEDTAK_MODAL
+    }
+};
+
+export const skjulNyRammevedtakModal = (): V2Action => {
+    return {
+        type: V2ActionTypeKeys.SKJUL_NY_RAMMEVEDTAK_MODAL
     }
 };
 
