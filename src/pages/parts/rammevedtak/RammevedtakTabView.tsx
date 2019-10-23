@@ -100,7 +100,6 @@ const RammevedtakTabView: React.FC<Props> = (props: Props) => {
                 </Table>
                 <Typography className={classes.paperRoute}>
                     <Fab size="small" aria-label="add" className={classes.fab} color="primary" onClick={() => {
-                        console.log(rammevedtak.rammevedtaksreferanse);
                         dispatch(setAktivtRammevedtak(rammevedtak.rammevedtaksreferanse));
                         dispatch(visNyRammevedtakModal());
                     }}>

@@ -27,20 +27,23 @@ const useStyles = makeStyles((theme) => {
             display: 'flex',
             flexDirection: 'row',
             justifyContent: 'space-between',
-            paddingTop: theme.spacing(2)
+            // paddingTop: theme.spacing(2)
         },
         paper: {
-            padding: theme.spacing(2, 2),
+            margin: theme.spacing(2, 2),
+            padding: theme.spacing(3, 2),
             display: 'flex',
             flexDirection: 'row',
             justifyContent: 'center'
         },
         paper2: {
-            padding: theme.spacing(2, 2),
+            margin: theme.spacing(2, 0),
+            padding: theme.spacing(3, 2),
             display: 'flex',
-            flexDirection: 'row',
+            flexWrap: 'wrap',
+            // flexDirection: 'row',
             justifyContent: 'center',
-            marginLeft: theme.spacing(2)
+            // marginLeft: theme.spacing(2)
         },
         box: {
             marginTop: theme.spacing(1),
@@ -131,10 +134,14 @@ const SoknadStatusView: React.FC<Props> = (props: Props) => {
                      }}>
                     <AddIcon/>
                 </Fab>
-                <Typography>Foreløpig svar</Typography>
+                <Typography>Send pdf med foreløpig svar</Typography>
             </Box>
         )
     };
+
+    function getAntallForelopigSvarHendelser() {
+        return soknad.fiksDigisosSokerJson.sak.soker.hendelser.filter(hendelse => hendelse.type === HendelseType.ForelopigSvar).length;
+    }
 
     return (
         <div className={classes.root}>
@@ -184,20 +191,15 @@ const SoknadStatusView: React.FC<Props> = (props: Props) => {
             </Paper>
             <Paper className={classes.paper2}>
                 <div className={classes.horizontalWrapper}>
-                    <Box className={classes.horizontalBox}>
-                        <Typography variant={"h5"}>Dokumentasjon som er etterspurt</Typography>
-                        {addNyDokumentasjonEtterspurtButton()}
-                    </Box>
+                    {/*<Box className={classes.horizontalBox}>*/}
+                    {/*    <Typography variant={"h5"}>Dokumentasjon som er etterspurt</Typography>*/}
+                    {/*    {addNyDokumentasjonEtterspurtButton()}*/}
+                    {/*</Box>*/}
                     <Box className={classes.horizontalBox}>
                         <Typography variant={'h5'}>Foreløpig svar</Typography>
                         {addNyttForelopigSvarButton()}
-                        <Typography>{antallForelopigSvar == 0 ?
-                            "Lag et foreløpig svar hvis for eksempel\nsaksbehandlingstiden tar lengre tid enn forventet.".split("\n").map((i, key) => {
-                                return <div key={key}>{i}</div>;
-                            }) :
-                            "Antall foreløpig svar lagt til: " + antallForelopigSvar}</Typography>
+                        <Typography>{"Antall pdfer sendt: " + getAntallForelopigSvarHendelser()}</Typography>
                     </Box>
-                    <NyDokumentasjonEtterspurtModal soknad={soknad}/>
                 </div>
             </Paper>
         </div>

@@ -20,7 +20,8 @@ const useStyles = makeStyles((theme: Theme) =>
             backgroundColor: theme.palette.background.paper,
             position: 'relative',
             bottom: theme.spacing(2),
-            right: theme.spacing(2)
+            right: theme.spacing(2),
+            minWidth: '40%'
         },
         fab: {
             marginRight: theme.spacing(1),
@@ -55,6 +56,9 @@ const useStyles = makeStyles((theme: Theme) =>
         },
         fullList: {
             width: 'auto',
+        },
+        drawer: {
+            minWidth: '40%'
         },
     }),
 );
@@ -119,11 +123,10 @@ const ReactJsonView: React.FC<Props> = (props: Props) => {
         <div
             className={classes.list}
             role="presentation"
-            onClick={toggleDrawer(side, false)}
-            onKeyDown={toggleDrawer(side, false)}
+            onBlur={() => setState({ ...state, [side]: false })}
         >
             <Divider />
-            { json ? (<ReactJson src={json}/>) : (<div>Ingen json tilgjengelig.</div>)}
+            { json ? (<ReactJson src={json} enableClipboard={false}/>) : (<div>Ingen json tilgjengelig.</div>)}
             <Divider />
         </div>
     );
@@ -176,7 +179,7 @@ const ReactJsonView: React.FC<Props> = (props: Props) => {
                 <Drawer anchor="bottom" open={state.bottom} onClose={toggleDrawer('bottom', false)}>
                     {fullList('bottom')}
                 </Drawer>
-                <Drawer anchor="right" open={state.right} onClose={toggleDrawer('right', false)}>
+                <Drawer classes={{paper: classes.drawer}} anchor="right" open={state.right} onClose={toggleDrawer('right', false)}>
                     {sideList('right')}
                 </Drawer>
             </div>

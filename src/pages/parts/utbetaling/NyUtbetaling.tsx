@@ -200,7 +200,6 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
         nyHendelse.hendelsestidspunkt = getNow();
         nyHendelse.saksreferanse = sak.referanse;
         nyHendelse.kontonummer = modalUtbetaling.kontonummer && modalUtbetaling.kontonummer.length == 11 ? modalUtbetaling.kontonummer : null;
-        console.log(nyHendelse.forfallsdato == 'Invalid Date');
         nyHendelse.forfallsdato = formatDateString(nyHendelse.forfallsdato);
         nyHendelse.utbetalingsdato = formatDateString(nyHendelse.utbetalingsdato);
         nyHendelse.fom = formatDateString(nyHendelse.fom);

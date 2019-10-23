@@ -38,7 +38,7 @@ const useStyles = makeStyles((theme: Theme) =>
             // border: "1px dotted red"
         },
         colJson: {
-            position: 'absolute',
+            position: 'fixed',
             bottom: '1rem',
             right: '1rem'
         }
@@ -70,10 +70,10 @@ const V3: React.FC<Props> = (props: Props) => {
             <AppBarView />
             <div className={classes.root}>
                 <Grid container={true} spacing={8} className={classes.maingrid}>
-                    <Grid item sm={3} className={classes.left}>
+                    <Grid item sm={2} className={classes.left}>
                         <SoknadsOversiktPanel />
                     </Grid>
-                    <Grid item sm={9} className={classes.right}>
+                    <Grid item sm={10} className={classes.right}>
                         <BehandleSoknadPanel />
                     </Grid>
                 </Grid>

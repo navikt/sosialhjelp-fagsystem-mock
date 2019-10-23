@@ -222,8 +222,8 @@ export interface Forvaltningsbrev {
 
 export interface Dokument {
     dokumenttype: string;
-    tilleggsinformasjon: string;
-    innsendelsesfrist: string;
+    tilleggsinformasjon: string|null;
+    innsendelsesfrist: string|null;
 }
 
 export interface Version {

@@ -12,6 +12,7 @@ import TildeldeltNavkontorView from "../navKontor/TildeltNavKontorView";
 import VilkarOversiktView from "../vilkar/VilkarOversiktView";
 import DokumentasjonkravOversiktView from "../dokumentasjonskrav/DokumentasjonkravOversiktView";
 import RammevedtakOversiktView from "../rammevedtak/RammevedtakOversiktView";
+import DokumentasjonEtterspurtOversiktView from "../dokumentasjonEtterspurt/DokumentasjonEtterspurtOversiktView";
 
 
 const useStyles = makeStyles(theme => ({
@@ -24,6 +25,16 @@ const useStyles = makeStyles(theme => ({
     paper: {
         margin: theme.spacing(2, 0),
         padding: theme.spacing(3, 2),
+        display: 'inline',
+        minWidth: '50%'
+    },
+    paper2: {
+        display: 'flex',
+        flexWrap: 'wrap',
+        whiteSpace: 'nowrap',
+        // flexDirection: 'row',
+        justifyContent: 'space-between',
+        // paddingTop: theme.spacing(2)
     },
     col: {
 
@@ -59,33 +70,38 @@ const BehandleSoknadPanel: React.FC<Props> = (props: Props) => {
 
     if (soknad) {
         return (
-            <div className={classes.root}>
+            <div>
 
-                <Paper className={classes.paper}>
-                    <div className={classes.col}>
-                        <Typography variant={"h5"} component={"h3"}>
-                            Oversikt over søknaden
-                        </Typography>
-                        <Typography variant={"subtitle1"}>
-                            Navn på søker: {soknad.navn}
-                        </Typography>
-                        <Typography variant={"subtitle1"}>
-                            FiksDigisosId: {soknad.fiksDigisosId}
-                        </Typography>
-                        <TildeldeltNavkontorView soknad={soknad} />
-                    </div>
+                <div className={classes.paper2}>
+                    <Paper className={classes.paper}>
+                        <div className={classes.col}>
+                            <Typography variant={"h5"} component={"h3"}>
+                                Oversikt over søknaden
+                            </Typography>
+                            <Typography variant={"subtitle1"}>
+                                Navn på søker: {soknad.navn}
+                            </Typography>
+                            <Typography variant={"subtitle1"}>
+                                FiksDigisosId: {soknad.fiksDigisosId}
+                            </Typography>
+                            <TildeldeltNavkontorView soknad={soknad} />
+                        </div>
 
-                </Paper>
+                    </Paper>
+                    <SoknadStatusView soknad={soknad}/>
+                </div>
 
-                <SoknadStatusView soknad={soknad}/>
+                <div className={classes.root}>
+                    <DokumentasjonEtterspurtOversiktView soknad={soknad}/>
 
-                <SaksOversiktView soknad={soknad}/>
+                    <SaksOversiktView soknad={soknad}/>
 
-                <VilkarOversiktView soknad={soknad}/>
+                    <VilkarOversiktView soknad={soknad}/>
 
-                <DokumentasjonkravOversiktView soknad={soknad}/>
+                    <DokumentasjonkravOversiktView soknad={soknad}/>
 
-                <RammevedtakOversiktView soknad={soknad}/>
+                    <RammevedtakOversiktView soknad={soknad}/>
+                </div>
             </div>
         );
     }

@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {AppState, DispatchProps} from "../../../redux/reduxTypes";
 import {connect} from "react-redux";
-import {createStyles, Modal, Theme} from "@material-ui/core";
+import {createStyles, Modal, Paper, Theme} from "@material-ui/core";
 import {skjulNyDokumentasjonEtterspurtModal} from "../../../redux/v2/v2Actions";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import Fade from "@material-ui/core/Fade";
@@ -14,14 +14,25 @@ import DateFnsUtils from '@date-io/date-fns';
 import {KeyboardDatePicker, MuiPickersUtilsProvider} from '@material-ui/pickers';
 import Fab from "@material-ui/core/Fab";
 import Typography from "@material-ui/core/Typography";
-import Box from "@material-ui/core/Box";
 import AddIcon from '@material-ui/icons/Add';
-import Hendelse, {Dokument, DokumentasjonEtterspurt, HendelseType} from "../../../types/hendelseTypes";
+import DeleteIcon from '@material-ui/icons/Delete';
+import Hendelse, {
+    Dokument,
+    DokumentasjonEtterspurt,
+    FilreferanseType,
+    HendelseType
+} from "../../../types/hendelseTypes";
 import Grid from "@material-ui/core/Grid";
 import {getNow} from "../../../utils/utilityFunctions";
 import {aiuuur, oppdaterDokumentasjonEtterspurt} from "../../../redux/v3/v3Actions";
 import {FsSoknad} from "../../../redux/v3/v3FsTypes";
 import {oHendelser} from "../../../redux/v3/v3Optics";
+import TableRow from "@material-ui/core/TableRow";
+import TableCell from "@material-ui/core/TableCell";
+import Table from "@material-ui/core/Table";
+import TableHead from "@material-ui/core/TableHead";
+import TableBody from "@material-ui/core/TableBody";
+import IconButton from "@material-ui/core/IconButton";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -36,9 +47,38 @@ const useStyles = makeStyles((theme: Theme) =>
             boxShadow: theme.shadows[5],
             padding: theme.spacing(2, 4, 3),
         },
+        papertowel: {
+            backgroundColor: theme.palette.background.paper,
+            width:'80%',
+        },
+        paperback: {
+            backgroundColor: theme.palette.background.paper,
+            padding: theme.spacing(2),
+            width:'100%',
+            display: 'flex',
+            flexwrap: 'wrap',
+        },
+        paperback2: {
+            backgroundColor: theme.palette.background.paper,
+            padding: theme.spacing(2),
+            width:'100%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexwrap: 'wrap',
+        },
+        paperbox: {
+            border: '2px solid #000',
+            boxShadow: theme.shadows[5],
+        },
         textField: {
-            marginLeft: theme.spacing(1),
-            marginRight: theme.spacing(1),
+            marginLeft: theme.spacing(2),
+            marginRight: theme.spacing(2),
+            width:'95%',
+        },
+        otherField: {
+            marginLeft: theme.spacing(2),
+            marginRight: theme.spacing(2),
         },
         addbox: {
             margin: theme.spacing(2, 0, 2, 0),
@@ -57,6 +97,23 @@ const useStyles = makeStyles((theme: Theme) =>
             marginRight: theme.spacing(1),
             margin: theme.spacing(1),
         },
+        tablePaper: {
+            marginTop: theme.spacing(3),
+            overflowX: 'auto',
+            marginBottom: theme.spacing(2),
+        },
+        table: {
+            minWidth: 650,
+        },
+        paperRoute: {
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexwrap: 'wrap',
+        },
+        margin: {
+            margin: theme.spacing(1),
+        },
     }),
 );
 
@@ -73,33 +130,42 @@ interface StoreProps {
 
 type Props = DispatchProps & OwnProps & StoreProps;
 
+const initialDokumentasjonEtterspurt: DokumentasjonEtterspurt = {
+    type: HendelseType.DokumentasjonEtterspurt,
+    hendelsestidspunkt: '',
+    forvaltningsbrev: {
+        referanse: {
+            type: FilreferanseType.dokumentlager,
+            id: ''
+        }
+    },
+    vedlegg: [],
+    dokumenter: []
+};
+
+const initialDokument: Dokument = {
+    dokumenttype: '',
+    tilleggsinformasjon: null,
+    innsendelsesfrist: null,
+};
 
 const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
-    const [dokumenttype, setDokumenttype] = useState('');
-    const [tilleggsinformasjon, setTilleggsinformasjon] = useState('');
-    const initialDokumentListe: Dokument[] = [];
-    const [dokumentListe, setDokumentListe] = useState(initialDokumentListe);
+    const [modalDokumentasjonEtterspurt, setModalDokumentasjonEtterspurt] = useState<DokumentasjonEtterspurt>(initialDokumentasjonEtterspurt);
+    const [modalDokument, setModalDokument] = useState<Dokument>(initialDokument);
     const [visFeilmelding, setVisFeilmelding] = useState(false);
     const [datePickerIsOpen, setDatePickerIsOpen] = useState(false);
-    let initialDate = new Date();
-    initialDate.setDate(new Date().getDate() + 7); // En uke fram i tid
-    initialDate.setHours(12);
-    const [innsendelsesfrist, setInnsendelsesfrist] = useState(initialDate);
     const classes = useStyles();
     const {visNyDokumentasjonEtterspurtModal, dispatch, v2, soknad, v3} = props;
     const filreferanselager = v2.filreferanselager;
 
     const leggTilDokument = () => {
         const nyttDokument: Dokument = {
-            dokumenttype: dokumenttype,
-            tilleggsinformasjon: tilleggsinformasjon,
-            innsendelsesfrist: innsendelsesfrist.toISOString()
+            dokumenttype: modalDokument.dokumenttype,
+            tilleggsinformasjon: modalDokument.tilleggsinformasjon,
+            innsendelsesfrist: modalDokument.innsendelsesfrist ? new Date(modalDokument.innsendelsesfrist).toISOString() : null
         };
-        dokumentListe.push(nyttDokument);
-        setDokumentListe(dokumentListe);
-        setDokumenttype('');
-        setTilleggsinformasjon('');
-        setInnsendelsesfrist(initialDate);
+        setModalDokumentasjonEtterspurt({...modalDokumentasjonEtterspurt, dokumenter: [...modalDokumentasjonEtterspurt.dokumenter, nyttDokument]});
+        setModalDokument({...initialDokument});
     };
 
     const sendDokumentasjonEtterspurt = () => {
@@ -113,7 +179,7 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
                 }
             },
             vedlegg: [],
-            dokumenter: dokumentListe
+            dokumenter: modalDokumentasjonEtterspurt.dokumenter
         };
 
         const soknadUpdated = oHendelser.modify((a: Hendelse[]) => [...a, nyHendelse])(soknad);
@@ -127,50 +193,129 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
             )
         );
 
-        setDokumentListe([]);
-        setDokumenttype('');
-        setTilleggsinformasjon('');
-        setInnsendelsesfrist(initialDate);
         setVisFeilmelding(false);
 
         dispatch(dispatch(skjulNyDokumentasjonEtterspurtModal()));
     };
 
-    function visAlleDokumenter() {
-        return <Grid container direction="column" justify="flex-start" alignItems="flex-start" spacing={3}>
-            {dokumentListe.map((dokument: Dokument, index) => {
-                return (
-                    <Grid item key={'krav: ' + index} xs={12} zeroMinWidth>
-                        <Box className={classes.krav}>
-                            <TextField
-                                id="outlined-name"
-                                label="Dokumenttype"
-                                className={classes.textField}
-                                value={dokument.dokumenttype}
-                                margin="normal"
-                                variant="outlined"
-                            />
-                            <TextField
-                                id="outlined-name"
-                                label="Tilleggsinfo"
-                                className={classes.textField}
-                                value={dokument.tilleggsinformasjon}
-                                margin="normal"
-                                variant="outlined"
-                            />
-                            <TextField
-                                id="outlined-name"
-                                label="Innsendelsesfrist (UTC)"
-                                className={classes.textField}
-                                value={dokument.innsendelsesfrist.substring(0, dokument.innsendelsesfrist.search('T'))}
-                                margin="normal"
-                                variant="outlined"
-                            />
-                        </Box>
-                    </Grid>)
-        })}
-        </Grid>
+    const makeTableRow = (dokument: Dokument, idx:number) => {
+        return <TableRow key={dokument.dokumenttype + dokument.tilleggsinformasjon}>
+            <TableCell component="th" scope="row">
+                {dokument.dokumenttype}
+            </TableCell>
+            {dokument.tilleggsinformasjon != null ?
+                <TableCell>{dokument.tilleggsinformasjon}</TableCell> :
+                <TableCell variant={'footer'}>Ikke utfylt</TableCell>
+            }
+            {dokument.innsendelsesfrist != null ?
+                <TableCell align="right">{dokument.innsendelsesfrist}</TableCell> :
+                <TableCell variant={'footer'} align="right">Ikke utfylt</TableCell>
+            }
+            <TableCell align="right">
+                <IconButton aria-label="delete" onClick={() => {
+                    let dokumenter = [...modalDokumentasjonEtterspurt.dokumenter];
+                    dokumenter.splice(idx, 1);
+                    setModalDokumentasjonEtterspurt({...modalDokumentasjonEtterspurt, dokumenter: dokumenter})
+                }}>
+                    <DeleteIcon fontSize="small" />
+                </IconButton>
+            </TableCell>
+        </TableRow>
+    };
+
+    const insertDokumentasjonEtterspurtOversikt = () => {
+
+        if (modalDokumentasjonEtterspurt.dokumenter.length > 0) {
+            return (
+                <Paper className={classes.tablePaper}>
+                    <Table className={classes.table} size="small">
+                        <TableHead>
+                            <TableRow>
+                                <TableCell>Type</TableCell>
+                                <TableCell>Tilleggsinformasjon</TableCell>
+                                <TableCell align="right">Innsendelsesfrist</TableCell>
+                                <TableCell align="right">Slett krav</TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {modalDokumentasjonEtterspurt.dokumenter.map((dokument, idx) => makeTableRow(dokument, idx))}
+                        </TableBody>
+                    </Table>
+                </Paper>
+            );
+        } else {
+            return (
+                <>
+                    <br/>
+                    <Typography variant={"subtitle1"}>
+                        Ingen dokumenter er etterspurt for denne søknaden.
+                    </Typography>
+                </>
+            )
+        }
+    };
+
+    function getTextFieldGrid(label: string, value: any, setValue: (v: any) => any, required: boolean = false) {
+        return <Grid item key={'Grid: ' + label} xs={3} zeroMinWidth>
+            <TextField
+                id="outlined-name"
+                label={label}
+                className={classes.textField}
+                value={value ? value : ''}
+                required={required}
+                error={required && visFeilmelding}
+                onChange={(evt) => {
+                    setValue(evt.target.value);
+                    if (required) {
+                        if (evt.target.value.length == 0) {
+                            setVisFeilmelding(true);
+                        } else {
+                            setVisFeilmelding(false);
+                        }
+                    }
+                }}
+                InputLabelProps={{
+                    shrink: true,
+                }}
+                margin="normal"
+                variant="filled"
+                autoComplete="off"
+            />
+        </Grid>;
     }
+
+    function getKeyboardDatePickerGrid(label: string, value: any, setValue: (v: string) => any, isOpen: boolean, setIsOpen: any) {
+        return <Grid item key={"grid: " + label} xs={2} zeroMinWidth>
+            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                <KeyboardDatePicker
+                    className={classes.otherField}
+                    disableToolbar
+                    variant="inline"
+                    format="yyyy-MM-dd"
+                    margin="normal"
+                    id={label}
+                    label={label}
+                    open={isOpen}
+                    onOpen={() => setIsOpen(true)}
+                    onClose={() => setIsOpen(false)}
+                    value={value}
+                    onChange={(date: any) => {
+                        setValue(date);
+                        setIsOpen(false);
+                    }}
+                    KeyboardButtonProps={{
+                        'aria-label': 'change date',
+                    }}
+                />
+            </MuiPickersUtilsProvider>
+        </Grid>;
+    }
+
+    const fyllInnDokumenterIModalDokumentasjonEtterspurt = () => {
+        if (soknad.dokumentasjonEtterspurt) {
+            setModalDokumentasjonEtterspurt({...modalDokumentasjonEtterspurt, dokumenter: soknad.dokumentasjonEtterspurt.dokumenter});
+        }
+    };
 
     return (
         <Modal
@@ -183,85 +328,49 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
                 timeout: 500,
             }}
             open={visNyDokumentasjonEtterspurtModal}
+            onRendered={() => fyllInnDokumenterIModalDokumentasjonEtterspurt()}
             onClose={() => dispatch(skjulNyDokumentasjonEtterspurtModal())}
         >
             <Fade in={visNyDokumentasjonEtterspurtModal}>
-                <div className={classes.paper}>
-                    <Box className={classes.addbox}>
-                        <TextField
-                            id="outlined-name"
-                            label="Dokumenttype"
-                            className={classes.textField}
-                            value={dokumenttype}
-                            required={true}
-                            error={visFeilmelding}
-                            onChange={(evt) => {
-                                setDokumenttype(evt.target.value);
-                                if (evt.target.value.length == 0) {
-                                    setVisFeilmelding(true);
-                                } else {
-                                    setVisFeilmelding(false);
-                                }
-                            }}
-                            margin="normal"
-                            variant="filled"
-                            autoComplete="off"
-                        />
-                        <TextField
-                            id="outlined-name"
-                            label="Tilleggsinfo"
-                            className={classes.textField}
-                            value={tilleggsinformasjon}
-                            onChange={(evt) => setTilleggsinformasjon(evt.target.value)}
-                            margin="normal"
-                            variant="filled"
-                            autoComplete="off"
-                        />
-                        <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                            <KeyboardDatePicker
-                                disableToolbar
-                                variant="inline"
-                                format="MM/dd/yyyy"
-                                margin="normal"
-                                id="date-picker-inline"
-                                label="Innsendelsesfrist"
-                                open={datePickerIsOpen}
-                                onOpen={() => setDatePickerIsOpen(true)}
-                                onClose={() => setDatePickerIsOpen(false)}
-                                value={innsendelsesfrist}
-                                onChange={(date: any) => {
-                                    setInnsendelsesfrist(date);
-                                    setDatePickerIsOpen(false);
-                                }}
-                                KeyboardButtonProps={{
-                                    'aria-label': 'change date',
-                                }}
-                            />
-                        </MuiPickersUtilsProvider>
+                <div className={classes.papertowel}>
+                    <div className={classes.paperbox}>
+                        <div className={classes.paperback}>
+                            <Grid container spacing={1} justify="center" alignItems="center">
+                                {getTextFieldGrid("Dokumenttype", modalDokument.dokumenttype, (verdi: string) => setModalDokument({...modalDokument, dokumenttype: verdi}), true)}
+                                {getTextFieldGrid("Tilleggsinformasjon", modalDokument.tilleggsinformasjon, (verdi: string) => setModalDokument({...modalDokument, tilleggsinformasjon: verdi}))}
+                                {getKeyboardDatePickerGrid("Innsendelsesfrist", modalDokument.innsendelsesfrist, (verdi: string) => setModalDokument({...modalDokument, innsendelsesfrist: verdi}),
+                                    datePickerIsOpen, setDatePickerIsOpen)}
 
-                        <Fab size="small" aria-label="add" className={classes.fab} color="primary" onClick={() => {
-                            if (dokumenttype === '') {
-                                setVisFeilmelding(true);
-                            } else {
-                                leggTilDokument();
-                            }
-                        }}>
-                            <AddIcon/>
-                        </Fab>
-                        <Typography>
-                            Legg til dokumentkrav
-                        </Typography>
-                        <Fab size="small" aria-label="add" className={classes.fab} color="primary" onClick={() => {
-                            sendDokumentasjonEtterspurt();
-                        }}>
-                            <AddIcon/>
-                        </Fab>
-                        <Typography>
-                            Etterspør dokumentasjon
-                        </Typography>
-                    </Box>
-                    {(dokumentListe.length == 0) && <Typography>Ingen dokumenter lagt til</Typography>}
-                    {visAlleDokumenter()}
+                                <Grid item key={"grid: legg til dokument"} xs={2} zeroMinWidth>
+                                    <Fab size="small" aria-label="add" className={classes.fab} color="primary" onClick={() => {
+                                        if (modalDokument.dokumenttype === '') {
+                                            setVisFeilmelding(true);
+                                        } else {
+                                            leggTilDokument();
+                                        }
+                                    }}>
+                                        <AddIcon/>
+                                    </Fab>
+                                    <Typography>
+                                        Legg til dokumentkrav
+                                    </Typography>
+                                </Grid>
+                                <Grid item key={"grid: send dokumentasjonEtterspurt"} xs={2} zeroMinWidth>
+                                    <Fab size="small" aria-label="add" className={classes.fab} color="primary" onClick={() => {
+                                        sendDokumentasjonEtterspurt();
+                                    }}>
+                                        <AddIcon/>
+                                    </Fab>
+                                    <Typography>
+                                        Etterspør dokumentasjon
+                                    </Typography>
+                                </Grid>
+                            </Grid>
+                        </div>
+                        <div className={classes.paperback2}>
+                            {insertDokumentasjonEtterspurtOversikt()}
+                        </div>
+                    </div>
                 </div>
             </Fade>
         </Modal>

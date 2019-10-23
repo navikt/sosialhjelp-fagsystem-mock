@@ -21,8 +21,8 @@ import DayPickerInput from 'react-day-picker/DayPickerInput';
 
 interface DokumentExtended {
     dokumenttype: string;
-    tilleggsinformasjon: string;
-    innsendelsesfrist: string;
+    tilleggsinformasjon: string|null;
+    innsendelsesfrist: string|null;
 }
 
 interface VedleggExtended {
@@ -153,7 +153,7 @@ const EttersporDokumentasjonView = (props: Props) => {
                                        ...state,
                                        nyttDokumentkrav: {...state.nyttDokumentkrav, dokumenttype: evt.target.value}
                                    })}/>
-                            <Input value={state.nyttDokumentkrav.tilleggsinformasjon} label="Tilleggsinformasjon"
+                            <Input value={state.nyttDokumentkrav.tilleggsinformasjon ? state.nyttDokumentkrav.tilleggsinformasjon : undefined} label="Tilleggsinformasjon"
                                    onChange={(evt) => setState({
                                        ...state,
                                        nyttDokumentkrav: {...state.nyttDokumentkrav, tilleggsinformasjon: evt.target.value}

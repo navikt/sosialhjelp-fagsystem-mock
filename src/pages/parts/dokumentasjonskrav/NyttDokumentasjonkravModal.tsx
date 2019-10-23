@@ -167,8 +167,6 @@ const NyttDokumentasjonkravModal: React.FC<Props> = (props: Props) => {
         nyHendelse.hendelsestidspunkt = getNow();
 
         const soknadUpdated = oHendelser.modify((a: Hendelse[]) => [...a, nyHendelse])(soknad);
-        console.log(soknadUpdated);
-        console.log(aktivtDokumentasjonkrav);
 
         if (aktivtDokumentasjonkrav == null) {
             dispatch(

@@ -59,7 +59,7 @@ const SoknadsOversiktPanel: React.FC<Props> = (props: Props) => {
     return (
         <Paper className={classes.paper}>
             <Typography variant="h5" component="h3">
-                Inboks
+                Søknader
             </Typography>
             <Typography component="p">
                 Oversikt over søknader i systemet
