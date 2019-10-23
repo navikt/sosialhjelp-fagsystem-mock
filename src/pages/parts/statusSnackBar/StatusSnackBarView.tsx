@@ -52,6 +52,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 interface StoreProps {
     visSnackbar: boolean;
+    snackbarVariant: 'success'|'warning'|'error'|'info';
     v2: V2Model;
     v3: V3State;
 }
@@ -63,7 +64,7 @@ export interface InterfaceProps {
     variant: keyof typeof variantIcon;
 }
 
-type Props = DispatchProps & InterfaceProps & StoreProps;
+type Props = DispatchProps & StoreProps;
 
 function MySnackbarContentWrapper(props: InterfaceProps) {
     const classes = useStyles();
@@ -92,7 +93,7 @@ function MySnackbarContentWrapper(props: InterfaceProps) {
 
 
 const StatusSnackBarView: React.FC<Props> = (props: Props) => {
-    const {visSnackbar, dispatch} = props;
+    const {visSnackbar, snackbarVariant, dispatch} = props;
 
     function handleClose(event?: SyntheticEvent, reason?: string) {
         if (reason === 'clickaway') {
@@ -115,8 +116,8 @@ const StatusSnackBarView: React.FC<Props> = (props: Props) => {
             >
                 <MySnackbarContentWrapper
                     onClose={handleClose}
-                    variant="success"
-                    message="En hendelse er registrert i innsyn"
+                    variant={snackbarVariant}
+                    message={snackbarVariant === 'error' ? "Noe gikk galt i kall mot server" : "En hendelse er registrert i innsyn"}
                 />
             </Snackbar>
         </div>
@@ -125,6 +126,7 @@ const StatusSnackBarView: React.FC<Props> = (props: Props) => {
 
 const mapStateToProps = (state: AppState) => ({
     visSnackbar: state.v2.visSnackbar,
+    snackbarVariant: state.v2.snackbarVariant,
     v2: state.v2,
     v3: state.v3
 });

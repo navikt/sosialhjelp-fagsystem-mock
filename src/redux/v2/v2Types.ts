@@ -6,6 +6,7 @@ import {
 import {PaletteType} from "@material-ui/core";
 import {Soknad} from "../../types/additionalTypes";
 import V2 from "../../pages/V2";
+import CheckCircleIcon from "@material-ui/core/SvgIcon/SvgIcon";
 
 export interface V2Model {
     fiksDigisosId: string;
@@ -31,6 +32,7 @@ export interface V2Model {
     visEndreNavKontorModal: boolean;
     visSystemSettingsModal: boolean;
     visSnackbar: boolean;
+    snackbarVariant: 'success'|'warning'|'error'|'info';
 
     aktivSoknad: string; // fiksDigisosId
     aktivSakIndex: number | undefined; // sakReferanse
@@ -81,7 +83,8 @@ export type V2Action
     | SkjulEndreNavKontorModal
     | VisSystemSettingsModal
     | SkjulSystemSettingsModal
-    | VisSnackbar
+    | VisSuccessSnackbar
+    | VisErrorSnackbar
     | SkjulSnackbar
     | SetAktivSoknad
     | SetAktivSak
@@ -123,7 +126,8 @@ export enum V2ActionTypeKeys {
     SKJUL_ENDRE_NAV_KONTOR_MODAL = "v2/SKJUL_ENDRE_NAV_KONTOR_MODAL",
     VIS_SYSTEM_SETTINGS_MODAL = "v2/VIS_SYSTEM_SETTINGS_MODAL",
     SKJUL_SYSTEM_SETTINGS_MODAL = "v2/SKJUL_SYSTEM_SETTINGS_MODAL",
-    VIS_SNACKBAR = "v2/VIS_SNACKBAR",
+    VIS_SUCCESS_SNACKBAR = "v2/VIS_SUCCESS_SNACKBAR",
+    VIS_ERROR_SNACKBAR = "v2/VIS_ERROR_SNACKBAR",
     SKJUL_SNACKBAR = "v2/SKJUL_SNACKBAR",
     // Aktive ting
     SET_AKTIV_SAK = "v2/SET_AKTIV_SAK",
@@ -257,8 +261,12 @@ export interface SkjulSystemSettingsModal {
     type: V2ActionTypeKeys.SKJUL_SYSTEM_SETTINGS_MODAL,
 }
 
-export interface VisSnackbar {
-    type: V2ActionTypeKeys.VIS_SNACKBAR,
+export interface VisSuccessSnackbar {
+    type: V2ActionTypeKeys.VIS_SUCCESS_SNACKBAR,
+}
+
+export interface VisErrorSnackbar {
+    type: V2ActionTypeKeys.VIS_ERROR_SNACKBAR,
 }
 
 export interface SkjulSnackbar {

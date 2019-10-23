@@ -246,9 +246,15 @@ export const skjulSystemSettingsModal = () => {
     }
 };
 
-export const visSnackbar = () => {
+export const visSuccessSnackbar = () => {
     return {
-        type: V2ActionTypeKeys.VIS_SNACKBAR,
+        type: V2ActionTypeKeys.VIS_SUCCESS_SNACKBAR,
+    }
+};
+
+export const visErrorSnackbar = () => {
+    return {
+        type: V2ActionTypeKeys.VIS_ERROR_SNACKBAR,
     }
 };
 

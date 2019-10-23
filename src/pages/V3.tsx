@@ -82,7 +82,7 @@ const V3: React.FC<Props> = (props: Props) => {
             <SystemSettingsModal />
 
             {/* FIXME: Ta i bruk denne senere.*/}
-            <StatusSnackBarView variant="success" />
+            <StatusSnackBarView />
 
             <div className={classes.colJson}>
                 <ReactJsonView json={getFsSoknadByFiksDigisosId(props.v3.soknader,props.v2.aktivSoknad)}/>

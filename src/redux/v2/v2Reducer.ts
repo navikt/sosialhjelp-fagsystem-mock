@@ -100,6 +100,7 @@ export const initialV2Model: V2Model = {
     visEndreNavKontorModal: false,
     visSystemSettingsModal: false,
     visSnackbar: false,
+    snackbarVariant: 'success',
 
     // Aktive ting
     aktivSoknad: '001',
@@ -170,7 +171,8 @@ const v2Reducer: Reducer<V2Model, V2Action> = (
         case V2ActionTypeKeys.SKJUL_ENDRE_NAV_KONTOR_MODAL: {return {...state, visEndreNavKontorModal: false}}
         case V2ActionTypeKeys.VIS_SYSTEM_SETTINGS_MODAL: {return {...state, visSystemSettingsModal: true}}
         case V2ActionTypeKeys.SKJUL_SYSTEM_SETTINGS_MODAL: {return {...state, visSystemSettingsModal: false}}
-        case V2ActionTypeKeys.VIS_SNACKBAR: {return {...state, visSnackbar: true}}
+        case V2ActionTypeKeys.VIS_SUCCESS_SNACKBAR: {return {...state, visSnackbar: true, snackbarVariant: 'success'}}
+        case V2ActionTypeKeys.VIS_ERROR_SNACKBAR: {return {...state, visSnackbar: true, snackbarVariant: 'error'}}
         case V2ActionTypeKeys.SKJUL_SNACKBAR: {return {...state, visSnackbar: false}}
 
         // Aktive ting

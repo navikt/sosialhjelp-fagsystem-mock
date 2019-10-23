@@ -20,8 +20,8 @@ import {
     setFiksDigisosSokerJson,
     skjulSnackbar,
     turnOffLoader,
-    turnOnLoader,
-    visSnackbar
+    turnOnLoader, visErrorSnackbar,
+    visSuccessSnackbar
 } from "../v2/v2Actions";
 import {V2Model} from "../v2/v2Types";
 import {FsSaksStatus} from "./v3FsTypes";
@@ -50,7 +50,7 @@ export const aiuuur = (
                 oppdaterFixId(fiksDigisosId, fiksId.toString()));
             dispatch(setAktivSoknad(fiksId.toString()));
             if (v2.fiksDigisosSokerJson.sak.soker.hendelser.length < fiksDigisosSokerJson.sak.soker.hendelser.length) {
-                dispatch(visSnackbar());
+                dispatch(visSuccessSnackbar());
             }
             dispatch(actionToDispatchIfSuccess);
             setTimeout(() => {
@@ -59,6 +59,7 @@ export const aiuuur = (
             }, 1000);
 
         }).catch((reason) => {
+            dispatch(visErrorSnackbar());
             switch (reason.message) {
                 case "Not Found": {
                     console.warn("Got 404. Specify a valid backend url...");
