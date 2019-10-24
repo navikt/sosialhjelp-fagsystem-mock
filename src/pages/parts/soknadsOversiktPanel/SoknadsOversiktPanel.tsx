@@ -12,11 +12,12 @@ import {FsSoknad} from "../../../redux/v3/v3FsTypes";
 
 const useStyles = makeStyles(theme => ({
     paper: {
-        margin: theme.spacing(2),
-        padding: theme.spacing(3, 2),
+        margin: theme.spacing(2, 2, 2, 0),
+        padding: theme.spacing(2, 2),
+        // width: '100%'
     },
     soknadliste: {
-        padding: theme.spacing(4, 0, 2, 0)
+        // padding: theme.spacing(2, 0, 2, 0)
     }
 }));
 
@@ -49,10 +50,7 @@ const SoknadsOversiktPanel: React.FC<Props> = (props: Props) => {
     return (
         <Paper className={classes.paper}>
             <Typography variant="h5" component="h3">
-                Søknader
-            </Typography>
-            <Typography component="p">
-                Oversikt over søknader i systemet
+                Søknadvelger
             </Typography>
             <List className={classes.soknadliste} component="nav"  aria-label="mailbox folders">
                 { getSoknadListItems(soknader) }

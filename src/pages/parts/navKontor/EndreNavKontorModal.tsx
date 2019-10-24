@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {AppState, DispatchProps} from "../../../redux/reduxTypes";
 import {connect} from "react-redux";
 import {makeStyles} from '@material-ui/core/styles';
@@ -42,7 +42,6 @@ type Props = DispatchProps & OwnProps & StoreProps;
 
 
 const EndreNavKontorModal: React.FC<Props> = (props: Props) => {
-    const [navKontor, setNavKontor] = useState('');
     const classes = useStyles();
     const {dispatch, soknad, v2} = props;
 
@@ -60,6 +59,18 @@ const EndreNavKontorModal: React.FC<Props> = (props: Props) => {
     };
     const navKontorListe = [navKontor0, navKontor1, navKontor2];
 
+    const getNavkontorFromId = (id: string|null) => {
+        if (id == null) {
+            return '';
+        }
+        const navKontoret = navKontorListe.filter(navkontor => navkontor.id.toString() == id);
+        if (navKontoret.length === 0) {
+            return '';
+        } else {
+            return navKontoret[0].id;
+        }
+    };
+
     const menuItems = navKontorListe.map((navKontor: NavKontor) => {
         return (<MenuItem key={"navKontorItem: " + navKontor.id} value={navKontor.id}>{navKontor.name}</MenuItem>)
     });
@@ -69,10 +80,9 @@ const EndreNavKontorModal: React.FC<Props> = (props: Props) => {
             <FormControl className={classes.formControl}>
                 <InputLabel htmlFor="age-simple">Navkontor</InputLabel>
                 <Select
-                    value={navKontor}
+                    value={getNavkontorFromId(soknad.navKontor ? soknad.navKontor.navKontor : null)}
                     onChange={(evt) => {
                         let navKontorEnhetsNr = evt.target.value as string;
-                        setNavKontor(navKontorEnhetsNr);
 
                         const nyHendelse: TildeltNavKontor = {
                             type: HendelseType.TildeltNavKontor,

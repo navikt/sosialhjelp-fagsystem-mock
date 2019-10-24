@@ -59,6 +59,7 @@ export const oFsSaksStatusUtbetalinger = Lens.fromProp<FsSaksStatus>()('utbetali
 export const oFsSaksStatusUtbetalingerTraversal = fromTraversable(array)<Utbetaling>();
 export const oFsUtbetalingPrism = (referanse: string): Prism<Utbetaling, Utbetaling> => Prism.fromPredicate(utbetaling => utbetaling.utbetalingsreferanse === referanse);
 
+export const oFsSaksStatusRammevedtak = Lens.fromProp<FsSaksStatus>()('rammevedtak');
 
 export const oGetFsSaksStatus = (forFsSaksStatusReferanse: string) => {
     return oFsSaker

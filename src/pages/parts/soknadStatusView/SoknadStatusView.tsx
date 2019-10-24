@@ -32,7 +32,8 @@ const useStyles = makeStyles((theme) => {
             padding: theme.spacing(3, 2),
             display: 'flex',
             flexDirection: 'row',
-            justifyContent: 'center'
+            justifyContent: 'center',
+            // minWidth:
         },
         paper2: {
             margin: theme.spacing(2, 0),
@@ -44,8 +45,8 @@ const useStyles = makeStyles((theme) => {
             // marginLeft: theme.spacing(2)
         },
         box: {
-            marginTop: theme.spacing(1),
-            padding: theme.spacing(1),
+            // marginTop: theme.spacing(1),
+            padding: theme.spacing(0, 1, 0, 1),
         },
         formControl: {
             margin: theme.spacing(3)

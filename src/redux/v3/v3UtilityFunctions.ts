@@ -21,7 +21,7 @@ export const generateNyFsSaksStatus = (tittel: string|null): FsSaksStatus => {
         status: null,
         utbetalinger: [],
         vedtakFattet: undefined,
-        rammevedtak: undefined,
+        rammevedtak: [],
         vilkar: [],
         dokumentasjonskrav: [],
     } as FsSaksStatus;

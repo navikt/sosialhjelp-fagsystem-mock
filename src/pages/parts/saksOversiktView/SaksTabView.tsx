@@ -23,6 +23,7 @@ import TextField from "@material-ui/core/TextField";
 import EndreSaksstatusModal from "./EndreSaksstatusModal";
 import VedtakFattetModal from "./VedtakFattetModal";
 import {oHendelser} from "../../../redux/v3/v3Optics";
+import RammevedtakOversiktView from "../rammevedtak/RammevedtakOversiktView";
 
 interface TabPanelProps {
     children?: React.ReactNode;
@@ -237,6 +238,7 @@ const SaksTabView: React.FC<Props> = (props: Props) => {
             <VedtakFattetModal soknad={soknad} sak={sak}/>
             <br/>
             <Typography>Rammevedtak</Typography>
+            <RammevedtakOversiktView rammevedtakListe={sak.rammevedtak}/>
             <br/>
         </div>
     );

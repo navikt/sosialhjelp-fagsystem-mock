@@ -39,7 +39,7 @@ export interface FsSoknad {
 export interface FsSaksStatus extends SaksStatus {
     utbetalinger: Utbetaling[];
     vedtakFattet: VedtakFattet | undefined;
-    rammevedtak: Rammevedtak | undefined;
+    rammevedtak: Rammevedtak[];
     vilkar: Vilkar[];
     dokumentasjonskrav: Dokumentasjonkrav[];
 }

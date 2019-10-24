@@ -84,8 +84,8 @@ const NySakModal: React.FC<Props> = (props: Props) => {
                                     )
                                 );
 
-                                if (soknadUpdated.saker.length === 1) {
-                                    dispatch(setAktivSak(soknadUpdated.saker[0].referanse));
+                                if (soknadUpdated.saker.length === 0) {
+                                    dispatch(setAktivSak(fsSaksStatus.referanse));
                                 }
                             }
                         }

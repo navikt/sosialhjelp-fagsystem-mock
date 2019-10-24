@@ -15,6 +15,7 @@ import StatusSnackBarView from "./parts/statusSnackBar/StatusSnackBarView";
 import {V3State} from "../redux/v3/v3Types";
 import ReactJsonView from "./parts/reactJsonView/ReactJsonView";
 import {getFsSoknadByFiksDigisosId} from "../utils/utilityFunctions";
+import ToppPanel from "./parts/panel/ToppPanel";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -28,7 +29,7 @@ const useStyles = makeStyles((theme: Theme) =>
         left: {
             display: 'flex',
             flexDirection: 'row',
-            justifyContent: 'center',
+            // justifyContent: 'center',
             // border: "1px dotted red"
         },
         right: {
@@ -63,11 +64,19 @@ const V3: React.FC<Props> = (props: Props) => {
             <CssBaseline />
             <AppBarView />
             <div className={classes.root}>
-                <Grid container={true} spacing={8} className={classes.maingrid}>
+                <Grid container={true} spacing={6} className={classes.maingrid}>
                     <Grid item sm={2} className={classes.left}>
                         <SoknadsOversiktPanel />
                     </Grid>
-                    <Grid item sm={10} className={classes.right}>
+                    <Grid item sm={1} className={classes.left}>
+                        <br />
+                    </Grid>
+                    <Grid item sm={9} className={classes.right}>
+                        <ToppPanel />
+                    </Grid>
+                </Grid>
+                <Grid container={true} spacing={6} className={classes.maingrid}>
+                    <Grid item sm={12} className={classes.right}>
                         <BehandleSoknadPanel />
                     </Grid>
                 </Grid>

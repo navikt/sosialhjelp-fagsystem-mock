@@ -11,7 +11,7 @@ import {
     oFsDokumentasjonkravTraversal, oFsRammevedtak, oFsRammevedtakPrism, oFsRammevedtakTraversal,
     oFsSaker,
     oFsSakerTraversal,
-    oFsSaksStatusPrism,
+    oFsSaksStatusPrism, oFsSaksStatusRammevedtak,
     oFsSaksStatusUtbetalinger,
     oFsSaksStatusUtbetalingerTraversal,
     oFsUtbetalingPrism,
@@ -220,12 +220,21 @@ const v3Reducer: Reducer<V3State, V3Action> = (
             const {forFiksDigisosId, nyttRammevedtak} = action;
 
             const s1 = oGetSoknad(forFiksDigisosId)
-                .composeLens(oFsRammevedtak)
-                .modify((rammevedtakListe: Rammevedtak[]) => [...rammevedtakListe, nyttRammevedtak])(state);
-
-            return oGetSoknad(forFiksDigisosId)
                 .composeLens(oHendelser)
-                .modify((a: Hendelse[]) => [...a, nyttRammevedtak])(s1);
+                .modify((a: Hendelse[]) => [...a, nyttRammevedtak])(state);
+
+            if (nyttRammevedtak.saksreferanse) {
+                return oGetSoknad(forFiksDigisosId)
+                    .composeLens(oFsSaker)
+                    .composeTraversal(oFsSakerTraversal)
+                    .composePrism(oFsSaksStatusPrism(nyttRammevedtak.saksreferanse))
+                    .composeLens(oFsSaksStatusRammevedtak)
+                    .modify((rammevedtak: Rammevedtak[]) => [...rammevedtak, nyttRammevedtak])(s1);
+            } else {
+                return oGetSoknad(forFiksDigisosId)
+                    .composeLens(oFsRammevedtak)
+                    .modify((rammevedtakListe: Rammevedtak[]) => [...rammevedtakListe, nyttRammevedtak])(s1);
+            }
         }
         case V3ActionTypeKeys.OPPDATER_RAMMEVEDTAK: {
             const {forFiksDigisosId, oppdatertRammevedtak} = action;

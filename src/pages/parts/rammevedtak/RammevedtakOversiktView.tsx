@@ -12,10 +12,8 @@ import AddIcon from '@material-ui/icons/Add';
 import Box from '@material-ui/core/Box';
 import {Paper} from "@material-ui/core";
 import {visNyRammevedtakModal} from "../../../redux/v2/v2Actions";
-import {FsSoknad} from "../../../redux/v3/v3FsTypes";
 import RammevedtakTabView from "./RammevedtakTabView";
 import {Rammevedtak} from "../../../types/hendelseTypes";
-import NyttRammevedtakModal from "./NyttRammevedtakModal";
 
 
 interface TabPanelProps {
@@ -70,7 +68,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 
 interface OwnProps {
-    soknad: FsSoknad
+    rammevedtakListe: Rammevedtak[]
 }
 
 type Props = DispatchProps & OwnProps;
@@ -79,7 +77,7 @@ type Props = DispatchProps & OwnProps;
 const RammevedtakOversiktView: React.FC<Props> = (props: Props) => {
     const classes = useStyles();
     const theme = useTheme();
-    const {soknad, dispatch} = props;
+    const {rammevedtakListe, dispatch} = props;
     const [aktivtRammevedtakIdx, setAktivtRammevedtakIdx] = useState(0);
 
     const addNyttRammevedtakButton = () => {
@@ -99,13 +97,13 @@ const RammevedtakOversiktView: React.FC<Props> = (props: Props) => {
 
     const insertRammevedtakOversikt = () => {
 
-        if (soknad.rammevedtak.length > 0){
-            const listTabs = soknad.rammevedtak.map((rammevedtak: Rammevedtak, idx) => {
+        if (rammevedtakListe.length > 0){
+            const listTabs = rammevedtakListe.map((rammevedtak: Rammevedtak, idx) => {
                 return (
                     <Tab key={"tab: " + rammevedtak.rammevedtaksreferanse} label={"Rammevedtak " + (idx + 1)} />
                 )
             });
-            const listTabPanels = soknad.rammevedtak.map((rammevedtak: Rammevedtak, idx) => {
+            const listTabPanels = rammevedtakListe.map((rammevedtak: Rammevedtak, idx) => {
                 return(
                     <TabPanel key={"tabPanel: " + rammevedtak.rammevedtaksreferanse} value={aktivtRammevedtakIdx} index={idx} dir={theme.direction}>
                         <RammevedtakTabView rammevedtak={rammevedtak} />
@@ -155,7 +153,6 @@ const RammevedtakOversiktView: React.FC<Props> = (props: Props) => {
                 {addNyttRammevedtakButton()}
 
                 { insertRammevedtakOversikt() }
-                <NyttRammevedtakModal soknad={soknad}/>
             </Paper>
         </div>
     );
