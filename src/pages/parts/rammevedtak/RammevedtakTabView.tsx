@@ -1,11 +1,9 @@
 import React from 'react';
-import {AppState, DispatchProps} from "../../../redux/reduxTypes";
+import {DispatchProps} from "../../../redux/reduxTypes";
 import {connect} from "react-redux";
 import {Rammevedtak} from "../../../types/hendelseTypes";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import {createStyles} from "@material-ui/core";
-import {V2Model} from "../../../redux/v2/v2Types";
-import {V3State} from "../../../redux/v3/v3Types";
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -52,16 +50,11 @@ interface OwnProps {
     rammevedtak: Rammevedtak
 }
 
-interface StoreProps {
-    v2: V2Model,
-    v3: V3State
-}
-
-type Props = DispatchProps & OwnProps & StoreProps;
+type Props = DispatchProps & OwnProps;
 
 
 const RammevedtakTabView: React.FC<Props> = (props: Props) => {
-    const {rammevedtak, dispatch, v2, v3}  = props;
+    const {rammevedtak, dispatch}  = props;
     const classes = useStyles();
 
     const makeTableRow = (type:string, value:any) => {
@@ -91,7 +84,7 @@ const RammevedtakTabView: React.FC<Props> = (props: Props) => {
                     </TableHead>
                     <TableBody>
                         {makeTableRow("Rammevedtakreferanse", rammevedtak.rammevedtaksreferanse)}
-                        {makeTableRow("Saksreferanse", rammevedtak.saksreferanse == null || rammevedtak.saksreferanse.length == 0 ? null : rammevedtak.saksreferanse)}
+                        {makeTableRow("Saksreferanse", rammevedtak.saksreferanse == null || rammevedtak.saksreferanse.length === 0 ? null : rammevedtak.saksreferanse)}
                         {makeTableRow("Beskrivelse", rammevedtak.beskrivelse)}
                         {makeTableRow("Beløp", rammevedtak.belop)}
                         {makeTableRow("fom", rammevedtak.fom)}
@@ -112,11 +105,6 @@ const RammevedtakTabView: React.FC<Props> = (props: Props) => {
     );
 };
 
-const mapStateToProps = (state: AppState) => ({
-    v2: state.v2,
-    v3: state.v3,
-});
-
 const mapDispatchToProps = (dispatch: any) => {
     return {
         dispatch
@@ -124,6 +112,5 @@ const mapDispatchToProps = (dispatch: any) => {
 };
 
 export default connect(
-    mapStateToProps,
     mapDispatchToProps
 )(RammevedtakTabView);

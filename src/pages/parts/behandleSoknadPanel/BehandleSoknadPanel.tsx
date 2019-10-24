@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {AppState, DispatchProps} from "../../../redux/reduxTypes";
 import {connect} from "react-redux";
 import SaksOversiktView from "../saksOversiktView/SaksOversiktView";
@@ -49,23 +49,10 @@ interface StoreProps {
     soknad: FsSoknad | undefined;
 }
 
-interface BehandleSoknadPanelState {
-    input: string;
-}
-
-const initialState: BehandleSoknadPanelState = {
-    input: ''
-};
-
 type Props = DispatchProps & StoreProps;
-type State = BehandleSoknadPanelState;
-
 
 const BehandleSoknadPanel: React.FC<Props> = (props: Props) => {
-    const [state, setState] = useState(initialState);
-
     const classes = useStyles();
-
     const {soknad} = props;
 
     if (soknad) {

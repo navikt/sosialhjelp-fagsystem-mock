@@ -17,8 +17,6 @@ import {aiuuur, oppdaterForelopigSvar, oppdaterSoknadsStatus} from "../../../red
 import {getNow} from "../../../utils/utilityFunctions";
 import {V2Model} from "../../../redux/v2/v2Types";
 import {oHendelser} from "../../../redux/v3/v3Optics";
-import {visNyDokumentasjonEtterspurtModal} from "../../../redux/v2/v2Actions";
-import NyDokumentasjonEtterspurtModal from "../dokumentasjonEtterspurt/NyDokumentasjonEtterspurt";
 
 
 const useStyles = makeStyles((theme) => {
@@ -90,18 +88,6 @@ const SoknadStatusView: React.FC<Props> = (props: Props) => {
     const {dispatch, soknad, v2} = props;
     const [antallForelopigSvar, setAntallForelopigSvar] = useState(0);
     const filreferanselager = v2.filreferanselager;
-
-    const addNyDokumentasjonEtterspurtButton = () => {
-        return (
-            <Box className={classes.addbox}>
-                <Fab aria-label='Add' className={classes.fab} color='primary'
-                     onClick={() => dispatch(visNyDokumentasjonEtterspurtModal())}>
-                    <AddIcon/>
-                </Fab>
-                <Typography>Etterspør mer dokumentasjon</Typography>
-            </Box>
-        )
-    };
 
     const addNyttForelopigSvarButton = () => {
         return (
@@ -191,10 +177,6 @@ const SoknadStatusView: React.FC<Props> = (props: Props) => {
             </Paper>
             <Paper className={classes.paper2}>
                 <div className={classes.horizontalWrapper}>
-                    {/*<Box className={classes.horizontalBox}>*/}
-                    {/*    <Typography variant={"h5"}>Dokumentasjon som er etterspurt</Typography>*/}
-                    {/*    {addNyDokumentasjonEtterspurtButton()}*/}
-                    {/*</Box>*/}
                     <Box className={classes.horizontalBox}>
                         <Typography variant={'h5'}>Foreløpig svar</Typography>
                         {addNyttForelopigSvarButton()}

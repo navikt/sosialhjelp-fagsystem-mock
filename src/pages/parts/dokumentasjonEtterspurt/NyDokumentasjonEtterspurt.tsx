@@ -7,7 +7,6 @@ import makeStyles from "@material-ui/core/styles/makeStyles";
 import Fade from "@material-ui/core/Fade";
 import Backdrop from "@material-ui/core/Backdrop";
 import {V2Model} from "../../../redux/v2/v2Types";
-import {V3State} from "../../../redux/v3/v3Types";
 import TextField from '@material-ui/core/TextField';
 import 'date-fns';
 import DateFnsUtils from '@date-io/date-fns';
@@ -23,7 +22,7 @@ import Hendelse, {
     HendelseType
 } from "../../../types/hendelseTypes";
 import Grid from "@material-ui/core/Grid";
-import {getNow} from "../../../utils/utilityFunctions";
+import {formatDateString, getDateOrNullFromDateString, getNow} from "../../../utils/utilityFunctions";
 import {aiuuur, oppdaterDokumentasjonEtterspurt} from "../../../redux/v3/v3Actions";
 import {FsSoknad} from "../../../redux/v3/v3FsTypes";
 import {oHendelser} from "../../../redux/v3/v3Optics";
@@ -125,7 +124,6 @@ interface OwnProps {
 interface StoreProps {
     visNyDokumentasjonEtterspurtModal: boolean;
     v2: V2Model;
-    v3: V3State;
 }
 
 type Props = DispatchProps & OwnProps & StoreProps;
@@ -155,14 +153,15 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
     const [visFeilmelding, setVisFeilmelding] = useState(false);
     const [datePickerIsOpen, setDatePickerIsOpen] = useState(false);
     const classes = useStyles();
-    const {visNyDokumentasjonEtterspurtModal, dispatch, v2, soknad, v3} = props;
+    const {visNyDokumentasjonEtterspurtModal, dispatch, v2, soknad} = props;
     const filreferanselager = v2.filreferanselager;
 
     const leggTilDokument = () => {
+        let innsendelsesfristDate = getDateOrNullFromDateString(modalDokument.innsendelsesfrist);
         const nyttDokument: Dokument = {
             dokumenttype: modalDokument.dokumenttype,
             tilleggsinformasjon: modalDokument.tilleggsinformasjon,
-            innsendelsesfrist: modalDokument.innsendelsesfrist ? new Date(modalDokument.innsendelsesfrist).toISOString() : null
+            innsendelsesfrist: innsendelsesfristDate ? innsendelsesfristDate.toISOString() : null
         };
         setModalDokumentasjonEtterspurt({...modalDokumentasjonEtterspurt, dokumenter: [...modalDokumentasjonEtterspurt.dokumenter, nyttDokument]});
         setModalDokument({...initialDokument});
@@ -208,7 +207,7 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
                 <TableCell variant={'footer'}>Ikke utfylt</TableCell>
             }
             {dokument.innsendelsesfrist != null ?
-                <TableCell align="right">{dokument.innsendelsesfrist}</TableCell> :
+                <TableCell align="right">{formatDateString(dokument.innsendelsesfrist)}</TableCell> :
                 <TableCell variant={'footer'} align="right">Ikke utfylt</TableCell>
             }
             <TableCell align="right">
@@ -248,7 +247,7 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
                 <>
                     <br/>
                     <Typography variant={"subtitle1"}>
-                        Ingen dokumenter er etterspurt for denne søknaden.
+                        Ingen dokumenter er lagt til
                     </Typography>
                 </>
             )
@@ -267,7 +266,7 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
                 onChange={(evt) => {
                     setValue(evt.target.value);
                     if (required) {
-                        if (evt.target.value.length == 0) {
+                        if (evt.target.value.length === 0) {
                             setVisFeilmelding(true);
                         } else {
                             setVisFeilmelding(false);
@@ -379,8 +378,7 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
 
 const mapStateToProps = (state: AppState) => ({
     visNyDokumentasjonEtterspurtModal: state.v2.visNyDokumentasjonEtterspurtModal,
-    v2: state.v2,
-    v3: state.v3
+    v2: state.v2
 });
 
 const mapDispatchToProps = (dispatch: any) => {

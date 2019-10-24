@@ -1,8 +1,14 @@
 import {
-    DokumentasjonEtterspurt, Dokumentasjonkrav,
-    ForelopigSvar, Rammevedtak, SaksStatus, SaksStatusType,
+    DokumentasjonEtterspurt,
+    Dokumentasjonkrav,
+    ForelopigSvar,
+    Rammevedtak,
+    SaksStatus,
     SoknadsStatus,
-    TildeltNavKontor, Utbetaling, VedtakFattet, Vilkar
+    TildeltNavKontor,
+    Utbetaling,
+    VedtakFattet,
+    Vilkar
 } from "../../types/hendelseTypes";
 import {FsSaksStatus, FsSoknad} from "./v3FsTypes";
 

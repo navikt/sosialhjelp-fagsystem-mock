@@ -16,7 +16,7 @@ import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import TableCell from "@material-ui/core/TableCell";
 import TableBody from "@material-ui/core/TableBody";
-import {getNow} from "../../../utils/utilityFunctions";
+import {getNow, getShortDateISOString} from "../../../utils/utilityFunctions";
 import {oHendelser} from "../../../redux/v3/v3Optics";
 import {aiuuur, oppdaterDokumentasjonEtterspurt} from "../../../redux/v3/v3Actions";
 import {Filreferanselager, V2Model} from "../../../redux/v2/v2Types";
@@ -103,7 +103,7 @@ const DokumentasjonEtterspurtOversiktView: React.FC<Props> = (props: Props) => {
                 <TableCell variant={'footer'}>Ikke utfylt</TableCell>
             }
             {dokument.innsendelsesfrist != null ?
-                <TableCell align="right">{dokument.innsendelsesfrist}</TableCell> :
+                <TableCell align="right">{getShortDateISOString(new Date(dokument.innsendelsesfrist))}</TableCell> :
                 <TableCell variant={'footer'} align="right">Ikke utfylt</TableCell>
             }
         </TableRow>
@@ -213,7 +213,6 @@ const DokumentasjonEtterspurtOversiktView: React.FC<Props> = (props: Props) => {
 };
 
 const mapStateToProps = (state: AppState) => ({
-    aktivSakIndex: state.v2.aktivSakIndex,
     v2: state.v2,
     filreferanselager: state.v2.filreferanselager
 });

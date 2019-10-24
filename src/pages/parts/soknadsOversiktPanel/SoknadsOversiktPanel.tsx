@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {AppState, DispatchProps} from "../../../redux/reduxTypes";
 import {connect} from "react-redux";
 import makeStyles from "@material-ui/core/styles/makeStyles";
@@ -25,20 +25,10 @@ interface StoreProps {
     aktivSoknad: string
 }
 
-interface State {
-    input: string;
-}
-
-const initialState: State = {
-    input: ''
-};
-
-
 type Props = DispatchProps & StoreProps;
 
 
 const SoknadsOversiktPanel: React.FC<Props> = (props: Props) => {
-    const [state, setState] = useState(initialState);
     const {soknader, aktivSoknad} = props;
 
     const classes = useStyles();

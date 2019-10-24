@@ -2,17 +2,22 @@ import Hendelse, {
     Dokumentasjonkrav,
     Dokumentlager,
     DokumentlagerExtended,
-    FiksDigisosSokerJson, FilreferanseType,
-    HendelseType, Rammevedtak,
-    SaksStatus, SaksStatusType, Svarut,
-    SvarutExtended, Utbetaling, Vedlegg,
-    VedtakFattet, Vilkar
+    FiksDigisosSokerJson,
+    FilreferanseType,
+    HendelseType,
+    Rammevedtak,
+    SaksStatus,
+    Svarut,
+    SvarutExtended,
+    Utbetaling,
+    Vedlegg,
+    VedtakFattet,
+    Vilkar
 } from "../types/hendelseTypes";
-import {Filreferanselager, V2Model} from "../redux/v2/v2Types";
+import {Filreferanselager} from "../redux/v2/v2Types";
 import {Soknad} from "../types/additionalTypes";
 import {FsSaksStatus, FsSoknad} from "../redux/v3/v3FsTypes";
 import {generateNyFsSaksStatus} from "../redux/v3/v3UtilityFunctions";
-import {instanceOf} from "prop-types";
 
 const tildeltNavKontorSchema = require('../digisos/hendelse/tildeltNavKontor');
 const soknadsStatusSchema = require('../digisos/hendelse/soknadsStatus');
@@ -72,14 +77,19 @@ export const getLastHendelseOfType = (fiksDigisosSokerJson: FiksDigisosSokerJson
 
 export const getShortDateISOString = (date: Date) => date.toISOString().substring(0, date.toISOString().search('T'));
 
-export const formatDateString = (date: string|null) => {
-    if (date == null || date == 'Invalid Date') {
+export const formatDateString = (dateString: string|null) => {
+    const dat = getDateOrNullFromDateString(dateString);
+    return dat ? getShortDateISOString(dat) : null;
+};
+
+export const getDateOrNullFromDateString = (date: string|null) => {
+    if (date == null || date === 'Invalid Date') {
         return null;
     } else {
         let dateNumber = Date.parse(date);
         let newDate = new Date(dateNumber);
         newDate.setHours(12);
-        return getShortDateISOString(newDate);
+        return newDate;
     }
 };
 
@@ -98,12 +108,11 @@ export const getAllUtbetalingsreferanser = (soknad: FsSoknad) => {
 export const getSakTittelOgNrFraUtbetalingsreferanse = (soknad: FsSoknad, referanse: string) => {
     let tittel = '';
 
-    soknad.saker.map(sak => {sak.utbetalinger.map((utbetaling, idx) => {
-        if (utbetaling.utbetalingsreferanse == referanse) {
+    soknad.saker.forEach(sak => sak.utbetalinger.forEach((utbetaling, idx) => {
+        if (utbetaling.utbetalingsreferanse === referanse) {
             tittel = '(sak: ' + sak.tittel + ', utbetaling: ' + (idx + 1) + ')';
         }
-    });
-    });
+    }));
 
     return tittel;
 };
@@ -111,8 +120,8 @@ export const getSakTittelOgNrFraUtbetalingsreferanse = (soknad: FsSoknad, refera
 export const getSakTittelFraSaksreferanse = (soknad: FsSoknad, referanse: string) => {
     let tittel = '';
 
-    soknad.saker.map(sak => {
-        if (sak.referanse == referanse) {
+    soknad.saker.forEach(sak => {
+        if (sak.referanse === referanse) {
             tittel = '(sak: ' + sak.tittel + ')';
         }
     });
@@ -248,14 +257,18 @@ export const getFsSoknadByFiksDigisosId = (soknader: FsSoknad[], fiksDigisosId: 
     })
 };
 
-export const getFsSaksStatusByReferanse = (saker: FsSaksStatus[], saksreferanse: string): FsSaksStatus | undefined => {
-    return saker.find(s => {
+export const getFsSaksStatusByReferanse = (saker: FsSaksStatus[], saksreferanse: string|null): FsSaksStatus => {
+    if (saksreferanse == null || saker.length === 0) {
+        return generateNyFsSaksStatus("");
+    }
+    const fsSaksStatus = saker.find(s => {
         return s.referanse === saksreferanse
-    })
+    });
+    return fsSaksStatus ? fsSaksStatus : generateNyFsSaksStatus("");
 };
 
 export const getFsSaksStatusByIdx = (saker: FsSaksStatus[], idx: number|undefined): FsSaksStatus => {
-    if (typeof idx == 'undefined' || saker.length == 0) {
+    if (typeof idx == 'undefined' || saker.length === 0) {
         return generateNyFsSaksStatus("");
     }
     return saker[idx];

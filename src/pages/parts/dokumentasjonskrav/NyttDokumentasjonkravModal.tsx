@@ -9,14 +9,14 @@ import Backdrop from "@material-ui/core/Backdrop";
 import {V2Model} from "../../../redux/v2/v2Types";
 import {
     generateFilreferanseId,
-    getNow,
+    getAllUtbetalingsreferanser,
     getDokumentasjonkravByDokumentasjonkravreferanse,
-    getAllUtbetalingsreferanser, getSakTittelOgNrFraUtbetalingsreferanse
+    getNow,
+    getSakTittelOgNrFraUtbetalingsreferanse
 } from "../../../utils/utilityFunctions";
-import {V3State} from "../../../redux/v3/v3Types";
 import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
-import Hendelse, {HendelseType, Dokumentasjonkrav, DokumentasjonkravStatus} from "../../../types/hendelseTypes";
+import Hendelse, {Dokumentasjonkrav, DokumentasjonkravStatus, HendelseType} from "../../../types/hendelseTypes";
 import {oHendelser} from "../../../redux/v3/v3Optics";
 import {aiuuur, nyttDokumentasjonkrav, oppdaterDokumentasjonkrav} from "../../../redux/v3/v3Actions";
 import Select from "@material-ui/core/Select";
@@ -112,7 +112,6 @@ interface OwnProps {
 interface StoreProps {
     visNyDokumentasjonkravModal: boolean;
     v2: V2Model;
-    v3: V3State;
     aktivtDokumentasjonkrav: string | undefined | null;
 }
 
@@ -153,7 +152,7 @@ const NyttDokumentasjonkravModal: React.FC<Props> = (props: Props) => {
     const theme = useTheme();
 
     const classes = useStyles();
-    const {visNyDokumentasjonkravModal, dispatch, v2, v3, soknad, aktivtDokumentasjonkrav} = props;
+    const {visNyDokumentasjonkravModal, dispatch, v2, soknad, aktivtDokumentasjonkrav} = props;
 
     function resetStateValues() {
         setModalDokumentasjonkrav({...initialDokumentasjonkrav, dokumentasjonkravreferanse: generateFilreferanseId()});
@@ -225,7 +224,7 @@ const NyttDokumentasjonkravModal: React.FC<Props> = (props: Props) => {
                 onChange={(evt) => {
                     setValue(evt.target.value);
                     if (required) {
-                        if (evt.target.value.length == 0) {
+                        if (evt.target.value.length === 0) {
                             setVisFeilmelding(true);
                         } else {
                             setVisFeilmelding(false);
@@ -360,7 +359,6 @@ const NyttDokumentasjonkravModal: React.FC<Props> = (props: Props) => {
 const mapStateToProps = (state: AppState) => ({
     visNyDokumentasjonkravModal: state.v2.visNyDokumentasjonkravModal,
     v2: state.v2,
-    v3: state.v3,
     aktivtDokumentasjonkrav: state.v2.aktivtDokumentasjonkrav
 });
 

@@ -1,15 +1,9 @@
 import {array} from "fp-ts/es6/Array";
-import {Lens, fromTraversable, Prism, Traversal} from "monocle-ts/es6";
+import {fromTraversable, Lens, Prism} from "monocle-ts/es6";
 
 import {V3State} from "./v3Types";
 import {FsSaksStatus, FsSoknad} from "./v3FsTypes";
-import Hendelse, {Dokumentasjonkrav, Rammevedtak, SaksStatusType, Utbetaling, Vilkar} from "../../types/hendelseTypes";
-
-
-
-
-
-
+import Hendelse, {Dokumentasjonkrav, Rammevedtak, Utbetaling, Vilkar} from "../../types/hendelseTypes";
 
 
 export const oFsSoknader = Lens.fromProp<V3State>()('soknader');

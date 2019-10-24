@@ -2,12 +2,12 @@ import React, {useState} from 'react';
 import {AppState, DispatchProps} from "../../../redux/reduxTypes";
 import {connect} from "react-redux";
 import {createStyles, Modal, Theme} from "@material-ui/core";
-import {skjulNySakModal} from "../../../redux/v2/v2Actions";
+import {setAktivSak, skjulNySakModal} from "../../../redux/v2/v2Actions";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import Fade from "@material-ui/core/Fade";
 import Backdrop from "@material-ui/core/Backdrop";
-import {aiuuur, nyFsSaksStatus, oppdaterFsSaksStatus} from "../../../redux/v3/v3Actions";
-import {SkjulNySakModal, V2Model} from "../../../redux/v2/v2Types";
+import {aiuuur, nyFsSaksStatus} from "../../../redux/v3/v3Actions";
+import {V2Model} from "../../../redux/v2/v2Types";
 import {fsSaksStatusToSaksStatus, generateNyFsSaksStatus} from "../../../redux/v3/v3UtilityFunctions";
 import {FsSoknad} from "../../../redux/v3/v3FsTypes";
 import {getFsSoknadByFiksDigisosId} from "../../../utils/utilityFunctions";
@@ -41,13 +41,11 @@ interface StoreProps {
     v3: V3State;
 }
 
-const initialTittel = '';
-
 type Props = DispatchProps & OwnProps & StoreProps;
 
 
 const NySakModal: React.FC<Props> = (props: Props) => {
-    const [tittel, setTittel] = useState(initialTittel);
+    const [tittel, setTittel] = useState('');
     const classes = useStyles();
     const {visNySakModal, dispatch, v2, v3} = props;
 
@@ -69,31 +67,29 @@ const NySakModal: React.FC<Props> = (props: Props) => {
                 <div className={classes.paper}>
                     <input onChange={(evt) => setTittel(evt.target.value)} />
                     <button onClick={() => {
-                        if (tittel.length > 0){
-                            const fsSoknader = v3.soknader;
-                            if (fsSoknader){
-                                const fsSoknad: FsSoknad | undefined = getFsSoknadByFiksDigisosId(fsSoknader, v2.aktivSoknad);
-                                if (fsSoknad) {
-                                    const fsSaksStatus = generateNyFsSaksStatus(tittel);
-                                    const nyHendelse = fsSaksStatusToSaksStatus(fsSaksStatus);
-                                    const soknadUpdated = oHendelser.modify((a: Hendelse[]) => [...a, nyHendelse])(fsSoknad);
+                        const fsSoknader = v3.soknader;
+                        if (fsSoknader){
+                            const fsSoknad: FsSoknad | undefined = getFsSoknadByFiksDigisosId(fsSoknader, v2.aktivSoknad);
+                            if (fsSoknad) {
+                                const fsSaksStatus = generateNyFsSaksStatus(tittel.length !== 0 ? tittel : null);
+                                const nyHendelse = fsSaksStatusToSaksStatus(fsSaksStatus);
+                                const soknadUpdated = oHendelser.modify((a: Hendelse[]) => [...a, nyHendelse])(fsSoknad);
 
-                                    if (fsSoknad && tittel.length > 0){
-                                        dispatch(
-                                            aiuuur(
-                                                v2.aktivSoknad,
-                                                soknadUpdated.fiksDigisosSokerJson,
-                                                v2,
-                                                nyFsSaksStatus(v2.aktivSoknad, fsSaksStatus)
-                                            )
-                                        )
-                                    }
+                                dispatch(
+                                    aiuuur(
+                                        v2.aktivSoknad,
+                                        soknadUpdated.fiksDigisosSokerJson,
+                                        v2,
+                                        nyFsSaksStatus(v2.aktivSoknad, fsSaksStatus)
+                                    )
+                                );
+
+                                if (soknadUpdated.saker.length === 1) {
+                                    dispatch(setAktivSak(soknadUpdated.saker[0].referanse));
                                 }
                             }
-                            dispatch(skjulNySakModal());
-                        } else {
-                            console.warn("Spesifiser en tittel.")
                         }
+                        dispatch(skjulNySakModal());
                     }}>Opprett</button>
                 </div>
             </Fade>

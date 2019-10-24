@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {AppState, DispatchProps} from "../../../redux/reduxTypes";
+import {DispatchProps} from "../../../redux/reduxTypes";
 import {connect} from "react-redux";
 import SwipeableViews from 'react-swipeable-views';
 import {createStyles, makeStyles, Theme, useTheme} from '@material-ui/core/styles';
@@ -69,14 +69,11 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 
-interface StoreProps {
-}
-
 interface OwnProps {
     soknad: FsSoknad
 }
 
-type Props = DispatchProps & StoreProps & OwnProps;
+type Props = DispatchProps & OwnProps;
 
 
 const VilkarOversiktView: React.FC<Props> = (props: Props) => {
@@ -164,10 +161,6 @@ const VilkarOversiktView: React.FC<Props> = (props: Props) => {
     );
 };
 
-const mapStateToProps = (state: AppState) => ({
-    aktivSakIndex: state.v2.aktivSakIndex
-});
-
 const mapDispatchToProps = (dispatch: any) => {
     return {
         dispatch
@@ -175,6 +168,5 @@ const mapDispatchToProps = (dispatch: any) => {
 };
 
 export default connect(
-    mapStateToProps,
     mapDispatchToProps
 )(VilkarOversiktView);

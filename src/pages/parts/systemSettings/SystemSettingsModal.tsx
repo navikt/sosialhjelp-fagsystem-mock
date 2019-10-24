@@ -1,11 +1,8 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {AppState, DispatchProps} from "../../../redux/reduxTypes";
 import {connect} from "react-redux";
 import {createStyles, Modal, Theme} from "@material-ui/core";
-import {
-    skjulSystemSettingsModal,
-    setBackendUrlTypeToUse
-} from "../../../redux/v2/v2Actions";
+import {setBackendUrlTypeToUse, skjulSystemSettingsModal} from "../../../redux/v2/v2Actions";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import Backdrop from "@material-ui/core/Backdrop/Backdrop";
 import Fade from "@material-ui/core/Fade";
@@ -46,23 +43,14 @@ interface StoreProps {
     oppdaterDigisosSakUrl: string;
 }
 
-interface State {
-    input: string;
-}
-
-const initialState: State = {
-    input: ''
-};
-
 type Props = DispatchProps & OwnProps & StoreProps;
 
 
 const SystemSettingsModal: React.FC<Props> = (props: Props) => {
-    const [state, setState] = useState(initialState);
     const classes = useStyles();
     const {visSystemSettingsModal, dispatch, backendUrls, backendUrlTypeToUse, oppdaterDigisosSakUrl} = props;
 
-    const radios = Object.keys(backendUrls).map((backendUrlType: string, index: number) => {
+    const radios = Object.keys(backendUrls).map((backendUrlType: string) => {
         // @ts-ignore
         const backendUrl = backendUrls[backendUrlType];
         return (

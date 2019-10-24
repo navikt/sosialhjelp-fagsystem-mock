@@ -1,7 +1,4 @@
-import {
-    HendelseType,
-    SaksStatus, SaksStatusType,
-} from "../../types/hendelseTypes";
+import {HendelseType, SaksStatus,} from "../../types/hendelseTypes";
 import {FsSaksStatus} from "./v3FsTypes";
 import {generateFilreferanseId, getNow} from "../../utils/utilityFunctions";
 
@@ -15,12 +12,12 @@ export const fsSaksStatusToSaksStatus = (fsSaksStatus: FsSaksStatus): SaksStatus
     } as SaksStatus;
 };
 
-export const generateNyFsSaksStatus = (tittel: string): FsSaksStatus => {
+export const generateNyFsSaksStatus = (tittel: string|null): FsSaksStatus => {
     return {
         type: HendelseType.SaksStatus,
         hendelsestidspunkt: getNow(),
         referanse: generateFilreferanseId(),
-        tittel,
+        tittel: tittel,
         status: null,
         utbetalinger: [],
         vedtakFattet: undefined,

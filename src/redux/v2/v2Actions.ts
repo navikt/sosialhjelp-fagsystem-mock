@@ -264,10 +264,17 @@ export const skjulSnackbar = () => {
     }
 };
 
-export const setAktivSak = (saksIndex: number): V2Action => {
+// export const setAktivSak = (saksIndex: number): V2Action => {
+//     return {
+//         type: V2ActionTypeKeys.SET_AKTIV_SAK,
+//         saksIndex: saksIndex
+//     }
+// };
+
+export const setAktivSak = (referanse: string | null): V2Action => {
     return {
         type: V2ActionTypeKeys.SET_AKTIV_SAK,
-        saksIndex: saksIndex
+        referanse
     }
 };
 

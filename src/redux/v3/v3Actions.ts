@@ -1,26 +1,45 @@
 import {
     NyFsSaksStatus,
-    NyFsSoknad, NyttDokumentasjonkrav, NyttVilkar, NyUtbetaling,
-    OppdaterDokumentasjonEtterspurt, OppdaterDokumentasjonkrav, OppdaterForelopigSvar,
-    OppdaterNavKontor, OppdaterRammevedtak, OppdaterFsSaksStatus,
-    OppdaterSoknadsStatus, OppdaterUtbetaling, OppdaterVedtakFattet, OppdaterVilkar,
-    SlettFsSoknad, V3ActionTypeKeys, OppdaterFiksId, NyttRammevedtak
+    NyFsSoknad,
+    NyttDokumentasjonkrav,
+    NyttRammevedtak,
+    NyttVilkar,
+    NyUtbetaling,
+    OppdaterDokumentasjonEtterspurt,
+    OppdaterDokumentasjonkrav,
+    OppdaterFiksId,
+    OppdaterForelopigSvar,
+    OppdaterFsSaksStatus,
+    OppdaterNavKontor,
+    OppdaterRammevedtak,
+    OppdaterSoknadsStatus,
+    OppdaterUtbetaling,
+    OppdaterVedtakFattet,
+    OppdaterVilkar,
+    SlettFsSoknad,
+    V3ActionTypeKeys
 } from "./v3Types";
 import {
-    DokumentasjonEtterspurt, Dokumentasjonkrav, FiksDigisosSokerJson,
-    ForelopigSvar, Rammevedtak,
-    SaksStatus, SaksStatusType,
+    DokumentasjonEtterspurt,
+    Dokumentasjonkrav,
+    FiksDigisosSokerJson,
+    ForelopigSvar,
+    Rammevedtak,
+    SaksStatus,
     SoknadsStatus,
-    TildeltNavKontor, Utbetaling, VedtakFattet, Vilkar
+    TildeltNavKontor,
+    Utbetaling,
+    VedtakFattet,
+    Vilkar
 } from "../../types/hendelseTypes";
 import {AnyAction, Dispatch} from "redux";
 import {fetchPost} from "../../utils/restUtils";
 import {
-    setAktivSak, setAktivSoknad,
+    setAktivSoknad,
     setFiksDigisosSokerJson,
-    skjulSnackbar,
     turnOffLoader,
-    turnOnLoader, visErrorSnackbar,
+    turnOnLoader,
+    visErrorSnackbar,
     visSuccessSnackbar
 } from "../v2/v2Actions";
 import {V2Model} from "../v2/v2Types";
@@ -44,14 +63,14 @@ export const aiuuur = (
         // const url = getDigisosApiControllerPath();
         const queryParam = `?fiksDigisosId=${fiksDigisosId}`;
         fetchPost(`${backendUrl}${oppdaterDigisosSakUrl}${queryParam}`, JSON.stringify(fiksDigisosSokerJson)).then((response: any) => {
+            if (v2.fiksDigisosSokerJson.sak.soker.hendelser.length < fiksDigisosSokerJson.sak.soker.hendelser.length) {
+                dispatch(visSuccessSnackbar());
+            }
             dispatch(setFiksDigisosSokerJson(fiksDigisosSokerJson));
             let fiksId = response.fiksDigisosId
             dispatch(
                 oppdaterFixId(fiksDigisosId, fiksId.toString()));
             dispatch(setAktivSoknad(fiksId.toString()));
-            if (v2.fiksDigisosSokerJson.sak.soker.hendelser.length < fiksDigisosSokerJson.sak.soker.hendelser.length) {
-                dispatch(visSuccessSnackbar());
-            }
             dispatch(actionToDispatchIfSuccess);
             setTimeout(() => {
                 dispatch(turnOffLoader());

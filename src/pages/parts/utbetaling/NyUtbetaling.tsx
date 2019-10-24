@@ -10,11 +10,11 @@ import {V2Model} from "../../../redux/v2/v2Types";
 import {
     formatDateString,
     generateFilreferanseId,
-    getFsSaksStatusByIdx,
-    getNow, getShortDateISOString,
+    getFsSaksStatusByReferanse,
+    getNow,
+    getShortDateISOString,
     getUtbetalingByUtbetalingsreferanse
 } from "../../../utils/utilityFunctions";
-import {V3State} from "../../../redux/v3/v3Types";
 import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
 import Hendelse, {HendelseType, Utbetaling, UtbetalingStatus} from "../../../types/hendelseTypes";
@@ -104,8 +104,7 @@ interface OwnProps {
 interface StoreProps {
     visNyUtbetalingModal: boolean;
     v2: V2Model;
-    v3: V3State;
-    aktivSakIndex: number | undefined;
+    aktivSak: string | null;
     aktivUtbetaling: string | undefined | null;
 }
 
@@ -178,7 +177,7 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
 
 
     const classes = useStyles();
-    const {visNyUtbetalingModal, dispatch, v2, v3, soknad, aktivSakIndex, aktivUtbetaling} = props;
+    const {visNyUtbetalingModal, dispatch, v2, soknad, aktivSak, aktivUtbetaling} = props;
 
     function resetStateValues() {
         setModalUtbetaling({...initialUtbetaling, utbetalingsreferanse: generateFilreferanseId()});
@@ -195,11 +194,11 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
     }
 
     const sendUtbetaling = () => {
-        const sak = getFsSaksStatusByIdx(soknad.saker, aktivSakIndex);
+        const sak = getFsSaksStatusByReferanse(soknad.saker, aktivSak);
         const nyHendelse: Utbetaling = {...modalUtbetaling};
         nyHendelse.hendelsestidspunkt = getNow();
         nyHendelse.saksreferanse = sak.referanse;
-        nyHendelse.kontonummer = modalUtbetaling.kontonummer && modalUtbetaling.kontonummer.length == 11 ? modalUtbetaling.kontonummer : null;
+        nyHendelse.kontonummer = modalUtbetaling.kontonummer && modalUtbetaling.kontonummer.length === 11 ? modalUtbetaling.kontonummer : null;
         nyHendelse.forfallsdato = formatDateString(nyHendelse.forfallsdato);
         nyHendelse.utbetalingsdato = formatDateString(nyHendelse.utbetalingsdato);
         nyHendelse.fom = formatDateString(nyHendelse.fom);
@@ -247,7 +246,7 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
 
     const fyllInnAktivUtbetaling = () => {
         if (aktivUtbetaling) {
-            const sak = getFsSaksStatusByIdx(soknad.saker, aktivSakIndex);
+            const sak = getFsSaksStatusByReferanse(soknad.saker, aktivSak);
             let utbetaling = getUtbetalingByUtbetalingsreferanse(sak.utbetalinger, aktivUtbetaling);
             if (utbetaling){
                 setModalUtbetaling(utbetaling);
@@ -271,7 +270,7 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
                 onChange={(evt) => {
                     setValue(evt.target.value);
                     if (required) {
-                        if (evt.target.value.length == 0) {
+                        if (evt.target.value.length === 0) {
                             setVisFeilmelding(true);
                         } else {
                             setVisFeilmelding(false);
@@ -413,7 +412,7 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
                                     label={kontonummerLabelPlaceholder}
                                     onChange={(evt) => {
                                         setModalUtbetaling({...modalUtbetaling, kontonummer: evt.target.value});
-                                        if (evt.target.value.length == 11) {
+                                        if (evt.target.value.length === 11) {
                                             setKontonummerLabelPlaceholder("Kontonummer");
                                         } else {
                                             setKontonummerLabelPlaceholder("Kontonummer (Ikke satt)");
@@ -464,8 +463,7 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
 const mapStateToProps = (state: AppState) => ({
     visNyUtbetalingModal: state.v2.visNyUtbetalingModal,
     v2: state.v2,
-    v3: state.v3,
-    aktivSakIndex: state.v2.aktivSakIndex,
+    aktivSak: state.v2.aktivSak,
     aktivUtbetaling: state.v2.aktivUtbetaling
 });
 

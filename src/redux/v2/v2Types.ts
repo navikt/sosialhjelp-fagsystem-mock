@@ -1,12 +1,13 @@
 import {
     DokumentlagerExtended,
-    FiksDigisosSokerJson, SaksStatus, SaksStatusType, SoknadsStatusType,
+    FiksDigisosSokerJson,
+    SaksStatus,
+    SaksStatusType,
+    SoknadsStatusType,
     SvarutExtended
 } from "../../types/hendelseTypes";
 import {PaletteType} from "@material-ui/core";
 import {Soknad} from "../../types/additionalTypes";
-import V2 from "../../pages/V2";
-import CheckCircleIcon from "@material-ui/core/SvgIcon/SvgIcon";
 
 export interface V2Model {
     fiksDigisosId: string;
@@ -35,11 +36,11 @@ export interface V2Model {
     snackbarVariant: 'success'|'warning'|'error'|'info';
 
     aktivSoknad: string; // fiksDigisosId
-    aktivSakIndex: number | undefined; // sakReferanse
-    aktivUtbetaling: string | undefined | null; // utbetalingsreferanse
-    aktivtVilkar: string | undefined | null; // vilkarreferanse
-    aktivtDokumentasjonkrav: string | undefined | null; // dokumentasjonkravreferanse
-    aktivtRammevedtak: string | undefined | null; // rammevedtakreferanse
+    aktivSak: string | null; // saksreferanse
+    aktivUtbetaling: string | null; // utbetalingsreferanse
+    aktivtVilkar: string | null; // vilkarreferanse
+    aktivtDokumentasjonkrav: string | null; // dokumentasjonkravreferanse
+    aktivtRammevedtak: string | null; // rammevedtakreferanse
 }
 
 export interface BackendUrls {
@@ -281,7 +282,7 @@ export interface SetAktivSoknad {
 
 export interface SetAktivSak {
     type: V2ActionTypeKeys.SET_AKTIV_SAK;
-    saksIndex: number
+    referanse: string | null
 }
 
 export interface SetAktivUtbetaling {

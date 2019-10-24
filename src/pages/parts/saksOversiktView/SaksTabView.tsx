@@ -9,8 +9,7 @@ import {createStyles, useTheme} from "@material-ui/core";
 import {V2Model} from "../../../redux/v2/v2Types";
 import Button from "@material-ui/core/Button";
 import {aiuuur, oppdaterFsSaksStatus} from "../../../redux/v3/v3Actions";
-import {V3State} from "../../../redux/v3/v3Types";
-import {getFsSoknadByFiksDigisosId, getNow} from "../../../utils/utilityFunctions";
+import {getNow} from "../../../utils/utilityFunctions";
 import {FsSaksStatus, FsSoknad} from "../../../redux/v3/v3FsTypes";
 import AddIcon from '@material-ui/icons/Add';
 import Fab from "@material-ui/core/Fab";
@@ -109,12 +108,7 @@ interface OwnProps {
 }
 
 interface StoreProps {
-    v2: V2Model,
-    v3: V3State
-}
-
-interface State {
-    input: string;
+    v2: V2Model
 }
 
 type Props = DispatchProps & OwnProps & StoreProps;
@@ -123,7 +117,7 @@ type Props = DispatchProps & OwnProps & StoreProps;
 const SaksTabView: React.FC<Props> = (props: Props) => {
     const [tittel, setTittel] = useState('');
     const [aktivUtbetalingIdx, setAktivUtbetalingIdx] = useState(0);
-    const {sak, dispatch, v2, v3, soknad}  = props;
+    const {sak, dispatch, v2, soknad}  = props;
     const classes = useStyles();
     const theme = useTheme();
 
@@ -249,8 +243,7 @@ const SaksTabView: React.FC<Props> = (props: Props) => {
 };
 
 const mapStateToProps = (state: AppState) => ({
-    v2: state.v2,
-    v3: state.v3,
+    v2: state.v2
 });
 
 const mapDispatchToProps = (dispatch: any) => {

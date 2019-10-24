@@ -72,7 +72,7 @@ export interface SaksStatus {
     type: HendelseType.SaksStatus;
     hendelsestidspunkt: string;
     referanse: string; // FIXME: Lag generator function. Ikke la bru
-    tittel: string;
+    tittel: string|null;
     status: SaksStatusType|null;
 }
 

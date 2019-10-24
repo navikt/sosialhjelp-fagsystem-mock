@@ -135,7 +135,7 @@ const v3Reducer: Reducer<V3State, V3Action> = (
         }
         case V3ActionTypeKeys.OPPDATER_FS_SAKS_STATUS: {
             const {forFiksDigisosId, oppdatertSaksstatus} = action;
-            const tittel: string = oppdatertSaksstatus.tittel;
+            const tittel: string|null = oppdatertSaksstatus.tittel;
             const status: SaksStatusType | null = oppdatertSaksstatus.status;
 
             const s1 = oGetSoknad(forFiksDigisosId)

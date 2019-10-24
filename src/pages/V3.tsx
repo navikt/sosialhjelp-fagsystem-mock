@@ -14,8 +14,7 @@ import SystemSettingsModal from "./parts/systemSettings/SystemSettingsModal";
 import StatusSnackBarView from "./parts/statusSnackBar/StatusSnackBarView";
 import {V3State} from "../redux/v3/v3Types";
 import ReactJsonView from "./parts/reactJsonView/ReactJsonView";
-import {getFsSoknadByFiksDigisosId, getSoknadByFiksDigisosId} from "../utils/utilityFunctions";
-import {FsSoknad} from "../redux/v3/v3FsTypes";
+import {getFsSoknadByFiksDigisosId} from "../utils/utilityFunctions";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -49,11 +48,6 @@ interface V3Props {
     v2: V2Model;
     v3: V3State;
     hendelserUpdated: Hendelse[];
-}
-
-interface V3ViewState {
-    input: string;
-    showSnackbar: boolean
 }
 
 type Props = DispatchProps & V3Props;

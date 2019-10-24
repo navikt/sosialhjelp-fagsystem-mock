@@ -8,12 +8,12 @@ import Fade from "@material-ui/core/Fade";
 import Backdrop from "@material-ui/core/Backdrop";
 import {V2Model} from "../../../redux/v2/v2Types";
 import {
-    generateFilreferanseId, getAllUtbetalingsreferanser,
+    generateFilreferanseId,
+    getAllUtbetalingsreferanser,
     getNow,
     getSakTittelOgNrFraUtbetalingsreferanse,
     getVilkarByVilkarreferanse
 } from "../../../utils/utilityFunctions";
-import {V3State} from "../../../redux/v3/v3Types";
 import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
 import Hendelse, {HendelseType, Vilkar, VilkarStatus} from "../../../types/hendelseTypes";
@@ -112,7 +112,6 @@ interface OwnProps {
 interface StoreProps {
     visNyVilkarModal: boolean;
     v2: V2Model;
-    v3: V3State;
     aktivtVilkar: string | undefined | null;
 }
 
@@ -153,7 +152,7 @@ const NyttVilkarModal: React.FC<Props> = (props: Props) => {
     const theme = useTheme();
 
     const classes = useStyles();
-    const {visNyVilkarModal, dispatch, v2, v3, soknad, aktivtVilkar} = props;
+    const {visNyVilkarModal, dispatch, v2, soknad, aktivtVilkar} = props;
 
     function resetStateValues() {
         setModalVilkar({...initialVilkar, vilkarreferanse: generateFilreferanseId()});
@@ -225,7 +224,7 @@ const NyttVilkarModal: React.FC<Props> = (props: Props) => {
                 onChange={(evt) => {
                     setValue(evt.target.value);
                     if (required) {
-                        if (evt.target.value.length == 0) {
+                        if (evt.target.value.length === 0) {
                             setVisFeilmelding(true);
                         } else {
                             setVisFeilmelding(false);
@@ -360,7 +359,6 @@ const NyttVilkarModal: React.FC<Props> = (props: Props) => {
 const mapStateToProps = (state: AppState) => ({
     visNyVilkarModal: state.v2.visNyVilkarModal,
     v2: state.v2,
-    v3: state.v3,
     aktivtVilkar: state.v2.aktivtVilkar
 });
 

@@ -19,7 +19,6 @@ import {soknadMockData} from "../../pages/parts/soknadsOversiktPanel/soknadsover
 import {Soknad} from "../../types/additionalTypes";
 import {array} from "fp-ts/lib/Array";
 import {fromTraversable, Lens, Prism, Traversal} from "monocle-ts/es6";
-import produce from "immer";
 
 
 const minimal: FiksDigisosSokerJson = {
@@ -96,7 +95,7 @@ export const initialV2Model: V2Model = {
 
     // Aktive ting
     aktivSoknad: '001',
-    aktivSakIndex: 0,
+    aktivSak: null,
     aktivUtbetaling: null,
     aktivtVilkar: null,
     aktivtDokumentasjonkrav: null,
@@ -173,7 +172,7 @@ const v2Reducer: Reducer<V2Model, V2Action> = (
         case V2ActionTypeKeys.SET_AKTIVT_VILKAR: {return {...state, aktivtVilkar: action.referanse}}
         case V2ActionTypeKeys.SET_AKTIVT_DOKUMENTASJONKRAV: {return {...state, aktivtDokumentasjonkrav: action.referanse}}
         case V2ActionTypeKeys.SET_AKTIVT_RAMMEVEDTAK: {return {...state, aktivtRammevedtak: action.referanse}}
-        case V2ActionTypeKeys.SET_AKTIV_SAK: {return {...state, aktivSakIndex: action.saksIndex}}
+        case V2ActionTypeKeys.SET_AKTIV_SAK: {return {...state, aktivSak: action.referanse}}
 
 
         case V2ActionTypeKeys.SET_SOKNADS_STATUS: {
@@ -272,19 +271,19 @@ const v2Reducer: Reducer<V2Model, V2Action> = (
 
             // debugger;
             // // Example 3: With immer
-            return produce(state, (draft: V2Model) => {
-                const soknadToUpdate = draft
-                    .soknader
-                    .find((soknad: Soknad) => soknad.fiksDigisosId === soknadFiksDigisosId);
-                if (soknadToUpdate){
-                    const saksStatusToUpdate = soknadToUpdate
-                        .saker
-                        .find((sak: SaksStatus) => sak.referanse === saksStatusReferanse);
-                    if (saksStatusToUpdate){
-                        saksStatusToUpdate.status = nySaksStatus;
-                    }
-                }
-            })
+            // return produce(state, (draft: V2Model) => {
+            //     const soknadToUpdate = draft
+            //         .soknader
+            //         .find((soknad: Soknad) => soknad.fiksDigisosId === soknadFiksDigisosId);
+            //     if (soknadToUpdate){
+            //         const saksStatusToUpdate = soknadToUpdate
+            //             .saker
+            //             .find((sak: SaksStatus) => sak.referanse === saksStatusReferanse);
+            //         if (saksStatusToUpdate){
+            //             saksStatusToUpdate.status = nySaksStatus;
+            //         }
+            //     }
+            // })
         }
         default:
             return state;

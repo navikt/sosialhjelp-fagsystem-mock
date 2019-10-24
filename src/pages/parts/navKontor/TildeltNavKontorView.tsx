@@ -1,15 +1,11 @@
 import React from 'react';
-import {AppState, DispatchProps} from "../../../redux/reduxTypes";
+import {DispatchProps} from "../../../redux/reduxTypes";
 import {connect} from "react-redux";
 import Typography from "@material-ui/core/Typography";
 import EndreNavKontorModal from "./EndreNavKontorModal";
 import {FsSoknad} from "../../../redux/v3/v3FsTypes";
 import {makeStyles} from "@material-ui/core";
 
-
-interface StoreProps {
-
-}
 
 interface OwnProps {
     soknad: FsSoknad
@@ -22,12 +18,12 @@ const useStyles = makeStyles(() => ({
     },
 }));
 
-type Props = DispatchProps & OwnProps & StoreProps;
+type Props = DispatchProps & OwnProps;
 
 
 const TildeldeltNavkontorView: React.FC<Props> = (props: Props) => {
 
-    const {soknad, dispatch} = props;
+    const {soknad} = props;
 
     return (
         <div className={useStyles().root}>
@@ -39,8 +35,6 @@ const TildeldeltNavkontorView: React.FC<Props> = (props: Props) => {
     );
 };
 
-const mapStateToProps = (state: AppState) => ({});
-
 const mapDispatchToProps = (dispatch: any) => {
     return {
         dispatch
@@ -48,6 +42,5 @@ const mapDispatchToProps = (dispatch: any) => {
 };
 
 export default connect(
-    mapStateToProps,
     mapDispatchToProps
 )(TildeldeltNavkontorView);

@@ -1,11 +1,9 @@
 import React from 'react';
-import {AppState, DispatchProps} from "../../../redux/reduxTypes";
+import {DispatchProps} from "../../../redux/reduxTypes";
 import {connect} from "react-redux";
 import {Utbetaling, UtbetalingStatus} from "../../../types/hendelseTypes";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import {createStyles} from "@material-ui/core";
-import {V2Model} from "../../../redux/v2/v2Types";
-import {V3State} from "../../../redux/v3/v3Types";
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -52,16 +50,11 @@ interface OwnProps {
     utbetaling: Utbetaling
 }
 
-interface StoreProps {
-    v2: V2Model,
-    v3: V3State
-}
-
-type Props = DispatchProps & OwnProps & StoreProps;
+type Props = DispatchProps & OwnProps;
 
 
 const UtbetalingTabView: React.FC<Props> = (props: Props) => {
-    const {utbetaling, dispatch, v2, v3}  = props;
+    const {utbetaling, dispatch}  = props;
     const classes = useStyles();
 
     const makeTableRow = (type:string, value:any) => {
@@ -140,11 +133,6 @@ const UtbetalingTabView: React.FC<Props> = (props: Props) => {
     );
 };
 
-const mapStateToProps = (state: AppState) => ({
-    v2: state.v2,
-    v3: state.v3,
-});
-
 const mapDispatchToProps = (dispatch: any) => {
     return {
         dispatch
@@ -152,6 +140,5 @@ const mapDispatchToProps = (dispatch: any) => {
 };
 
 export default connect(
-    mapStateToProps,
     mapDispatchToProps
 )(UtbetalingTabView);

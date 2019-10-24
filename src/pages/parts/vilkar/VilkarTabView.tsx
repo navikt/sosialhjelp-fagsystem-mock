@@ -1,11 +1,9 @@
 import React from 'react';
-import {AppState, DispatchProps} from "../../../redux/reduxTypes";
+import {DispatchProps} from "../../../redux/reduxTypes";
 import {connect} from "react-redux";
 import {Vilkar, VilkarStatus} from "../../../types/hendelseTypes";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import {createStyles} from "@material-ui/core";
-import {V2Model} from "../../../redux/v2/v2Types";
-import {V3State} from "../../../redux/v3/v3Types";
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -53,15 +51,13 @@ interface OwnProps {
 }
 
 interface StoreProps {
-    v2: V2Model,
-    v3: V3State
 }
 
 type Props = DispatchProps & OwnProps & StoreProps;
 
 
 const VilkarTabView: React.FC<Props> = (props: Props) => {
-    const {vilkar, dispatch, v2, v3}  = props;
+    const {vilkar, dispatch}  = props;
     const classes = useStyles();
 
     const makeTableRow = (type:string, value:any) => {
@@ -77,33 +73,6 @@ const VilkarTabView: React.FC<Props> = (props: Props) => {
                 <TableCell variant={'footer'} align="right">Ikke utfylt</TableCell>
             }
         </TableRow>
-    };
-
-    const makeTableRowOfList = (type:string, list:string[]|null) => {
-        if (list == null || list.length == 0) {
-            return <TableRow key={type}>
-                <TableCell component="th" scope="row">{type}</TableCell>
-                <TableCell variant={'footer'} align="right">Ikke utfylt</TableCell>
-            </TableRow>
-        } else if (list.length == 1) {
-            return <TableRow key={type}>
-                <TableCell component="th" scope="row">{type}</TableCell>
-                <TableCell align="right">{list[0]}</TableCell>
-            </TableRow>
-        }
-        return (<div><TableRow key={type}>
-            <TableCell rowSpan={list.length} component="th" scope="row">{type}</TableCell>
-            <TableCell variant={'footer'} align="right">{list[0]}</TableCell>
-        </TableRow>
-            {list.map(((value, idx) => {
-                if (idx == 0) {
-                    return;
-                }
-                    return (<TableRow key={type + idx}>
-                        <TableCell variant={'footer'}  align="right">{value}</TableCell>
-                    </TableRow>)
-                }
-            ))}</div>)
     };
 
     const makeTableRowOfStatus = (type: string, value: VilkarStatus|null) => {
@@ -144,8 +113,8 @@ const VilkarTabView: React.FC<Props> = (props: Props) => {
                             <TableCell rowSpan={vilkar.utbetalingsreferanse.length} component="th" scope="row">{"Utbetalingsreferanse"}</TableCell>
                             <TableCell align="right">{vilkar.utbetalingsreferanse[0]}</TableCell>
                         </TableRow>
-                        {vilkar.utbetalingsreferanse.map(((value, idx) => {
-                            if (idx == 0) {
+                        {vilkar.utbetalingsreferanse.forEach(((value, idx) => {
+                            if (idx === 0) {
                             return;
                         }
                             return (<TableRow key={"Utbetalingsreferanse" + idx}>
@@ -159,7 +128,7 @@ const VilkarTabView: React.FC<Props> = (props: Props) => {
                     {(vilkar.utbetalingsreferanse == null || vilkar.utbetalingsreferanse.length <= 1) &&
                     <TableBody>
                         {makeTableRow("Vilkårreferanse", vilkar.vilkarreferanse)}
-                        {makeTableRow("Utbetalingsreferanse", vilkar.utbetalingsreferanse == null || vilkar.utbetalingsreferanse.length == 0 ? null : vilkar.utbetalingsreferanse)}
+                        {makeTableRow("Utbetalingsreferanse", vilkar.utbetalingsreferanse == null || vilkar.utbetalingsreferanse.length === 0 ? null : vilkar.utbetalingsreferanse)}
                         {makeTableRow("Beskrivelse", vilkar.beskrivelse)}
                         {makeTableRowOfStatus("Status", vilkar.status)}
                     </TableBody>
@@ -179,9 +148,7 @@ const VilkarTabView: React.FC<Props> = (props: Props) => {
     );
 };
 
-const mapStateToProps = (state: AppState) => ({
-    v2: state.v2,
-    v3: state.v3,
+const mapStateToProps = () => ({
 });
 
 const mapDispatchToProps = (dispatch: any) => {

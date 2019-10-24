@@ -91,7 +91,7 @@ type Props = DispatchProps & OwnProps & StoreProps;
 const ReactJsonView: React.FC<Props> = (props: Props) => {
     const [state, setState] = useState(initialState);
     
-    const {dispatch, json} = props;
+    const {json} = props;
     
     const classes = useStyles();
 

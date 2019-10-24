@@ -11,10 +11,10 @@ import {
     formatDateString,
     generateFilreferanseId,
     getNow,
-    getRammevedtakByRammevedtaksreferanse, getSakTittelFraSaksreferanse,
+    getRammevedtakByRammevedtaksreferanse,
+    getSakTittelFraSaksreferanse,
     getShortDateISOString
 } from "../../../utils/utilityFunctions";
-import {V3State} from "../../../redux/v3/v3Types";
 import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
 import Hendelse, {HendelseType, Rammevedtak} from "../../../types/hendelseTypes";
@@ -100,15 +100,6 @@ const useStyles = makeStyles((theme: Theme) =>
     }),
 );
 
-function getStyles(name: string, personName: string[], theme: Theme) {
-    return {
-        fontWeight:
-            personName.indexOf(name) === -1
-                ? theme.typography.fontWeightRegular
-                : theme.typography.fontWeightMedium,
-    };
-}
-
 interface OwnProps {
     soknad: FsSoknad
 }
@@ -116,7 +107,6 @@ interface OwnProps {
 interface StoreProps {
     visNyRammevedtakModal: boolean;
     v2: V2Model;
-    v3: V3State;
     aktivtRammevedtak: string | undefined | null;
 }
 
@@ -159,7 +149,7 @@ const NyttRammevedtakModal: React.FC<Props> = (props: Props) => {
     const [visFeilmelding, setVisFeilmelding] = useState(false);
 
     const classes = useStyles();
-    const {visNyRammevedtakModal, dispatch, v2, v3, soknad, aktivtRammevedtak} = props;
+    const {visNyRammevedtakModal, dispatch, v2, soknad, aktivtRammevedtak} = props;
 
     function resetStateValues() {
         setModalRammevedtak({...initialRammevedtak});
@@ -237,7 +227,7 @@ const NyttRammevedtakModal: React.FC<Props> = (props: Props) => {
                 onChange={(evt) => {
                     setValue(evt.target.value);
                     if (required) {
-                        if (evt.target.value.length == 0) {
+                        if (evt.target.value.length === 0) {
                             setVisFeilmelding(true);
                         } else {
                             setVisFeilmelding(false);
@@ -377,7 +367,6 @@ const NyttRammevedtakModal: React.FC<Props> = (props: Props) => {
 const mapStateToProps = (state: AppState) => ({
     visNyRammevedtakModal: state.v2.visNyRammevedtakModal,
     v2: state.v2,
-    v3: state.v3,
     aktivtRammevedtak: state.v2.aktivtRammevedtak
 });
 

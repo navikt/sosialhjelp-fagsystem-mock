@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {AppState, DispatchProps} from "../../../redux/reduxTypes";
 import {connect} from "react-redux";
 import SwipeableViews from 'react-swipeable-views';
@@ -77,33 +77,36 @@ const useStyles = makeStyles((theme: Theme) =>
             flexDirection: 'row',
             justifyContent: 'flex-start',
             alignItems: 'center'
-        }
+        },
+        normalLabel: {},
+        italicLabel: {
+            fontStyle: 'italic'
+        },
     }),
 );
 
-
-interface StoreProps {
-    aktivSakIndex: number | undefined;
-}
 
 interface OwnProps {
     soknad: FsSoknad
 }
 
-type Props = DispatchProps & StoreProps & OwnProps;
+type Props = DispatchProps & OwnProps;
 
 
 const SaksOversiktView: React.FC<Props> = (props: Props) => {
     const classes = useStyles();
     const theme = useTheme();
-    const {soknad, dispatch, aktivSakIndex} = props;
+    const {soknad, dispatch} = props;
+    const [aktivSakIndex, setAktivSakIndex] = useState(0);
 
     function handleChange(event: unknown, newValue: number) {
-        dispatch(setAktivSak(newValue));
+        setAktivSakIndex(newValue);
+        dispatch(setAktivSak(soknad.saker[newValue].referanse));
     }
 
     function handleChangeIndex(index: number) {
-        dispatch(setAktivSak(index));
+        setAktivSakIndex(index);
+        dispatch(setAktivSak(soknad.saker[index].referanse));
     }
 
     const addNySakButton = () => {
@@ -124,7 +127,7 @@ const SaksOversiktView: React.FC<Props> = (props: Props) => {
         if (soknad.saker.length > 0){
             const listTabs = soknad.saker.map((sak: FsSaksStatus) => {
                 return (
-                    <Tab key={"tab: " + sak.referanse} label={sak.tittel} />
+                    <Tab key={"tab: " + sak.referanse} label={sak.tittel ? sak.tittel : 'Sak uten tittel'} className={sak.tittel ? classes.normalLabel : classes.italicLabel} />
                 )
             });
             const listTabPanels = soknad.saker.map((sak: FsSaksStatus, idx) => {
@@ -162,7 +165,7 @@ const SaksOversiktView: React.FC<Props> = (props: Props) => {
                 <>
                     <br/>
                     <Typography variant={"subtitle1"}>
-                        Ingen saker er opprettet for denne søknaden ennå. Opprett en eller flere saker for å kunne gå videre med å behandle søknaden.
+                        Ingen saker er opprettet for denne søknaden ennå.
                     </Typography>
                 </>
             )
@@ -188,7 +191,7 @@ const SaksOversiktView: React.FC<Props> = (props: Props) => {
 };
 
 const mapStateToProps = (state: AppState) => ({
-    aktivSakIndex: state.v2.aktivSakIndex
+    aktivSak: state.v2.aktivSak
 });
 
 const mapDispatchToProps = (dispatch: any) => {

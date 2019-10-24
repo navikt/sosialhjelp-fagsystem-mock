@@ -1,11 +1,9 @@
 import React from 'react';
-import {AppState, DispatchProps} from "../../../redux/reduxTypes";
+import {DispatchProps} from "../../../redux/reduxTypes";
 import {connect} from "react-redux";
 import {Dokumentasjonkrav, DokumentasjonkravStatus} from "../../../types/hendelseTypes";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import {createStyles} from "@material-ui/core";
-import {V2Model} from "../../../redux/v2/v2Types";
-import {V3State} from "../../../redux/v3/v3Types";
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -52,16 +50,11 @@ interface OwnProps {
     dokumentasjonkrav: Dokumentasjonkrav
 }
 
-interface StoreProps {
-    v2: V2Model,
-    v3: V3State
-}
-
-type Props = DispatchProps & OwnProps & StoreProps;
+type Props = DispatchProps & OwnProps;
 
 
 const DokumentasjonkravTabView: React.FC<Props> = (props: Props) => {
-    const {dokumentasjonkrav, dispatch, v2, v3}  = props;
+    const {dokumentasjonkrav, dispatch}  = props;
     const classes = useStyles();
 
     const makeTableRow = (type:string, value:any) => {
@@ -77,33 +70,6 @@ const DokumentasjonkravTabView: React.FC<Props> = (props: Props) => {
                 <TableCell variant={'footer'} align="right">Ikke utfylt</TableCell>
             }
         </TableRow>
-    };
-
-    const makeTableRowOfList = (type:string, list:string[]|null) => {
-        if (list == null || list.length == 0) {
-            return <TableRow key={type}>
-                <TableCell component="th" scope="row">{type}</TableCell>
-                <TableCell variant={'footer'} align="right">Ikke utfylt</TableCell>
-            </TableRow>
-        } else if (list.length == 1) {
-            return <TableRow key={type}>
-                <TableCell component="th" scope="row">{type}</TableCell>
-                <TableCell align="right">{list[0]}</TableCell>
-            </TableRow>
-        }
-        return (<div><TableRow key={type}>
-            <TableCell rowSpan={list.length} component="th" scope="row">{type}</TableCell>
-            <TableCell variant={'footer'} align="right">{list[0]}</TableCell>
-        </TableRow>
-            {list.map(((value, idx) => {
-                    if (idx == 0) {
-                        return;
-                    }
-                    return (<TableRow key={type + idx}>
-                        <TableCell variant={'footer'}  align="right">{value}</TableCell>
-                    </TableRow>)
-                }
-            ))}</div>)
     };
 
     const makeTableRowOfStatus = (type: string, value: DokumentasjonkravStatus|null) => {
@@ -144,13 +110,12 @@ const DokumentasjonkravTabView: React.FC<Props> = (props: Props) => {
                             <TableCell rowSpan={dokumentasjonkrav.utbetalingsreferanse.length} component="th" scope="row">{"Utbetalingsreferanse"}</TableCell>
                             <TableCell align="right">{dokumentasjonkrav.utbetalingsreferanse[0]}</TableCell>
                         </TableRow>
-                        {dokumentasjonkrav.utbetalingsreferanse.map(((value, idx) => {
-                            if (idx == 0) {
-                                return;
+                        {dokumentasjonkrav.utbetalingsreferanse.forEach(((value, idx) => {
+                            if (idx !== 0) {
+                                return (<TableRow key={"Utbetalingsreferanse" + idx}>
+                                    <TableCell align="right">{value}</TableCell>
+                                </TableRow>)
                             }
-                            return (<TableRow key={"Utbetalingsreferanse" + idx}>
-                                <TableCell align="right">{value}</TableCell>
-                            </TableRow>)
                         }))}
                         {makeTableRow("Beskrivelse", dokumentasjonkrav.beskrivelse)}
                         {makeTableRowOfStatus("Status", dokumentasjonkrav.status)}
@@ -159,7 +124,7 @@ const DokumentasjonkravTabView: React.FC<Props> = (props: Props) => {
                     {(dokumentasjonkrav.utbetalingsreferanse == null || dokumentasjonkrav.utbetalingsreferanse.length <= 1) &&
                     <TableBody>
                         {makeTableRow("Dokumentasjonkravreferanse", dokumentasjonkrav.dokumentasjonkravreferanse)}
-                        {makeTableRow("Utbetalingsreferanse", dokumentasjonkrav.utbetalingsreferanse == null || dokumentasjonkrav.utbetalingsreferanse.length == 0 ? null : dokumentasjonkrav.utbetalingsreferanse)}
+                        {makeTableRow("Utbetalingsreferanse", dokumentasjonkrav.utbetalingsreferanse == null || dokumentasjonkrav.utbetalingsreferanse.length === 0 ? null : dokumentasjonkrav.utbetalingsreferanse)}
                         {makeTableRow("Beskrivelse", dokumentasjonkrav.beskrivelse)}
                         {makeTableRowOfStatus("Status", dokumentasjonkrav.status)}
                     </TableBody>
@@ -179,11 +144,6 @@ const DokumentasjonkravTabView: React.FC<Props> = (props: Props) => {
     );
 };
 
-const mapStateToProps = (state: AppState) => ({
-    v2: state.v2,
-    v3: state.v3,
-});
-
 const mapDispatchToProps = (dispatch: any) => {
     return {
         dispatch
@@ -191,6 +151,5 @@ const mapDispatchToProps = (dispatch: any) => {
 };
 
 export default connect(
-    mapStateToProps,
     mapDispatchToProps
 )(DokumentasjonkravTabView);
