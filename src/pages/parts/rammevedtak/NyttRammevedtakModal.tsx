@@ -147,6 +147,7 @@ const NyttRammevedtakModal: React.FC<Props> = (props: Props) => {
     const [fomDatePickerIsOpen, setFomDatePickerIsOpen] = useState(false);
     const [tomDatePickerIsOpen, setTomDatePickerIsOpen] = useState(false);
     const [visFeilmelding, setVisFeilmelding] = useState(false);
+    const [referansefeltDisabled, setReferansefeltDisabled] = useState(false);
 
     const classes = useStyles();
     const {visNyRammevedtakModal, dispatch, v2, soknad, aktivtRammevedtak} = props;
@@ -157,6 +158,7 @@ const NyttRammevedtakModal: React.FC<Props> = (props: Props) => {
         setFomDatePickerIsOpen(false);
         setTomDatePickerIsOpen(false);
         setVisFeilmelding(false);
+        setReferansefeltDisabled(false);
 
         dispatch(setAktivtRammevedtak(null));
     }
@@ -204,6 +206,7 @@ const NyttRammevedtakModal: React.FC<Props> = (props: Props) => {
         setFomDatePickerIsOpen(false);
         setTomDatePickerIsOpen(false);
         setVisFeilmelding(false);
+        setReferansefeltDisabled(false);
     };
 
     const fyllInnAktivtRammevedtak = () => {
@@ -211,6 +214,10 @@ const NyttRammevedtakModal: React.FC<Props> = (props: Props) => {
             const rammevedtak = getRammevedtakByRammevedtaksreferanse(soknad, aktivtRammevedtak);
             if (rammevedtak){
                 setModalRammevedtak(rammevedtak);
+
+                setTimeout(() => {
+                    setReferansefeltDisabled(true);
+                }, 10);
             }
         }
     };
@@ -218,6 +225,7 @@ const NyttRammevedtakModal: React.FC<Props> = (props: Props) => {
     function getTextFieldGrid(label: string, value: any, setValue: (v: any) => any, required: boolean = false) {
         return <Grid item key={'Grid: ' + label} xs={6} zeroMinWidth>
             <TextField
+                disabled={required && referansefeltDisabled}
                 id="outlined-name"
                 label={label}
                 className={classes.textField}
@@ -292,22 +300,8 @@ const NyttRammevedtakModal: React.FC<Props> = (props: Props) => {
                 <div className={classes.papertowel}>
                     <div className={classes.paperback}>
                         <Grid container spacing={3} justify="center" alignItems="center">
-                            {(aktivtRammevedtak == null) ?
-                                getTextFieldGrid("Rammevedtakreferanse", modalRammevedtak.rammevedtaksreferanse, (verdi: string) => {
-                                    setModalRammevedtak({...modalRammevedtak, rammevedtaksreferanse: verdi})
-                                }, true)
-                                : (<Grid item key={'Grid: Rammevedtaksreferanse'} xs={6} zeroMinWidth>
-                                    <TextField
-                                        disabled
-                                        id="Rammevedtaksreferanse-disabled"
-                                        label="Rammevedtakreferanse"
-                                        className={classes.textField}
-                                        required={true}
-                                        defaultValue={modalRammevedtak.rammevedtaksreferanse}
-                                        margin="normal"
-                                        variant="filled"
-                                    />
-                                </Grid>)}
+                            {getTextFieldGrid("Rammevedtakreferanse", modalRammevedtak.rammevedtaksreferanse,
+                                (verdi: string) => setModalRammevedtak({...modalRammevedtak, rammevedtaksreferanse: verdi}), true)}
                             <Grid item key={'Saksreferanse'} xs={6} zeroMinWidth>
                                 <FormControl className={classes.formControl2}>
                                     <InputLabel htmlFor="age-simple" shrink={true}>Saksreferanse</InputLabel>

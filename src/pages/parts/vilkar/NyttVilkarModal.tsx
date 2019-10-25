@@ -149,6 +149,7 @@ const MenuProps = {
 const NyttVilkarModal: React.FC<Props> = (props: Props) => {
     const [modalVilkar, setModalVilkar] = useState<Vilkar>(initialVilkar);
     const [visFeilmelding, setVisFeilmelding] = useState(false);
+    const [referansefeltDisabled, setReferansefeltDisabled] = useState(false);
     const theme = useTheme();
 
     const classes = useStyles();
@@ -157,6 +158,7 @@ const NyttVilkarModal: React.FC<Props> = (props: Props) => {
     function resetStateValues() {
         setModalVilkar({...initialVilkar, vilkarreferanse: generateFilreferanseId()});
         setVisFeilmelding(false);
+        setReferansefeltDisabled(false);
 
         dispatch(setAktivtVilkar(null));
     }
@@ -201,6 +203,7 @@ const NyttVilkarModal: React.FC<Props> = (props: Props) => {
         }
 
         setVisFeilmelding(false);
+        setReferansefeltDisabled(false);
     };
 
     const fyllInnAktivtVilkar = () => {
@@ -208,6 +211,10 @@ const NyttVilkarModal: React.FC<Props> = (props: Props) => {
             let vilkar = getVilkarByVilkarreferanse(soknad.vilkar, aktivtVilkar);
             if (vilkar){
                 setModalVilkar(vilkar);
+
+                setTimeout(() => {
+                    setReferansefeltDisabled(true);
+                }, 10);
             }
         }
     };
@@ -215,6 +222,7 @@ const NyttVilkarModal: React.FC<Props> = (props: Props) => {
     function getTextFieldGrid(label: string, value: any, setValue: (v: any) => any, required: boolean = false) {
         return <Grid item key={'Grid: ' + label} xs={6} zeroMinWidth>
             <TextField
+                disabled={required && referansefeltDisabled}
                 id="outlined-name"
                 label={label}
                 className={classes.textField}
@@ -262,22 +270,8 @@ const NyttVilkarModal: React.FC<Props> = (props: Props) => {
                 <div className={classes.papertowel}>
                     <div className={classes.paperback}>
                         <Grid container spacing={3} justify="center" alignItems="center">
-                            {(aktivtVilkar == null) ?
-                                getTextFieldGrid("Vilkårreferanse", modalVilkar.vilkarreferanse, (verdi: string) => {
-                                    setModalVilkar({...modalVilkar, vilkarreferanse: verdi})
-                                }, true)
-                                : (<Grid item key={'Grid: Vilkarreferanse'} xs={6} zeroMinWidth>
-                                    <TextField
-                                        disabled
-                                        id="Vilkarreferanse-disabled"
-                                        label="Vilkårreferanse"
-                                        className={classes.textField}
-                                        required={true}
-                                        defaultValue={modalVilkar.vilkarreferanse}
-                                        margin="normal"
-                                        variant="filled"
-                                    />
-                                </Grid>)}
+                            {getTextFieldGrid("Vilkårreferanse", modalVilkar.vilkarreferanse,
+                                (verdi: string) => setModalVilkar({...modalVilkar, vilkarreferanse: verdi}), true)}
                             <Grid item key={'Utbetalingsreferanse'} xs={6} zeroMinWidth>
                                 <FormControl className={classes.formControl2}>
                                     <InputLabel htmlFor="age-simple" shrink={true}>Utbetalingsreferanse</InputLabel>

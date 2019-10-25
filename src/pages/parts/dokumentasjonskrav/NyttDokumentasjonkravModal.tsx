@@ -149,6 +149,7 @@ const MenuProps = {
 const NyttDokumentasjonkravModal: React.FC<Props> = (props: Props) => {
     const [modalDokumentasjonkrav, setModalDokumentasjonkrav] = useState<Dokumentasjonkrav>(initialDokumentasjonkrav);
     const [visFeilmelding, setVisFeilmelding] = useState(false);
+    const [referansefeltDisabled, setReferansefeltDisabled] = useState(false);
     const theme = useTheme();
 
     const classes = useStyles();
@@ -157,6 +158,7 @@ const NyttDokumentasjonkravModal: React.FC<Props> = (props: Props) => {
     function resetStateValues() {
         setModalDokumentasjonkrav({...initialDokumentasjonkrav, dokumentasjonkravreferanse: generateFilreferanseId()});
         setVisFeilmelding(false);
+        setReferansefeltDisabled(false);
 
         dispatch(setAktivtDokumentasjonkrav(null));
     }
@@ -201,6 +203,7 @@ const NyttDokumentasjonkravModal: React.FC<Props> = (props: Props) => {
         }
 
         setVisFeilmelding(false);
+        setReferansefeltDisabled(false);
     };
 
     const fyllInnAktivtDokumentasjonkrav = () => {
@@ -208,6 +211,10 @@ const NyttDokumentasjonkravModal: React.FC<Props> = (props: Props) => {
             let dokumentasjonkrav = getDokumentasjonkravByDokumentasjonkravreferanse(soknad.dokumentasjonkrav, aktivtDokumentasjonkrav);
             if (dokumentasjonkrav){
                 setModalDokumentasjonkrav(dokumentasjonkrav);
+
+                setTimeout(() => {
+                    setReferansefeltDisabled(true);
+                }, 10);
             }
         }
     };
@@ -215,6 +222,7 @@ const NyttDokumentasjonkravModal: React.FC<Props> = (props: Props) => {
     function getTextFieldGrid(label: string, value: any, setValue: (v: any) => any, required: boolean = false) {
         return <Grid item key={'Grid: ' + label} xs={6} zeroMinWidth>
             <TextField
+                disabled={required && referansefeltDisabled}
                 id="outlined-name"
                 label={label}
                 className={classes.textField}
@@ -262,22 +270,8 @@ const NyttDokumentasjonkravModal: React.FC<Props> = (props: Props) => {
                 <div className={classes.papertowel}>
                     <div className={classes.paperback}>
                         <Grid container spacing={3} justify="center" alignItems="center">
-                            {(aktivtDokumentasjonkrav == null) ?
-                                getTextFieldGrid("Dokumentasjonkravreferanse", modalDokumentasjonkrav.dokumentasjonkravreferanse, (verdi: string) => {
-                                    setModalDokumentasjonkrav({...modalDokumentasjonkrav, dokumentasjonkravreferanse: verdi})
-                                }, true)
-                                : (<Grid item key={'Grid: Dokumentasjonkravreferanse'} xs={6} zeroMinWidth>
-                                    <TextField
-                                        disabled
-                                        id="Dokumentasjonkravreferanse-disabled"
-                                        label="Dokumentasjonkravreferanse"
-                                        className={classes.textField}
-                                        required={true}
-                                        defaultValue={modalDokumentasjonkrav.dokumentasjonkravreferanse}
-                                        margin="normal"
-                                        variant="filled"
-                                    />
-                                </Grid>)}
+                            {getTextFieldGrid("Dokumentasjonkravreferanse", modalDokumentasjonkrav.dokumentasjonkravreferanse,
+                                (verdi: string) => setModalDokumentasjonkrav({...modalDokumentasjonkrav, dokumentasjonkravreferanse: verdi}), true)}
                             <Grid item key={'Utbetalingsreferanse'} xs={6} zeroMinWidth>
                                 <FormControl className={classes.formControl2}>
                                     <InputLabel htmlFor="age-simple" shrink={true}>Utbetalingsreferanse</InputLabel>

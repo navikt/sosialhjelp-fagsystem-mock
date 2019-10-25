@@ -174,6 +174,7 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
     const [fomDatePickerIsOpen, setFomDatePickerIsOpen] = useState(false);
     const [tomDatePickerIsOpen, setTomDatePickerIsOpen] = useState(false);
     const [visFeilmelding, setVisFeilmelding] = useState(false);
+    const [referansefeltDisabled, setReferansefeltDisabled] = useState(false);
 
 
     const classes = useStyles();
@@ -190,6 +191,7 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
         setFomDatePickerIsOpen(false);
         setTomDatePickerIsOpen(false);
         setVisFeilmelding(false);
+        setReferansefeltDisabled(false);
         dispatch(setAktivUtbetaling(null));
     }
 
@@ -242,6 +244,7 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
         setFomDatePickerIsOpen(false);
         setTomDatePickerIsOpen(false);
         setVisFeilmelding(false);
+        setReferansefeltDisabled(false);
     };
 
     const fyllInnAktivUtbetaling = () => {
@@ -254,6 +257,9 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
                 setAnnenMottakerTrueVariant(utbetaling.annenMottaker == null || !utbetaling.annenMottaker ? 'text' : 'contained');
                 setAnnenMottakerFalseVariant(utbetaling.annenMottaker == null || utbetaling.annenMottaker ? 'text' : 'contained');
                 setKontonummerLabelPlaceholder(utbetaling.kontonummer == null ? "Kontonummer (Ikke satt)" : "Kontonummer");
+                setTimeout(() => {
+                    setReferansefeltDisabled(true);
+                }, 10);
             }
         }
     };
@@ -261,6 +267,7 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
     function getTextFieldGrid(label: string, value: any, setValue: (v: any) => any, inputType: string = 'text', required: boolean = false) {
         return <Grid item key={'Grid: ' + label} xs={6} zeroMinWidth>
             <TextField
+                disabled={required && referansefeltDisabled}
                 id="outlined-name"
                 label={label}
                 className={classes.textField}
@@ -336,22 +343,8 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
                 <div className={classes.papertowel}>
                     <div className={classes.paperback}>
                         <Grid container spacing={3} justify="center" alignItems="center">
-                            {(aktivUtbetaling == null) ?
-                                getTextFieldGrid("Utbetalingsreferanse", modalUtbetaling.utbetalingsreferanse, (verdi: string) => {
-                                    setModalUtbetaling({...modalUtbetaling, utbetalingsreferanse: verdi})
-                                }, "text", true)
-                                : (<Grid item key={'Grid: Utbetalingsreferanse'} xs={6} zeroMinWidth>
-                                        <TextField
-                                        disabled
-                                        id="Utbetalingsreferanse-disabled"
-                                        label="Utbetalingsreferanse"
-                                        className={classes.textField}
-                                        required={true}
-                                        defaultValue={modalUtbetaling.utbetalingsreferanse}
-                                        margin="normal"
-                                        variant="filled"
-                                    />
-                                </Grid>)}
+                            {getTextFieldGrid("Utbetalingsreferanse", modalUtbetaling.utbetalingsreferanse,
+                                (verdi: string) => setModalUtbetaling({...modalUtbetaling, utbetalingsreferanse: verdi}), "text", true)}
                             {getTextFieldGrid("Rammevedtaksreferanse", modalUtbetaling.rammevedtaksreferanse,
                                 (verdi: string) => setModalUtbetaling({...modalUtbetaling, rammevedtaksreferanse: verdi}))}
                             <Grid item key={'Status'} xs={6} zeroMinWidth>
