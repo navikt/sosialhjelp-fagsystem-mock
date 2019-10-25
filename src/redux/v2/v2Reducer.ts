@@ -67,12 +67,12 @@ export const initialV2Model: V2Model = {
     loaderOn: false,
     setFiksDigisosIdIsEnabled: false,
     backendUrls: {
-        local: backendUrlsLocalTemplate,
+        lokalt: backendUrlsLocalTemplate,
         digisostest: backendUrlsDigisostestTemplate,
         q0: backendUrlsQ0Template,
         q1: backendUrlsQTemplate
     },
-    backendUrlTypeToUse: 'local',
+    backendUrlTypeToUse: 'lokalt',
     oppdaterDigisosSakUrl: '/api/v1/digisosapi/oppdaterDigisosSak',
     nyNavEnhetUrl: '/api/v1/mock/nyNavEnhet',
     filreferanselager: initialFilreferanselager,

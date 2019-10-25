@@ -39,7 +39,7 @@ interface OwnProps {
 interface StoreProps {
     visSystemSettingsModal: boolean;
     backendUrls: BackendUrls;
-    backendUrlTypeToUse: string;
+    backendUrlTypeToUse: keyof BackendUrls;
 }
 
 type Props = DispatchProps & OwnProps & StoreProps;
@@ -56,7 +56,7 @@ const SystemSettingsModal: React.FC<Props> = (props: Props) => {
                 key={"urlLabel: " + backendUrlType}
                 value={backendUrlType}
                 control={<Radio/>}
-                label={backendUrlType}
+                label={backendUrlType === 'digisostest' ? 'digisos-test.com' : backendUrlType}
             />
         );
     });
@@ -83,10 +83,11 @@ const SystemSettingsModal: React.FC<Props> = (props: Props) => {
                             aria-label="backend url"
                             name="miljo"
                             value={backendUrlTypeToUse}
+                            onClick={() => props.dispatch(skjulSystemSettingsModal())}
                             onChange={
                                 (event, value) => {
                                     console.warn("value: " + value);
-                                    dispatch(setBackendUrlTypeToUse(value))
+                                    dispatch(setBackendUrlTypeToUse(value as keyof BackendUrls))
                                 }}
                         >
                             {radios}

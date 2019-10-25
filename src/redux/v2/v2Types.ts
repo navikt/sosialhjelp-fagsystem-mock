@@ -15,7 +15,7 @@ export interface V2Model {
     loaderOn: boolean;
     setFiksDigisosIdIsEnabled: boolean;
     backendUrls: BackendUrls;
-    backendUrlTypeToUse: string;
+    backendUrlTypeToUse: keyof BackendUrls;
     oppdaterDigisosSakUrl: string;
     nyNavEnhetUrl: string;
     filreferanselager: Filreferanselager;
@@ -44,7 +44,7 @@ export interface V2Model {
 }
 
 export interface BackendUrls {
-    local: string,
+    lokalt: string,
     digisostest: string,
     q0: string,
     q1: string
@@ -170,7 +170,7 @@ export interface DisableSetFiksDigisosId {
 
 export interface SetBackendUrlTypeToUse {
     type: V2ActionTypeKeys.SET_BACKEND_URL_TYPE_TO_USE;
-    backendUrlTypeToUse: string
+    backendUrlTypeToUse: keyof BackendUrls
 }
 
 export interface EditBackendUrlForType {

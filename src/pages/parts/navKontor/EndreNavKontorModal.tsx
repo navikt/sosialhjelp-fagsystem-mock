@@ -91,7 +91,7 @@ const EndreNavKontorModal: React.FC<Props> = (props: Props) => {
                         };
 
                         const soknadUpdated = oHendelser.modify((a: Hendelse[]) => [...a, nyHendelse])(soknad);
-                        if (v2.backendUrlTypeToUse !== 'q') {
+                        if (v2.backendUrlTypeToUse !== 'q0' && v2.backendUrlTypeToUse !== 'q1') {
                             dispatch(zeruuus(navKontorListe, v2));
                         }
 

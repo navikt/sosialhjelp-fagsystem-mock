@@ -8,6 +8,8 @@ import SoknadStatusView from "../soknadStatusView/SoknadStatusView";
 import {FsSoknad} from "../../../redux/v3/v3FsTypes";
 import Typography from "@material-ui/core/Typography";
 import TildeldeltNavkontorView from "../navKontor/TildeltNavKontorView";
+import {BackendUrls, V2Model} from "../../../redux/v2/v2Types";
+import {Box} from "@material-ui/core";
 
 
 const useStyles = makeStyles(theme => ({
@@ -32,21 +34,30 @@ const useStyles = makeStyles(theme => ({
         width: '100%',
         flexDirection: 'row',
         justifyContent: 'space-between',
-    }
+    },
+    // navkontorBox: {
+    //     display: 'flex',
+    //     justifyContent: 'flex-end',
+    //     flexDirection: 'column',
+    //     height: '100%'
+    // }
 }));
 
 
 interface StoreProps {
     soknad: FsSoknad | undefined;
+    backendUrls: BackendUrls;
+    backendUrlTypeToUse: keyof BackendUrls;
 }
 
 type Props = DispatchProps & StoreProps;
 
 const ToppPanel: React.FC<Props> = (props: Props) => {
     const classes = useStyles();
-    const {soknad} = props;
-
+    const {soknad, backendUrls, backendUrlTypeToUse} = props;
+    const backendUrl = backendUrls[backendUrlTypeToUse];
     if (soknad) {
+        const frontendUrl = backendUrl.substring(0, backendUrl.search('/sosialhjelp/')) + '/sosialhjelp/innsyn/' + soknad.fiksDigisosId + '/status';
         return (
             <div>
 
@@ -59,8 +70,9 @@ const ToppPanel: React.FC<Props> = (props: Props) => {
                             Navn på søker: {soknad.navn}
                         </Typography>
                         <Typography variant={"subtitle1"}>
-                            FiksDigisosId: {soknad.fiksDigisosId}
+                            <a href={frontendUrl} target="_blank">{frontendUrl}</a>
                         </Typography>
+                        <br/>
                         <TildeldeltNavkontorView soknad={soknad} />
 
                     </Paper>
@@ -82,7 +94,9 @@ const mapStateToProps = (state: AppState) => {
     const {aktivSoknad} = state.v2;
     const {soknader} = state.v3;
     return {
-        soknad: getFsSoknadByFiksDigisosId(soknader, aktivSoknad)
+        soknad: getFsSoknadByFiksDigisosId(soknader, aktivSoknad),
+        backendUrls: state.v2.backendUrls,
+        backendUrlTypeToUse: state.v2.backendUrlTypeToUse
     };
 };
 

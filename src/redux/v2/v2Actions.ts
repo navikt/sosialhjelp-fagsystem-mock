@@ -1,4 +1,4 @@
-import {V2Action, V2ActionTypeKeys} from "./v2Types";
+import {BackendUrls, V2Action, V2ActionTypeKeys} from "./v2Types";
 import {Dispatch} from "redux";
 import {fetchPost} from "../../utils/restUtils";
 import {
@@ -80,7 +80,7 @@ export const turnOffLoader = (): V2Action => {
 
 export const enableSetFiksDigisosId = (): V2Action => { return {type: V2ActionTypeKeys.ENABLE_SET_FIKS_DIGISOS_ID}};
 export const disableSetFiksDigisosId = (): V2Action => { return {type: V2ActionTypeKeys.DISABLE_SET_FIKS_DIGISOS_ID}};
-export const setBackendUrlTypeToUse = (backendUrlTypeToUse: string): V2Action => {return {type: V2ActionTypeKeys.SET_BACKEND_URL_TYPE_TO_USE, backendUrlTypeToUse}};
+export const setBackendUrlTypeToUse = (backendUrlTypeToUse: keyof BackendUrls): V2Action => {return {type: V2ActionTypeKeys.SET_BACKEND_URL_TYPE_TO_USE, backendUrlTypeToUse}};
 export const editBackendUrlForType = (backendUrlType: string, backendUrlUpdated: string): V2Action => {
     return {
         type: V2ActionTypeKeys.EDIT_BACKEND_URL_FOR_TYPE,
