@@ -199,7 +199,7 @@ const NyttVilkarModal: React.FC<Props> = (props: Props) => {
 
         const alleUtbetalingsreferanser = getAllUtbetalingsreferanser(soknad);
         if (alleUtbetalingsreferanser.length > 0) {
-            setModalVilkar({...defaultVilkar, utbetalingsreferanse: [alleUtbetalingsreferanser[0]]});
+            setModalVilkar({...defaultVilkar, vilkarreferanse: generateFilreferanseId(), utbetalingsreferanse: [alleUtbetalingsreferanser[0]]});
         }
 
         setVisFeilmelding(false);

@@ -200,7 +200,7 @@ const NyttRammevedtakModal: React.FC<Props> = (props: Props) => {
         setModalRammevedtak({...defaultRammevedtak, rammevedtaksreferanse: generateFilreferanseId()});
 
         if (soknad.saker.length > 0) {
-            setModalRammevedtak({...defaultRammevedtak, saksreferanse: soknad.saker[0].referanse});
+            setModalRammevedtak({...defaultRammevedtak, rammevedtaksreferanse: generateFilreferanseId(), saksreferanse: soknad.saker[0].referanse});
         }
 
         setFomDatePickerIsOpen(false);

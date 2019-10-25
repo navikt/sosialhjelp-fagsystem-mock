@@ -199,7 +199,7 @@ const NyttDokumentasjonkravModal: React.FC<Props> = (props: Props) => {
 
         const alleUtbetalingsreferanser = getAllUtbetalingsreferanser(soknad);
         if (alleUtbetalingsreferanser.length > 0) {
-            setModalDokumentasjonkrav({...defaultDokumentasjonkrav, utbetalingsreferanse: [alleUtbetalingsreferanser[0]]});
+            setModalDokumentasjonkrav({...defaultDokumentasjonkrav, dokumentasjonkravreferanse: generateFilreferanseId(), utbetalingsreferanse: [alleUtbetalingsreferanser[0]]});
         }
 
         setVisFeilmelding(false);
