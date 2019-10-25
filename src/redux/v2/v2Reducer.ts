@@ -89,7 +89,7 @@ export const initialV2Model: V2Model = {
     visNyDokumentasjonkravModal: false,
     visNyRammevedtakModal: false,
     visEndreNavKontorModal: false,
-    visSystemSettingsModal: false,
+    visSystemSettingsModal: true,
     visSnackbar: false,
     snackbarVariant: 'success',
 

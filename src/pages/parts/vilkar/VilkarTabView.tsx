@@ -112,7 +112,7 @@ const VilkarTabView: React.FC<Props> = (props: Props) => {
                         {vilkar.utbetalingsreferanse.map(((value, idx) => {
                             if (idx === 0) {
                             return <TableRow key={"Utbetalingsreferanse"}>
-                                <TableCell rowSpan={vilkar.utbetalingsreferanse ? vilkar.utbetalingsreferanse.length : 1} component="th" scope="row">{"Utbetalingsreferanse"}</TableCell>
+                                <TableCell rowSpan={vilkar.utbetalingsreferanse ? vilkar.utbetalingsreferanse.length : 1} component="th" scope="row">{"Utbetalingsreferanser"}</TableCell>
                                 <TableCell align="right">{value}</TableCell>
                             </TableRow>
                         } else {

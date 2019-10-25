@@ -292,8 +292,22 @@ export const getDokumentasjonkravByDokumentasjonkravreferanse = (dokumentasjonkr
     })
 };
 
-export const getRammevedtakByRammevedtaksreferanse = (rammevedtak: Rammevedtak[], referanse: string): Rammevedtak | undefined => {
-    return rammevedtak.find(s => {
+const getAlleRammeVedtakFraSaker = (saker: FsSaksStatus[]): Rammevedtak[] => {
+    let rammevedtakListe:Rammevedtak[] = [];
+    saker.forEach(sak => sak.rammevedtak.forEach(rammevedtak => rammevedtakListe = [...rammevedtakListe, rammevedtak]));
+    return rammevedtakListe;
+};
+
+export const getAlleRammevedtak = (soknad: FsSoknad): Rammevedtak[] => {
+    let alleRammeVedtak:Rammevedtak[] = [...soknad.rammevedtak];
+    const alleRammeVedtakFraSaker = getAlleRammeVedtakFraSaker(soknad.saker);
+    alleRammeVedtakFraSaker.forEach(rammevedtak => alleRammeVedtak = [...alleRammeVedtak, rammevedtak]);
+    return alleRammeVedtakFraSaker;
+};
+
+export const getRammevedtakByRammevedtaksreferanse = (soknad: FsSoknad, referanse: string): Rammevedtak | undefined => {
+    let alleRammevedtak = getAlleRammevedtak(soknad);
+    return alleRammevedtak.find(s => {
         return s.rammevedtaksreferanse === referanse
     })
 };

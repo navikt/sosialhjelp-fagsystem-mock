@@ -152,7 +152,7 @@ const NyttRammevedtakModal: React.FC<Props> = (props: Props) => {
     const {visNyRammevedtakModal, dispatch, v2, soknad, aktivtRammevedtak} = props;
 
     function resetStateValues() {
-        setModalRammevedtak({...initialRammevedtak});
+        setModalRammevedtak({...initialRammevedtak, rammevedtaksreferanse: generateFilreferanseId()});
 
         setFomDatePickerIsOpen(false);
         setTomDatePickerIsOpen(false);
@@ -208,7 +208,7 @@ const NyttRammevedtakModal: React.FC<Props> = (props: Props) => {
 
     const fyllInnAktivtRammevedtak = () => {
         if (aktivtRammevedtak) {
-            let rammevedtak = getRammevedtakByRammevedtaksreferanse(soknad.rammevedtak, aktivtRammevedtak);
+            const rammevedtak = getRammevedtakByRammevedtaksreferanse(soknad, aktivtRammevedtak);
             if (rammevedtak){
                 setModalRammevedtak(rammevedtak);
             }

@@ -11,7 +11,7 @@ import Fab from '@material-ui/core/Fab';
 import AddIcon from '@material-ui/icons/Add';
 import Box from '@material-ui/core/Box';
 import {Paper} from "@material-ui/core";
-import {visNyRammevedtakModal} from "../../../redux/v2/v2Actions";
+import {setAktivtRammevedtak, visNyRammevedtakModal} from "../../../redux/v2/v2Actions";
 import RammevedtakTabView from "./RammevedtakTabView";
 import {Rammevedtak} from "../../../types/hendelseTypes";
 
@@ -85,6 +85,7 @@ const RammevedtakOversiktView: React.FC<Props> = (props: Props) => {
             <Box className={classes.addbox}>
                 <Typography>
                     <Fab aria-label="add" className={classes.fab} color="primary" onClick={() => {
+                        dispatch(setAktivtRammevedtak(null));
                         dispatch(visNyRammevedtakModal());
                     }}>
                         <AddIcon/>
@@ -147,13 +148,10 @@ const RammevedtakOversiktView: React.FC<Props> = (props: Props) => {
 
 
     return (
-        <div className={classes.root}>
-            <Paper className={classes.paper}>
-                <Typography variant={"h5"}>Rammevedtak</Typography>
-                {addNyttRammevedtakButton()}
+        <div>
+            {addNyttRammevedtakButton()}
 
-                { insertRammevedtakOversikt() }
-            </Paper>
+            { insertRammevedtakOversikt() }
         </div>
     );
 };

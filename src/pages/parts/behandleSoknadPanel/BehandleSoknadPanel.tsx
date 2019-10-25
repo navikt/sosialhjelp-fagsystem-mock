@@ -36,7 +36,12 @@ const useStyles = makeStyles(theme => ({
         width: '100%',
         flexDirection: 'row',
         justifyContent: 'space-between',
-    }
+    },
+    paper3: {
+        padding: theme.spacing(2, 2),
+        marginTop: theme.spacing(2)
+
+    },
 }));
 
 
@@ -91,7 +96,12 @@ const BehandleSoknadPanel: React.FC<Props> = (props: Props) => {
 
                     <DokumentasjonkravOversiktView soknad={soknad}/>
 
-                    <RammevedtakOversiktView rammevedtakListe={soknad.rammevedtak}/>
+                    <div className={classes.root2}>
+                        <Paper className={classes.paper3}>
+                            <Typography variant={"h5"}>Rammevedtak</Typography>
+                            <RammevedtakOversiktView rammevedtakListe={soknad.rammevedtak}/>
+                        </Paper>
+                    </div>
                 </div>
                 <NyttRammevedtakModal soknad={soknad}/>
             </div>

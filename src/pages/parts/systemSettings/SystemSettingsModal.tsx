@@ -40,7 +40,6 @@ interface StoreProps {
     visSystemSettingsModal: boolean;
     backendUrls: BackendUrls;
     backendUrlTypeToUse: string;
-    oppdaterDigisosSakUrl: string;
 }
 
 type Props = DispatchProps & OwnProps & StoreProps;
@@ -48,17 +47,16 @@ type Props = DispatchProps & OwnProps & StoreProps;
 
 const SystemSettingsModal: React.FC<Props> = (props: Props) => {
     const classes = useStyles();
-    const {visSystemSettingsModal, dispatch, backendUrls, backendUrlTypeToUse, oppdaterDigisosSakUrl} = props;
+    const {visSystemSettingsModal, dispatch, backendUrls, backendUrlTypeToUse} = props;
 
     const radios = Object.keys(backendUrls).map((backendUrlType: string) => {
         // @ts-ignore
-        const backendUrl = backendUrls[backendUrlType];
         return (
             <FormControlLabel
                 key={"urlLabel: " + backendUrlType}
                 value={backendUrlType}
                 control={<Radio/>}
-                label={backendUrlType + " " + backendUrl + oppdaterDigisosSakUrl}
+                label={backendUrlType}
             />
         );
     });
@@ -80,10 +78,10 @@ const SystemSettingsModal: React.FC<Props> = (props: Props) => {
             <Fade in={visSystemSettingsModal}>
                 <div className={classes.paper}>
                     <FormControl component="fieldset" className={classes.formControl}>
-                        <FormLabel component="legend">Url til backend</FormLabel>
+                        <FormLabel component="legend">Miljø</FormLabel>
                         <RadioGroup
                             aria-label="backend url"
-                            name="Url til backend"
+                            name="miljo"
                             value={backendUrlTypeToUse}
                             onChange={
                                 (event, value) => {
@@ -103,8 +101,7 @@ const SystemSettingsModal: React.FC<Props> = (props: Props) => {
 const mapStateToProps = (state: AppState) => ({
     visSystemSettingsModal: state.v2.visSystemSettingsModal,
     backendUrls: state.v2.backendUrls,
-    backendUrlTypeToUse: state.v2.backendUrlTypeToUse,
-    oppdaterDigisosSakUrl: state.v2.oppdaterDigisosSakUrl
+    backendUrlTypeToUse: state.v2.backendUrlTypeToUse
 });
 
 const mapDispatchToProps = (dispatch: any) => {

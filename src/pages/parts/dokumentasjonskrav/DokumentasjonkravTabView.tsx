@@ -109,7 +109,7 @@ const DokumentasjonkravTabView: React.FC<Props> = (props: Props) => {
                         {dokumentasjonkrav.utbetalingsreferanse.map(((value, idx) => {
                             if (idx === 0) {
                                 return <TableRow key={"Utbetalingsreferanse"}>
-                                    <TableCell rowSpan={dokumentasjonkrav.utbetalingsreferanse ? dokumentasjonkrav.utbetalingsreferanse.length : 1} component="th" scope="row">{"Utbetalingsreferanse"}</TableCell>
+                                    <TableCell rowSpan={dokumentasjonkrav.utbetalingsreferanse ? dokumentasjonkrav.utbetalingsreferanse.length : 1} component="th" scope="row">{"Utbetalingsreferanser"}</TableCell>
                                     <TableCell align="right">{value}</TableCell>
                                 </TableRow>
                             } else {
