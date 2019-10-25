@@ -109,17 +109,17 @@ const VilkarTabView: React.FC<Props> = (props: Props) => {
                     <TableBody>
                         {makeTableRow("Vilkårreferanse *", vilkar.vilkarreferanse)}
 
-                        <TableRow key={"Utbetalingsreferanse"}>
-                            <TableCell rowSpan={vilkar.utbetalingsreferanse.length} component="th" scope="row">{"Utbetalingsreferanse"}</TableCell>
-                            <TableCell align="right">{vilkar.utbetalingsreferanse[0]}</TableCell>
-                        </TableRow>
-                        {vilkar.utbetalingsreferanse.forEach(((value, idx) => {
+                        {vilkar.utbetalingsreferanse.map(((value, idx) => {
                             if (idx === 0) {
-                            return;
-                        }
-                            return (<TableRow key={"Utbetalingsreferanse" + idx}>
-                            <TableCell align="right">{value}</TableCell>
-                            </TableRow>)
+                            return <TableRow key={"Utbetalingsreferanse"}>
+                                <TableCell rowSpan={vilkar.utbetalingsreferanse ? vilkar.utbetalingsreferanse.length : 1} component="th" scope="row">{"Utbetalingsreferanse"}</TableCell>
+                                <TableCell align="right">{value}</TableCell>
+                            </TableRow>
+                        } else {
+                                return <TableRow key={"Utbetalingsreferanse" + idx}>
+                                    <TableCell align="right">{value}</TableCell>
+                                </TableRow>
+                            }
                         }))}
                         {makeTableRow("Beskrivelse", vilkar.beskrivelse)}
                         {makeTableRowOfStatus("Status", vilkar.status)}

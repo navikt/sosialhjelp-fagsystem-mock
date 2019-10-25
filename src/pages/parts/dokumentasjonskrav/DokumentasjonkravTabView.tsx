@@ -106,15 +106,16 @@ const DokumentasjonkravTabView: React.FC<Props> = (props: Props) => {
                     <TableBody>
                         {makeTableRow("Dokumentasjonkravreferanse", dokumentasjonkrav.dokumentasjonkravreferanse)}
 
-                        <TableRow key={"Utbetalingsreferanse"}>
-                            <TableCell rowSpan={dokumentasjonkrav.utbetalingsreferanse.length} component="th" scope="row">{"Utbetalingsreferanse"}</TableCell>
-                            <TableCell align="right">{dokumentasjonkrav.utbetalingsreferanse[0]}</TableCell>
-                        </TableRow>
-                        {dokumentasjonkrav.utbetalingsreferanse.forEach(((value, idx) => {
-                            if (idx !== 0) {
-                                return (<TableRow key={"Utbetalingsreferanse" + idx}>
+                        {dokumentasjonkrav.utbetalingsreferanse.map(((value, idx) => {
+                            if (idx === 0) {
+                                return <TableRow key={"Utbetalingsreferanse"}>
+                                    <TableCell rowSpan={dokumentasjonkrav.utbetalingsreferanse ? dokumentasjonkrav.utbetalingsreferanse.length : 1} component="th" scope="row">{"Utbetalingsreferanse"}</TableCell>
                                     <TableCell align="right">{value}</TableCell>
-                                </TableRow>)
+                                </TableRow>
+                            } else {
+                                return <TableRow key={"Utbetalingsreferanse" + idx}>
+                                    <TableCell align="right">{value}</TableCell>
+                                </TableRow>
                             }
                         }))}
                         {makeTableRow("Beskrivelse", dokumentasjonkrav.beskrivelse)}
