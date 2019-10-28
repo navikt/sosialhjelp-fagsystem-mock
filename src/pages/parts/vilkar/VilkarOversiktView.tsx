@@ -140,7 +140,7 @@ const VilkarOversiktView: React.FC<Props> = (props: Props) => {
                 <>
                     <br/>
                     <Typography variant={"subtitle1"}>
-                        Ingen vilkår er opprettet for denne søknaden ennå.
+                        Ingen vilkår er opprettet for denne søknaden.
                     </Typography>
                 </>
             )

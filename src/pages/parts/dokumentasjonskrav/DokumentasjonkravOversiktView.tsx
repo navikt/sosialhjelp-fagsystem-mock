@@ -140,7 +140,7 @@ const DokumentasjonkravOversiktView: React.FC<Props> = (props: Props) => {
                 <>
                     <br/>
                     <Typography variant={"subtitle1"}>
-                        Ingen dokumentasjonkrav er opprettet for denne søknaden ennå.
+                        Ingen dokumentasjonkrav er opprettet for denne søknaden.
                     </Typography>
                 </>
             )

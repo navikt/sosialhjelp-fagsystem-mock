@@ -225,10 +225,6 @@ const SaksTabView: React.FC<Props> = (props: Props) => {
             </Box>
 
             <br/>
-            <Typography>Vilkår</Typography>
-            <br/>
-            <Typography>Dokumentasjonskrav</Typography>
-            <br/>
             <Typography>Utbetaling</Typography>
 
             {addNyUtbetalingButton()}

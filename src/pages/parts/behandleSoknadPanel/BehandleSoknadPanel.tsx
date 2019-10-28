@@ -100,6 +100,14 @@ const BehandleSoknadPanel: React.FC<Props> = (props: Props) => {
                         <Paper className={classes.paper3}>
                             <Typography variant={"h5"}>Rammevedtak</Typography>
                             <RammevedtakOversiktView rammevedtakListe={soknad.rammevedtak}/>
+                            {(soknad.rammevedtak.length === 0) &&
+                            <>
+                                <br/>
+                                <Typography variant={"subtitle1"}>
+                                    Ingen rammevedtak uten saksreferanse er opprettet for denne søknaden.
+                                </Typography>
+                            </>
+                            }
                         </Paper>
                     </div>
                 </div>

@@ -137,10 +137,6 @@ const RammevedtakOversiktView: React.FC<Props> = (props: Props) => {
         } else {
             return (
                 <>
-                    <br/>
-                    <Typography variant={"subtitle1"}>
-                        Ingen rammevedtak er opprettet for denne søknaden ennå.
-                    </Typography>
                 </>
             )
         }

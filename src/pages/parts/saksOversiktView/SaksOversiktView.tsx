@@ -165,7 +165,7 @@ const SaksOversiktView: React.FC<Props> = (props: Props) => {
                 <>
                     <br/>
                     <Typography variant={"subtitle1"}>
-                        Ingen saker er opprettet for denne søknaden ennå.
+                        Ingen saker er opprettet for denne søknaden.
                     </Typography>
                 </>
             )
