@@ -57,7 +57,10 @@ const ToppPanel: React.FC<Props> = (props: Props) => {
     const {soknad, backendUrls, backendUrlTypeToUse} = props;
     const backendUrl = backendUrls[backendUrlTypeToUse];
     if (soknad) {
-        const frontendUrl = backendUrl.substring(0, backendUrl.search('/sosialhjelp/')) + '/sosialhjelp/innsyn/' + soknad.fiksDigisosId + '/status';
+        let frontendUrl = backendUrl.substring(0, backendUrl.search('/sosialhjelp/')) + '/sosialhjelp/innsyn/' + soknad.fiksDigisosId + '/status';
+        if (frontendUrl.includes('localhost:8080')) {
+            frontendUrl = frontendUrl.replace('localhost:8080', 'localhost:3000')
+        }
         return (
             <div>
 
