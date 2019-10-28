@@ -1,5 +1,5 @@
 export interface FiksDigisosSokerJson {
-    "sak" : {
+    "sak": {
         "soker": DigisosSokerJson
     }
     "type": string
@@ -65,15 +65,14 @@ export interface ForelopigSvar { // hvis behandlingstiden er lenger enn forventa
 }
 
 
-
 // -----
 // En sak og alle tingene som kan knyttes til en sak.
 export interface SaksStatus {
     type: HendelseType.SaksStatus;
     hendelsestidspunkt: string;
     referanse: string; // FIXME: Lag generator function. Ikke la bru
-    tittel: string|null;
-    status: SaksStatusType|null;
+    tittel: string | null;
+    status: SaksStatusType | null;
 }
 
 // saksreferanse
@@ -82,57 +81,61 @@ export interface Utbetaling {
     hendelsestidspunkt: string; // f eks "2018-10-08T21:47:00.134Z"
     utbetalingsreferanse: string; // unik string ref
     saksreferanse: string; // "Referanse utbetalingen skal tilknyttes til (samme som i vedtak fattet og saksstatus)"
-    rammevedtaksreferanse: string|null; // "Settes dersom utbetalingen er en del av et rammevedtak"
-    status: UtbetalingStatus|null;
-    belop: number|null; // belop i kr
-    beskrivelse: string|null; // "Stønaden utbetalingen gjelder for (livsopphold, strøm etc.)"
-    forfallsdato: string|null; // "pattern": "^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$"
-    stonadstype: string|null; // Grupperingsnøkkel
-    utbetalingsdato: string|null; // "pattern": "^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$"
-    fom: string|null; // DATO
-    tom: string|null; // DATO
-    annenMottaker: boolean|null; // "Om en annen mottaker enn brukeren skal ha pengene"
-    mottaker: string|null; // "Mottaker (søker eller annen mottaker), fnummer, orgnummer, eller navn"
-    kontonummer: string|null; //"Mottakers kontonummer, bank i Norge, blir bare vist dersom mottaker er brukeren", "^[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]$"
-    utbetalingsmetode: string|null; // "Utbetalingsmetode, eks kontooverføring, kontantkort"
+    rammevedtaksreferanse: string | null; // "Settes dersom utbetalingen er en del av et rammevedtak"
+    status: UtbetalingStatus | null;
+    belop: number | null; // belop i kr
+    beskrivelse: string | null; // "Stønaden utbetalingen gjelder for (livsopphold, strøm etc.)"
+    forfallsdato: string | null; // "pattern": "^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$"
+    stonadstype: string | null; // Grupperingsnøkkel
+    utbetalingsdato: string | null; // "pattern": "^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$"
+    fom: string | null; // DATO
+    tom: string | null; // DATO
+    annenMottaker: boolean | null; // "Om en annen mottaker enn brukeren skal ha pengene"
+    mottaker: string | null; // "Mottaker (søker eller annen mottaker), fnummer, orgnummer, eller navn"
+    kontonummer: string | null; //"Mottakers kontonummer, bank i Norge, blir bare vist dersom mottaker er brukeren", "^[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]$"
+    utbetalingsmetode: string | null; // "Utbetalingsmetode, eks kontooverføring, kontantkort"
 }
+
 //saksreferanse
 export interface VedtakFattet {
     type: HendelseType.VedtakFattet;
     hendelsestidspunkt: string;
     saksreferanse: string;
-    utfall: { utfall: Utfall|null };
-    vedtaksfil: { referanse: Svarut | Dokumentlager};
+    utfall: Utfall | null;
+    vedtaksfil: { referanse: Svarut | Dokumentlager };
     vedlegg: Vedlegg[]
 }
+
 // saksreferanse
 export interface Rammevedtak {
     type: HendelseType.Rammevedtak;
     hendelsestidspunkt: string;
     rammevedtaksreferanse: string;
-    saksreferanse: string|null;
-    beskrivelse: string|null;
-    belop: number|null;
-    fom: string|null;
-    tom: string|null;
+    saksreferanse: string | null;
+    beskrivelse: string | null;
+    belop: number | null;
+    fom: string | null;
+    tom: string | null;
 }
+
 // utbetalingsref
 export interface Vilkar {
     type: HendelseType.Vilkar;
     hendelsestidspunkt: string;
     vilkarreferanse: string;
-    utbetalingsreferanse: string[]|null;
-    beskrivelse: string|null;
-    status: VilkarStatus|null;
+    utbetalingsreferanse: string[] | null;
+    beskrivelse: string | null;
+    status: VilkarStatus | null;
 }
+
 // utbetalingsref
 export interface Dokumentasjonkrav {
     type: HendelseType.Dokumentasjonkrav;
     hendelsestidspunkt: string;
     dokumentasjonkravreferanse: string;
-    utbetalingsreferanse: string[]|null, // Array med hvilke utbetalinger som venter på at dette kravet blir oppfylt
-    beskrivelse: string|null, // beskrivelse av hva som må gjøres
-    status: DokumentasjonkravStatus|null
+    utbetalingsreferanse: string[] | null, // Array med hvilke utbetalinger som venter på at dette kravet blir oppfylt
+    beskrivelse: string | null, // beskrivelse av hva som må gjøres
+    status: DokumentasjonkravStatus | null
 }
 
 
@@ -205,7 +208,7 @@ export interface Dokumentlager {
 
 }
 
-export interface DokumentlagerExtended{
+export interface DokumentlagerExtended {
     type: FilreferanseType.dokumentlager
     id: string;
     tittel: string;
@@ -222,8 +225,8 @@ export interface Forvaltningsbrev {
 
 export interface Dokument {
     dokumenttype: string;
-    tilleggsinformasjon: string|null;
-    innsendelsesfrist: string|null;
+    tilleggsinformasjon: string | null;
+    innsendelsesfrist: string | null;
 }
 
 export interface Version {
