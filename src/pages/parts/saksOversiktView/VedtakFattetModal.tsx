@@ -97,7 +97,7 @@ const VedtakFattetModal: React.FC<Props> = (props: Props) => {
                          type: HendelseType.VedtakFattet,
                          hendelsestidspunkt: getNow(),
                          saksreferanse: sak.referanse,
-                         utfall: { utfall: vedtakFattetUtfall },
+                         utfall:  vedtakFattetUtfall ,
                          vedtaksfil: {
                              referanse: {
                                  type: filreferanselager.dokumentlager[0].type,

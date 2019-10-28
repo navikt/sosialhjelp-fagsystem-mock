@@ -30,7 +30,7 @@ export interface vedtakFattetExtended {
     type: HendelseType.VedtakFattet;
     hendelsestidspunkt: string;
     saksreferanse: string;
-    utfall: { utfall: Utfall | undefined };
+    utfall:  Utfall | undefined ;
     vedtaksfil: {
         referanse: SvarutExtended | DokumentlagerExtended | undefined
     }
@@ -41,7 +41,7 @@ const nyttVedtakTemplate: vedtakFattetExtended = {
     type: HendelseType.VedtakFattet,
     hendelsestidspunkt: getNow(),
     saksreferanse: "",
-    utfall: {utfall: undefined},
+    utfall: undefined,
     vedtaksfil: {referanse: undefined},
     vedlegg: []
 };
@@ -109,15 +109,15 @@ class FattNyttVedtak extends React.Component<Props, State> {
             listOfFeil.push({type: VedtaksFeiltype.SAKS_REFERANSE});
         }
         if (
-            nyttVedtak.utfall.utfall !== Utfall.AVVIST &&
-            nyttVedtak.utfall.utfall !== Utfall.AVSLATT &&
-            nyttVedtak.utfall.utfall !== Utfall.DELVIS_INNVILGET &&
-            nyttVedtak.utfall.utfall !== Utfall.INNVILGET) {
+            nyttVedtak.utfall !== Utfall.AVVIST &&
+            nyttVedtak.utfall !== Utfall.AVSLATT &&
+            nyttVedtak.utfall !== Utfall.DELVIS_INNVILGET &&
+            nyttVedtak.utfall !== Utfall.INNVILGET) {
             listOfFeil.push({type: VedtaksFeiltype.UTFALL});
         }
 
         if (listOfFeil.length === 0 &&
-            nyttVedtak.utfall.utfall &&
+            nyttVedtak.utfall &&
             nyttVedtak.vedtaksfil.referanse
         ) {
             const vedtaksfilUpdated: Svarut | Dokumentlager = convertToFilreferanse(nyttVedtak.vedtaksfil.referanse);
@@ -128,7 +128,7 @@ class FattNyttVedtak extends React.Component<Props, State> {
                 type: HendelseType.VedtakFattet,
                 hendelsestidspunkt: getNow(),
                 saksreferanse: nyttVedtak.saksreferanse,
-                utfall: {utfall: nyttVedtak.utfall.utfall},
+                utfall: nyttVedtak.utfall,
                 vedtaksfil: {referanse: vedtaksfilUpdated},
                 vedlegg: vedleggUpdated
             };
@@ -148,23 +148,23 @@ class FattNyttVedtak extends React.Component<Props, State> {
         const nyttVedtak = {...this.state.nyttVedtak};
         switch (utfall) {
             case "INNVILGET": {
-                nyttVedtak.utfall.utfall = Utfall.INNVILGET;
+                nyttVedtak.utfall = Utfall.INNVILGET;
                 break;
             }
             case "DELVIS_INNVILGET": {
-                nyttVedtak.utfall.utfall = Utfall.DELVIS_INNVILGET;
+                nyttVedtak.utfall = Utfall.DELVIS_INNVILGET;
                 break;
             }
             case "AVSLATT": {
-                nyttVedtak.utfall.utfall = Utfall.AVSLATT;
+                nyttVedtak.utfall = Utfall.AVSLATT;
                 break;
             }
             case "AVVIST": {
-                nyttVedtak.utfall.utfall = Utfall.AVVIST;
+                nyttVedtak.utfall = Utfall.AVVIST;
                 break;
             }
             default: {
-                nyttVedtak.utfall.utfall = undefined;
+                nyttVedtak.utfall = undefined;
             }
         }
         this.setState({nyttVedtak: nyttVedtak, isValid: true});
