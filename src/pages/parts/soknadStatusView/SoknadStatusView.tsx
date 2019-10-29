@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useRef} from 'react';
 import {AppState, DispatchProps} from "../../../redux/reduxTypes";
 import {connect} from "react-redux";
 import {createStyles, Paper} from "@material-ui/core";
@@ -13,7 +13,7 @@ import AddIcon from '@material-ui/icons/Add';
 import Box from "@material-ui/core/Box";
 import Fab from "@material-ui/core/Fab";
 import {FsSoknad} from "../../../redux/v3/v3FsTypes";
-import {aiuuur, oppdaterForelopigSvar, oppdaterSoknadsStatus} from "../../../redux/v3/v3Actions";
+import {aiuuur, chaaar, oppdaterForelopigSvar, oppdaterSoknadsStatus} from "../../../redux/v3/v3Actions";
 import {getNow} from "../../../utils/utilityFunctions";
 import {V2Model} from "../../../redux/v2/v2Types";
 import {oHendelser} from "../../../redux/v3/v3Optics";
@@ -87,37 +87,26 @@ type Props = DispatchProps & OwnProps & StoreProps;
 const SoknadStatusView: React.FC<Props> = (props: Props) => {
     const classes = useStyles();
     const {dispatch, soknad, v2} = props;
-    const [antallForelopigSvar, setAntallForelopigSvar] = useState(0);
-    const filreferanselager = v2.filreferanselager;
+    const inputEl = useRef<HTMLInputElement>(null);
+
+    const handleFileUpload = (files: FileList) => {
+        if (files.length !== 1) {
+            return;
+        }
+        const formData = new FormData();
+        formData.append("file", files[0], files[0].name);
+
+        dispatch(chaaar(soknad.fiksDigisosId, formData, v2, soknad));
+    };
 
     const addNyttForelopigSvarButton = () => {
         return (
             <Box className={classes.addbox}>
                 <Fab aria-label='Add' className={classes.fab} color='primary'
                      onClick={() => {
-                         const nyHendelse: ForelopigSvar = {
-                             type: HendelseType.ForelopigSvar,
-                             hendelsestidspunkt: getNow(),
-                             forvaltningsbrev: {
-                                 referanse: {
-                                     type: filreferanselager.dokumentlager[0].type,
-                                     id: filreferanselager.dokumentlager[0].id
-                                 }
-                             },
-                             vedlegg: []
-                         };
-
-                         const soknadUpdated = oHendelser.modify((a: Hendelse[]) => [...a, nyHendelse])(soknad);
-
-                         dispatch(
-                             aiuuur(
-                                 soknad.fiksDigisosId,
-                                 soknadUpdated.fiksDigisosSokerJson,
-                                 v2,
-                                 oppdaterForelopigSvar(soknad.fiksDigisosId, nyHendelse)
-                             )
-                         );
-                         setAntallForelopigSvar(antallForelopigSvar + 1);
+                         if(inputEl && inputEl.current) {
+                             inputEl.current.click();
+                         }
                      }}>
                     <AddIcon/>
                 </Fab>
@@ -136,7 +125,6 @@ const SoknadStatusView: React.FC<Props> = (props: Props) => {
                 <Box className={classes.box}>
                     <FormControl component="fieldset" className={classes.formControl}>
                         <Typography variant={'h5'}>Status på Søknaden</Typography>
-                        {/*<FormLabel component="legend">Status på sak</FormLabel>*/}
                         <RadioGroup aria-label="soknadsStatus" name="soknadsStatus1" value={soknad.soknadsStatus.status}
                                     onChange={(event, value) => {
                                         if (
@@ -182,6 +170,20 @@ const SoknadStatusView: React.FC<Props> = (props: Props) => {
                         <Typography variant={'h5'}>Foreløpig svar</Typography>
                         {addNyttForelopigSvarButton()}
                         <Typography>{"Antall pdfer sendt: " + getAntallForelopigSvarHendelser()}</Typography>
+                        <input
+                            id={'inputField'}
+                            ref={inputEl}
+                            onChange={(e) => {
+                                if (e.target.files) {
+                                    handleFileUpload(e.target.files)
+                                }
+                            }}
+                            type="file"
+                            hidden={true}
+                            className="visuallyhidden"
+                            tabIndex={-1}
+                            accept={window.navigator.platform.match(/iPad|iPhone|iPod/) !== null ? "*" : "application/pdf"}
+                        />
                     </Box>
                 </div>
             </Paper>

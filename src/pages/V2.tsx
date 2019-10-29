@@ -289,28 +289,28 @@ class V2 extends React.Component<Props, State> {
                                         </Panel>
                                     </div>
 
-                                    {/*<Modal*/}
-                                    {/*    isOpen={loaderOn}*/}
-                                    {/*    contentLabel=""*/}
-                                    {/*    onRequestClose={() => console.warn("aksjdn")}*/}
-                                    {/*    closeButton={false}*/}
-                                    {/*    shouldCloseOnOverlayClick={false}*/}
-                                    {/*    className={"modal-style-override"}*/}
-                                    {/*>*/}
-                                    {/*    <div className="application-spinner">*/}
-                                    {/*        /!*<div style={{padding:'2rem 2.5rem'}}>Innhold her</div>*!/*/}
-                                    {/*        /!*<NavFrontendSpinner type="XXL"/>*!/*/}
-                                    {/*        <div className='sweet-loading pacmanloader'>*/}
-                                    {/*            <PacmanLoader*/}
-                                    {/*                css={override}*/}
-                                    {/*                sizeUnit={"px"}*/}
-                                    {/*                size={50}*/}
-                                    {/*                color={'#000'}*/}
-                                    {/*                loading={loaderOn}*/}
-                                    {/*            />*/}
-                                    {/*        </div>*/}
-                                    {/*    </div>*/}
-                                    {/*</Modal>*/}
+                                    <Modal
+                                        isOpen={loaderOn}
+                                        contentLabel=""
+                                        onRequestClose={() => console.warn("aksjdn")}
+                                        closeButton={false}
+                                        shouldCloseOnOverlayClick={false}
+                                        className={"modal-style-override"}
+                                    >
+                                        <div className="application-spinner">
+                                            {/*<div style={{padding:'2rem 2.5rem'}}>Innhold her</div>*/}
+                                            {/*<NavFrontendSpinner type="XXL"/>*/}
+                                            <div className='sweet-loading pacmanloader'>
+                                                <PacmanLoader
+                                                    css={override}
+                                                    sizeUnit={"px"}
+                                                    size={50}
+                                                    color={'#000'}
+                                                    loading={loaderOn}
+                                                />
+                                            </div>
+                                        </div>
+                                    </Modal>
                                 </>
                             )}
                             <Panel>

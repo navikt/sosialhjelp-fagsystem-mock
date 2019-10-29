@@ -19,11 +19,11 @@ import {
     SlettFsSoknad,
     V3ActionTypeKeys
 } from "./v3Types";
-import {
+import Hendelse, {
     DokumentasjonEtterspurt,
     Dokumentasjonkrav,
-    FiksDigisosSokerJson,
-    ForelopigSvar,
+    FiksDigisosSokerJson, FilreferanseType,
+    ForelopigSvar, HendelseType,
     Rammevedtak,
     SaksStatus,
     SoknadsStatus,
@@ -43,8 +43,10 @@ import {
     visSuccessSnackbar
 } from "../v2/v2Actions";
 import {V2Model} from "../v2/v2Types";
-import {FsSaksStatus} from "./v3FsTypes";
+import {FsSaksStatus, FsSoknad} from "./v3FsTypes";
 import {NavKontor} from "../../types/additionalTypes";
+import {getNow} from "../../utils/utilityFunctions";
+import {oHendelser} from "./v3Optics";
 
 
 export const aiuuur = (
@@ -67,7 +69,7 @@ export const aiuuur = (
                 dispatch(visSuccessSnackbar());
             }
             dispatch(setFiksDigisosSokerJson(fiksDigisosSokerJson));
-            let fiksId = response.fiksDigisosId
+            let fiksId = response.fiksDigisosId;
             dispatch(
                 oppdaterFixId(fiksDigisosId, fiksId.toString()));
             dispatch(setAktivSoknad(fiksId.toString()));
@@ -119,6 +121,112 @@ export const zeruuus = (
 
             }, 1000);
 
+        }).catch((reason) => {
+            switch (reason.message) {
+                case "Not Found": {
+                    console.warn("Got 404. Specify a valid backend url...");
+                    setTimeout(() => {
+                        dispatch(turnOffLoader());
+                    }, 1000);
+                    break;
+                }
+                case "Failed to fetch": {
+                    console.warn("Got 404. Specify a valid backend url...");
+                    setTimeout(() => {
+                        dispatch(turnOffLoader());
+                    }, 1000);
+                    break;
+                }
+                default: {
+                    console.warn("Unhandled reason with message: " + reason.message);
+                }
+            }
+        });
+    }
+};
+
+export const chaaar = (
+    fiksDigisosId: string,
+    formData: FormData,
+    v2: V2Model,
+    soknad: FsSoknad
+): (dispatch: Dispatch<AnyAction>) => void => {
+
+    const backendUrl = v2.backendUrls[v2.backendUrlTypeToUse];
+
+    return (dispatch: Dispatch) => {
+        dispatch(turnOnLoader());
+
+        fetch(`${backendUrl}/api/v1/digisosapi/${fiksDigisosId}/filOpplasting`, {
+            method: 'POST',
+            body: formData,
+            headers: new Headers({
+                "Authorization": "Bearer 1234",
+                "Accept": "*/*"
+            })
+        }).then((response: Response) => {
+            response.text().then((id: string) => {
+
+                const nyHendelse: ForelopigSvar = {
+                    type: HendelseType.ForelopigSvar,
+                    hendelsestidspunkt: getNow(),
+                    forvaltningsbrev: {
+                        referanse: {
+                            type: FilreferanseType.dokumentlager,
+                            id: id
+                        }
+                    },
+                    vedlegg: []
+                };
+
+                const soknadUpdated = oHendelser.modify((a: Hendelse[]) => [...a, nyHendelse])(soknad);
+
+                const backendUrl = v2.backendUrls[v2.backendUrlTypeToUse];
+                const oppdaterDigisosSakUrl = v2.oppdaterDigisosSakUrl;
+
+                const queryParam = `?fiksDigisosId=${fiksDigisosId}`;
+                const fiksDigisosSokerJson = soknadUpdated.fiksDigisosSokerJson;
+
+                fetchPost(`${backendUrl}${oppdaterDigisosSakUrl}${queryParam}`, JSON.stringify(fiksDigisosSokerJson)).then((response: any) => {
+                    if (v2.fiksDigisosSokerJson.sak.soker.hendelser.length < fiksDigisosSokerJson.sak.soker.hendelser.length) {
+                        dispatch(visSuccessSnackbar());
+                    }
+                    dispatch(setFiksDigisosSokerJson(fiksDigisosSokerJson));
+                    let fiksId = response.fiksDigisosId;
+                    dispatch(
+                        oppdaterFixId(fiksDigisosId, fiksId.toString()));
+                    dispatch(setAktivSoknad(fiksId.toString()));
+                    dispatch(oppdaterForelopigSvar(soknad.fiksDigisosId, nyHendelse));
+                    setTimeout(() => {
+                        dispatch(turnOffLoader());
+
+                    }, 1000);
+
+                }).catch((reason) => {
+                    dispatch(visErrorSnackbar());
+                    switch (reason.message) {
+                        case "Not Found": {
+                            console.warn("Got 404. Specify a valid backend url...");
+                            setTimeout(() => {
+                                dispatch(turnOffLoader());
+                            }, 1000);
+                            break;
+                        }
+                        case "Failed to fetch": {
+                            console.warn("Got 404. Specify a valid backend url...");
+                            setTimeout(() => {
+                                dispatch(turnOffLoader());
+                            }, 1000);
+                            break;
+                        }
+                        default: {
+                            console.warn("Unhandled reason with message: " + reason.message);
+                        }
+                    }
+                });
+
+                dispatch(turnOffLoader());
+            });
         }).catch((reason) => {
             switch (reason.message) {
                 case "Not Found": {
