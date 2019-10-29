@@ -25,7 +25,7 @@ jobs:
             echo "export DOCKER_TAG=\"docker.pkg.github.com/navikt/$CIRCLE_PROJECT_REPONAME/$CIRCLE_PROJECT_REPONAME:$VERSION\"" >> $BASH_ENV
       - run:
           name: Build docker image
-          command: docker build -t $DOCKER_TAG . || true # FIXME: Remove || true later
+          command: docker build -t $DOCKER_TAG .
       - run:
           name: Create tag and release
           command: |
@@ -50,27 +50,16 @@ jobs:
       - run:
           name: Deploy versjon=${VERSION} til miljø=${MILJO} i dev-sbs
           command: |
-            deployment-cli deploy create --cluster=dev-sbs --repository=navikt/sosialhjelp-fagsystem-mock --team=digisos -r=nais.yaml --var version=${VERSION} --vars=nais/dev/${MILJO}.json
+            export DEPLOYMENT_USERNAME="$DOCKER_USERNAME_GITHUB"
+            export DEPLOYMENT_PASSWORD="$DOCKER_PASSWORD_GITHUB"
 
-  deploy_prod:
-    docker:
-      - image: navikt/deployment-cli:v0.2.0
-    steps:
-      - checkout
-      - setup_remote_docker
-      - run:
-          name: Deploy versjon=${VERSION} til prod
-          command: |
-            deployment-cli deploy create --cluster=prod-sbs --repository=navikt/sosialhjelp-fagsystem-mock --team=digisos -r=nais.yaml --var version=${VERSION} --vars=nais/prod/default.json
+            git clone https://github.com/navikt/sosialhjelp-ci.git
+            VERSION=$(sosialhjelp-ci/bin/create-artifact-version.sh)
+
+            deployment-cli deploy create --cluster=dev-sbs --repository=navikt/sosialhjelp-fagsystem-mock --team=digisos -r=nais.yaml --var version=${VERSION} --vars=nais/dev/${MILJO}.json
 
 workflows:
   version: 2
   build_and_deploy:
     jobs:
       - build
-#      - deploy_dev:
-#          requires:
-#            - release
-#          filters:
-#            branches:
-#              only: master
