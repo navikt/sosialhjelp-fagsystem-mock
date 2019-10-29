@@ -40,5 +40,3 @@ spec:
   env:
     - name: APPRES_CMS_URL
       value: {{appresCmsUrl}}
-    - name: PORT
-      value: 80
