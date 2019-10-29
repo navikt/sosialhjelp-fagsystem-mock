@@ -153,6 +153,7 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
     const [modalDokumentasjonEtterspurt, setModalDokumentasjonEtterspurt] = useState<DokumentasjonEtterspurt>(initialDokumentasjonEtterspurt);
     const [modalDokument, setModalDokument] = useState<Dokument>(initialDokument);
     const [visFeilmelding, setVisFeilmelding] = useState(false);
+    const [visFeilmeldingDatePicker, setVisFeilmeldingDatePicker] = useState(false);
     const [datePickerIsOpen, setDatePickerIsOpen] = useState(false);
     const classes = useStyles();
     const {visNyDokumentasjonEtterspurtModal, dispatch, v2, soknad} = props;
@@ -210,6 +211,7 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
             );
 
             setVisFeilmelding(false);
+            setVisFeilmeldingDatePicker(false);
 
             dispatch(dispatch(skjulNyDokumentasjonEtterspurtModal()));
         }
@@ -307,6 +309,8 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
                 <KeyboardDatePicker
                     className={classes.otherField}
                     disableToolbar
+                    required={true}
+                    error={visFeilmeldingDatePicker}
                     variant="inline"
                     format="yyyy-MM-dd"
                     margin="normal"
@@ -319,6 +323,7 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
                     onChange={(date: any) => {
                         setValue(date);
                         setIsOpen(false);
+                        setVisFeilmeldingDatePicker(false);
                     }}
                     KeyboardButtonProps={{
                         'aria-label': 'change date',
@@ -363,6 +368,8 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
                                         <Fab size="small" aria-label="add" className={classes.fab} color="primary" onClick={() => {
                                             if (modalDokument.dokumenttype === '') {
                                                 setVisFeilmelding(true);
+                                            } else if (getDateOrNullFromDateString(modalDokument.innsendelsesfrist) == null) {
+                                                setVisFeilmeldingDatePicker(true);
                                             } else {
                                                 leggTilDokument();
                                             }

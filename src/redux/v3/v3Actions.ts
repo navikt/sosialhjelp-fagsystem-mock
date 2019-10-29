@@ -286,7 +286,13 @@ export const tarsoniiis = (
                             id: id
                         }
                     },
-                    vedlegg: []
+                    vedlegg: [
+                        {tittel: '',
+                            referanse: {
+                                type: FilreferanseType.dokumentlager,
+                                id: id
+                            }}
+                    ]
                 };
 
                 const soknadUpdated = oHendelser.modify((a: Hendelse[]) => [...a, nyHendelse])(soknad);
