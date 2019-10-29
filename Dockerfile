@@ -2,7 +2,6 @@ FROM node as node-builder
 ADD / /source
 WORKDIR /source
 ENV CI=false
-ENV PORT=80
 
 # && npm run test
 RUN npm ci  && npm run build && npm install express
