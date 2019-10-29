@@ -21,5 +21,5 @@ jobs:
             deployment-cli deploy create --cluster=dev-sbs --repository=${GITHUB_REPOSITORY} --team=digisos -r=nais.yaml --var version=${VERSION} --vars=nais/dev/${MILJO}.json
           fi
         env:
-          DEPLOYMENT_USERNAME: ${{ secrets.DEPLOYMENT_USERNAME }}
-          DEPLOYMENT_PASSWORD: ${{ secrets.DEPLOYMENT_PASSWORD }}
+          DEPLOYMENT_USERNAME: ${{ secrets.DOCKER_USERNAME_GITHUB }}
+          DEPLOYMENT_PASSWORD: ${{ secrets.DOCKER_PASSWORD_GITHUB }}
