@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useRef, useState} from 'react';
 import {AppState, DispatchProps} from "../../../redux/reduxTypes";
 import {connect} from "react-redux";
 import {createStyles, Modal, Paper, Theme} from "@material-ui/core";
@@ -23,7 +23,7 @@ import Hendelse, {
 } from "../../../types/hendelseTypes";
 import Grid from "@material-ui/core/Grid";
 import {formatDateString, getDateOrNullFromDateString, getNow} from "../../../utils/utilityFunctions";
-import {aiuuur, oppdaterDokumentasjonEtterspurt} from "../../../redux/v3/v3Actions";
+import {aiuuur, oppdaterDokumentasjonEtterspurt, shakuraaas} from "../../../redux/v3/v3Actions";
 import {FsSoknad} from "../../../redux/v3/v3FsTypes";
 import {oHendelser} from "../../../redux/v3/v3Optics";
 import TableRow from "@material-ui/core/TableRow";
@@ -32,6 +32,7 @@ import Table from "@material-ui/core/Table";
 import TableHead from "@material-ui/core/TableHead";
 import TableBody from "@material-ui/core/TableBody";
 import IconButton from "@material-ui/core/IconButton";
+import Box from "@material-ui/core/Box";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -100,6 +101,7 @@ const useStyles = makeStyles((theme: Theme) =>
             marginTop: theme.spacing(3),
             overflowX: 'auto',
             marginBottom: theme.spacing(2),
+            marginRight: theme.spacing(3),
         },
         table: {
             minWidth: 650,
@@ -155,6 +157,17 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
     const classes = useStyles();
     const {visNyDokumentasjonEtterspurtModal, dispatch, v2, soknad} = props;
     const filreferanselager = v2.filreferanselager;
+    const inputEl = useRef<HTMLInputElement>(null);
+
+    const handleFileUpload = (files: FileList) => {
+        if (files.length !== 1) {
+            return;
+        }
+        const formData = new FormData();
+        formData.append("file", files[0], files[0].name);
+
+        dispatch(shakuraaas(soknad.fiksDigisosId, formData, modalDokumentasjonEtterspurt.dokumenter, v2, soknad));
+    };
 
     const leggTilDokument = () => {
         let innsendelsesfristDate = getDateOrNullFromDateString(modalDokument.innsendelsesfrist);
@@ -168,33 +181,38 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
     };
 
     const sendDokumentasjonEtterspurt = () => {
-        const nyHendelse: DokumentasjonEtterspurt = {
-            type: HendelseType.DokumentasjonEtterspurt,
-            hendelsestidspunkt: getNow(),
-            forvaltningsbrev: {
-                referanse: {
-                    type: filreferanselager.dokumentlager[0].type,
-                    id: filreferanselager.dokumentlager[0].id
-                }
-            },
-            vedlegg: [],
-            dokumenter: modalDokumentasjonEtterspurt.dokumenter
-        };
+        if((v2.backendUrlTypeToUse === 'q0' || v2.backendUrlTypeToUse === 'q1') && inputEl && inputEl.current
+            && modalDokumentasjonEtterspurt.forvaltningsbrev.referanse.id === '') {
+            inputEl.current.click();
+        } else {
+            const nyHendelse: DokumentasjonEtterspurt = {
+                type: HendelseType.DokumentasjonEtterspurt,
+                hendelsestidspunkt: getNow(),
+                forvaltningsbrev: {
+                    referanse: {
+                        type: filreferanselager.dokumentlager[0].type,
+                        id: filreferanselager.dokumentlager[0].id
+                    }
+                },
+                vedlegg: [],
+                dokumenter: modalDokumentasjonEtterspurt.dokumenter
+            };
 
-        const soknadUpdated = oHendelser.modify((a: Hendelse[]) => [...a, nyHendelse])(soknad);
+            const soknadUpdated = oHendelser.modify((a: Hendelse[]) => [...a, nyHendelse])(soknad);
 
-        dispatch(
-            aiuuur(
-                soknad.fiksDigisosId,
-                soknadUpdated.fiksDigisosSokerJson,
-                v2,
-                oppdaterDokumentasjonEtterspurt(soknad.fiksDigisosId, nyHendelse)
-            )
-        );
+            dispatch(
+                aiuuur(
+                    soknad.fiksDigisosId,
+                    soknadUpdated.fiksDigisosSokerJson,
+                    v2,
+                    oppdaterDokumentasjonEtterspurt(soknad.fiksDigisosId, nyHendelse)
+                )
+            );
 
-        setVisFeilmelding(false);
+            setVisFeilmelding(false);
 
-        dispatch(dispatch(skjulNyDokumentasjonEtterspurtModal()));
+            dispatch(dispatch(skjulNyDokumentasjonEtterspurtModal()));
+        }
     };
 
     const makeTableRow = (dokument: Dokument, idx:number) => {
@@ -246,7 +264,7 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
             return (
                 <>
                     <br/>
-                    <Typography variant={"subtitle1"}>
+                    <Typography variant={"subtitle1"} className={classes.tablePaper}>
                         Ingen dokumenter er lagt til
                     </Typography>
                 </>
@@ -254,8 +272,8 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
         }
     };
 
-    function getTextFieldGrid(label: string, value: any, setValue: (v: any) => any, required: boolean = false) {
-        return <Grid item key={'Grid: ' + label} xs={3} zeroMinWidth>
+    function getTextFieldGrid(label: string, value: any, setValue: (v: any) => any, width: 1|2|3|4|5 = 3, required: boolean = false) {
+        return <Grid item key={'Grid: ' + label} xs={width} zeroMinWidth>
             <TextField
                 id="outlined-name"
                 label={label}
@@ -335,39 +353,55 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
                     <div className={classes.paperbox}>
                         <div className={classes.paperback}>
                             <Grid container spacing={1} justify="center" alignItems="center">
-                                {getTextFieldGrid("Dokumenttype", modalDokument.dokumenttype, (verdi: string) => setModalDokument({...modalDokument, dokumenttype: verdi}), true)}
-                                {getTextFieldGrid("Tilleggsinformasjon", modalDokument.tilleggsinformasjon, (verdi: string) => setModalDokument({...modalDokument, tilleggsinformasjon: verdi}))}
+                                {getTextFieldGrid("Dokumenttype", modalDokument.dokumenttype, (verdi: string) => setModalDokument({...modalDokument, dokumenttype: verdi}), 3, true)}
+                                {getTextFieldGrid("Tilleggsinformasjon", modalDokument.tilleggsinformasjon, (verdi: string) => setModalDokument({...modalDokument, tilleggsinformasjon: verdi}), 5)}
                                 {getKeyboardDatePickerGrid("Innsendelsesfrist", modalDokument.innsendelsesfrist, (verdi: string) => setModalDokument({...modalDokument, innsendelsesfrist: verdi}),
                                     datePickerIsOpen, setDatePickerIsOpen)}
 
                                 <Grid item key={"grid: legg til dokument"} xs={2} zeroMinWidth>
-                                    <Fab size="small" aria-label="add" className={classes.fab} color="primary" onClick={() => {
-                                        if (modalDokument.dokumenttype === '') {
-                                            setVisFeilmelding(true);
-                                        } else {
-                                            leggTilDokument();
-                                        }
-                                    }}>
-                                        <AddIcon/>
-                                    </Fab>
-                                    <Typography>
-                                        Legg til dokumentkrav
-                                    </Typography>
-                                </Grid>
-                                <Grid item key={"grid: send dokumentasjonEtterspurt"} xs={2} zeroMinWidth>
-                                    <Fab size="small" aria-label="add" className={classes.fab} color="primary" onClick={() => {
-                                        sendDokumentasjonEtterspurt();
-                                    }}>
-                                        <AddIcon/>
-                                    </Fab>
-                                    <Typography>
-                                        Etterspør dokumentasjon
-                                    </Typography>
+                                    <Box className={classes.addbox}>
+                                        <Fab size="small" aria-label="add" className={classes.fab} color="primary" onClick={() => {
+                                            if (modalDokument.dokumenttype === '') {
+                                                setVisFeilmelding(true);
+                                            } else {
+                                                leggTilDokument();
+                                            }
+                                        }}>
+                                            <AddIcon/>
+                                        </Fab>
+                                        <Typography>
+                                            Legg til dokumentkrav
+                                        </Typography>
+                                    </Box>
                                 </Grid>
                             </Grid>
                         </div>
                         <div className={classes.paperback2}>
                             {insertDokumentasjonEtterspurtOversikt()}
+                            <Box className={classes.addbox}>
+                                <Fab size="small" aria-label="add" className={classes.fab} color="primary" onClick={() => {
+                                    sendDokumentasjonEtterspurt();
+                                }}>
+                                    <AddIcon/>
+                                </Fab>
+                                <Typography>
+                                    Etterspør dokumentasjon
+                                </Typography>
+                                <input
+                                    id={'inputField vedtakFattet'}
+                                    ref={inputEl}
+                                    onChange={(e) => {
+                                        if (e.target.files) {
+                                            handleFileUpload(e.target.files)
+                                        }
+                                    }}
+                                    type="file"
+                                    hidden={true}
+                                    className="visuallyhidden"
+                                    tabIndex={-1}
+                                    accept={window.navigator.platform.match(/iPad|iPhone|iPod/) !== null ? "*" : "application/pdf"}
+                                />
+                            </Box>
                         </div>
                     </div>
                 </div>

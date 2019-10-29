@@ -7,7 +7,6 @@ import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import {Typography} from "@material-ui/core";
 import Paper from "@material-ui/core/Paper";
-import {setAktivSoknad} from "../../../redux/v2/v2Actions";
 import {FsSoknad} from "../../../redux/v3/v3FsTypes";
 import {V2Model} from "../../../redux/v2/v2Types";
 import {opprettEllerOppdaterDigisosSakOgSettAktivSak} from "../../../redux/v3/v3Actions";

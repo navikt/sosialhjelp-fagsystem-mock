@@ -150,29 +150,26 @@ const DokumentasjonEtterspurtOversiktView: React.FC<Props> = (props: Props) => {
 
 
     function dispatchNyHendelseMedTomDokumentasjonEtterspurt() {
-        const nyHendelse: DokumentasjonEtterspurt = {
-            type: HendelseType.DokumentasjonEtterspurt,
-            hendelsestidspunkt: getNow(),
-            forvaltningsbrev: {
-                referanse: {
-                    type: filreferanselager.dokumentlager[0].type,
-                    id: filreferanselager.dokumentlager[0].id
-                }
-            },
-            vedlegg: [],
-            dokumenter: []
-        };
+        if (soknad.dokumentasjonEtterspurt) {
+            const nyHendelse: DokumentasjonEtterspurt = {
+                type: HendelseType.DokumentasjonEtterspurt,
+                hendelsestidspunkt: getNow(),
+                forvaltningsbrev: soknad.dokumentasjonEtterspurt.forvaltningsbrev,
+                vedlegg: [],
+                dokumenter: []
+            };
 
-        const soknadUpdated = oHendelser.modify((a: Hendelse[]) => [...a, nyHendelse])(soknad);
+            const soknadUpdated = oHendelser.modify((a: Hendelse[]) => [...a, nyHendelse])(soknad);
 
-        dispatch(
-            aiuuur(
-                soknad.fiksDigisosId,
-                soknadUpdated.fiksDigisosSokerJson,
-                v2,
-                oppdaterDokumentasjonEtterspurt(soknad.fiksDigisosId, nyHendelse)
-            )
-        );
+            dispatch(
+                aiuuur(
+                    soknad.fiksDigisosId,
+                    soknadUpdated.fiksDigisosSokerJson,
+                    v2,
+                    oppdaterDokumentasjonEtterspurt(soknad.fiksDigisosId, nyHendelse)
+                )
+            );
+        }
     }
 
     return (

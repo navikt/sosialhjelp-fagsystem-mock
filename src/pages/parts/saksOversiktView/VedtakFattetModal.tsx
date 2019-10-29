@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useRef, useState} from 'react';
 import {AppState, DispatchProps} from "../../../redux/reduxTypes";
 import {connect} from "react-redux";
 import {makeStyles} from '@material-ui/core/styles';
@@ -6,7 +6,7 @@ import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
-import {aiuuur, oppdaterVedtakFattet} from "../../../redux/v3/v3Actions";
+import {aiuuur, oppdaterVedtakFattet, tarsoniiis} from "../../../redux/v3/v3Actions";
 import Hendelse, {HendelseType, Utfall, VedtakFattet} from "../../../types/hendelseTypes";
 import {getNow} from "../../../utils/utilityFunctions";
 import {V2Model} from "../../../redux/v2/v2Types";
@@ -61,6 +61,17 @@ const VedtakFattetModal: React.FC<Props> = (props: Props) => {
     const [vedtakFattetUtfall, setVedtakFattetUtfall] = useState<Utfall|null>(null);
     const {dispatch, soknad, v2, sak} = props;
     const filreferanselager = v2.filreferanselager;
+    const inputEl = useRef<HTMLInputElement>(null);
+
+    const handleFileUpload = (files: FileList) => {
+        if (files.length !== 1) {
+            return;
+        }
+        const formData = new FormData();
+        formData.append("file", files[0], files[0].name);
+
+        dispatch(tarsoniiis(soknad.fiksDigisosId, formData, vedtakFattetUtfall, sak.referanse, v2, soknad));
+    };
 
     return (
         <Box className={classes.addbox}>
@@ -93,33 +104,51 @@ const VedtakFattetModal: React.FC<Props> = (props: Props) => {
             </form>
             <Fab size="small" aria-label="add" className={classes.fab} color="primary"
                  onClick={() => {
-                     const nyHendelse: VedtakFattet = {
-                         type: HendelseType.VedtakFattet,
-                         hendelsestidspunkt: getNow(),
-                         saksreferanse: sak.referanse,
-                         utfall:  vedtakFattetUtfall ,
-                         vedtaksfil: {
-                             referanse: {
-                                 type: filreferanselager.dokumentlager[0].type,
-                                 id: filreferanselager.dokumentlager[0].id
-                             }
-                         },
-                         vedlegg: []
-                     };
-                     const soknadUpdated = oHendelser.modify((a: Hendelse[]) => [...a, nyHendelse])(soknad);
+                     if((v2.backendUrlTypeToUse === 'q0' || v2.backendUrlTypeToUse === 'q1') && inputEl && inputEl.current) {
+                         inputEl.current.click();
+                     } else {
+                         const nyHendelse: VedtakFattet = {
+                             type: HendelseType.VedtakFattet,
+                             hendelsestidspunkt: getNow(),
+                             saksreferanse: sak.referanse,
+                             utfall:  vedtakFattetUtfall ,
+                             vedtaksfil: {
+                                 referanse: {
+                                     type: filreferanselager.dokumentlager[0].type,
+                                     id: filreferanselager.dokumentlager[0].id
+                                 }
+                             },
+                             vedlegg: []
+                         };
+                         const soknadUpdated = oHendelser.modify((a: Hendelse[]) => [...a, nyHendelse])(soknad);
 
-                     dispatch(
-                         aiuuur(
-                             v2.aktivSoknad,
-                             soknadUpdated.fiksDigisosSokerJson,
-                             v2,
-                             oppdaterVedtakFattet(v2.aktivSoknad, nyHendelse)
-                         )
-                     );
+                         dispatch(
+                             aiuuur(
+                                 v2.aktivSoknad,
+                                 soknadUpdated.fiksDigisosSokerJson,
+                                 v2,
+                                 oppdaterVedtakFattet(v2.aktivSoknad, nyHendelse)
+                             )
+                         );
+                     }
                  }}>
                 <AddIcon/>
             </Fab>
             <Typography>Send vedtak fattet</Typography>
+            <input
+                id={'inputField vedtakFattet'}
+                ref={inputEl}
+                onChange={(e) => {
+                    if (e.target.files) {
+                        handleFileUpload(e.target.files)
+                    }
+                }}
+                type="file"
+                hidden={true}
+                className="visuallyhidden"
+                tabIndex={-1}
+                accept={window.navigator.platform.match(/iPad|iPhone|iPod/) !== null ? "*" : "application/pdf"}
+            />
         </Box>
     );
 };

@@ -20,6 +20,7 @@ import {
     V3ActionTypeKeys
 } from "./v3Types";
 import Hendelse, {
+    Dokument,
     DokumentasjonEtterspurt,
     Dokumentasjonkrav,
     FiksDigisosSokerJson, FilreferanseType,
@@ -28,7 +29,7 @@ import Hendelse, {
     SaksStatus,
     SoknadsStatus,
     TildeltNavKontor,
-    Utbetaling,
+    Utbetaling, Utfall,
     VedtakFattet,
     Vilkar
 } from "../../types/hendelseTypes";
@@ -196,6 +197,224 @@ export const chaaar = (
                         oppdaterFixId(fiksDigisosId, fiksId.toString()));
                     dispatch(setAktivSoknad(fiksId.toString()));
                     dispatch(oppdaterForelopigSvar(soknad.fiksDigisosId, nyHendelse));
+                    setTimeout(() => {
+                        dispatch(turnOffLoader());
+
+                    }, 1000);
+
+                }).catch((reason) => {
+                    dispatch(visErrorSnackbar());
+                    switch (reason.message) {
+                        case "Not Found": {
+                            console.warn("Got 404. Specify a valid backend url...");
+                            setTimeout(() => {
+                                dispatch(turnOffLoader());
+                            }, 1000);
+                            break;
+                        }
+                        case "Failed to fetch": {
+                            console.warn("Got 404. Specify a valid backend url...");
+                            setTimeout(() => {
+                                dispatch(turnOffLoader());
+                            }, 1000);
+                            break;
+                        }
+                        default: {
+                            console.warn("Unhandled reason with message: " + reason.message);
+                        }
+                    }
+                });
+
+                dispatch(turnOffLoader());
+            });
+        }).catch((reason) => {
+            switch (reason.message) {
+                case "Not Found": {
+                    console.warn("Got 404. Specify a valid backend url...");
+                    setTimeout(() => {
+                        dispatch(turnOffLoader());
+                    }, 1000);
+                    break;
+                }
+                case "Failed to fetch": {
+                    console.warn("Got 404. Specify a valid backend url...");
+                    setTimeout(() => {
+                        dispatch(turnOffLoader());
+                    }, 1000);
+                    break;
+                }
+                default: {
+                    console.warn("Unhandled reason with message: " + reason.message);
+                }
+            }
+        });
+    }
+};
+
+export const tarsoniiis = (
+    fiksDigisosId: string,
+    formData: FormData,
+    vedtakFattetUtfall: Utfall|null,
+    saksreferanse: string,
+    v2: V2Model,
+    soknad: FsSoknad
+): (dispatch: Dispatch<AnyAction>) => void => {
+
+    const backendUrl = v2.backendUrls[v2.backendUrlTypeToUse];
+
+    return (dispatch: Dispatch) => {
+        dispatch(turnOnLoader());
+
+        fetch(`${backendUrl}/api/v1/digisosapi/${fiksDigisosId}/filOpplasting`, {
+            method: 'POST',
+            body: formData,
+            headers: new Headers({
+                "Authorization": "Bearer 1234",
+                "Accept": "*/*"
+            })
+        }).then((response: Response) => {
+            response.text().then((id: string) => {
+
+                const nyHendelse: VedtakFattet = {
+                    type: HendelseType.VedtakFattet,
+                    hendelsestidspunkt: getNow(),
+                    saksreferanse: saksreferanse,
+                    utfall:  vedtakFattetUtfall ,
+                    vedtaksfil: {
+                        referanse: {
+                            type: FilreferanseType.dokumentlager,
+                            id: id
+                        }
+                    },
+                    vedlegg: []
+                };
+
+                const soknadUpdated = oHendelser.modify((a: Hendelse[]) => [...a, nyHendelse])(soknad);
+
+                const backendUrl = v2.backendUrls[v2.backendUrlTypeToUse];
+                const oppdaterDigisosSakUrl = v2.oppdaterDigisosSakUrl;
+
+                const queryParam = `?fiksDigisosId=${fiksDigisosId}`;
+                const fiksDigisosSokerJson = soknadUpdated.fiksDigisosSokerJson;
+
+                fetchPost(`${backendUrl}${oppdaterDigisosSakUrl}${queryParam}`, JSON.stringify(fiksDigisosSokerJson)).then((response: any) => {
+                    if (v2.fiksDigisosSokerJson.sak.soker.hendelser.length < fiksDigisosSokerJson.sak.soker.hendelser.length) {
+                        dispatch(visSuccessSnackbar());
+                    }
+                    dispatch(setFiksDigisosSokerJson(fiksDigisosSokerJson));
+                    let fiksId = response.fiksDigisosId;
+                    dispatch(
+                        oppdaterFixId(fiksDigisosId, fiksId.toString()));
+                    dispatch(setAktivSoknad(fiksId.toString()));
+                    dispatch(oppdaterVedtakFattet(soknad.fiksDigisosId, nyHendelse));
+                    setTimeout(() => {
+                        dispatch(turnOffLoader());
+
+                    }, 1000);
+
+                }).catch((reason) => {
+                    dispatch(visErrorSnackbar());
+                    switch (reason.message) {
+                        case "Not Found": {
+                            console.warn("Got 404. Specify a valid backend url...");
+                            setTimeout(() => {
+                                dispatch(turnOffLoader());
+                            }, 1000);
+                            break;
+                        }
+                        case "Failed to fetch": {
+                            console.warn("Got 404. Specify a valid backend url...");
+                            setTimeout(() => {
+                                dispatch(turnOffLoader());
+                            }, 1000);
+                            break;
+                        }
+                        default: {
+                            console.warn("Unhandled reason with message: " + reason.message);
+                        }
+                    }
+                });
+
+                dispatch(turnOffLoader());
+            });
+        }).catch((reason) => {
+            switch (reason.message) {
+                case "Not Found": {
+                    console.warn("Got 404. Specify a valid backend url...");
+                    setTimeout(() => {
+                        dispatch(turnOffLoader());
+                    }, 1000);
+                    break;
+                }
+                case "Failed to fetch": {
+                    console.warn("Got 404. Specify a valid backend url...");
+                    setTimeout(() => {
+                        dispatch(turnOffLoader());
+                    }, 1000);
+                    break;
+                }
+                default: {
+                    console.warn("Unhandled reason with message: " + reason.message);
+                }
+            }
+        });
+    }
+};
+
+export const shakuraaas = (
+    fiksDigisosId: string,
+    formData: FormData,
+    dokumenter: Dokument[],
+    v2: V2Model,
+    soknad: FsSoknad
+): (dispatch: Dispatch<AnyAction>) => void => {
+
+    const backendUrl = v2.backendUrls[v2.backendUrlTypeToUse];
+
+    return (dispatch: Dispatch) => {
+        dispatch(turnOnLoader());
+
+        fetch(`${backendUrl}/api/v1/digisosapi/${fiksDigisosId}/filOpplasting`, {
+            method: 'POST',
+            body: formData,
+            headers: new Headers({
+                "Authorization": "Bearer 1234",
+                "Accept": "*/*"
+            })
+        }).then((response: Response) => {
+            response.text().then((id: string) => {
+
+                const nyHendelse: DokumentasjonEtterspurt = {
+                    type: HendelseType.DokumentasjonEtterspurt,
+                    hendelsestidspunkt: getNow(),
+                    forvaltningsbrev: {
+                        referanse: {
+                            type: FilreferanseType.dokumentlager,
+                            id: id
+                        }
+                    },
+                    vedlegg: [],
+                    dokumenter: dokumenter
+                };
+
+                const soknadUpdated = oHendelser.modify((a: Hendelse[]) => [...a, nyHendelse])(soknad);
+
+                const backendUrl = v2.backendUrls[v2.backendUrlTypeToUse];
+                const oppdaterDigisosSakUrl = v2.oppdaterDigisosSakUrl;
+
+                const queryParam = `?fiksDigisosId=${fiksDigisosId}`;
+                const fiksDigisosSokerJson = soknadUpdated.fiksDigisosSokerJson;
+
+                fetchPost(`${backendUrl}${oppdaterDigisosSakUrl}${queryParam}`, JSON.stringify(fiksDigisosSokerJson)).then((response: any) => {
+                    if (v2.fiksDigisosSokerJson.sak.soker.hendelser.length < fiksDigisosSokerJson.sak.soker.hendelser.length) {
+                        dispatch(visSuccessSnackbar());
+                    }
+                    dispatch(setFiksDigisosSokerJson(fiksDigisosSokerJson));
+                    let fiksId = response.fiksDigisosId;
+                    dispatch(
+                        oppdaterFixId(fiksDigisosId, fiksId.toString()));
+                    dispatch(setAktivSoknad(fiksId.toString()));
+                    dispatch(oppdaterDokumentasjonEtterspurt(soknad.fiksDigisosId, nyHendelse));
                     setTimeout(() => {
                         dispatch(turnOffLoader());
 
