@@ -8,8 +8,7 @@ import SoknadStatusView from "../soknadStatusView/SoknadStatusView";
 import {FsSoknad} from "../../../redux/v3/v3FsTypes";
 import Typography from "@material-ui/core/Typography";
 import TildeldeltNavkontorView from "../navKontor/TildeltNavKontorView";
-import {BackendUrls, V2Model} from "../../../redux/v2/v2Types";
-import {Box} from "@material-ui/core";
+import {BackendUrls} from "../../../redux/v2/v2Types";
 
 
 const useStyles = makeStyles(theme => ({
@@ -73,7 +72,7 @@ const ToppPanel: React.FC<Props> = (props: Props) => {
                             Navn på søker: {soknad.navn}
                         </Typography>
                         <Typography variant={"subtitle1"}>
-                            <a href={frontendUrl} target="_blank">{frontendUrl}</a>
+                            <a href={frontendUrl} target="_blank" rel="noopener noreferrer">{frontendUrl}</a>
                         </Typography>
                         <br/>
                         <TildeldeltNavkontorView soknad={soknad} />

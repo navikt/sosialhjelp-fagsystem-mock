@@ -6,12 +6,14 @@ import {setBackendUrlTypeToUse, skjulSystemSettingsModal} from "../../../redux/v
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import Backdrop from "@material-ui/core/Backdrop/Backdrop";
 import Fade from "@material-ui/core/Fade";
-import {BackendUrls} from "../../../redux/v2/v2Types";
+import {BackendUrls, V2Model} from "../../../redux/v2/v2Types";
 import FormControl from "@material-ui/core/FormControl";
 import FormLabel from "@material-ui/core/FormLabel";
 import RadioGroup from "@material-ui/core/RadioGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Radio from "@material-ui/core/Radio";
+import {FsSoknad} from "../../../redux/v3/v3FsTypes";
+import {opprettEllerOppdaterDigisosSakOgSettAktivSak} from "../../../redux/v3/v3Actions";
 
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -34,12 +36,14 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 interface OwnProps {
+    soknad: FsSoknad|undefined;
 }
 
 interface StoreProps {
     visSystemSettingsModal: boolean;
     backendUrls: BackendUrls;
     backendUrlTypeToUse: keyof BackendUrls;
+    v2: V2Model;
 }
 
 type Props = DispatchProps & OwnProps & StoreProps;
@@ -47,7 +51,7 @@ type Props = DispatchProps & OwnProps & StoreProps;
 
 const SystemSettingsModal: React.FC<Props> = (props: Props) => {
     const classes = useStyles();
-    const {visSystemSettingsModal, dispatch, backendUrls, backendUrlTypeToUse} = props;
+    const {visSystemSettingsModal, dispatch, backendUrls, backendUrlTypeToUse, soknad, v2} = props;
 
     const radios = Object.keys(backendUrls).map((backendUrlType: string) => {
         // @ts-ignore
@@ -65,7 +69,7 @@ const SystemSettingsModal: React.FC<Props> = (props: Props) => {
     return (
         <Modal
             open={visSystemSettingsModal}
-            onClose={() => props.dispatch(skjulSystemSettingsModal())}
+            onClose={() => dispatch(skjulSystemSettingsModal())}
             aria-labelledby="transition-modal-title"
             aria-describedby="transition-modal-description"
             className={classes.modal}
@@ -83,7 +87,12 @@ const SystemSettingsModal: React.FC<Props> = (props: Props) => {
                             aria-label="backend url"
                             name="miljo"
                             value={backendUrlTypeToUse}
-                            onClick={() => props.dispatch(skjulSystemSettingsModal())}
+                            onClick={() => {
+                                dispatch(skjulSystemSettingsModal());
+                                if (soknad) {
+                                    dispatch(opprettEllerOppdaterDigisosSakOgSettAktivSak(soknad, v2));
+                                }
+                            }}
                             onChange={
                                 (event, value) => {
                                     console.warn("value: " + value);
@@ -102,7 +111,8 @@ const SystemSettingsModal: React.FC<Props> = (props: Props) => {
 const mapStateToProps = (state: AppState) => ({
     visSystemSettingsModal: state.v2.visSystemSettingsModal,
     backendUrls: state.v2.backendUrls,
-    backendUrlTypeToUse: state.v2.backendUrlTypeToUse
+    backendUrlTypeToUse: state.v2.backendUrlTypeToUse,
+    v2: state.v2
 });
 
 const mapDispatchToProps = (dispatch: any) => {

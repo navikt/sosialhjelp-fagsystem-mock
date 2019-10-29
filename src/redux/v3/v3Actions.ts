@@ -70,8 +70,7 @@ export const aiuuur = (
             }
             dispatch(setFiksDigisosSokerJson(fiksDigisosSokerJson));
             let fiksId = response.fiksDigisosId;
-            dispatch(
-                oppdaterFixId(fiksDigisosId, fiksId.toString()));
+            dispatch(oppdaterFixId(fiksDigisosId, fiksId.toString()));
             dispatch(setAktivSoknad(fiksId.toString()));
             dispatch(actionToDispatchIfSuccess);
             setTimeout(() => {
@@ -228,6 +227,52 @@ export const chaaar = (
                 dispatch(turnOffLoader());
             });
         }).catch((reason) => {
+            switch (reason.message) {
+                case "Not Found": {
+                    console.warn("Got 404. Specify a valid backend url...");
+                    setTimeout(() => {
+                        dispatch(turnOffLoader());
+                    }, 1000);
+                    break;
+                }
+                case "Failed to fetch": {
+                    console.warn("Got 404. Specify a valid backend url...");
+                    setTimeout(() => {
+                        dispatch(turnOffLoader());
+                    }, 1000);
+                    break;
+                }
+                default: {
+                    console.warn("Unhandled reason with message: " + reason.message);
+                }
+            }
+        });
+    }
+};
+
+export const opprettEllerOppdaterDigisosSakOgSettAktivSak = (
+    soknad: FsSoknad,
+    v2: V2Model,
+): (dispatch: Dispatch<AnyAction>) => void => {
+
+    // @ts-ignore
+    const backendUrl = v2.backendUrls[v2.backendUrlTypeToUse];
+    const oppdaterDigisosSakUrl = v2.oppdaterDigisosSakUrl;
+
+    return (dispatch: Dispatch) => {
+        dispatch(turnOnLoader());
+        const queryParam = `?fiksDigisosId=${soknad.fiksDigisosId}`;
+        fetchPost(`${backendUrl}${oppdaterDigisosSakUrl}${queryParam}`, JSON.stringify(soknad.fiksDigisosSokerJson)).then((response: any) => {
+            let fiksId = response.fiksDigisosId;
+            dispatch(oppdaterFixId(soknad.fiksDigisosId, fiksId.toString()));
+            dispatch(setAktivSoknad(fiksId.toString()));
+            setTimeout(() => {
+                dispatch(turnOffLoader());
+
+            }, 1000);
+
+        }).catch((reason) => {
+            dispatch(visErrorSnackbar());
             switch (reason.message) {
                 case "Not Found": {
                     console.warn("Got 404. Specify a valid backend url...");

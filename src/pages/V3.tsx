@@ -82,7 +82,7 @@ const V3: React.FC<Props> = (props: Props) => {
                 </Grid>
             </div>
 
-            <SystemSettingsModal />
+            <SystemSettingsModal soknad={getFsSoknadByFiksDigisosId(props.v3.soknader,props.v2.aktivSoknad)} />
 
             {/* FIXME: Ta i bruk denne senere.*/}
             <StatusSnackBarView />

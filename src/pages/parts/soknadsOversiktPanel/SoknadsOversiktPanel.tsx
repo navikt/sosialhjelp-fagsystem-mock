@@ -9,6 +9,8 @@ import {Typography} from "@material-ui/core";
 import Paper from "@material-ui/core/Paper";
 import {setAktivSoknad} from "../../../redux/v2/v2Actions";
 import {FsSoknad} from "../../../redux/v3/v3FsTypes";
+import {V2Model} from "../../../redux/v2/v2Types";
+import {opprettEllerOppdaterDigisosSakOgSettAktivSak} from "../../../redux/v3/v3Actions";
 
 const useStyles = makeStyles(theme => ({
     paper: {
@@ -23,14 +25,15 @@ const useStyles = makeStyles(theme => ({
 
 interface StoreProps {
     soknader: FsSoknad[],
-    aktivSoknad: string
+    aktivSoknad: string,
+    v2: V2Model
 }
 
 type Props = DispatchProps & StoreProps;
 
 
 const SoknadsOversiktPanel: React.FC<Props> = (props: Props) => {
-    const {soknader, aktivSoknad} = props;
+    const {soknader, aktivSoknad, v2} = props;
 
     const classes = useStyles();
 
@@ -38,7 +41,7 @@ const SoknadsOversiktPanel: React.FC<Props> = (props: Props) => {
         return soknader.map((soknad: FsSoknad) => {
             return (
                 <ListItem key={"SoknadItem: " + soknad.navn} selected={ soknad.fiksDigisosId === aktivSoknad} button divider
-                          onClick={() => props.dispatch(setAktivSoknad(soknad.fiksDigisosId))}>
+                          onClick={() => props.dispatch(opprettEllerOppdaterDigisosSakOgSettAktivSak(soknad, v2))}>
                     <ListItemText primary={soknad.navn} />
                 </ListItem>
             )
@@ -63,7 +66,8 @@ const SoknadsOversiktPanel: React.FC<Props> = (props: Props) => {
 
 const mapStateToProps = (state: AppState) => ({
     soknader: state.v3.soknader,
-    aktivSoknad: state.v2.aktivSoknad
+    aktivSoknad: state.v2.aktivSoknad,
+    v2: state.v2
 });
 
 const mapDispatchToProps = (dispatch: any) => {
