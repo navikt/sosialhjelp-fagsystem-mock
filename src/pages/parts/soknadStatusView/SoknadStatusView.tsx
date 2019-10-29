@@ -104,8 +104,31 @@ const SoknadStatusView: React.FC<Props> = (props: Props) => {
             <Box className={classes.addbox}>
                 <Fab aria-label='Add' className={classes.fab} color='primary'
                      onClick={() => {
-                         if(inputEl && inputEl.current) {
+                         if((v2.backendUrlTypeToUse === 'q0' || v2.backendUrlTypeToUse === 'q1') && inputEl && inputEl.current) {
                              inputEl.current.click();
+                         } else {
+                             const nyHendelse: ForelopigSvar = {
+                                 type: HendelseType.ForelopigSvar,
+                                 hendelsestidspunkt: getNow(),
+                                 forvaltningsbrev: {
+                                     referanse: {
+                                         type: v2.filreferanselager.dokumentlager[0].type,
+                                         id: v2.filreferanselager.dokumentlager[0].id
+                                     }
+                                 },
+                                 vedlegg: []
+                             };
+
+                             const soknadUpdated = oHendelser.modify((a: Hendelse[]) => [...a, nyHendelse])(soknad);
+
+                             dispatch(
+                                 aiuuur(
+                                     soknad.fiksDigisosId,
+                                     soknadUpdated.fiksDigisosSokerJson,
+                                     v2,
+                                     oppdaterForelopigSvar(soknad.fiksDigisosId, nyHendelse)
+                                 )
+                             );
                          }
                      }}>
                     <AddIcon/>
