@@ -1,15 +1,15 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {AppState, DispatchProps} from "../../../redux/reduxTypes";
 import {connect} from "react-redux";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import ListItemText from "@material-ui/core/ListItemText";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
-import {Typography} from "@material-ui/core";
+import {Button, Input, Typography} from "@material-ui/core";
 import Paper from "@material-ui/core/Paper";
 import {FsSoknad} from "../../../redux/v3/v3FsTypes";
 import {V2Model} from "../../../redux/v2/v2Types";
-import {opprettEllerOppdaterDigisosSakOgSettAktivSak} from "../../../redux/v3/v3Actions";
+import {nyFsSoknad, opprettEllerOppdaterDigisosSakOgSettAktivSak} from "../../../redux/v3/v3Actions";
 
 const useStyles = makeStyles(theme => ({
     paper: {
@@ -36,6 +36,8 @@ const SoknadsOversiktPanel: React.FC<Props> = (props: Props) => {
 
     const classes = useStyles();
 
+    const [fiksDigisosId, setFiksDigisosId] = useState("");
+
     const getSoknadListItems = (soknader: FsSoknad[]): JSX.Element[] => {
         return soknader.map((soknad: FsSoknad) => {
             return (
@@ -57,6 +59,14 @@ const SoknadsOversiktPanel: React.FC<Props> = (props: Props) => {
             <List className={classes.soknadliste} component="nav"  aria-label="mailbox folders">
                 { getSoknadListItems(soknader) }
             </List>
+            <Input
+                onChange={(evt) => {
+                    setFiksDigisosId(evt.target.value);
+                }}
+           />
+           <Button onClick={() => {
+               props.dispatch(nyFsSoknad(fiksDigisosId, '26104500284', 'Natalie Emberland'))
+           }}> Opprett</Button>
         </Paper>
     );
 };
