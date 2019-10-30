@@ -299,10 +299,10 @@ const getAlleRammeVedtakFraSaker = (saker: FsSaksStatus[]): Rammevedtak[] => {
 };
 
 export const getAlleRammevedtak = (soknad: FsSoknad): Rammevedtak[] => {
-    let alleRammeVedtak:Rammevedtak[] = [...soknad.rammevedtak];
-    const alleRammeVedtakFraSaker = getAlleRammeVedtakFraSaker(soknad.saker);
-    alleRammeVedtakFraSaker.forEach(rammevedtak => alleRammeVedtak = [...alleRammeVedtak, rammevedtak]);
-    return alleRammeVedtakFraSaker;
+    let alleRammevedtak:Rammevedtak[] = [...soknad.rammevedtak];
+    const alleRammevedtakFraSaker = getAlleRammeVedtakFraSaker(soknad.saker);
+    alleRammevedtakFraSaker.forEach(rammevedtak => alleRammevedtak = [...alleRammevedtak, rammevedtak]);
+    return alleRammevedtak.concat(alleRammevedtakFraSaker);
 };
 
 export const getRammevedtakByRammevedtaksreferanse = (soknad: FsSoknad, referanse: string): Rammevedtak | undefined => {

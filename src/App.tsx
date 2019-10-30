@@ -20,7 +20,7 @@ const App: React.FC = () => {
 	return (
 		<Provider store={store}>
 			<IntlProvider defaultLocale={language} locale={language} messages={tekster[language]}>
-				{/*<SplashScreen>*/}
+				<SplashScreen>
 					<div className="informasjon-side">
 						<ConnectedRouter history={history}>
 							<Switch>
@@ -33,7 +33,7 @@ const App: React.FC = () => {
 							</Switch>
 						</ConnectedRouter>
 					</div>
-				{/*</SplashScreen>*/}
+				</SplashScreen>
 			</IntlProvider>
 		</Provider>
 	);

@@ -240,14 +240,25 @@ const v3Reducer: Reducer<V3State, V3Action> = (
             const {forFiksDigisosId, oppdatertRammevedtak} = action;
 
             const s1 = oGetSoknad(forFiksDigisosId)
-                .composeLens(oFsRammevedtak)
-                .composeTraversal(oFsRammevedtakTraversal)
-                .composePrism(oFsRammevedtakPrism(oppdatertRammevedtak.rammevedtaksreferanse))
-                .set(oppdatertRammevedtak)(state);
-
-            return oGetSoknad(forFiksDigisosId)
                 .composeLens(oHendelser)
-                .modify((a: Hendelse[]) => [...a, oppdatertRammevedtak])(s1);
+                .modify((a: Hendelse[]) => [...a, oppdatertRammevedtak])(state);
+
+            if (oppdatertRammevedtak.saksreferanse) {
+                return oGetSoknad(forFiksDigisosId)
+                    .composeLens(oFsSaker)
+                    .composeTraversal(oFsSakerTraversal)
+                    .composePrism(oFsSaksStatusPrism(oppdatertRammevedtak.saksreferanse))
+                    .composeLens(oFsSaksStatusRammevedtak)
+                    .composeTraversal(oFsRammevedtakTraversal)
+                    .composePrism(oFsRammevedtakPrism(oppdatertRammevedtak.rammevedtaksreferanse))
+                    .set(oppdatertRammevedtak)(s1);
+            } else {
+                return oGetSoknad(forFiksDigisosId)
+                    .composeLens(oFsRammevedtak)
+                    .composeTraversal(oFsRammevedtakTraversal)
+                    .composePrism(oFsRammevedtakPrism(oppdatertRammevedtak.rammevedtaksreferanse))
+                    .set(oppdatertRammevedtak)(s1);
+            }
         }
         case V3ActionTypeKeys.NYTT_VILKAR: {
             const {forFiksDigisosId, nyttVilkar} = action;

@@ -165,7 +165,7 @@ const NyttRammevedtakModal: React.FC<Props> = (props: Props) => {
     }
 
     const sendRammevedtak = () => {
-        let nyHendelse: Rammevedtak = {...modalRammevedtak, belop:modalRammevedtak.belop?modalRammevedtak.belop as number: null};
+        let nyHendelse: Rammevedtak = {...modalRammevedtak, belop: modalRammevedtak.belop ? modalRammevedtak.belop as number: null};
         if (modalSaksreferanse) {
             nyHendelse = {...nyHendelse, saksreferanse: modalSaksreferanse};
         }
@@ -216,6 +216,7 @@ const NyttRammevedtakModal: React.FC<Props> = (props: Props) => {
     const fyllInnAktivtRammevedtak = () => {
         if (aktivtRammevedtak) {
             const rammevedtak = getRammevedtakByRammevedtaksreferanse(soknad, aktivtRammevedtak);
+            console.log(rammevedtak);
             if (rammevedtak){
                 setModalRammevedtak(rammevedtak);
 
@@ -236,7 +237,7 @@ const NyttRammevedtakModal: React.FC<Props> = (props: Props) => {
                 label={label}
                 className={classes.textField}
                 value={value ? value : ''}
-                type="number"
+                type={inputType}
                 required={required}
                 error={required && visFeilmelding}
                 onChange={(evt) => {
