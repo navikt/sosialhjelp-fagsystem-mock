@@ -49,8 +49,8 @@ const initialFilreferanselager: Filreferanselager = {
         {type: FilreferanseType.svarut, id: generateFilreferanseId(), nr: 4, tittel: "01 - vedtak - asdf - svarut"},
     ],
     dokumentlager: [
-        {type: FilreferanseType.dokumentlager, id: "12v915rd-l1b9-8xn7-z539-afuvtami0oc6", tittel: "Test_PDF"},
-        {type: FilreferanseType.dokumentlager, id: generateFilreferanseId(), tittel: "01 - qwer - dokumentalger"},
+        // {type: FilreferanseType.dokumentlager, id: "12v915rd-l1b9-8xn7-z539-afuvtami0oc6", tittel: "Test_PDF"},
+        {type: FilreferanseType.dokumentlager, id: "2c75227d-64f8-4db6-b718-3b6dd6beb450", tittel: "01 - qwer - dokumentalger"},
         {type: FilreferanseType.dokumentlager, id: generateFilreferanseId(), tittel: "02 - asdf - dokumentlager"},
         {type: FilreferanseType.dokumentlager, id: generateFilreferanseId(), tittel: "03 - zxcv - dokumentlager"},
     ]

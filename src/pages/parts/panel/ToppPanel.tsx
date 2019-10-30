@@ -34,12 +34,6 @@ const useStyles = makeStyles(theme => ({
         flexDirection: 'row',
         justifyContent: 'space-between',
     },
-    // navkontorBox: {
-    //     display: 'flex',
-    //     justifyContent: 'flex-end',
-    //     flexDirection: 'column',
-    //     height: '100%'
-    // }
 }));
 
 

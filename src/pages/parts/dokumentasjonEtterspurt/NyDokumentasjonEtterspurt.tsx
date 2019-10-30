@@ -130,13 +130,14 @@ interface StoreProps {
 
 type Props = DispatchProps & OwnProps & StoreProps;
 
+const standardRef = "2c75227d-64f8-4db6-b718-3b6dd6beb450";
 const initialDokumentasjonEtterspurt: DokumentasjonEtterspurt = {
     type: HendelseType.DokumentasjonEtterspurt,
     hendelsestidspunkt: '',
     forvaltningsbrev: {
         referanse: {
             type: FilreferanseType.dokumentlager,
-            id: ''
+            id: standardRef
         }
     },
     vedlegg: [],
@@ -187,7 +188,7 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
 
     const sendDokumentasjonEtterspurt = () => {
         if((v2.backendUrlTypeToUse === 'q0' || v2.backendUrlTypeToUse === 'q1') && inputEl && inputEl.current
-            && modalDokumentasjonEtterspurt.forvaltningsbrev.referanse.id === '') {
+            && modalDokumentasjonEtterspurt.forvaltningsbrev.referanse.id === standardRef) {
             inputEl.current.click();
         } else {
             const nyHendelse: DokumentasjonEtterspurt = {

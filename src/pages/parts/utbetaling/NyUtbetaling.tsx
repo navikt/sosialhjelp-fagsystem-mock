@@ -365,9 +365,7 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
                                     </Select>
                                 </FormControl>
                             </Grid>
-                            {getTextFieldGrid("Beløp", modalUtbetaling.belop, (verdi: number) => {
-                                setModalUtbetaling({...modalUtbetaling, belop: verdi})
-                            })}
+                            {getTextFieldGrid("Beløp", modalUtbetaling.belop, (verdi: number) => setModalUtbetaling({...modalUtbetaling, belop: +verdi}), "number")}
                             {getTextFieldGrid("Beskrivelse", modalUtbetaling.beskrivelse, (verdi: string) => setModalUtbetaling({...modalUtbetaling, beskrivelse: verdi}))}
                             {getKeyboardDatePickerGrid("Forfallsdato", modalUtbetaling.forfallsdato, (verdi: string) => setModalUtbetaling({...modalUtbetaling, forfallsdato: verdi}),
                                 forfallsdatoDatePickerIsOpen, setForfallsdatoDatePickerIsOpen)}

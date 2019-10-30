@@ -165,7 +165,7 @@ const NyttRammevedtakModal: React.FC<Props> = (props: Props) => {
     }
 
     const sendRammevedtak = () => {
-        let nyHendelse: Rammevedtak = {...modalRammevedtak};
+        let nyHendelse: Rammevedtak = {...modalRammevedtak, belop:modalRammevedtak.belop?modalRammevedtak.belop as number: null};
         if (modalSaksreferanse) {
             nyHendelse = {...nyHendelse, saksreferanse: modalSaksreferanse};
         }
@@ -228,7 +228,7 @@ const NyttRammevedtakModal: React.FC<Props> = (props: Props) => {
         }
     };
 
-    function getTextFieldGrid(label: string, value: any, setValue: (v: any) => any, required: boolean = false) {
+    function getTextFieldGrid(label: string, value: any, setValue: (v: any) => any, inputType: string = 'string', required: boolean = false) {
         return <Grid item key={'Grid: ' + label} xs={6} zeroMinWidth>
             <TextField
                 disabled={required && referansefeltDisabled}
@@ -236,6 +236,7 @@ const NyttRammevedtakModal: React.FC<Props> = (props: Props) => {
                 label={label}
                 className={classes.textField}
                 value={value ? value : ''}
+                type="number"
                 required={required}
                 error={required && visFeilmelding}
                 onChange={(evt) => {
@@ -307,7 +308,7 @@ const NyttRammevedtakModal: React.FC<Props> = (props: Props) => {
                     <div className={classes.paperback}>
                         <Grid container spacing={3} justify="center" alignItems="center">
                             {getTextFieldGrid("Rammevedtakreferanse", modalRammevedtak.rammevedtaksreferanse,
-                                (verdi: string) => setModalRammevedtak({...modalRammevedtak, rammevedtaksreferanse: verdi}), true)}
+                                (verdi: string) => setModalRammevedtak({...modalRammevedtak, rammevedtaksreferanse: verdi}), 'string', true)}
                             {modalSaksreferanse == null && <Grid item key={'Saksreferanse'} xs={6} zeroMinWidth>
                                 <FormControl className={classes.formControl2}>
                                     <InputLabel htmlFor="age-simple" shrink={true}>Saksreferanse</InputLabel>
@@ -328,7 +329,7 @@ const NyttRammevedtakModal: React.FC<Props> = (props: Props) => {
 
                             {getTextFieldGrid("Beskrivelse", modalRammevedtak.beskrivelse, (verdi: string) => setModalRammevedtak({...modalRammevedtak, beskrivelse: verdi}))}
 
-                            {getTextFieldGrid("Beløp", modalRammevedtak.belop, (verdi: number) => setModalRammevedtak({...modalRammevedtak, belop: verdi}))}
+                            {getTextFieldGrid("Beløp", modalRammevedtak.belop, (verdi: number) => setModalRammevedtak({...modalRammevedtak, belop: +verdi}), 'number')}
 
                             {getKeyboardDatePickerGrid("fom", modalRammevedtak.fom, (verdi: string) => setModalRammevedtak({...modalRammevedtak, fom: verdi}),
                                 fomDatePickerIsOpen, setFomDatePickerIsOpen)}
