@@ -36,14 +36,14 @@ import Hendelse, {
 import {AnyAction, Dispatch} from "redux";
 import {fetchPost} from "../../utils/restUtils";
 import {
-    setAktivSoknad,
+    setAktivSoknad, setBackendUrlTypeToUse,
     setFiksDigisosSokerJson,
     turnOffLoader,
     turnOnLoader,
     visErrorSnackbar,
     visSuccessSnackbar
 } from "../v2/v2Actions";
-import {V2Model} from "../v2/v2Types";
+import {BackendUrls, V2Model} from "../v2/v2Types";
 import {FsSaksStatus, FsSoknad} from "./v3FsTypes";
 import {NavKontor} from "../../types/additionalTypes";
 import {getNow} from "../../utils/utilityFunctions";
@@ -478,14 +478,16 @@ export const shakuraaas = (
 export const opprettEllerOppdaterDigisosSakOgSettAktivSak = (
     soknad: FsSoknad,
     v2: V2Model,
+    backendUrlTypeToUse: keyof BackendUrls
 ): (dispatch: Dispatch<AnyAction>) => void => {
 
     // @ts-ignore
-    const backendUrl = v2.backendUrls[v2.backendUrlTypeToUse];
+    const backendUrl = v2.backendUrls[backendUrlTypeToUse];
     const oppdaterDigisosSakUrl = v2.oppdaterDigisosSakUrl;
 
     return (dispatch: Dispatch) => {
         dispatch(turnOnLoader());
+        dispatch(setBackendUrlTypeToUse(backendUrlTypeToUse));
         const queryParam = `?fiksDigisosId=${soknad.fiksDigisosId}`;
         fetchPost(`${backendUrl}${oppdaterDigisosSakUrl}${queryParam}`, JSON.stringify(soknad.fiksDigisosSokerJson)).then((response: any) => {
             let fiksId = response.fiksDigisosId;

@@ -89,14 +89,13 @@ const SystemSettingsModal: React.FC<Props> = (props: Props) => {
                             value={backendUrlTypeToUse}
                             onClick={() => {
                                 dispatch(skjulSystemSettingsModal());
-                                if (soknad) {
-                                    dispatch(opprettEllerOppdaterDigisosSakOgSettAktivSak(soknad, v2));
-                                }
                             }}
                             onChange={
                                 (event, value) => {
                                     console.warn("value: " + value);
-                                    dispatch(setBackendUrlTypeToUse(value as keyof BackendUrls))
+                                    if (soknad) {
+                                        dispatch(opprettEllerOppdaterDigisosSakOgSettAktivSak(soknad, v2, value as keyof BackendUrls));
+                                    }
                                 }}
                         >
                             {radios}

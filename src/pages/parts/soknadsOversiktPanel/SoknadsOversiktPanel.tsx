@@ -40,7 +40,7 @@ const SoknadsOversiktPanel: React.FC<Props> = (props: Props) => {
         return soknader.map((soknad: FsSoknad) => {
             return (
                 <ListItem key={"SoknadItem: " + soknad.navn} selected={ soknad.fiksDigisosId === aktivSoknad} button divider
-                          onClick={() => props.dispatch(opprettEllerOppdaterDigisosSakOgSettAktivSak(soknad, v2))}>
+                          onClick={() => props.dispatch(opprettEllerOppdaterDigisosSakOgSettAktivSak(soknad, v2, v2.backendUrlTypeToUse))}>
                     <ListItemText primary={soknad.navn} />
                 </ListItem>
             )

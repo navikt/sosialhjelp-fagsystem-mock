@@ -157,7 +157,6 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
     const [datePickerIsOpen, setDatePickerIsOpen] = useState(false);
     const classes = useStyles();
     const {visNyDokumentasjonEtterspurtModal, dispatch, v2, soknad} = props;
-    const filreferanselager = v2.filreferanselager;
     const inputEl = useRef<HTMLInputElement>(null);
 
     const handleFileUpload = (files: FileList) => {
@@ -168,6 +167,11 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
         formData.append("file", files[0], files[0].name);
 
         dispatch(shakuraaas(soknad.fiksDigisosId, formData, modalDokumentasjonEtterspurt.dokumenter, v2, soknad));
+
+        setVisFeilmelding(false);
+        setVisFeilmeldingDatePicker(false);
+
+        dispatch(dispatch(skjulNyDokumentasjonEtterspurtModal()));
     };
 
     const leggTilDokument = () => {
@@ -189,12 +193,7 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
             const nyHendelse: DokumentasjonEtterspurt = {
                 type: HendelseType.DokumentasjonEtterspurt,
                 hendelsestidspunkt: getNow(),
-                forvaltningsbrev: {
-                    referanse: {
-                        type: filreferanselager.dokumentlager[0].type,
-                        id: filreferanselager.dokumentlager[0].id
-                    }
-                },
+                forvaltningsbrev: modalDokumentasjonEtterspurt.forvaltningsbrev,
                 vedlegg: [],
                 dokumenter: modalDokumentasjonEtterspurt.dokumenter
             };
@@ -335,7 +334,7 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
 
     const fyllInnDokumenterIModalDokumentasjonEtterspurt = () => {
         if (soknad.dokumentasjonEtterspurt) {
-            setModalDokumentasjonEtterspurt({...modalDokumentasjonEtterspurt, dokumenter: soknad.dokumentasjonEtterspurt.dokumenter});
+            setModalDokumentasjonEtterspurt({...soknad.dokumentasjonEtterspurt});
         }
     };
 
