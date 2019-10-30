@@ -9,7 +9,7 @@ import {Button, Input, Typography} from "@material-ui/core";
 import Paper from "@material-ui/core/Paper";
 import {FsSoknad} from "../../../redux/v3/v3FsTypes";
 import {V2Model} from "../../../redux/v2/v2Types";
-import {nyFsSoknad, opprettEllerOppdaterDigisosSakOgSettAktivSak} from "../../../redux/v3/v3Actions";
+import {nyFsSoknad, opprettEllerOppdaterDigisosSak} from "../../../redux/v3/v3Actions";
 
 const useStyles = makeStyles(theme => ({
     paper: {
@@ -42,7 +42,7 @@ const SoknadsOversiktPanel: React.FC<Props> = (props: Props) => {
         return soknader.map((soknad: FsSoknad) => {
             return (
                 <ListItem key={"SoknadItem: " + soknad.navn} selected={ soknad.fiksDigisosId === aktivSoknad} button divider
-                          onClick={() => props.dispatch(opprettEllerOppdaterDigisosSakOgSettAktivSak(soknad, v2, v2.backendUrlTypeToUse))}>
+                          onClick={() => props.dispatch(opprettEllerOppdaterDigisosSak(soknad, v2, v2.backendUrlTypeToUse))}>
                     <ListItemText primary={soknad.navn} />
                 </ListItem>
             )

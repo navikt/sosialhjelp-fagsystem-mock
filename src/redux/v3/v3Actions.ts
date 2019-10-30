@@ -489,7 +489,7 @@ export const shakuraaas = (
     }
 };
 
-export const opprettEllerOppdaterDigisosSakOgSettAktivSak = (
+export const opprettEllerOppdaterDigisosSak = (
     soknad: FsSoknad,
     v2: V2Model,
     backendUrlTypeToUse: keyof BackendUrls
@@ -501,7 +501,6 @@ export const opprettEllerOppdaterDigisosSakOgSettAktivSak = (
 
     return (dispatch: Dispatch) => {
         dispatch(turnOnLoader());
-        dispatch(setBackendUrlTypeToUse(backendUrlTypeToUse));
         const queryParam = `?fiksDigisosId=${soknad.fiksDigisosId}`;
 
         let hednelserUtenNull = JSON.parse(JSON.stringify(soknad.fiksDigisosSokerJson.sak.soker.hendelser, (key, value) => {

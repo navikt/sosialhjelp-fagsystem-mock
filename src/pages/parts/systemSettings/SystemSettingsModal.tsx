@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {AppState, DispatchProps} from "../../../redux/reduxTypes";
 import {connect} from "react-redux";
 import {createStyles, Modal, Theme} from "@material-ui/core";
@@ -13,7 +13,7 @@ import RadioGroup from "@material-ui/core/RadioGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Radio from "@material-ui/core/Radio";
 import {FsSoknad} from "../../../redux/v3/v3FsTypes";
-import {opprettEllerOppdaterDigisosSakOgSettAktivSak} from "../../../redux/v3/v3Actions";
+import {opprettEllerOppdaterDigisosSak} from "../../../redux/v3/v3Actions";
 
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -52,6 +52,7 @@ type Props = DispatchProps & OwnProps & StoreProps;
 const SystemSettingsModal: React.FC<Props> = (props: Props) => {
     const classes = useStyles();
     const {visSystemSettingsModal, dispatch, backendUrls, backendUrlTypeToUse, soknad, v2} = props;
+    const [typeToUse, setTypeToUse] = useState<keyof BackendUrls | null>(null);
 
     const radios = Object.keys(backendUrls).map((backendUrlType: string) => {
         // @ts-ignore
@@ -78,6 +79,8 @@ const SystemSettingsModal: React.FC<Props> = (props: Props) => {
             BackdropProps={{
                 timeout: 500,
             }}
+            disableBackdropClick
+            disableEscapeKeyDown
         >
             <Fade in={visSystemSettingsModal}>
                 <div className={classes.paper}>
@@ -86,15 +89,16 @@ const SystemSettingsModal: React.FC<Props> = (props: Props) => {
                         <RadioGroup
                             aria-label="backend url"
                             name="miljo"
-                            value={backendUrlTypeToUse}
+                            value={typeToUse}
                             onClick={() => {
                                 dispatch(skjulSystemSettingsModal());
                             }}
                             onChange={
                                 (event, value) => {
-                                    console.warn("value: " + value);
+                                    setTypeToUse(value as keyof BackendUrls);
+                                    dispatch(setBackendUrlTypeToUse(value as keyof BackendUrls));
                                     if (soknad) {
-                                        dispatch(opprettEllerOppdaterDigisosSakOgSettAktivSak(soknad, v2, value as keyof BackendUrls));
+                                        dispatch(opprettEllerOppdaterDigisosSak(soknad, v2, value as keyof BackendUrls));
                                     }
                                 }}
                         >

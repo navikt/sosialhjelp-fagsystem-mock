@@ -223,8 +223,9 @@ const NyttRammevedtakModal: React.FC<Props> = (props: Props) => {
                     setReferansefeltDisabled(true);
                 }, 10);
             }
+        } else {
+            setModalRammevedtak({...modalRammevedtak, saksreferanse: modalSaksreferanse});
         }
-        setModalRammevedtak({...modalRammevedtak, saksreferanse: modalSaksreferanse});
     };
 
     function getTextFieldGrid(label: string, value: any, setValue: (v: any) => any, required: boolean = false) {
