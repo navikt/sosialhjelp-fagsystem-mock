@@ -1,4 +1,4 @@
-import React, {useRef} from 'react';
+import React, {useState, useRef} from 'react';
 import {AppState, DispatchProps} from "../../../redux/reduxTypes";
 import {connect} from "react-redux";
 import {createStyles, Paper} from "@material-ui/core";
