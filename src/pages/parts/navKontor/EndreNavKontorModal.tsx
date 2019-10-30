@@ -87,7 +87,7 @@ const EndreNavKontorModal: React.FC<Props> = (props: Props) => {
                         const nyHendelse: TildeltNavKontor = {
                             type: HendelseType.TildeltNavKontor,
                             hendelsestidspunkt: getNow(),
-                            navKontor: navKontorEnhetsNr
+                            navKontor: navKontorEnhetsNr.toString()
                         };
 
                         const soknadUpdated = oHendelser.modify((a: Hendelse[]) => [...a, nyHendelse])(soknad);
