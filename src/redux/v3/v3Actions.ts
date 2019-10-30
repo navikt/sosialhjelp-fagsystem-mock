@@ -65,7 +65,11 @@ export const aiuuur = (
         dispatch(turnOnLoader());
         // const url = getDigisosApiControllerPath();
         const queryParam = `?fiksDigisosId=${fiksDigisosId}`;
-        fetchPost(`${backendUrl}${oppdaterDigisosSakUrl}${queryParam}`, JSON.stringify(fiksDigisosSokerJson)).then((response: any) => {
+        let hednelserUtenNull = JSON.parse(JSON.stringify(fiksDigisosSokerJson.sak.soker.hendelser, (key, value) => {
+            if (value !== null) return value
+        }));
+        let fiksDigisosSokerJsonUtenNull = {...fiksDigisosSokerJson, sak: {...fiksDigisosSokerJson.sak, soker: {...fiksDigisosSokerJson.sak.soker, hendelser: hednelserUtenNull}}};
+        fetchPost(`${backendUrl}${oppdaterDigisosSakUrl}${queryParam}`, JSON.stringify(fiksDigisosSokerJsonUtenNull)).then((response: any) => {
             if (v2.fiksDigisosSokerJson.sak.soker.hendelser.length < fiksDigisosSokerJson.sak.soker.hendelser.length) {
                 dispatch(visSuccessSnackbar());
             }
