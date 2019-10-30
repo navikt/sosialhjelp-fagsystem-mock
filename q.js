@@ -3,6 +3,11 @@ var app = express()
 var path = require('path')
 const port = 80
 
+app.get("/sosialhjelp/fagsystem-mock/isAlive", (req, res) => {
+    console.log(`request isAlive`)
+    res.status(200).send('This was a triumph')
+})
+
 app.get("*/static/*", (req, res) => {
     console.log(`request path: ${req.path}. serving: ${path.resolve(__dirname, "build/static", req.params[1])}`)
     res.sendFile(path.resolve(__dirname, "build/static", req.params[1]))

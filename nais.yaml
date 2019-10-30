@@ -13,13 +13,13 @@ spec:
     - "{{this}}"
 {{/each}}
   liveness:
-    path: /sosialhjelp/fagsystem-mock/v3
+    path: /sosialhjelp/fagsystem-mock/isAlive
     initialDelay: 20
     timeout: 1
     periodSeconds: 5
     failureThreshold: 10
   readiness:
-    path: /sosialhjelp/fagsystem-mock/v3
+    path: /sosialhjelp/fagsystem-mock/isAlive
     initialDelay: 20
     timeout: 1
   prometheus:
