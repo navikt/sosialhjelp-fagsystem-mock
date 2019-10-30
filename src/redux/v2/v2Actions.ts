@@ -197,9 +197,10 @@ export const skjulNyDokumentasjonkravModal = (): V2Action => {
     }
 };
 
-export const visNyRammevedtakModal = (): V2Action => {
+export const visNyRammevedtakModal = (saksreferanse: string|null): V2Action => {
     return {
-        type: V2ActionTypeKeys.VIS_NY_RAMMEVEDTAK_MODAL
+        type: V2ActionTypeKeys.VIS_NY_RAMMEVEDTAK_MODAL,
+        saksreferanse
     }
 };
 

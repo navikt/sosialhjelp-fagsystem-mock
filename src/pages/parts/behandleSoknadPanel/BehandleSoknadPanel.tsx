@@ -99,7 +99,7 @@ const BehandleSoknadPanel: React.FC<Props> = (props: Props) => {
                     <div className={classes.root2}>
                         <Paper className={classes.paper3}>
                             <Typography variant={"h5"}>Rammevedtak</Typography>
-                            <RammevedtakOversiktView rammevedtakListe={soknad.rammevedtak}/>
+                            <RammevedtakOversiktView rammevedtakListe={soknad.rammevedtak} saksreferanse={null}/>
                             {(soknad.rammevedtak.length === 0) &&
                             <>
                                 <br/>

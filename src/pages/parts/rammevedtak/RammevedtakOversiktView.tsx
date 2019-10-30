@@ -67,7 +67,8 @@ const useStyles = makeStyles((theme: Theme) =>
 
 
 interface OwnProps {
-    rammevedtakListe: Rammevedtak[]
+    rammevedtakListe: Rammevedtak[],
+    saksreferanse: string|null
 }
 
 type Props = DispatchProps & OwnProps;
@@ -76,7 +77,7 @@ type Props = DispatchProps & OwnProps;
 const RammevedtakOversiktView: React.FC<Props> = (props: Props) => {
     const classes = useStyles();
     const theme = useTheme();
-    const {rammevedtakListe, dispatch} = props;
+    const {rammevedtakListe, dispatch, saksreferanse} = props;
     const [aktivtRammevedtakIdx, setAktivtRammevedtakIdx] = useState(0);
 
     const addNyttRammevedtakButton = () => {
@@ -85,7 +86,7 @@ const RammevedtakOversiktView: React.FC<Props> = (props: Props) => {
                 <Typography>
                     <Fab aria-label="add" className={classes.fab} color="primary" onClick={() => {
                         dispatch(setAktivtRammevedtak(null));
-                        dispatch(visNyRammevedtakModal());
+                        dispatch(visNyRammevedtakModal(saksreferanse));
                     }}>
                         <AddIcon/>
                     </Fab>

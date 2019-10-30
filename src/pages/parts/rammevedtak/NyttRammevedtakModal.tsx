@@ -108,6 +108,7 @@ interface StoreProps {
     visNyRammevedtakModal: boolean;
     v2: V2Model;
     aktivtRammevedtak: string | undefined | null;
+    modalSaksreferanse: string|null;
 }
 
 type Props = DispatchProps & OwnProps & StoreProps;
@@ -150,7 +151,7 @@ const NyttRammevedtakModal: React.FC<Props> = (props: Props) => {
     const [referansefeltDisabled, setReferansefeltDisabled] = useState(false);
 
     const classes = useStyles();
-    const {visNyRammevedtakModal, dispatch, v2, soknad, aktivtRammevedtak} = props;
+    const {visNyRammevedtakModal, dispatch, v2, soknad, aktivtRammevedtak, modalSaksreferanse} = props;
 
     function resetStateValues() {
         setModalRammevedtak({...initialRammevedtak, rammevedtaksreferanse: generateFilreferanseId()});
@@ -164,7 +165,10 @@ const NyttRammevedtakModal: React.FC<Props> = (props: Props) => {
     }
 
     const sendRammevedtak = () => {
-        const nyHendelse: Rammevedtak = {...modalRammevedtak};
+        let nyHendelse: Rammevedtak = {...modalRammevedtak};
+        if (modalSaksreferanse) {
+            nyHendelse = {...nyHendelse, saksreferanse: modalSaksreferanse};
+        }
         nyHendelse.hendelsestidspunkt = getNow();
         nyHendelse.fom = formatDateString(nyHendelse.fom);
         nyHendelse.tom = formatDateString(nyHendelse.tom);
@@ -199,8 +203,8 @@ const NyttRammevedtakModal: React.FC<Props> = (props: Props) => {
     const setDefaultRammevedtak = () => {
         setModalRammevedtak({...defaultRammevedtak, rammevedtaksreferanse: generateFilreferanseId()});
 
-        if (soknad.saker.length > 0) {
-            setModalRammevedtak({...defaultRammevedtak, rammevedtaksreferanse: generateFilreferanseId(), saksreferanse: soknad.saker[0].referanse});
+        if (soknad.saker.length > 0 && modalRammevedtak.saksreferanse == null) {
+            setModalRammevedtak({...defaultRammevedtak, saksreferanse: soknad.saker[0].referanse});
         }
 
         setFomDatePickerIsOpen(false);
@@ -220,6 +224,7 @@ const NyttRammevedtakModal: React.FC<Props> = (props: Props) => {
                 }, 10);
             }
         }
+        setModalRammevedtak({...modalRammevedtak, saksreferanse: modalSaksreferanse});
     };
 
     function getTextFieldGrid(label: string, value: any, setValue: (v: any) => any, required: boolean = false) {
@@ -302,7 +307,7 @@ const NyttRammevedtakModal: React.FC<Props> = (props: Props) => {
                         <Grid container spacing={3} justify="center" alignItems="center">
                             {getTextFieldGrid("Rammevedtakreferanse", modalRammevedtak.rammevedtaksreferanse,
                                 (verdi: string) => setModalRammevedtak({...modalRammevedtak, rammevedtaksreferanse: verdi}), true)}
-                            <Grid item key={'Saksreferanse'} xs={6} zeroMinWidth>
+                            {modalSaksreferanse == null && <Grid item key={'Saksreferanse'} xs={6} zeroMinWidth>
                                 <FormControl className={classes.formControl2}>
                                     <InputLabel htmlFor="age-simple" shrink={true}>Saksreferanse</InputLabel>
                                     <Select
@@ -318,7 +323,7 @@ const NyttRammevedtakModal: React.FC<Props> = (props: Props) => {
                                         ))}
                                     </Select>
                                 </FormControl>
-                            </Grid>
+                            </Grid>}
 
                             {getTextFieldGrid("Beskrivelse", modalRammevedtak.beskrivelse, (verdi: string) => setModalRammevedtak({...modalRammevedtak, beskrivelse: verdi}))}
 
@@ -361,7 +366,8 @@ const NyttRammevedtakModal: React.FC<Props> = (props: Props) => {
 const mapStateToProps = (state: AppState) => ({
     visNyRammevedtakModal: state.v2.visNyRammevedtakModal,
     v2: state.v2,
-    aktivtRammevedtak: state.v2.aktivtRammevedtak
+    aktivtRammevedtak: state.v2.aktivtRammevedtak,
+    modalSaksreferanse: state.v2.modalSaksreferanse
 });
 
 const mapDispatchToProps = (dispatch: any) => {

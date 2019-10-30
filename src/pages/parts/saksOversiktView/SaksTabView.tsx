@@ -234,7 +234,7 @@ const SaksTabView: React.FC<Props> = (props: Props) => {
             <VedtakFattetModal soknad={soknad} sak={sak}/>
             <br/>
             <Typography>Rammevedtak</Typography>
-            <RammevedtakOversiktView rammevedtakListe={sak.rammevedtak}/>
+            <RammevedtakOversiktView rammevedtakListe={sak.rammevedtak} saksreferanse={sak.referanse}/>
             <br/>
         </div>
     );

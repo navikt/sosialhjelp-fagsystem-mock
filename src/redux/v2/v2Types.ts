@@ -30,6 +30,7 @@ export interface V2Model {
     visNyVilkarModal: boolean;
     visNyDokumentasjonkravModal: boolean;
     visNyRammevedtakModal: boolean;
+    modalSaksreferanse: string|null;
     visEndreNavKontorModal: boolean;
     visSystemSettingsModal: boolean;
     visSnackbar: boolean;
@@ -231,6 +232,7 @@ export interface SkjulNyDokumentasjonkravModal {
 
 export interface VisNyRammevedtakModal {
     type: V2ActionTypeKeys.VIS_NY_RAMMEVEDTAK_MODAL;
+    saksreferanse: string|null;
 }
 
 export interface SkjulNyRammevedtakModal {

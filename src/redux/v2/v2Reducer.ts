@@ -88,6 +88,7 @@ export const initialV2Model: V2Model = {
     visNyVilkarModal: false,
     visNyDokumentasjonkravModal: false,
     visNyRammevedtakModal: false,
+    modalSaksreferanse: null,
     visEndreNavKontorModal: false,
     visSystemSettingsModal: true,
     visSnackbar: false,
@@ -156,7 +157,7 @@ const v2Reducer: Reducer<V2Model, V2Action> = (
         case V2ActionTypeKeys.SKJUL_NY_VILKAR_MODAL: {return {...state, visNyVilkarModal: false}}
         case V2ActionTypeKeys.VIS_NY_DOKUMENTASJONKRAV_MODAL: {return {...state, visNyDokumentasjonkravModal: true}}
         case V2ActionTypeKeys.SKJUL_NY_DOKUMENTASJONKRAV_MODAL: {return {...state, visNyDokumentasjonkravModal: false}}
-        case V2ActionTypeKeys.VIS_NY_RAMMEVEDTAK_MODAL: {return {...state, visNyRammevedtakModal: true}}
+        case V2ActionTypeKeys.VIS_NY_RAMMEVEDTAK_MODAL: {return {...state, visNyRammevedtakModal: true, modalSaksreferanse: action.saksreferanse}}
         case V2ActionTypeKeys.SKJUL_NY_RAMMEVEDTAK_MODAL: {return {...state, visNyRammevedtakModal: false}}
         case V2ActionTypeKeys.VIS_ENDRE_NAV_KONTOR_MODAL: {return {...state, visEndreNavKontorModal: true}}
         case V2ActionTypeKeys.SKJUL_ENDRE_NAV_KONTOR_MODAL: {return {...state, visEndreNavKontorModal: false}}
