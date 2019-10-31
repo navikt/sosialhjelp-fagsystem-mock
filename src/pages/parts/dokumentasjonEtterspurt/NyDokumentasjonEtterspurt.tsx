@@ -402,6 +402,10 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
                                             handleFileUpload(e.target.files)
                                         }
                                     }}
+                                    onClick={( event: React.MouseEvent<HTMLInputElement, MouseEvent>) => {
+                                        const element = event.target as HTMLInputElement;
+                                        element.value = '';
+                                    }}
                                     type="file"
                                     hidden={true}
                                     className="visuallyhidden"

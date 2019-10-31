@@ -42,7 +42,6 @@ interface OwnProps {
 interface StoreProps {
     visSystemSettingsModal: boolean;
     backendUrls: BackendUrls;
-    backendUrlTypeToUse: keyof BackendUrls;
     v2: V2Model;
 }
 
@@ -51,7 +50,7 @@ type Props = DispatchProps & OwnProps & StoreProps;
 
 const SystemSettingsModal: React.FC<Props> = (props: Props) => {
     const classes = useStyles();
-    const {visSystemSettingsModal, dispatch, backendUrls, backendUrlTypeToUse, soknad, v2} = props;
+    const {visSystemSettingsModal, dispatch, backendUrls, soknad, v2} = props;
     const [typeToUse, setTypeToUse] = useState<keyof BackendUrls | null>(null);
 
     const radios = Object.keys(backendUrls).map((backendUrlType: string) => {
@@ -114,7 +113,6 @@ const SystemSettingsModal: React.FC<Props> = (props: Props) => {
 const mapStateToProps = (state: AppState) => ({
     visSystemSettingsModal: state.v2.visSystemSettingsModal,
     backendUrls: state.v2.backendUrls,
-    backendUrlTypeToUse: state.v2.backendUrlTypeToUse,
     v2: state.v2
 });
 
