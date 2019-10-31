@@ -32,13 +32,9 @@ const useStyles = makeStyles((theme: Theme) =>
         left: {
             display: 'flex',
             flexDirection: 'row',
-            // justifyContent: 'center',
-            // border: "1px dotted red"
         },
         right: {
             paddingRight: 0
-            // padding: theme.spacing(2, 2),
-            // border: "1px dotted red"
         },
         colJson: {
             position: 'fixed',
@@ -122,10 +118,6 @@ const V3: React.FC<Props> = (props: Props) => {
     );
 };
 
-
-
-
-
 const mapStateToProps = (state: AppState) => ({
     v2: state.v2,
     v3: state.v3,
@@ -142,5 +134,3 @@ export default connect(
     mapStateToProps,
     mapDispatchToProps
 )(V3);
-
-
