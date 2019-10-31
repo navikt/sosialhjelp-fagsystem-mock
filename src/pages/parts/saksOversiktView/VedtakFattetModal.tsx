@@ -134,7 +134,7 @@ const VedtakFattetModal: React.FC<Props> = (props: Props) => {
                  }}>
                 <AddIcon/>
             </Fab>
-            <Typography>Send vedtak fattet</Typography>
+            <Typography>{(v2.backendUrlTypeToUse === 'q0' || v2.backendUrlTypeToUse === 'q1') ? "Send vedtak fattet og velg vedtaksbrev" : "Send vedtak fattet"}</Typography>
             <input
                 id={'inputField vedtakFattet'}
                 ref={inputEl}

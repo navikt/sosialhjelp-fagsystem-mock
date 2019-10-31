@@ -81,26 +81,19 @@ export const aiuuur = (
             dispatch(oppdaterFixId(fiksDigisosId, fiksId.toString()));
             dispatch(setAktivSoknad(fiksId.toString()));
             dispatch(actionToDispatchIfSuccess);
-            setTimeout(() => {
-                dispatch(turnOffLoader());
-
-            }, 1000);
+            dispatch(turnOffLoader());
 
         }).catch((reason) => {
             dispatch(visErrorSnackbar());
             switch (reason.message) {
                 case "Not Found": {
                     console.warn("Got 404. Specify a valid backend url...");
-                    setTimeout(() => {
-                        dispatch(turnOffLoader());
-                    }, 1000);
+                    dispatch(turnOffLoader());
                     break;
                 }
                 case "Failed to fetch": {
                     console.warn("Got 404. Specify a valid backend url...");
-                    setTimeout(() => {
-                        dispatch(turnOffLoader());
-                    }, 1000);
+                    dispatch(turnOffLoader());
                     break;
                 }
                 default: {
@@ -123,25 +116,18 @@ export const zeruuus = (
     return (dispatch: Dispatch) => {
         dispatch(turnOnLoader());
         fetchPost(`${backendUrl}${nyNavEnhetUrl}`, JSON.stringify(navKontorListe)).then((response: any) => {
-            setTimeout(() => {
-                dispatch(turnOffLoader());
-
-            }, 1000);
+            dispatch(turnOffLoader());
 
         }).catch((reason) => {
             switch (reason.message) {
                 case "Not Found": {
                     console.warn("Got 404. Specify a valid backend url...");
-                    setTimeout(() => {
-                        dispatch(turnOffLoader());
-                    }, 1000);
+                    dispatch(turnOffLoader());
                     break;
                 }
                 case "Failed to fetch": {
                     console.warn("Got 404. Specify a valid backend url...");
-                    setTimeout(() => {
-                        dispatch(turnOffLoader());
-                    }, 1000);
+                    dispatch(turnOffLoader());
                     break;
                 }
                 default: {
@@ -204,26 +190,19 @@ export const chaaar = (
                         oppdaterFixId(fiksDigisosId, fiksId.toString()));
                     dispatch(setAktivSoknad(fiksId.toString()));
                     dispatch(oppdaterForelopigSvar(soknad.fiksDigisosId, nyHendelse));
-                    setTimeout(() => {
-                        dispatch(turnOffLoader());
-
-                    }, 1000);
+                    dispatch(turnOffLoader());
 
                 }).catch((reason) => {
                     dispatch(visErrorSnackbar());
                     switch (reason.message) {
                         case "Not Found": {
                             console.warn("Got 404. Specify a valid backend url...");
-                            setTimeout(() => {
-                                dispatch(turnOffLoader());
-                            }, 1000);
+                            dispatch(turnOffLoader());
                             break;
                         }
                         case "Failed to fetch": {
                             console.warn("Got 404. Specify a valid backend url...");
-                            setTimeout(() => {
-                                dispatch(turnOffLoader());
-                            }, 1000);
+                            dispatch(turnOffLoader());
                             break;
                         }
                         default: {
@@ -238,16 +217,12 @@ export const chaaar = (
             switch (reason.message) {
                 case "Not Found": {
                     console.warn("Got 404. Specify a valid backend url...");
-                    setTimeout(() => {
-                        dispatch(turnOffLoader());
-                    }, 1000);
+                    dispatch(turnOffLoader());
                     break;
                 }
                 case "Failed to fetch": {
                     console.warn("Got 404. Specify a valid backend url...");
-                    setTimeout(() => {
-                        dispatch(turnOffLoader());
-                    }, 1000);
+                    dispatch(turnOffLoader());
                     break;
                 }
                 default: {
@@ -325,26 +300,19 @@ export const tarsoniiis = (
                         oppdaterFixId(fiksDigisosId, fiksId.toString()));
                     dispatch(setAktivSoknad(fiksId.toString()));
                     dispatch(oppdaterVedtakFattet(soknad.fiksDigisosId, nyHendelse));
-                    setTimeout(() => {
-                        dispatch(turnOffLoader());
-
-                    }, 1000);
+                    dispatch(turnOffLoader());
 
                 }).catch((reason) => {
                     dispatch(visErrorSnackbar());
                     switch (reason.message) {
                         case "Not Found": {
                             console.warn("Got 404. Specify a valid backend url...");
-                            setTimeout(() => {
-                                dispatch(turnOffLoader());
-                            }, 1000);
+                            dispatch(turnOffLoader());
                             break;
                         }
                         case "Failed to fetch": {
                             console.warn("Got 404. Specify a valid backend url...");
-                            setTimeout(() => {
-                                dispatch(turnOffLoader());
-                            }, 1000);
+                            dispatch(turnOffLoader());
                             break;
                         }
                         default: {
@@ -359,16 +327,12 @@ export const tarsoniiis = (
             switch (reason.message) {
                 case "Not Found": {
                     console.warn("Got 404. Specify a valid backend url...");
-                    setTimeout(() => {
-                        dispatch(turnOffLoader());
-                    }, 1000);
+                    dispatch(turnOffLoader());
                     break;
                 }
                 case "Failed to fetch": {
                     console.warn("Got 404. Specify a valid backend url...");
-                    setTimeout(() => {
-                        dispatch(turnOffLoader());
-                    }, 1000);
+                    dispatch(turnOffLoader());
                     break;
                 }
                 default: {
@@ -438,26 +402,19 @@ export const shakuraaas = (
                         oppdaterFixId(fiksDigisosId, fiksId.toString()));
                     dispatch(setAktivSoknad(fiksId.toString()));
                     dispatch(oppdaterDokumentasjonEtterspurt(soknad.fiksDigisosId, nyHendelse));
-                    setTimeout(() => {
-                        dispatch(turnOffLoader());
-
-                    }, 1000);
+                    dispatch(turnOffLoader());
 
                 }).catch((reason) => {
                     dispatch(visErrorSnackbar());
                     switch (reason.message) {
                         case "Not Found": {
                             console.warn("Got 404. Specify a valid backend url...");
-                            setTimeout(() => {
-                                dispatch(turnOffLoader());
-                            }, 1000);
+                            dispatch(turnOffLoader());
                             break;
                         }
                         case "Failed to fetch": {
                             console.warn("Got 404. Specify a valid backend url...");
-                            setTimeout(() => {
-                                dispatch(turnOffLoader());
-                            }, 1000);
+                            dispatch(turnOffLoader());
                             break;
                         }
                         default: {
@@ -472,16 +429,12 @@ export const shakuraaas = (
             switch (reason.message) {
                 case "Not Found": {
                     console.warn("Got 404. Specify a valid backend url...");
-                    setTimeout(() => {
-                        dispatch(turnOffLoader());
-                    }, 1000);
+                    dispatch(turnOffLoader());
                     break;
                 }
                 case "Failed to fetch": {
                     console.warn("Got 404. Specify a valid backend url...");
-                    setTimeout(() => {
-                        dispatch(turnOffLoader());
-                    }, 1000);
+                    dispatch(turnOffLoader());
                     break;
                 }
                 default: {
@@ -515,26 +468,19 @@ export const opprettEllerOppdaterDigisosSak = (
             let fiksId = response.fiksDigisosId;
             dispatch(oppdaterFixId(soknad.fiksDigisosId, fiksId.toString()));
             dispatch(setAktivSoknad(fiksId.toString()));
-            setTimeout(() => {
-                dispatch(turnOffLoader());
-
-            }, 1000);
+            dispatch(turnOffLoader());
 
         }).catch((reason) => {
             dispatch(visErrorSnackbar());
             switch (reason.message) {
                 case "Not Found": {
                     console.warn("Got 404. Specify a valid backend url...");
-                    setTimeout(() => {
-                        dispatch(turnOffLoader());
-                    }, 1000);
+                    dispatch(turnOffLoader());
                     break;
                 }
                 case "Failed to fetch": {
                     console.warn("Got 404. Specify a valid backend url...");
-                    setTimeout(() => {
-                        dispatch(turnOffLoader());
-                    }, 1000);
+                    dispatch(turnOffLoader());
                     break;
                 }
                 default: {

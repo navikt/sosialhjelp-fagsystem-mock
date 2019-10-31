@@ -133,7 +133,7 @@ const SoknadStatusView: React.FC<Props> = (props: Props) => {
                      }}>
                     <AddIcon/>
                 </Fab>
-                <Typography>Send pdf med foreløpig svar</Typography>
+                <Typography>{(v2.backendUrlTypeToUse === 'q0' || v2.backendUrlTypeToUse === 'q1') ? "Send pdf med foreløpig svar" : "Send foreløpig svar"}</Typography>
             </Box>
         )
     };
@@ -192,7 +192,7 @@ const SoknadStatusView: React.FC<Props> = (props: Props) => {
                     <Box className={classes.horizontalBox}>
                         <Typography variant={'h5'}>Foreløpig svar</Typography>
                         {addNyttForelopigSvarButton()}
-                        <Typography>{"Antall pdfer sendt: " + getAntallForelopigSvarHendelser()}</Typography>
+                        <Typography>{"Antall sendt: " + getAntallForelopigSvarHendelser()}</Typography>
                         <input
                             id={'inputField'}
                             ref={inputEl}

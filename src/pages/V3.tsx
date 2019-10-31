@@ -16,6 +16,7 @@ import {V3State} from "../redux/v3/v3Types";
 import ReactJsonView from "./parts/reactJsonView/ReactJsonView";
 import {getFsSoknadByFiksDigisosId} from "../utils/utilityFunctions";
 import ToppPanel from "./parts/panel/ToppPanel";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -41,6 +42,13 @@ const useStyles = makeStyles((theme: Theme) =>
             position: 'fixed',
             bottom: '1rem',
             right: '1rem'
+        },
+        progressBar: {
+            position: 'fixed',
+            top: '50%',
+            left: '50%',
+            marginTop: '-50px',
+            marginLeft: '-50px'
         }
     }),
 );
@@ -56,6 +64,7 @@ type Props = DispatchProps & V3Props;
 const V3: React.FC<Props> = (props: Props) => {
 
     const theme = { palette: {type: props.v2.thememode}};
+    const loaderOn = props.v2.loaderOn;
     const muiTheme = createMuiTheme(theme);
     const classes = useStyles();
 
@@ -84,8 +93,11 @@ const V3: React.FC<Props> = (props: Props) => {
 
             <SystemSettingsModal soknad={getFsSoknadByFiksDigisosId(props.v3.soknader,props.v2.aktivSoknad)} />
 
-            {/* FIXME: Ta i bruk denne senere.*/}
             <StatusSnackBarView />
+
+            <div hidden={!loaderOn} className={classes.progressBar}>
+                <CircularProgress size={100} thickness={3} disableShrink color={'secondary'} />
+            </div>
 
             <div className={classes.colJson}>
                 <ReactJsonView json={getFsSoknadByFiksDigisosId(props.v3.soknader,props.v2.aktivSoknad)}/>

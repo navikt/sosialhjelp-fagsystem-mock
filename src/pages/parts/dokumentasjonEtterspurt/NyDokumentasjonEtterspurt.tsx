@@ -186,9 +186,13 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
         setModalDokument({...initialDokument});
     };
 
+    function skalLasteOppFil() {
+        return (v2.backendUrlTypeToUse === 'q0' || v2.backendUrlTypeToUse === 'q1')
+            && modalDokumentasjonEtterspurt.forvaltningsbrev.referanse.id === standardRef;
+    }
+
     const sendDokumentasjonEtterspurt = () => {
-        if((v2.backendUrlTypeToUse === 'q0' || v2.backendUrlTypeToUse === 'q1') && inputEl && inputEl.current
-            && modalDokumentasjonEtterspurt.forvaltningsbrev.referanse.id === standardRef) {
+        if(skalLasteOppFil() && inputEl && inputEl.current) {
             inputEl.current.click();
         } else {
             const nyHendelse: DokumentasjonEtterspurt = {
@@ -392,7 +396,7 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
                                     <AddIcon/>
                                 </Fab>
                                 <Typography>
-                                    Etterspør dokumentasjon
+                                    {skalLasteOppFil() ? "Etterspør dokumentasjon og velg forvaltningsbrev" : "Etterspør dokumentasjon"}
                                 </Typography>
                                 <input
                                     id={'inputField vedtakFattet'}

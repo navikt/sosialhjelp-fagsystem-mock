@@ -17,7 +17,7 @@ import ReactJson from "react-json-view";
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         root: {
-            backgroundColor: theme.palette.background.paper,
+            // backgroundColor: theme.palette.background.paper,
             position: 'relative',
             bottom: theme.spacing(2),
             right: theme.spacing(2),
