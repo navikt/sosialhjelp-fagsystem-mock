@@ -17,6 +17,8 @@ import ReactJsonView from "./parts/reactJsonView/ReactJsonView";
 import {getFsSoknadByFiksDigisosId} from "../utils/utilityFunctions";
 import ToppPanel from "./parts/panel/ToppPanel";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import deepOrange from "@material-ui/core/colors/deepOrange";
+import indigo from "@material-ui/core/colors/indigo";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -63,9 +65,22 @@ type Props = DispatchProps & V3Props;
 
 const V3: React.FC<Props> = (props: Props) => {
 
-    const theme = { palette: {type: props.v2.thememode}};
     const loaderOn = props.v2.loaderOn;
-    const muiTheme = createMuiTheme(theme);
+    const muiTheme = createMuiTheme({
+        palette: {
+            primary: {
+                light: indigo[300],
+                main: indigo[500],
+                dark: indigo[700]
+            },
+            secondary: {
+                light: deepOrange[300],
+                main: deepOrange[500],
+                dark: deepOrange[700]
+            },
+            type: props.v2.thememode
+        }
+    });
     const classes = useStyles();
 
     return (
