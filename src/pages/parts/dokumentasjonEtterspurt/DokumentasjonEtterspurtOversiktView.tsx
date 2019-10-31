@@ -19,7 +19,7 @@ import TableBody from "@material-ui/core/TableBody";
 import {getNow, getShortDateISOString} from "../../../utils/utilityFunctions";
 import {oHendelser} from "../../../redux/v3/v3Optics";
 import {aiuuur, oppdaterDokumentasjonEtterspurt} from "../../../redux/v3/v3Actions";
-import {Filreferanselager, V2Model} from "../../../redux/v2/v2Types";
+import {V2Model} from "../../../redux/v2/v2Types";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -79,7 +79,6 @@ const useStyles = makeStyles((theme: Theme) =>
 
 interface StoreProps {
     v2: V2Model;
-    filreferanselager: Filreferanselager;
 }
 
 interface OwnProps {
@@ -91,7 +90,7 @@ type Props = DispatchProps & StoreProps & OwnProps;
 
 const DokumentasjonEtterspurtOversiktView: React.FC<Props> = (props: Props) => {
     const classes = useStyles();
-    const {soknad, v2, filreferanselager, dispatch} = props;
+    const {soknad, v2, dispatch} = props;
 
     const makeTableRow = (dokument: Dokument) => {
         return <TableRow key={dokument.dokumenttype + dokument.tilleggsinformasjon}>
@@ -210,8 +209,7 @@ const DokumentasjonEtterspurtOversiktView: React.FC<Props> = (props: Props) => {
 };
 
 const mapStateToProps = (state: AppState) => ({
-    v2: state.v2,
-    filreferanselager: state.v2.filreferanselager
+    v2: state.v2
 });
 
 const mapDispatchToProps = (dispatch: any) => {

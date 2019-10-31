@@ -106,7 +106,9 @@ const RammevedtakOversiktView: React.FC<Props> = (props: Props) => {
             });
             const listTabPanels = rammevedtakListe.map((rammevedtak: Rammevedtak, idx) => {
                 return(
-                    <TabPanel key={"tabPanel: " + rammevedtak.rammevedtaksreferanse} value={aktivtRammevedtakIdx} index={idx} dir={theme.direction}>
+                    <TabPanel key={"tabPanel: " + rammevedtak.rammevedtaksreferanse}
+                              value={aktivtRammevedtakIdx < rammevedtakListe.length ? aktivtRammevedtakIdx : rammevedtakListe.length - 1}
+                              index={idx} dir={theme.direction}>
                         <RammevedtakTabView rammevedtak={rammevedtak} />
                     </TabPanel>
                 )
@@ -115,7 +117,7 @@ const RammevedtakOversiktView: React.FC<Props> = (props: Props) => {
                 <>
                     <AppBar position="static" color="default">
                         <Tabs
-                            value={aktivtRammevedtakIdx}
+                            value={aktivtRammevedtakIdx < rammevedtakListe.length ? aktivtRammevedtakIdx : rammevedtakListe.length - 1}
                             onChange={(event: unknown, newValue: number) => setAktivtRammevedtakIdx(newValue)}
                             indicatorColor="primary"
                             textColor="primary"
@@ -127,7 +129,7 @@ const RammevedtakOversiktView: React.FC<Props> = (props: Props) => {
                     </AppBar>
                     <SwipeableViews
                         axis={theme.direction === 'rtl' ? 'x-reverse' : 'x'}
-                        index={aktivtRammevedtakIdx}
+                        index={aktivtRammevedtakIdx < rammevedtakListe.length ? aktivtRammevedtakIdx : rammevedtakListe.length - 1}
                         onChangeIndex={(newValue: number) => setAktivtRammevedtakIdx(newValue)}
                     >
                         { listTabPanels}

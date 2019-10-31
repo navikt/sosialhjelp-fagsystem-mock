@@ -23,20 +23,23 @@ import Hendelse, {
     Dokument,
     DokumentasjonEtterspurt,
     Dokumentasjonkrav,
-    FiksDigisosSokerJson, FilreferanseType,
-    ForelopigSvar, HendelseType,
+    FiksDigisosSokerJson,
+    FilreferanseType,
+    ForelopigSvar,
+    HendelseType,
     Rammevedtak,
     SaksStatus,
     SoknadsStatus,
     TildeltNavKontor,
-    Utbetaling, Utfall,
+    Utbetaling,
+    Utfall,
     VedtakFattet,
     Vilkar
 } from "../../types/hendelseTypes";
 import {AnyAction, Dispatch} from "redux";
 import {fetchPost} from "../../utils/restUtils";
 import {
-    setAktivSoknad, setBackendUrlTypeToUse,
+    setAktivSoknad,
     setFiksDigisosSokerJson,
     turnOffLoader,
     turnOnLoader,

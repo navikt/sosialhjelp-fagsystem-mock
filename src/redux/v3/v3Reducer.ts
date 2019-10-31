@@ -244,14 +244,30 @@ const v3Reducer: Reducer<V3State, V3Action> = (
                 .modify((a: Hendelse[]) => [...a, oppdatertRammevedtak])(state);
 
             if (oppdatertRammevedtak.saksreferanse) {
-                return oGetSoknad(forFiksDigisosId)
-                    .composeLens(oFsSaker)
-                    .composeTraversal(oFsSakerTraversal)
-                    .composePrism(oFsSaksStatusPrism(oppdatertRammevedtak.saksreferanse))
-                    .composeLens(oFsSaksStatusRammevedtak)
-                    .composeTraversal(oFsRammevedtakTraversal)
-                    .composePrism(oFsRammevedtakPrism(oppdatertRammevedtak.rammevedtaksreferanse))
-                    .set(oppdatertRammevedtak)(s1);
+                if (state.soknader.find(s => s.fiksDigisosId === forFiksDigisosId)!.rammevedtak
+                    .find(r => r.rammevedtaksreferanse === oppdatertRammevedtak.rammevedtaksreferanse)) {
+                    // Fjern fra liste over rammevedtak uten saksreferanse
+                    const s2 = oGetSoknad(forFiksDigisosId)
+                        .composeLens(oFsRammevedtak)
+                        .modify((rammevedtakliste) => rammevedtakliste.filter(
+                            (rammevedtak) => rammevedtak.rammevedtaksreferanse !== oppdatertRammevedtak.rammevedtaksreferanse))(s1);
+                    // Legg til i liste over rammevedtak under den valgte saken
+                    return oGetSoknad(forFiksDigisosId)
+                        .composeLens(oFsSaker)
+                        .composeTraversal(oFsSakerTraversal)
+                        .composePrism(oFsSaksStatusPrism(oppdatertRammevedtak.saksreferanse))
+                        .composeLens(oFsSaksStatusRammevedtak)
+                        .modify((rammevedtak: Rammevedtak[]) => [...rammevedtak, oppdatertRammevedtak])(s2);
+                } else {
+                    return oGetSoknad(forFiksDigisosId)
+                        .composeLens(oFsSaker)
+                        .composeTraversal(oFsSakerTraversal)
+                        .composePrism(oFsSaksStatusPrism(oppdatertRammevedtak.saksreferanse))
+                        .composeLens(oFsSaksStatusRammevedtak)
+                        .composeTraversal(oFsRammevedtakTraversal)
+                        .composePrism(oFsRammevedtakPrism(oppdatertRammevedtak.rammevedtaksreferanse))
+                        .set(oppdatertRammevedtak)(s1);
+                }
             } else {
                 return oGetSoknad(forFiksDigisosId)
                     .composeLens(oFsRammevedtak)

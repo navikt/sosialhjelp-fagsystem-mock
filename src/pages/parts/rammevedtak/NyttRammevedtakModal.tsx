@@ -216,7 +216,6 @@ const NyttRammevedtakModal: React.FC<Props> = (props: Props) => {
     const fyllInnAktivtRammevedtak = () => {
         if (aktivtRammevedtak) {
             const rammevedtak = getRammevedtakByRammevedtaksreferanse(soknad, aktivtRammevedtak);
-            console.log(rammevedtak);
             if (rammevedtak){
                 setModalRammevedtak(rammevedtak);
 
