@@ -81,26 +81,8 @@ export const aiuuur = (
             dispatch(oppdaterFixId(fiksDigisosId, fiksId.toString()));
             dispatch(setAktivSoknad(fiksId.toString()));
             dispatch(actionToDispatchIfSuccess);
-            dispatch(turnOffLoader());
-
-        }).catch((reason) => {
-            dispatch(visErrorSnackbar());
-            switch (reason.message) {
-                case "Not Found": {
-                    console.warn("Got 404. Specify a valid backend url...");
-                    dispatch(turnOffLoader());
-                    break;
-                }
-                case "Failed to fetch": {
-                    console.warn("Got 404. Specify a valid backend url...");
-                    dispatch(turnOffLoader());
-                    break;
-                }
-                default: {
-                    console.warn("Unhandled reason with message: " + reason.message);
-                }
-            }
-        });
+        }).catch((reason) => runOnErrorResponse(reason, dispatch))
+            .finally(() => dispatch(turnOffLoader()));
     }
 };
 
@@ -115,26 +97,9 @@ export const zeruuus = (
 
     return (dispatch: Dispatch) => {
         dispatch(turnOnLoader());
-        fetchPost(`${backendUrl}${nyNavEnhetUrl}`, JSON.stringify(navKontorListe)).then((response: any) => {
-            dispatch(turnOffLoader());
-
-        }).catch((reason) => {
-            switch (reason.message) {
-                case "Not Found": {
-                    console.warn("Got 404. Specify a valid backend url...");
-                    dispatch(turnOffLoader());
-                    break;
-                }
-                case "Failed to fetch": {
-                    console.warn("Got 404. Specify a valid backend url...");
-                    dispatch(turnOffLoader());
-                    break;
-                }
-                default: {
-                    console.warn("Unhandled reason with message: " + reason.message);
-                }
-            }
-        });
+        fetchPost(`${backendUrl}${nyNavEnhetUrl}`, JSON.stringify(navKontorListe))
+            .catch((reason) => runOnErrorResponse(reason, dispatch))
+            .finally(() => dispatch(turnOffLoader()));
     }
 };
 
@@ -190,46 +155,11 @@ export const chaaar = (
                         oppdaterFixId(fiksDigisosId, fiksId.toString()));
                     dispatch(setAktivSoknad(fiksId.toString()));
                     dispatch(oppdaterForelopigSvar(soknad.fiksDigisosId, nyHendelse));
-                    dispatch(turnOffLoader());
 
-                }).catch((reason) => {
-                    dispatch(visErrorSnackbar());
-                    switch (reason.message) {
-                        case "Not Found": {
-                            console.warn("Got 404. Specify a valid backend url...");
-                            dispatch(turnOffLoader());
-                            break;
-                        }
-                        case "Failed to fetch": {
-                            console.warn("Got 404. Specify a valid backend url...");
-                            dispatch(turnOffLoader());
-                            break;
-                        }
-                        default: {
-                            console.warn("Unhandled reason with message: " + reason.message);
-                        }
-                    }
-                });
-
-                dispatch(turnOffLoader());
+                }).catch((reason) => runOnErrorResponse(reason, dispatch));
             });
-        }).catch((reason) => {
-            switch (reason.message) {
-                case "Not Found": {
-                    console.warn("Got 404. Specify a valid backend url...");
-                    dispatch(turnOffLoader());
-                    break;
-                }
-                case "Failed to fetch": {
-                    console.warn("Got 404. Specify a valid backend url...");
-                    dispatch(turnOffLoader());
-                    break;
-                }
-                default: {
-                    console.warn("Unhandled reason with message: " + reason.message);
-                }
-            }
-        });
+        }).catch((reason) => runOnErrorResponse(reason, dispatch))
+            .finally(() => dispatch(turnOffLoader()));
     }
 };
 
@@ -300,46 +230,10 @@ export const tarsoniiis = (
                         oppdaterFixId(fiksDigisosId, fiksId.toString()));
                     dispatch(setAktivSoknad(fiksId.toString()));
                     dispatch(oppdaterVedtakFattet(soknad.fiksDigisosId, nyHendelse));
-                    dispatch(turnOffLoader());
-
-                }).catch((reason) => {
-                    dispatch(visErrorSnackbar());
-                    switch (reason.message) {
-                        case "Not Found": {
-                            console.warn("Got 404. Specify a valid backend url...");
-                            dispatch(turnOffLoader());
-                            break;
-                        }
-                        case "Failed to fetch": {
-                            console.warn("Got 404. Specify a valid backend url...");
-                            dispatch(turnOffLoader());
-                            break;
-                        }
-                        default: {
-                            console.warn("Unhandled reason with message: " + reason.message);
-                        }
-                    }
-                });
-
-                dispatch(turnOffLoader());
+                }).catch((reason) => runOnErrorResponse(reason, dispatch));
             });
-        }).catch((reason) => {
-            switch (reason.message) {
-                case "Not Found": {
-                    console.warn("Got 404. Specify a valid backend url...");
-                    dispatch(turnOffLoader());
-                    break;
-                }
-                case "Failed to fetch": {
-                    console.warn("Got 404. Specify a valid backend url...");
-                    dispatch(turnOffLoader());
-                    break;
-                }
-                default: {
-                    console.warn("Unhandled reason with message: " + reason.message);
-                }
-            }
-        });
+        }).catch((reason) => runOnErrorResponse(reason, dispatch))
+            .finally(() => dispatch(turnOffLoader()));
     }
 };
 
@@ -402,46 +296,10 @@ export const shakuraaas = (
                         oppdaterFixId(fiksDigisosId, fiksId.toString()));
                     dispatch(setAktivSoknad(fiksId.toString()));
                     dispatch(oppdaterDokumentasjonEtterspurt(soknad.fiksDigisosId, nyHendelse));
-                    dispatch(turnOffLoader());
-
-                }).catch((reason) => {
-                    dispatch(visErrorSnackbar());
-                    switch (reason.message) {
-                        case "Not Found": {
-                            console.warn("Got 404. Specify a valid backend url...");
-                            dispatch(turnOffLoader());
-                            break;
-                        }
-                        case "Failed to fetch": {
-                            console.warn("Got 404. Specify a valid backend url...");
-                            dispatch(turnOffLoader());
-                            break;
-                        }
-                        default: {
-                            console.warn("Unhandled reason with message: " + reason.message);
-                        }
-                    }
-                });
-
-                dispatch(turnOffLoader());
+                }).catch((reason) => runOnErrorResponse(reason, dispatch));
             });
-        }).catch((reason) => {
-            switch (reason.message) {
-                case "Not Found": {
-                    console.warn("Got 404. Specify a valid backend url...");
-                    dispatch(turnOffLoader());
-                    break;
-                }
-                case "Failed to fetch": {
-                    console.warn("Got 404. Specify a valid backend url...");
-                    dispatch(turnOffLoader());
-                    break;
-                }
-                default: {
-                    console.warn("Unhandled reason with message: " + reason.message);
-                }
-            }
-        });
+        }).catch(reason => runOnErrorResponse(reason, dispatch))
+            .finally(() => dispatch(turnOffLoader()));
     }
 };
 
@@ -451,7 +309,6 @@ export const opprettEllerOppdaterDigisosSak = (
     backendUrlTypeToUse: keyof BackendUrls
 ): (dispatch: Dispatch<AnyAction>) => void => {
 
-    // @ts-ignore
     const backendUrl = v2.backendUrls[backendUrlTypeToUse];
     const oppdaterDigisosSakUrl = v2.oppdaterDigisosSakUrl;
 
@@ -468,27 +325,28 @@ export const opprettEllerOppdaterDigisosSak = (
             let fiksId = response.fiksDigisosId;
             dispatch(oppdaterFixId(soknad.fiksDigisosId, fiksId.toString()));
             dispatch(setAktivSoknad(fiksId.toString()));
-            dispatch(turnOffLoader());
-
-        }).catch((reason) => {
-            dispatch(visErrorSnackbar());
-            switch (reason.message) {
-                case "Not Found": {
-                    console.warn("Got 404. Specify a valid backend url...");
-                    dispatch(turnOffLoader());
-                    break;
-                }
-                case "Failed to fetch": {
-                    console.warn("Got 404. Specify a valid backend url...");
-                    dispatch(turnOffLoader());
-                    break;
-                }
-                default: {
-                    console.warn("Unhandled reason with message: " + reason.message);
-                }
-            }
-        });
+        }).catch((reason) => runOnErrorResponse(reason, dispatch))
+            .finally(() => dispatch(turnOffLoader()));
     }
+};
+
+const runOnErrorResponse = (reason: any, dispatch: Dispatch) => {
+    dispatch(visErrorSnackbar());
+    return (reason: any) => {
+        switch (reason.message) {
+            case "Not Found": {
+                console.warn("Got 404. Specify a valid backend url...");
+                break;
+            }
+            case "Failed to fetch": {
+                console.warn("Got 404. Specify a valid backend url...");
+                break;
+            }
+            default: {
+                console.warn("Unhandled reason with message: " + reason.message);
+            }
+        }
+    };
 };
 
 
@@ -624,8 +482,3 @@ export const oppdaterVilkar = (forFiksDigisosId: string, oppdatertVilkar: Vilkar
         oppdatertVilkar
     }
 };
-
-
-
-
-
