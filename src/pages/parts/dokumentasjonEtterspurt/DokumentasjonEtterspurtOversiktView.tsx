@@ -112,33 +112,34 @@ const DokumentasjonEtterspurtOversiktView: React.FC<Props> = (props: Props) => {
         
         if (soknad.dokumentasjonEtterspurt && soknad.dokumentasjonEtterspurt.dokumenter.length > 0) {
             return (
-                <Paper className={classes.tablePaper}>
-                    <Table className={classes.table} size="small">
-                        <TableHead>
-                            <TableRow>
-                                <TableCell>Type</TableCell>
-                                <TableCell>Tilleggsinformasjon</TableCell>
-                                <TableCell align="right">Innsendelsesfrist</TableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {soknad.dokumentasjonEtterspurt && soknad.dokumentasjonEtterspurt.dokumenter.map(dokument => makeTableRow(dokument))}
-                        </TableBody>
-                    </Table>
-                    <Typography className={classes.paperRoute}>
-                        <Fab size="small" aria-label="add" className={classes.fab2} color="primary" onClick={() => {
-                            dispatch(visNyDokumentasjonEtterspurtModal());
-                        }}>
-                            <AddIcon/>
-                        </Fab>
-                        Endre etterspurt dokumentasjon
-                    </Typography>
-                </Paper>
+                <Box className={classes.tableBox}>
+                    <Paper className={classes.tablePaper}>
+                        <Table className={classes.table} size="small">
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell>Type</TableCell>
+                                    <TableCell>Tilleggsinformasjon</TableCell>
+                                    <TableCell align="right">Innsendelsesfrist</TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {soknad.dokumentasjonEtterspurt && soknad.dokumentasjonEtterspurt.dokumenter.map(dokument => makeTableRow(dokument))}
+                            </TableBody>
+                        </Table>
+                        <Typography className={classes.paperRoute}>
+                            <Fab size="small" aria-label="add" className={classes.fab2} color="primary" onClick={() => {
+                                dispatch(visNyDokumentasjonEtterspurtModal());
+                            }}>
+                                <AddIcon/>
+                            </Fab>
+                            Endre etterspurt dokumentasjon
+                        </Typography>
+                    </Paper>
+                </Box>
             );
         } else {
             return (
                 <>
-                    <br/>
                     <Typography variant={"subtitle1"}>
                         Ingen dokumenter er etterspurt for denne søknaden.
                     </Typography>
@@ -188,10 +189,9 @@ const DokumentasjonEtterspurtOversiktView: React.FC<Props> = (props: Props) => {
                         </Fab>
                         {(soknad.dokumentasjonEtterspurt && soknad.dokumentasjonEtterspurt.dokumenter.length > 0) ? "Slett etterspurt dokumentasjon" : "Etterspør mer dokumentasjon"}
                     </Typography>
-                    <Box className={classes.tableBox}>
-                        {(soknad.dokumentasjonEtterspurt && soknad.dokumentasjonEtterspurt.dokumenter.length > 0) && insertDokumentasjonEtterspurtOversikt()}
-                    </Box>
                 </Box>
+
+                {(soknad.dokumentasjonEtterspurt && soknad.dokumentasjonEtterspurt.dokumenter.length > 0) && insertDokumentasjonEtterspurtOversikt()}
 
 
                 {!(soknad.dokumentasjonEtterspurt && soknad.dokumentasjonEtterspurt.dokumenter.length > 0) &&

@@ -12,13 +12,44 @@ import DokumentasjonkravOversiktView from "../dokumentasjonskrav/Dokumentasjonkr
 import RammevedtakOversiktView from "../rammevedtak/RammevedtakOversiktView";
 import DokumentasjonEtterspurtOversiktView from "../dokumentasjonEtterspurt/DokumentasjonEtterspurtOversiktView";
 import NyttRammevedtakModal from "../rammevedtak/NyttRammevedtakModal";
+import {useMediaQuery} from "@material-ui/core";
 
+// const matches = useMediaQuery('(min-width:1910px)');
 
 const useStyles = makeStyles(theme => ({
     root: {
         width: '100%',
     },
     root2: {
+        width: '100%',
+        display: 'flex',
+        flexWrap: 'wrap',
+        '@media (min-width: 1920px)': {
+            flexDirection: 'row',
+        },
+        '@media (max-width: 1919px)': {
+            flexDirection: 'column',
+        },
+    },
+    root3: {
+        flex: 1,
+        '@media (min-width: 1920px)': {
+            // marginLeft: theme.spacing(2),
+            minWidth: '900px',
+        },
+        height: '100%'
+    },
+    dokumentasjonEtterspurtBoks: {
+        flex: 1,
+        '@media (min-width: 1920px)': {
+            marginLeft: theme.spacing(2),
+            minWidth: '900px',
+        },
+        // '@media (max-width: 1909px)': {
+        //     width: '100%'
+        // },
+    },
+    root4: {
         backgroundColor: theme.palette.background.paper,
         position: 'relative',
         minHeight: 200,
@@ -77,10 +108,15 @@ const BehandleSoknadPanel: React.FC<Props> = (props: Props) => {
                 {/*</div>*/}
 
                 <div className={classes.root}>
-                    <DokumentasjonEtterspurtOversiktView soknad={soknad}/>
+                    <div className={classes.root2}>
+                        <div className={classes.root3}>
+                            <SaksOversiktView soknad={soknad}/>
+                        </div>
 
-                    <SaksOversiktView soknad={soknad}/>
-
+                        <div className={classes.dokumentasjonEtterspurtBoks + " dokumentasjonEtterspurtBoks"}>
+                            <DokumentasjonEtterspurtOversiktView soknad={soknad}/>
+                        </div>
+                    </div>
                     <br/>
                     <br/>
                     <br/>
@@ -96,7 +132,7 @@ const BehandleSoknadPanel: React.FC<Props> = (props: Props) => {
 
                     <DokumentasjonkravOversiktView soknad={soknad}/>
 
-                    <div className={classes.root2}>
+                    <div className={classes.root4}>
                         <Paper className={classes.paper3}>
                             <Typography variant={"h5"}>Rammevedtak</Typography>
                             <RammevedtakOversiktView rammevedtakListe={soknad.rammevedtak} saksreferanse={null}/>
