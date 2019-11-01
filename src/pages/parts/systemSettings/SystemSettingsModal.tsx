@@ -57,6 +57,7 @@ const SystemSettingsModal: React.FC<Props> = (props: Props) => {
         // @ts-ignore
         return (
             <FormControlLabel
+                id={"system_settings_backend_url_radio_" + backendUrlType}
                 key={"urlLabel: " + backendUrlType}
                 value={backendUrlType}
                 control={<Radio/>}

@@ -72,6 +72,7 @@ function MySnackbarContentWrapper(props: InterfaceProps) {
 
     return (
         <SnackbarContent
+            id={'innsyn_status_snackbar'}
             className={clsx(classes[variant], className)}
             aria-describedby="client-snackbar"
             message={
