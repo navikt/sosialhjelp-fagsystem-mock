@@ -15,7 +15,6 @@ import {visNyVilkarModal} from "../../../redux/v2/v2Actions";
 import {FsSoknad} from "../../../redux/v3/v3FsTypes";
 import VilkarTabView from "./VilkarTabView";
 import {Vilkar} from "../../../types/hendelseTypes";
-import NyttVilkarModal from "./NyttVilkarModal";
 
 
 interface TabPanelProps {
@@ -45,18 +44,15 @@ function TabPanel(props: TabPanelProps) {
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         root: {
-            backgroundColor: theme.palette.background.paper,
-            // width: 500,
             position: 'relative',
-            minHeight: 200,
         },
         fab: {
             marginRight: theme.spacing(1),
         },
         paper: {
             padding: theme.spacing(2, 2),
-            marginTop: theme.spacing(2)
-
+            marginTop: theme.spacing(2),
+            backgroundColor: theme.palette.background.paper
         },
         addbox: {
             margin: theme.spacing(2, 0, 2, 0),
@@ -88,37 +84,35 @@ const VilkarOversiktView: React.FC<Props> = (props: Props) => {
         setAntallVilkar(soknad.vilkar.length);
     }
 
-    const addNyttVilkarButton = () => {
+    const listTabs = soknad.vilkar.map((vilkar: Vilkar, idx) => {
         return (
-            <Box className={classes.addbox}>
-                <Typography>
-                    <Fab aria-label="add" className={classes.fab} color="primary" onClick={() => {
-                        dispatch(visNyVilkarModal());
-                    }}>
-                        <AddIcon/>
-                    </Fab>
-                    Nytt vilkår
-                </Typography>
-            </Box>
+            <Tab key={"tab: " + vilkar.vilkarreferanse} label={"Vilkår " + (idx + 1)} />
         )
-    };
+    });
+    const listTabPanels = soknad.vilkar.map((vilkar: Vilkar, idx) => {
+        return(
+            <TabPanel key={"tabPanel: " + vilkar.vilkarreferanse} value={aktivtVilkarIdx} index={idx} dir={theme.direction}>
+                <VilkarTabView vilkar={vilkar} />
+            </TabPanel>
+        )
+    });
 
-    const insertVilkarOversikt = () => {
+    return (
+        <div className={classes.root}>
+            <Paper className={classes.paper}>
+                <Typography variant={"h5"}>Vilkår</Typography>
+                <Box className={classes.addbox}>
+                    <Typography>
+                        <Fab aria-label="add" className={classes.fab} color="primary" onClick={() => {
+                            dispatch(visNyVilkarModal());
+                        }}>
+                            <AddIcon/>
+                        </Fab>
+                        Nytt vilkår
+                    </Typography>
+                </Box>
 
-        if (soknad.vilkar.length > 0){
-            const listTabs = soknad.vilkar.map((vilkar: Vilkar, idx) => {
-                return (
-                    <Tab key={"tab: " + vilkar.vilkarreferanse} label={"Vilkår " + (idx + 1)} />
-                )
-            });
-            const listTabPanels = soknad.vilkar.map((vilkar: Vilkar, idx) => {
-                return(
-                    <TabPanel key={"tabPanel: " + vilkar.vilkarreferanse} value={aktivtVilkarIdx} index={idx} dir={theme.direction}>
-                        <VilkarTabView vilkar={vilkar} />
-                    </TabPanel>
-                )
-            });
-            return (
+                {(soknad.dokumentasjonkrav.length > 0) &&
                 <>
                     <AppBar position="static" color="default">
                         <Tabs
@@ -140,28 +134,7 @@ const VilkarOversiktView: React.FC<Props> = (props: Props) => {
                         { listTabPanels}
                     </SwipeableViews>
                 </>
-            );
-        } else {
-            return (
-                <>
-                    <br/>
-                    <Typography variant={"subtitle1"}>
-                        Ingen vilkår er opprettet for denne søknaden.
-                    </Typography>
-                </>
-            )
-        }
-    };
-
-
-    return (
-        <div className={classes.root}>
-            <Paper className={classes.paper}>
-                <Typography variant={"h5"}>Vilkår</Typography>
-                {addNyttVilkarButton()}
-
-                { insertVilkarOversikt() }
-                <NyttVilkarModal soknad={soknad}/>
+                }
             </Paper>
         </div>
     );

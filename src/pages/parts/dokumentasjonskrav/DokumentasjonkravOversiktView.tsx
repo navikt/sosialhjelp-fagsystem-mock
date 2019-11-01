@@ -15,7 +15,6 @@ import {visNyDokumentasjonkravModal} from "../../../redux/v2/v2Actions";
 import {FsSoknad} from "../../../redux/v3/v3FsTypes";
 import DokumentasjonkravTabView from "./DokumentasjonkravTabView";
 import {Dokumentasjonkrav} from "../../../types/hendelseTypes";
-import NyttDokumentasjonkravModal from "./NyttDokumentasjonkravModal";
 
 
 interface TabPanelProps {
@@ -45,18 +44,15 @@ function TabPanel(props: TabPanelProps) {
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         root: {
-            backgroundColor: theme.palette.background.paper,
-            // width: 500,
             position: 'relative',
-            minHeight: 200,
         },
         fab: {
             marginRight: theme.spacing(1),
         },
         paper: {
             padding: theme.spacing(2, 2),
-            marginTop: theme.spacing(2)
-
+            marginTop: theme.spacing(2),
+            backgroundColor: theme.palette.background.paper
         },
         addbox: {
             margin: theme.spacing(2, 0, 2, 0),
@@ -88,37 +84,36 @@ const DokumentasjonkravOversiktView: React.FC<Props> = (props: Props) => {
         setAntallDokumentasjonkrav(soknad.dokumentasjonkrav.length);
     }
 
-    const addNyttDokumentasjonkravButton = () => {
+    const listTabs = soknad.dokumentasjonkrav.map((dokumentasjonkrav: Dokumentasjonkrav, idx) => {
         return (
-            <Box className={classes.addbox}>
-                <Typography>
-                    <Fab aria-label="add" className={classes.fab} color="primary" onClick={() => {
-                        dispatch(visNyDokumentasjonkravModal());
-                    }}>
-                        <AddIcon/>
-                    </Fab>
-                    Nytt dokumentasjonkrav
-                </Typography>
-            </Box>
+            <Tab key={"tab: " + dokumentasjonkrav.dokumentasjonkravreferanse} label={"Dokumentasjonkrav " + (idx + 1)} />
         )
-    };
+    });
 
-    const insertDokumentasjonkravOversikt = () => {
+    const listTabPanels = soknad.dokumentasjonkrav.map((dokumentasjonkrav: Dokumentasjonkrav, idx) => {
+        return(
+            <TabPanel key={"tabPanel: " + dokumentasjonkrav.dokumentasjonkravreferanse} value={aktivtDokumentasjonkravIdx} index={idx} dir={theme.direction}>
+                <DokumentasjonkravTabView dokumentasjonkrav={dokumentasjonkrav} />
+            </TabPanel>
+        )
+    });
 
-        if (soknad.dokumentasjonkrav.length > 0){
-            const listTabs = soknad.dokumentasjonkrav.map((dokumentasjonkrav: Dokumentasjonkrav, idx) => {
-                return (
-                    <Tab key={"tab: " + dokumentasjonkrav.dokumentasjonkravreferanse} label={"Dokumentasjonkrav " + (idx + 1)} />
-                )
-            });
-            const listTabPanels = soknad.dokumentasjonkrav.map((dokumentasjonkrav: Dokumentasjonkrav, idx) => {
-                return(
-                    <TabPanel key={"tabPanel: " + dokumentasjonkrav.dokumentasjonkravreferanse} value={aktivtDokumentasjonkravIdx} index={idx} dir={theme.direction}>
-                        <DokumentasjonkravTabView dokumentasjonkrav={dokumentasjonkrav} />
-                    </TabPanel>
-                )
-            });
-            return (
+    return (
+        <div className={classes.root}>
+            <Paper className={classes.paper}>
+                <Typography variant={"h5"}>Dokumentasjonkrav</Typography>
+                <Box className={classes.addbox}>
+                    <Typography>
+                        <Fab aria-label="add" className={classes.fab} color="primary" onClick={() => {
+                            dispatch(visNyDokumentasjonkravModal());
+                        }}>
+                            <AddIcon/>
+                        </Fab>
+                        Nytt dokumentasjonkrav
+                    </Typography>
+                </Box>
+
+                {(soknad.dokumentasjonkrav.length > 0) &&
                 <>
                     <AppBar position="static" color="default">
                         <Tabs
@@ -140,28 +135,7 @@ const DokumentasjonkravOversiktView: React.FC<Props> = (props: Props) => {
                         { listTabPanels}
                     </SwipeableViews>
                 </>
-            );
-        } else {
-            return (
-                <>
-                    <br/>
-                    <Typography variant={"subtitle1"}>
-                        Ingen dokumentasjonkrav er opprettet for denne søknaden.
-                    </Typography>
-                </>
-            )
-        }
-    };
-
-
-    return (
-        <div className={classes.root}>
-            <Paper className={classes.paper}>
-                <Typography variant={"h5"}>Dokumentasjonkrav</Typography>
-                {addNyttDokumentasjonkravButton()}
-
-                { insertDokumentasjonkravOversikt() }
-                <NyttDokumentasjonkravModal soknad={soknad}/>
+                }
             </Paper>
         </div>
     );

@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {AppState, DispatchProps} from "../../../redux/reduxTypes";
+import {DispatchProps} from "../../../redux/reduxTypes";
 import {connect} from "react-redux";
 import SwipeableViews from 'react-swipeable-views';
 import {createStyles, makeStyles, Theme, useTheme} from '@material-ui/core/styles';
@@ -12,11 +12,9 @@ import AddIcon from '@material-ui/icons/Add';
 import {green} from '@material-ui/core/colors';
 import Box from '@material-ui/core/Box';
 import {Paper} from "@material-ui/core";
-import {setAktivSak, visNySakModal} from "../../../redux/v2/v2Actions";
-import NySakModal from "../nySak/NySak";
+import {visNySakModal} from "../../../redux/v2/v2Actions";
 import SaksTabView from "./SaksTabView";
 import {FsSaksStatus, FsSoknad} from "../../../redux/v3/v3FsTypes";
-import NyUtbetalingModal from "../utbetaling/NyUtbetalingModal";
 
 
 interface TabPanelProps {
@@ -46,10 +44,7 @@ function TabPanel(props: TabPanelProps) {
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         root: {
-            backgroundColor: theme.palette.background.paper,
-            // width: 500,
             position: 'relative',
-            minHeight: 200,
         },
         fab: {
             marginRight: theme.spacing(1),
@@ -63,8 +58,8 @@ const useStyles = makeStyles((theme: Theme) =>
         },
         paper: {
             padding: theme.spacing(2, 2),
-            marginTop: theme.spacing(2)
-
+            marginTop: theme.spacing(2),
+            backgroundColor: theme.palette.background.paper
         },
         addbox: {
             margin: theme.spacing(2, 0, 2, 0),
@@ -100,45 +95,43 @@ const SaksOversiktView: React.FC<Props> = (props: Props) => {
         setAntallSaker(soknad.saker.length);
     }
 
+    const listTabs = soknad.saker.map((sak: FsSaksStatus) => {
+        return (
+            <Tab key={"tab: " + sak.referanse} label={sak.tittel ? sak.tittel : 'Sak uten tittel'} className={sak.tittel ? classes.normalLabel : classes.italicLabel} />
+        )
+    });
+    const listTabPanels = soknad.saker.map((sak: FsSaksStatus, idx) => {
+        return(
+            <TabPanel key={"tabPanel: " + sak.referanse} value={aktivSakIndex} index={idx} dir={theme.direction}>
+                <SaksTabView idx={idx} sak={sak} soknad={soknad} />
+            </TabPanel>
+        )
+    });
+
     function handleChange(event: unknown, newValue: number) {
         setAktivSakIndex(newValue);
-        dispatch(setAktivSak(soknad.saker[newValue].referanse));
     }
 
     function handleChangeIndex(index: number) {
         setAktivSakIndex(index);
-        dispatch(setAktivSak(soknad.saker[index].referanse));
     }
 
-    const addNySakButton = () => {
-        return (
-            <Box className={classes.addbox}>
-                <Fab aria-label='Add' className={classes.fab} color='primary' onClick={() => dispatch(visNySakModal())}>
-                    <AddIcon/>
-                </Fab>
-                <Typography>
-                    Opprett ny sak
+    return (
+        <div className={classes.root}>
+            <Paper className={classes.paper}>
+                <Typography variant={"h5"}>
+                    Saksoversikt:
                 </Typography>
-            </Box>
-        )
-    };
+                <Box className={classes.addbox}>
+                    <Fab aria-label='Add' className={classes.fab} color='primary' onClick={() => dispatch(visNySakModal())}>
+                        <AddIcon/>
+                    </Fab>
+                    <Typography>
+                        Opprett ny sak
+                    </Typography>
+                </Box>
 
-    const insertSaksOversikt = () => {
-
-        if (soknad.saker.length > 0){
-            const listTabs = soknad.saker.map((sak: FsSaksStatus) => {
-                return (
-                    <Tab key={"tab: " + sak.referanse} label={sak.tittel ? sak.tittel : 'Sak uten tittel'} className={sak.tittel ? classes.normalLabel : classes.italicLabel} />
-                )
-            });
-            const listTabPanels = soknad.saker.map((sak: FsSaksStatus, idx) => {
-                return(
-                    <TabPanel key={"tabPanel: " + sak.referanse} value={aktivSakIndex} index={idx} dir={theme.direction}>
-                        <SaksTabView idx={idx} sak={sak} soknad={soknad} />
-                    </TabPanel>
-                )
-            });
-            return (
+                {(soknad.saker.length > 0) &&
                 <>
                     <AppBar position="static" color="default">
                         <Tabs
@@ -160,40 +153,11 @@ const SaksOversiktView: React.FC<Props> = (props: Props) => {
                         { listTabPanels}
                     </SwipeableViews>
                 </>
-            );
-        } else {
-            return (
-                <>
-                    <br/>
-                    <Typography variant={"subtitle1"}>
-                        Ingen saker er opprettet for denne søknaden.
-                    </Typography>
-                </>
-            )
-        }
-    };
-
-
-    return (
-        <div className={classes.root}>
-            <Paper className={classes.paper}>
-                <Typography variant={"h5"}>
-                    Saksoversikt:
-                </Typography>
-                { addNySakButton() }
-
-                { insertSaksOversikt() }
-                <NySakModal />
-                {/*{(soknad.saker.length > 0) && <NyUtbetalingModal soknad={soknad}/>*/}
-                {/*}*/}
+                }
             </Paper>
         </div>
     );
 };
-
-const mapStateToProps = (state: AppState) => ({
-    aktivSak: state.v2.aktivSak
-});
 
 const mapDispatchToProps = (dispatch: any) => {
     return {
@@ -202,6 +166,5 @@ const mapDispatchToProps = (dispatch: any) => {
 };
 
 export default connect(
-    mapStateToProps,
     mapDispatchToProps
 )(SaksOversiktView);

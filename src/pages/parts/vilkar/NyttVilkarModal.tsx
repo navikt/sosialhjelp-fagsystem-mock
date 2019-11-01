@@ -35,8 +35,11 @@ const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         modal: {
             display: 'flex',
-            alignItems: 'center',
             justifyContent: 'center',
+            '@media (min-height: 500px)': {
+                alignItems: 'center',
+            },
+            overflowY: 'auto',
         },
         paperback: {
             backgroundColor: theme.palette.background.paper,

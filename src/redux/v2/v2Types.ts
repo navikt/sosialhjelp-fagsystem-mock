@@ -37,7 +37,6 @@ export interface V2Model {
     snackbarVariant: 'success'|'warning'|'error'|'info';
 
     aktivSoknad: string; // fiksDigisosId
-    aktivSak: string | null; // saksreferanse
     aktivUtbetaling: string | null; // utbetalingsreferanse
     aktivtVilkar: string | null; // vilkarreferanse
     aktivtDokumentasjonkrav: string | null; // dokumentasjonkravreferanse
@@ -89,7 +88,6 @@ export type V2Action
     | VisErrorSnackbar
     | SkjulSnackbar
     | SetAktivSoknad
-    | SetAktivSak
     | SetAktivUtbetaling
     | SetAktivtVilkar
     | SetAktivtDokumentasjonkrav
@@ -132,7 +130,6 @@ export enum V2ActionTypeKeys {
     VIS_ERROR_SNACKBAR = "v2/VIS_ERROR_SNACKBAR",
     SKJUL_SNACKBAR = "v2/SKJUL_SNACKBAR",
     // Aktive ting
-    SET_AKTIV_SAK = "v2/SET_AKTIV_SAK",
     SET_AKTIV_SOKNAD = "v2/SET_AKTIV_SOKNAD",
     SET_AKTIV_UTBETALING = "v2/SET_AKTIV_UTBETALING",
     SET_AKTIVT_VILKAR = "v2/SET_AKTIVT_VILKAR",
@@ -281,11 +278,6 @@ export interface SkjulSnackbar {
 export interface SetAktivSoknad {
     type: V2ActionTypeKeys.SET_AKTIV_SOKNAD;
     fiksDigisosId: string
-}
-
-export interface SetAktivSak {
-    type: V2ActionTypeKeys.SET_AKTIV_SAK;
-    referanse: string | null
 }
 
 export interface SetAktivUtbetaling {

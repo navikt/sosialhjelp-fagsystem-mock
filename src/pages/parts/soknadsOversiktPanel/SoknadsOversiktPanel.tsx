@@ -41,10 +41,10 @@ const SoknadsOversiktPanel: React.FC<Props> = (props: Props) => {
     const getSoknadListItems = (soknader: FsSoknad[]): JSX.Element[] => {
         return soknader.map((soknad: FsSoknad, index: number) => {
             return (
-                <ListItem id={"soknad_" + index} key={"SoknadItem: " + soknad.navn} selected={soknad.fiksDigisosId === aktivSoknad} button
+                <ListItem id={"soknad_" + index} key={"SoknadItem: " + soknad.fiksDigisosId} selected={soknad.fiksDigisosId === aktivSoknad} button
                           divider
                           onClick={() => props.dispatch(opprettEllerOppdaterDigisosSak(soknad, v2, v2.backendUrlTypeToUse))}>
-                    <ListItemText primary={soknad.navn}/>
+                    <ListItemText primary={soknad.fiksDigisosId}/>
                 </ListItem>
             )
         });

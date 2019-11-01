@@ -14,6 +14,10 @@ import DokumentasjonEtterspurtOversiktView from "../dokumentasjonEtterspurt/Doku
 import NyttRammevedtakModal from "../rammevedtak/NyttRammevedtakModal";
 import UtbetalingOversiktView from "../utbetaling/UtbetalingOversiktView";
 import NyUtbetalingModal from "../utbetaling/NyUtbetalingModal";
+import NySakModal from "../nySak/NySak";
+import NyttDokumentasjonkravModal from "../dokumentasjonskrav/NyttDokumentasjonkravModal";
+import NyttVilkarModal from "../vilkar/NyttVilkarModal";
+import NyDokumentasjonEtterspurt from "../dokumentasjonEtterspurt/NyDokumentasjonEtterspurt";
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -33,7 +37,6 @@ const useStyles = makeStyles(theme => ({
     root3: {
         flex: 1,
         '@media (min-width: 1920px)': {
-            // marginLeft: theme.spacing(2),
             minWidth: '900px',
         },
         height: '100%'
@@ -44,14 +47,6 @@ const useStyles = makeStyles(theme => ({
             marginLeft: theme.spacing(2),
             minWidth: '900px',
         },
-        // '@media (max-width: 1909px)': {
-        //     width: '100%'
-        // },
-    },
-    root4: {
-        backgroundColor: theme.palette.background.paper,
-        position: 'relative',
-        minHeight: 200,
     },
     paper: {
         margin: theme.spacing(2, 0),
@@ -87,80 +82,56 @@ const BehandleSoknadPanel: React.FC<Props> = (props: Props) => {
 
     if (soknad) {
         return (
-            <div>
-
-                {/*<div className={classes.paper2}>*/}
-                {/*    <Paper className={classes.paper}>*/}
-                {/*        <Typography variant={"h5"} component={"h3"}>*/}
-                {/*            Oversikt over søknaden*/}
-                {/*        </Typography>*/}
-                {/*        <Typography variant={"subtitle1"}>*/}
-                {/*            Navn på søker: {soknad.navn}*/}
-                {/*        </Typography>*/}
-                {/*        <Typography variant={"subtitle1"}>*/}
-                {/*            FiksDigisosId: {soknad.fiksDigisosId}*/}
-                {/*        </Typography>*/}
-                {/*        <TildeldeltNavkontorView soknad={soknad} />*/}
-
-                {/*    </Paper>*/}
-                {/*    <SoknadStatusView soknad={soknad}/>*/}
-                {/*</div>*/}
-
-                <div className={classes.root}>
-                    <div className={classes.root2}>
-                        <div className={classes.root3}>
-                            <SaksOversiktView soknad={soknad}/>
-                        </div>
-
-                        <div className={classes.dokumentasjonEtterspurtBoks + " dokumentasjonEtterspurtBoks"}>
-                            <DokumentasjonEtterspurtOversiktView soknad={soknad}/>
-                        </div>
+            <div className={classes.root}>
+                <div className={classes.root2}>
+                    <div className={classes.root3}>
+                        <SaksOversiktView soknad={soknad}/>
                     </div>
-                    <br/>
-                    <br/>
-                    <br/>
-                    <br/>
-                    <Typography variant="h5" component="h3">
-                        Ting som ikke er knyttet til en sak:
-                    </Typography>
-                    <Typography variant={"subtitle1"}>
-                        Obs: Hvis du setter en saksreferanse på rammevedtak blir rammevedtaket flyttet inn under den valgte saken i saksoversikten over.
-                    </Typography>
 
-                    <VilkarOversiktView soknad={soknad}/>
+                    <div className={classes.dokumentasjonEtterspurtBoks}>
+                        <DokumentasjonEtterspurtOversiktView soknad={soknad}/>
+                    </div>
+                </div>
+                <br/>
+                <br/>
+                <br/>
+                <br/>
+                <Typography variant="h5" component="h3">
+                    Ting som ikke er knyttet til en sak:
+                </Typography>
+                <Typography variant={"subtitle1"}>
+                    Obs: Hvis du setter en saksreferanse på rammevedtak blir rammevedtaket flyttet inn under den valgte saken i saksoversikten over.
+                </Typography>
 
-                    <DokumentasjonkravOversiktView soknad={soknad}/>
+                <div className={classes.root2}>
+                    <div className={classes.root3}>
+                        <VilkarOversiktView soknad={soknad}/>
+                    </div>
 
-                    <div className={classes.root4}>
+                    <div className={classes.dokumentasjonEtterspurtBoks}>
+                        <DokumentasjonkravOversiktView soknad={soknad}/>
+                    </div>
+                </div>
+
+                <div className={classes.root2}>
+                    <div className={classes.root3}>
                         <Paper className={classes.paper3}>
-                            <Typography variant={"h5"}>Rammevedtak</Typography>
-                            <RammevedtakOversiktView rammevedtakListe={soknad.rammevedtakUtenSaksreferanse} saksreferanse={null}/>
-                            {(soknad.rammevedtakUtenSaksreferanse.length === 0) &&
-                            <>
-                                <br/>
-                                <Typography variant={"subtitle1"}>
-                                    Ingen rammevedtak uten saksreferanse er opprettet for denne søknaden.
-                                </Typography>
-                            </>
-                            }
+                            <Typography variant={"h5"}>Utbetalinger uten saksreferanse</Typography>
+                            <UtbetalingOversiktView utbetalingListe={soknad.utbetalingerUtenSaksreferanse} saksreferanse={null}/>
                         </Paper>
                     </div>
 
-                    <div className={classes.root4}>
+                    <div className={classes.dokumentasjonEtterspurtBoks}>
                         <Paper className={classes.paper3}>
-                            <Typography variant={"h5"}>Utbetalinger</Typography>
-                            <UtbetalingOversiktView utbetalingListe={soknad.utbetalingerUtenSaksreferanse} saksreferanse={null}/>
-                            {(soknad.rammevedtakUtenSaksreferanse.length === 0) &&
-                            <>
-                                <br/>
-                                <Typography variant={"subtitle1"}>
-                                    Ingen utbetalinger uten saksreferanse er opprettet for denne søknaden.
-                                </Typography>
-                            </>
-                            }
+                            <Typography variant={"h5"}>Rammevedtak uten saksreferanse</Typography>
+                            <RammevedtakOversiktView rammevedtakListe={soknad.rammevedtakUtenSaksreferanse} saksreferanse={null}/>
                         </Paper>
                     </div>
                 </div>
+                <NySakModal />
+                <NyDokumentasjonEtterspurt soknad={soknad}/>
+                <NyttVilkarModal soknad={soknad}/>
+                <NyttDokumentasjonkravModal soknad={soknad}/>
                 <NyUtbetalingModal soknad={soknad}/>
                 <NyttRammevedtakModal soknad={soknad}/>
             </div>

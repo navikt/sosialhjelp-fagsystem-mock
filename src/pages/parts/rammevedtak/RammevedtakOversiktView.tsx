@@ -43,9 +43,7 @@ const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         root: {
             backgroundColor: theme.palette.background.paper,
-            // width: 500,
             position: 'relative',
-            minHeight: 200,
         },
         fab: {
             marginRight: theme.spacing(1),

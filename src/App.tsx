@@ -1,13 +1,12 @@
 import React from 'react';
-import { ConnectedRouter } from "connected-react-router";
+import {ConnectedRouter} from "connected-react-router";
 import configureStore, {history} from "./configureStore";
-import { Provider } from "react-redux";
+import {Provider} from "react-redux";
 import {Route, Switch} from "react-router";
 import {IntlProvider} from "react-intl";
 import {tekster} from "./tekster/tekster";
 import './App.less';
 import UserGuide from "./pages/UserGuide";
-import Forside from "./pages/Forside";
 import NotFound from "./components/notFound";
 import Example from "./pages/Example";
 import V3 from "./pages/V3";
@@ -24,8 +23,6 @@ const App: React.FC = () => {
 					<div className="informasjon-side">
 						<ConnectedRouter history={history}>
 							<Switch>
-								<Route exact path={"/v1"} component={Forside}/>
-								{/*<Route exact path={"/v2"} component={V2}/>*/}
 								<Route exact path={"/v3"} component={V3}/>
 								<Route exact path="/userguide" component={UserGuide}/>
 								<Route exact path="/examplepage" component={Example}/>

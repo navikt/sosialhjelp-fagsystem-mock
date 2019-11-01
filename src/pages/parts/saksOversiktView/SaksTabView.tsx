@@ -2,23 +2,15 @@ import React, {useState} from 'react';
 import {AppState, DispatchProps} from "../../../redux/reduxTypes";
 import {connect} from "react-redux";
 import Typography from "@material-ui/core/Typography";
-import Hendelse, {HendelseType, SaksStatus, Utbetaling} from "../../../types/hendelseTypes";
+import Hendelse, {HendelseType, SaksStatus} from "../../../types/hendelseTypes";
 import Box from "@material-ui/core/Box";
 import makeStyles from "@material-ui/core/styles/makeStyles";
-import {createStyles, useTheme} from "@material-ui/core";
+import {createStyles} from "@material-ui/core";
 import {V2Model} from "../../../redux/v2/v2Types";
 import Button from "@material-ui/core/Button";
 import {aiuuur, oppdaterFsSaksStatus} from "../../../redux/v3/v3Actions";
 import {getNow} from "../../../utils/utilityFunctions";
 import {FsSaksStatus, FsSoknad} from "../../../redux/v3/v3FsTypes";
-import AddIcon from '@material-ui/icons/Add';
-import Fab from "@material-ui/core/Fab";
-import {visNyUtbetalingModal} from "../../../redux/v2/v2Actions";
-import Tab from "@material-ui/core/Tab";
-import AppBar from "@material-ui/core/AppBar/AppBar";
-import Tabs from "@material-ui/core/Tabs";
-import SwipeableViews from "react-swipeable-views";
-import UtbetalingTabView from "../utbetaling/UtbetalingTabView";
 import TextField from "@material-ui/core/TextField";
 import EndreSaksstatusModal from "./EndreSaksstatusModal";
 import VedtakFattetModal from "./VedtakFattetModal";
@@ -26,29 +18,6 @@ import {oHendelser} from "../../../redux/v3/v3Optics";
 import RammevedtakOversiktView from "../rammevedtak/RammevedtakOversiktView";
 import UtbetalingOversiktView from "../utbetaling/UtbetalingOversiktView";
 
-interface TabPanelProps {
-    children?: React.ReactNode;
-    dir?: string;
-    index: any;
-    value: any;
-}
-
-function TabPanel(props: TabPanelProps) {
-    const {children, value, index, ...other} = props;
-
-    return (
-        <Typography
-            component="div"
-            role="tabpanel"
-            hidden={value !== index}
-            id={`action-tabpanel-${index}`}
-            aria-labelledby={`action-tab-${index}`}
-            {...other}
-        >
-            <Box p={3}>{children}</Box>
-        </Typography>
-    );
-}
 
 const useStyles = makeStyles((theme) => {
     return createStyles({
@@ -118,66 +87,8 @@ type Props = DispatchProps & OwnProps & StoreProps;
 
 const SaksTabView: React.FC<Props> = (props: Props) => {
     const [tittel, setTittel] = useState('');
-    const [aktivUtbetalingIdx, setAktivUtbetalingIdx] = useState(0);
     const {sak, dispatch, v2, soknad}  = props;
     const classes = useStyles();
-    const theme = useTheme();
-
-    const addNyUtbetalingButton = () => {
-        return (
-            <Box className={classes.addbox}>
-                <Fab aria-label="add" className={classes.fab} color="primary"
-                     onClick={() => dispatch(visNyUtbetalingModal(sak.referanse))}>
-                    <AddIcon/>
-                </Fab>
-                <Typography>Legg til ny utbetaling</Typography>
-            </Box>
-        )
-    };
-
-    const insertUtbetalingsOversikt = () => {
-
-        if (sak.utbetalinger.length > 0){
-            const listTabs = sak.utbetalinger.map((utbetaling: Utbetaling, idx) => {
-                return (
-                    <Tab key={"utbetalingTab: " + utbetaling.utbetalingsreferanse} label={"Utbetaling " + (idx + 1)} />
-                )
-            });
-            const listTabPanels = sak.utbetalinger.map((utbetaling: Utbetaling, idx) => {
-                return(
-                    <TabPanel key={"utbetalingTabPanel: " + utbetaling.utbetalingsreferanse} value={aktivUtbetalingIdx} index={idx} dir={theme.direction}>
-                        <UtbetalingTabView utbetaling={utbetaling}/>
-                    </TabPanel>
-                )
-            });
-            return (
-                <>
-                    <AppBar position="static" color="default">
-                        <Tabs
-                            value={aktivUtbetalingIdx}
-                            onChange={(event: unknown, newValue: number) => setAktivUtbetalingIdx(newValue)}
-                            indicatorColor="primary"
-                            textColor="primary"
-                            variant="fullWidth"
-                            aria-label="action tabs example"
-                        >
-                            { listTabs }
-                        </Tabs>
-                    </AppBar>
-                    <SwipeableViews
-                        axis={theme.direction === 'rtl' ? 'x-reverse' : 'x'}
-                        index={aktivUtbetalingIdx}
-                        onChangeIndex={(newValue: number) => setAktivUtbetalingIdx(newValue)}
-                    >
-                        { listTabPanels}
-                    </SwipeableViews>
-                </>
-            );
-        } else {
-            return;
-        }
-    };
-
 
     return (
         <div>

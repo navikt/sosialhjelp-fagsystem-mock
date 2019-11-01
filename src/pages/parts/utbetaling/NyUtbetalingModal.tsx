@@ -10,7 +10,8 @@ import {V2Model} from "../../../redux/v2/v2Types";
 import {
     formatDateString,
     generateFilreferanseId,
-    getNow, getSakTittelFraSaksreferanse,
+    getNow,
+    getSakTittelFraSaksreferanse,
     getShortDateISOString,
     getUtbetalingByUtbetalingsreferanse
 } from "../../../utils/utilityFunctions";
@@ -36,8 +37,11 @@ const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         modal: {
             display: 'flex',
-            alignItems: 'center',
             justifyContent: 'center',
+            '@media (min-height: 851px)': {
+                alignItems: 'center',
+            },
+            overflowY: 'auto',
         },
         paper: {
             backgroundColor: theme.palette.background.paper,
@@ -113,7 +117,6 @@ interface OwnProps {
 interface StoreProps {
     visNyUtbetalingModal: boolean;
     v2: V2Model;
-    aktivSak: string | null;
     aktivUtbetaling: string | undefined | null;
     modalSaksreferanse: string|null;
 }
@@ -188,7 +191,7 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
 
 
     const classes = useStyles();
-    const {visNyUtbetalingModal, dispatch, v2, soknad, aktivSak, aktivUtbetaling, modalSaksreferanse} = props;
+    const {visNyUtbetalingModal, dispatch, v2, soknad, aktivUtbetaling, modalSaksreferanse} = props;
 
     function resetStateValues() {
         setModalUtbetaling({...initialUtbetaling, utbetalingsreferanse: generateFilreferanseId()});
@@ -494,7 +497,6 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
 const mapStateToProps = (state: AppState) => ({
     visNyUtbetalingModal: state.v2.visNyUtbetalingModal,
     v2: state.v2,
-    aktivSak: state.v2.aktivSak,
     aktivUtbetaling: state.v2.aktivUtbetaling,
     modalSaksreferanse: state.v2.modalSaksreferanse
 });

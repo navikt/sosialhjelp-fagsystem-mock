@@ -39,8 +39,11 @@ const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         modal: {
             display: 'flex',
-            alignItems: 'center',
             justifyContent: 'center',
+            '@media (min-height: 500px)': {
+                alignItems: 'center',
+            },
+            overflowY: 'auto',
         },
         paper: {
             backgroundColor: theme.palette.background.paper,
@@ -341,6 +344,9 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
                         setValue(date);
                         setIsOpen(false);
                         setVisFeilmeldingDatePicker(false);
+                    }}
+                    InputLabelProps={{
+                        shrink: true,
                     }}
                     KeyboardButtonProps={{
                         'aria-label': 'change date',

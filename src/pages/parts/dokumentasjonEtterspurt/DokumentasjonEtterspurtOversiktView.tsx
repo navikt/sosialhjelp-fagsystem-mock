@@ -10,7 +10,6 @@ import {Paper} from "@material-ui/core";
 import {visNyDokumentasjonEtterspurtModal} from "../../../redux/v2/v2Actions";
 import {FsSoknad} from "../../../redux/v3/v3FsTypes";
 import Hendelse, {Dokument, DokumentasjonEtterspurt, HendelseType} from "../../../types/hendelseTypes";
-import NyDokumentasjonEtterspurt from "./NyDokumentasjonEtterspurt";
 import Table from "@material-ui/core/Table";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
@@ -24,10 +23,7 @@ import {V2Model} from "../../../redux/v2/v2Types";
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         root: {
-            backgroundColor: theme.palette.background.paper,
-            // width: 500,
             position: 'relative',
-            minHeight: 200,
         },
         fab: {
             marginRight: theme.spacing(1),
@@ -40,6 +36,7 @@ const useStyles = makeStyles((theme: Theme) =>
         paper: {
             padding: theme.spacing(2, 2),
             marginTop: theme.spacing(2),
+            backgroundColor: theme.palette.background.paper
         },
         tablePaper: {
             marginTop: theme.spacing(3),
@@ -108,47 +105,6 @@ const DokumentasjonEtterspurtOversiktView: React.FC<Props> = (props: Props) => {
         </TableRow>
     };
 
-    const insertDokumentasjonEtterspurtOversikt = () => {
-        
-        if (soknad.dokumentasjonEtterspurt && soknad.dokumentasjonEtterspurt.dokumenter.length > 0) {
-            return (
-                <Box className={classes.tableBox}>
-                    <Paper className={classes.tablePaper}>
-                        <Table className={classes.table} size="small">
-                            <TableHead>
-                                <TableRow>
-                                    <TableCell>Type</TableCell>
-                                    <TableCell>Tilleggsinformasjon</TableCell>
-                                    <TableCell align="right">Innsendelsesfrist</TableCell>
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                {soknad.dokumentasjonEtterspurt && soknad.dokumentasjonEtterspurt.dokumenter.map(dokument => makeTableRow(dokument))}
-                            </TableBody>
-                        </Table>
-                        <Typography className={classes.paperRoute}>
-                            <Fab size="small" aria-label="add" className={classes.fab2} color="primary" onClick={() => {
-                                dispatch(visNyDokumentasjonEtterspurtModal());
-                            }}>
-                                <AddIcon/>
-                            </Fab>
-                            Endre etterspurt dokumentasjon
-                        </Typography>
-                    </Paper>
-                </Box>
-            );
-        } else {
-            return (
-                <>
-                    <Typography variant={"subtitle1"}>
-                        Ingen dokumenter er etterspurt for denne søknaden.
-                    </Typography>
-                </>
-            )
-        }
-    };
-
-
     function dispatchNyHendelseMedTomDokumentasjonEtterspurt() {
         if (soknad.dokumentasjonEtterspurt) {
             const nyHendelse: DokumentasjonEtterspurt = {
@@ -191,18 +147,31 @@ const DokumentasjonEtterspurtOversiktView: React.FC<Props> = (props: Props) => {
                     </Typography>
                 </Box>
 
-                {(soknad.dokumentasjonEtterspurt && soknad.dokumentasjonEtterspurt.dokumenter.length > 0) && insertDokumentasjonEtterspurtOversikt()}
-
-
-                {!(soknad.dokumentasjonEtterspurt && soknad.dokumentasjonEtterspurt.dokumenter.length > 0) &&
-                <>
-                    <br/>
-                    <Typography variant={"subtitle1"}>
-                        Ingen dokumenter er etterspurt for denne søknaden.
-                    </Typography>
-                </>}
-
-                <NyDokumentasjonEtterspurt soknad={soknad}/>
+                {(soknad.dokumentasjonEtterspurt && soknad.dokumentasjonEtterspurt.dokumenter.length > 0) &&
+                <Box className={classes.tableBox}>
+                    <Paper className={classes.tablePaper}>
+                        <Table className={classes.table} size="small">
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell>Type</TableCell>
+                                    <TableCell>Tilleggsinformasjon</TableCell>
+                                    <TableCell align="right">Innsendelsesfrist</TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {soknad.dokumentasjonEtterspurt && soknad.dokumentasjonEtterspurt.dokumenter.map(dokument => makeTableRow(dokument))}
+                            </TableBody>
+                        </Table>
+                        <Typography className={classes.paperRoute}>
+                            <Fab size="small" aria-label="add" className={classes.fab2} color="primary" onClick={() => {
+                                dispatch(visNyDokumentasjonEtterspurtModal());
+                            }}>
+                                <AddIcon/>
+                            </Fab>
+                            Endre etterspurt dokumentasjon
+                        </Typography>
+                    </Paper>
+                </Box>}
             </Paper>
         </div>
     );

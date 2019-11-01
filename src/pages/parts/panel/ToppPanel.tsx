@@ -18,13 +18,14 @@ const useStyles = makeStyles(theme => ({
     root2: {
         backgroundColor: theme.palette.background.paper,
         position: 'relative',
-        minHeight: 200,
     },
     paper: {
         margin: theme.spacing(2, 0),
         padding: theme.spacing(3, 2),
         display: 'inline',
-        minWidth: '35%',
+        '@media (min-width: 480px)': {
+            minWidth: '35%',
+        },
         flex:1
     },
     paper2: {
@@ -63,7 +64,7 @@ const ToppPanel: React.FC<Props> = (props: Props) => {
                             Oversikt over søknaden
                         </Typography>
                         <Typography variant={"subtitle1"}>
-                            Navn på søker: {soknad.navn}
+                            FiksDigisosId: {soknad.fiksDigisosId}
                         </Typography>
                         <Typography variant={"subtitle1"}>
                             <a href={frontendUrl} target="_blank" rel="noopener noreferrer">{frontendUrl}</a>

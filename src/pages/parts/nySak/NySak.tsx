@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import {AppState, DispatchProps} from "../../../redux/reduxTypes";
 import {connect} from "react-redux";
 import {createStyles, Modal, Theme} from "@material-ui/core";
-import {setAktivSak, skjulNySakModal} from "../../../redux/v2/v2Actions";
+import {skjulNySakModal} from "../../../redux/v2/v2Actions";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import Fade from "@material-ui/core/Fade";
 import Backdrop from "@material-ui/core/Backdrop";
@@ -113,10 +113,6 @@ const NySakModal: React.FC<Props> = (props: Props) => {
                                             nyFsSaksStatus(v2.aktivSoknad, fsSaksStatus)
                                         )
                                     );
-
-                                    if (soknadUpdated.saker.length === 0) {
-                                        dispatch(setAktivSak(fsSaksStatus.referanse));
-                                    }
 
                                     setTittel('');
                                 }
