@@ -178,7 +178,7 @@ const DokumentasjonEtterspurtOversiktView: React.FC<Props> = (props: Props) => {
                 <Typography variant={"h5"}>Dokumentasjon som er etterspurt</Typography>
                 <Box className={classes.addbox}>
                     <Typography>
-                        <Fab aria-label="add" className={classes.fab} color="primary" onClick={() => {
+                        <Fab id={'etterspor_mer_dokumentasjon_knapp'} aria-label="add" className={classes.fab} color="primary" onClick={() => {
                             if (soknad.dokumentasjonEtterspurt && soknad.dokumentasjonEtterspurt.dokumenter.length > 0) {
                                 dispatchNyHendelseMedTomDokumentasjonEtterspurt();
                             } else {

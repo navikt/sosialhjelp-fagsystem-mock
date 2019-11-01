@@ -39,16 +39,16 @@ const SoknadsOversiktPanel: React.FC<Props> = (props: Props) => {
     const [fiksDigisosId, setFiksDigisosId] = useState("");
 
     const getSoknadListItems = (soknader: FsSoknad[]): JSX.Element[] => {
-        return soknader.map((soknad: FsSoknad) => {
+        return soknader.map((soknad: FsSoknad, index: number) => {
             return (
-                <ListItem key={"SoknadItem: " + soknad.navn} selected={ soknad.fiksDigisosId === aktivSoknad} button divider
+                <ListItem id={"soknad_" + index} key={"SoknadItem: " + soknad.navn} selected={soknad.fiksDigisosId === aktivSoknad} button
+                          divider
                           onClick={() => props.dispatch(opprettEllerOppdaterDigisosSak(soknad, v2, v2.backendUrlTypeToUse))}>
-                    <ListItemText primary={soknad.navn} />
+                    <ListItemText primary={soknad.navn}/>
                 </ListItem>
             )
         });
     };
-
 
 
     return (
@@ -56,21 +56,26 @@ const SoknadsOversiktPanel: React.FC<Props> = (props: Props) => {
             <Typography variant="h5" component="h3">
                 Søknadvelger
             </Typography>
-            <List className={classes.soknadliste} component="nav"  aria-label="mailbox folders">
-                { getSoknadListItems(soknader) }
+            <List className={classes.soknadliste} component="nav" aria-label="mailbox folders">
+                {getSoknadListItems(soknader)}
             </List>
             <Input
+                id='ny_soknad_input'
                 onChange={(evt) => {
                     setFiksDigisosId(evt.target.value);
                 }}
-           />
-           <Button onClick={() => {
-               props.dispatch(nyFsSoknad(fiksDigisosId, '26104500284', 'Natalie Emberland'))
-           }}> Opprett</Button>
+            />
+            <Button
+                id='opprett_ny_soknad_knapp'
+                onClick={() => {
+                    props.dispatch(nyFsSoknad(fiksDigisosId, '26104500284', 'Natalie Emberland'))
+                }}
+            >
+                Opprett
+            </Button>
         </Paper>
     );
 };
-
 
 
 const mapStateToProps = (state: AppState) => ({

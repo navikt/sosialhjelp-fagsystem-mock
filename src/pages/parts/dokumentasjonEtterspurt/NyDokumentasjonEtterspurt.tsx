@@ -278,10 +278,10 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
         }
     };
 
-    function getTextFieldGrid(label: string, value: any, setValue: (v: any) => any, width: 1|2|3|4|5 = 3, required: boolean = false) {
+    function getTextFieldGrid(label: string, value: any, setValue: (v: any) => any, width: 1|2|3|4|5 = 3, required: boolean = false, id?: string) {
         return <Grid item key={'Grid: ' + label} xs={width} zeroMinWidth>
             <TextField
-                id="outlined-name"
+                id={id ? id : "outlined-name"}
                 label={label}
                 className={classes.textField}
                 value={value ? value : ''}
@@ -362,14 +362,14 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
                     <div className={classes.paperbox}>
                         <div className={classes.paperback}>
                             <Grid container spacing={1} justify="center" alignItems="center">
-                                {getTextFieldGrid("Dokumenttype", modalDokument.dokumenttype, (verdi: string) => setModalDokument({...modalDokument, dokumenttype: verdi}), 3, true)}
-                                {getTextFieldGrid("Tilleggsinformasjon", modalDokument.tilleggsinformasjon, (verdi: string) => setModalDokument({...modalDokument, tilleggsinformasjon: verdi}), 5)}
+                                {getTextFieldGrid("Dokumenttype", modalDokument.dokumenttype, (verdi: string) => setModalDokument({...modalDokument, dokumenttype: verdi}), 3, true, "nytt_dokumentasjonskrav_input_type")}
+                                {getTextFieldGrid("Tilleggsinformasjon", modalDokument.tilleggsinformasjon, (verdi: string) => setModalDokument({...modalDokument, tilleggsinformasjon: verdi}), 5, false, "nytt_dokumentasjonskrav_input_tilleggsinformasjon")}
                                 {getKeyboardDatePickerGrid("Innsendelsesfrist", modalDokument.innsendelsesfrist, (verdi: string) => setModalDokument({...modalDokument, innsendelsesfrist: verdi}),
                                     datePickerIsOpen, setDatePickerIsOpen)}
 
                                 <Grid item key={"grid: legg til dokument"} xs={2} zeroMinWidth>
                                     <Box className={classes.addbox}>
-                                        <Fab size="small" aria-label="add" className={classes.fab} color="primary" onClick={() => {
+                                        <Fab id={"legg_til_dokumentkrav"} size="small" aria-label="add" className={classes.fab} color="primary" onClick={() => {
                                             if (modalDokument.dokumenttype === '') {
                                                 setVisFeilmelding(true);
                                             } else if (getDateOrNullFromDateString(modalDokument.innsendelsesfrist) == null) {
@@ -390,7 +390,7 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
                         <div className={classes.paperback2}>
                             {insertDokumentasjonEtterspurtOversikt()}
                             <Box className={classes.addbox}>
-                                <Fab size="small" aria-label="add" className={classes.fab} color="primary" onClick={() => {
+                                <Fab id={"etterspor_dokumentasjon_send"} size="small" aria-label="add" className={classes.fab} color="primary" onClick={() => {
                                     sendDokumentasjonEtterspurt();
                                 }}>
                                     <AddIcon/>
