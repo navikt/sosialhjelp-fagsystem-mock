@@ -161,9 +161,10 @@ export const visNyDokumentasjonEtterspurtModal = (): V2Action => {
     }
 };
 
-export const visNyUtbetalingModal = (): V2Action => {
+export const visNyUtbetalingModal = (saksreferanse: string|null): V2Action => {
     return {
-        type: V2ActionTypeKeys.VIS_NY_UTBETALING_MODAL
+        type: V2ActionTypeKeys.VIS_NY_UTBETALING_MODAL,
+        saksreferanse
     }
 };
 

@@ -78,8 +78,8 @@ export const getLastHendelseOfType = (fiksDigisosSokerJson: FiksDigisosSokerJson
 export const getShortDateISOString = (date: Date) => date.toISOString().substring(0, date.toISOString().search('T'));
 
 export const formatDateString = (dateString: string|null) => {
-    const dat = getDateOrNullFromDateString(dateString);
-    return dat ? getShortDateISOString(dat) : null;
+    const date = getDateOrNullFromDateString(dateString);
+    return date ? getShortDateISOString(date) : null;
 };
 
 export const getDateOrNullFromDateString = (date: string|null) => {
@@ -274,10 +274,22 @@ export const getFsSaksStatusByIdx = (saker: FsSaksStatus[], idx: number|undefine
     return saker[idx];
 };
 
-export const getUtbetalingByUtbetalingsreferanse = (utbetalinger: Utbetaling[], referanse: string): Utbetaling | undefined => {
-    return utbetalinger.find(s => {
-        return s.utbetalingsreferanse === referanse
-    })
+export const getAlleUtbetalingerFraSaker = (saker: FsSaksStatus[]): Utbetaling[] => {
+    let utbetalingerListe:Utbetaling[] = [];
+    saker.forEach(sak => sak.utbetalinger.forEach(utbetalinger => utbetalingerListe = [...utbetalingerListe, utbetalinger]));
+    return utbetalingerListe;
+};
+
+export const getAlleUtbetalinger = (soknad: FsSoknad): Utbetaling[] => {
+    let alleUtbetalinger:Utbetaling[] = [...soknad.utbetalingerUtenSaksreferanse];
+    const alleUtbetalingerFraSaker = getAlleUtbetalingerFraSaker(soknad.saker);
+    alleUtbetalingerFraSaker.forEach(utbetalinger => alleUtbetalinger = [...alleUtbetalinger, utbetalinger]);
+    return alleUtbetalinger.concat(alleUtbetalingerFraSaker);
+};
+
+export const getUtbetalingByUtbetalingsreferanse = (soknad: FsSoknad, referanse: string): Utbetaling | undefined => {
+    let alleUtbetalinger = getAlleUtbetalinger(soknad);
+    return alleUtbetalinger.find(s => s.utbetalingsreferanse === referanse)
 };
 
 export const getVilkarByVilkarreferanse = (vilkar: Vilkar[], referanse: string): Vilkar | undefined => {
@@ -299,7 +311,7 @@ export const getAlleRammeVedtakFraSaker = (saker: FsSaksStatus[]): Rammevedtak[]
 };
 
 export const getAlleRammevedtak = (soknad: FsSoknad): Rammevedtak[] => {
-    let alleRammevedtak:Rammevedtak[] = [...soknad.rammevedtak];
+    let alleRammevedtak:Rammevedtak[] = [...soknad.rammevedtakUtenSaksreferanse];
     const alleRammevedtakFraSaker = getAlleRammeVedtakFraSaker(soknad.saker);
     alleRammevedtakFraSaker.forEach(rammevedtak => alleRammevedtak = [...alleRammevedtak, rammevedtak]);
     return alleRammevedtak.concat(alleRammevedtakFraSaker);

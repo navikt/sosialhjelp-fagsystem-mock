@@ -2,7 +2,7 @@ import React, {useRef, useState} from 'react';
 import {AppState, DispatchProps} from "../../../redux/reduxTypes";
 import {connect} from "react-redux";
 import {createStyles, Modal, Paper, Theme} from "@material-ui/core";
-import {skjulNyDokumentasjonEtterspurtModal} from "../../../redux/v2/v2Actions";
+import {setAktivtRammevedtak, skjulNyDokumentasjonEtterspurtModal} from "../../../redux/v2/v2Actions";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import Fade from "@material-ui/core/Fade";
 import Backdrop from "@material-ui/core/Backdrop";
@@ -33,6 +33,7 @@ import TableHead from "@material-ui/core/TableHead";
 import TableBody from "@material-ui/core/TableBody";
 import IconButton from "@material-ui/core/IconButton";
 import Box from "@material-ui/core/Box";
+import useMediaQuery from "@material-ui/core/useMediaQuery";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -60,7 +61,6 @@ const useStyles = makeStyles((theme: Theme) =>
         },
         paperback2: {
             backgroundColor: theme.palette.background.paper,
-            padding: theme.spacing(2),
             width:'100%',
             display: 'flex',
             alignItems: 'center',
@@ -83,8 +83,9 @@ const useStyles = makeStyles((theme: Theme) =>
         addbox: {
             margin: theme.spacing(2, 0, 2, 0),
             display: 'flex',
+            flexwrap: 'wrap',
             flexDirection: 'row',
-            justifyContent: 'flex-start',
+            justifyContent: 'center',
             alignItems: 'center'
         },
         krav: {
@@ -96,15 +97,16 @@ const useStyles = makeStyles((theme: Theme) =>
             marginLeft: theme.spacing(1),
             marginRight: theme.spacing(1),
             margin: theme.spacing(1),
+            minWidth: '20px',
         },
         tablePaper: {
-            marginTop: theme.spacing(3),
+            margin: theme.spacing(2),
             overflowX: 'auto',
-            marginBottom: theme.spacing(2),
-            marginRight: theme.spacing(3),
         },
         table: {
-            minWidth: 650,
+            '@media (min-width: 1000px)': {
+                minWidth: 650,
+            },
         },
         paperRoute: {
             display: 'flex',
@@ -159,6 +161,16 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
     const classes = useStyles();
     const {visNyDokumentasjonEtterspurtModal, dispatch, v2, soknad} = props;
     const inputEl = useRef<HTMLInputElement>(null);
+    const smallScreen = useMediaQuery('(max-width:1200px)');
+
+    function resetStateValues() {
+        setModalDokumentasjonEtterspurt({...initialDokumentasjonEtterspurt});
+
+        setVisFeilmelding(false);
+        setVisFeilmeldingDatePicker(false);
+
+        dispatch(setAktivtRammevedtak(null));
+    }
 
     const handleFileUpload = (files: FileList) => {
         if (files.length !== 1) {
@@ -214,10 +226,11 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
                 )
             );
 
-            setVisFeilmelding(false);
-            setVisFeilmeldingDatePicker(false);
-
             dispatch(dispatch(skjulNyDokumentasjonEtterspurtModal()));
+
+            setTimeout(() => {
+                resetStateValues();
+            }, 500);
         }
     };
 
@@ -355,7 +368,12 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
             }}
             open={visNyDokumentasjonEtterspurtModal}
             onRendered={() => fyllInnDokumenterIModalDokumentasjonEtterspurt()}
-            onClose={() => dispatch(skjulNyDokumentasjonEtterspurtModal())}
+            onClose={() => {
+                dispatch(skjulNyDokumentasjonEtterspurtModal());
+                setTimeout(() => {
+                    resetStateValues();
+                }, 500);
+            }}
         >
             <Fade in={visNyDokumentasjonEtterspurtModal}>
                 <div className={classes.papertowel}>
@@ -380,7 +398,7 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
                                         }}>
                                             <AddIcon/>
                                         </Fab>
-                                        <Typography>
+                                        <Typography hidden={smallScreen}>
                                             Legg til dokumentkrav
                                         </Typography>
                                     </Box>
@@ -389,15 +407,14 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
                         </div>
                         <div className={classes.paperback2}>
                             {insertDokumentasjonEtterspurtOversikt()}
+                        </div>
+                        <div className={classes.paperback2}>
                             <Box className={classes.addbox}>
                                 <Fab size="small" aria-label="add" className={classes.fab} color="primary" onClick={() => {
                                     sendDokumentasjonEtterspurt();
                                 }}>
                                     <AddIcon/>
                                 </Fab>
-                                <Typography>
-                                    {skalLasteOppFil() ? "Etterspør dokumentasjon og velg forvaltningsbrev" : "Etterspør dokumentasjon"}
-                                </Typography>
                                 <input
                                     id={'inputField vedtakFattet'}
                                     ref={inputEl}
@@ -417,6 +434,9 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
                                     accept={window.navigator.platform.match(/iPad|iPhone|iPod/) !== null ? "*" : "application/pdf"}
                                 />
                             </Box>
+                            <Typography>
+                                {skalLasteOppFil() ? "Etterspør dokumentasjon og velg forvaltningsbrev" : "Etterspør dokumentasjon"}
+                            </Typography>
                         </div>
                     </div>
                 </div>

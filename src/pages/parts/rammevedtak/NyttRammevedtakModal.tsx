@@ -195,13 +195,15 @@ const NyttRammevedtakModal: React.FC<Props> = (props: Props) => {
             );
         }
 
-        resetStateValues();
-
         dispatch(dispatch(skjulNyRammevedtakModal()));
+
+        setTimeout(() => {
+            resetStateValues();
+        }, 500);
     };
 
     const setDefaultRammevedtak = () => {
-        setModalRammevedtak({...defaultRammevedtak, rammevedtaksreferanse: generateFilreferanseId()});
+        setModalRammevedtak({...defaultRammevedtak, rammevedtaksreferanse: generateFilreferanseId(), saksreferanse: modalRammevedtak.saksreferanse});
 
         if (soknad.saker.length > 0 && modalRammevedtak.saksreferanse == null) {
             setModalRammevedtak({...defaultRammevedtak, saksreferanse: soknad.saker[0].referanse});
@@ -299,8 +301,10 @@ const NyttRammevedtakModal: React.FC<Props> = (props: Props) => {
             open={visNyRammevedtakModal}
             onRendered={() => fyllInnAktivtRammevedtak()}
             onClose={() => {
-                resetStateValues();
                 props.dispatch(skjulNyRammevedtakModal());
+                setTimeout(() => {
+                    resetStateValues();
+                }, 500);
             }}
         >
             <Fade in={visNyRammevedtakModal}>
@@ -309,8 +313,8 @@ const NyttRammevedtakModal: React.FC<Props> = (props: Props) => {
                         <Grid container spacing={3} justify="center" alignItems="center">
                             {getTextFieldGrid("Rammevedtakreferanse", modalRammevedtak.rammevedtaksreferanse,
                                 (verdi: string) => setModalRammevedtak({...modalRammevedtak, rammevedtaksreferanse: verdi}), 'string', true)}
-                            {modalSaksreferanse == null && <Grid item key={'Saksreferanse'} xs={6} zeroMinWidth>
-                                <FormControl className={classes.formControl2}>
+                            <Grid item key={'Saksreferanse'} xs={6} zeroMinWidth>
+                                <FormControl className={classes.formControl2} disabled={modalSaksreferanse != null}>
                                     <InputLabel htmlFor="age-simple" shrink={true}>Saksreferanse</InputLabel>
                                     <Select
                                         value={modalRammevedtak.saksreferanse ? modalRammevedtak.saksreferanse : ''}
@@ -325,7 +329,7 @@ const NyttRammevedtakModal: React.FC<Props> = (props: Props) => {
                                         ))}
                                     </Select>
                                 </FormControl>
-                            </Grid>}
+                            </Grid>
 
                             {getTextFieldGrid("Beskrivelse", modalRammevedtak.beskrivelse, (verdi: string) => setModalRammevedtak({...modalRammevedtak, beskrivelse: verdi}))}
 

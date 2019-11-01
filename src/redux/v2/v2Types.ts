@@ -208,6 +208,7 @@ export interface VisNyDokumentasjonEtterspurtModal {
 
 export interface VisNyUtbetalingModal {
     type: V2ActionTypeKeys.VIS_NY_UTBETALING_MODAL;
+    saksreferanse: string|null;
 }
 
 export interface SkjulNyUtbetalingModal {

@@ -12,9 +12,8 @@ import DokumentasjonkravOversiktView from "../dokumentasjonskrav/Dokumentasjonkr
 import RammevedtakOversiktView from "../rammevedtak/RammevedtakOversiktView";
 import DokumentasjonEtterspurtOversiktView from "../dokumentasjonEtterspurt/DokumentasjonEtterspurtOversiktView";
 import NyttRammevedtakModal from "../rammevedtak/NyttRammevedtakModal";
-import {useMediaQuery} from "@material-ui/core";
-
-// const matches = useMediaQuery('(min-width:1910px)');
+import UtbetalingOversiktView from "../utbetaling/UtbetalingOversiktView";
+import NyUtbetalingModal from "../utbetaling/NyUtbetalingModal";
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -135,8 +134,8 @@ const BehandleSoknadPanel: React.FC<Props> = (props: Props) => {
                     <div className={classes.root4}>
                         <Paper className={classes.paper3}>
                             <Typography variant={"h5"}>Rammevedtak</Typography>
-                            <RammevedtakOversiktView rammevedtakListe={soknad.rammevedtak} saksreferanse={null}/>
-                            {(soknad.rammevedtak.length === 0) &&
+                            <RammevedtakOversiktView rammevedtakListe={soknad.rammevedtakUtenSaksreferanse} saksreferanse={null}/>
+                            {(soknad.rammevedtakUtenSaksreferanse.length === 0) &&
                             <>
                                 <br/>
                                 <Typography variant={"subtitle1"}>
@@ -146,7 +145,23 @@ const BehandleSoknadPanel: React.FC<Props> = (props: Props) => {
                             }
                         </Paper>
                     </div>
+
+                    <div className={classes.root4}>
+                        <Paper className={classes.paper3}>
+                            <Typography variant={"h5"}>Utbetalinger</Typography>
+                            <UtbetalingOversiktView utbetalingListe={soknad.utbetalingerUtenSaksreferanse} saksreferanse={null}/>
+                            {(soknad.rammevedtakUtenSaksreferanse.length === 0) &&
+                            <>
+                                <br/>
+                                <Typography variant={"subtitle1"}>
+                                    Ingen utbetalinger uten saksreferanse er opprettet for denne søknaden.
+                                </Typography>
+                            </>
+                            }
+                        </Paper>
+                    </div>
                 </div>
+                <NyUtbetalingModal soknad={soknad}/>
                 <NyttRammevedtakModal soknad={soknad}/>
             </div>
         );

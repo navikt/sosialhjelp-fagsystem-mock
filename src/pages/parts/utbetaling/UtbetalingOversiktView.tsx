@@ -10,9 +10,9 @@ import Typography from '@material-ui/core/Typography';
 import Fab from '@material-ui/core/Fab';
 import AddIcon from '@material-ui/icons/Add';
 import Box from '@material-ui/core/Box';
-import {setAktivtRammevedtak, visNyRammevedtakModal} from "../../../redux/v2/v2Actions";
-import RammevedtakTabView from "./RammevedtakTabView";
-import {Rammevedtak} from "../../../types/hendelseTypes";
+import {setAktivUtbetaling, visNyUtbetalingModal} from "../../../redux/v2/v2Actions";
+import UtbetalingTabView from "./UtbetalingTabView";
+import {Utbetaling} from "../../../types/hendelseTypes";
 
 
 interface TabPanelProps {
@@ -67,36 +67,38 @@ const useStyles = makeStyles((theme: Theme) =>
 
 
 interface OwnProps {
-    rammevedtakListe: Rammevedtak[],
+    utbetalingListe: Utbetaling[],
     saksreferanse: string|null
 }
 
 type Props = DispatchProps & OwnProps;
 
 
-const RammevedtakOversiktView: React.FC<Props> = (props: Props) => {
+const UtbetalingOversiktView: React.FC<Props> = (props: Props) => {
     const classes = useStyles();
     const theme = useTheme();
-    const {rammevedtakListe, dispatch, saksreferanse} = props;
-    const [aktivtRammevedtakIdx, setAktivtRammevedtakIdx] = useState(0);
-    const [antallRammevedtak, setAntallRammevedtak] = useState(0);
+    const {utbetalingListe, dispatch, saksreferanse} = props;
+    const [aktivUtbetalingIdx, setAktivUtbetalingIdx] = useState(0);
+    const [antallUtbetalinger, setAntallUtbetalinger] = useState(0);
 
-    if (antallRammevedtak !== rammevedtakListe.length) {
-        setAktivtRammevedtakIdx(rammevedtakListe.length - 1);
-        setAntallRammevedtak(rammevedtakListe.length);
+    if (antallUtbetalinger !== utbetalingListe.length) {
+        if (antallUtbetalinger < utbetalingListe.length) {
+            setAktivUtbetalingIdx(utbetalingListe.length - 1);
+        }
+        setAntallUtbetalinger(utbetalingListe.length);
     }
 
-    const listTabs = rammevedtakListe.map((rammevedtak: Rammevedtak, idx) => {
+    const listTabs = utbetalingListe.map((utbetaling: Utbetaling, idx) => {
         return (
-            <Tab key={"tab: " + rammevedtak.rammevedtaksreferanse} label={"Rammevedtak " + (idx + 1)} />
+            <Tab key={"tab: " + utbetaling.utbetalingsreferanse} label={"Utbetaling " + (idx + 1)} />
         )
     });
-    const listTabPanels = rammevedtakListe.map((rammevedtak: Rammevedtak, idx) => {
+    const listTabPanels = utbetalingListe.map((utbetaling: Utbetaling, idx) => {
         return(
-            <TabPanel key={"tabPanel: " + rammevedtak.rammevedtaksreferanse}
-                      value={aktivtRammevedtakIdx}
+            <TabPanel key={"tabPanel: " + utbetaling.utbetalingsreferanse}
+                      value={aktivUtbetalingIdx < utbetalingListe.length ? aktivUtbetalingIdx : utbetalingListe.length - 1}
                       index={idx} dir={theme.direction}>
-                <RammevedtakTabView rammevedtak={rammevedtak} />
+                <UtbetalingTabView utbetaling={utbetaling} />
             </TabPanel>
         )
     });
@@ -106,21 +108,21 @@ const RammevedtakOversiktView: React.FC<Props> = (props: Props) => {
             <Box className={classes.addbox}>
                 <Typography>
                     <Fab aria-label="add" className={classes.fab} color="primary" onClick={() => {
-                        dispatch(setAktivtRammevedtak(null));
-                        dispatch(visNyRammevedtakModal(saksreferanse));
+                        dispatch(setAktivUtbetaling(null));
+                        dispatch(visNyUtbetalingModal(saksreferanse));
                     }}>
                         <AddIcon/>
                     </Fab>
-                    Nytt rammevedtak
+                    Ny utbetaling
                 </Typography>
             </Box>
 
-            {(rammevedtakListe.length > 0) &&
+            {(utbetalingListe.length > 0) &&
             <>
                 <AppBar position="static" color="default">
                     <Tabs
-                        value={aktivtRammevedtakIdx}
-                        onChange={(event: unknown, newValue: number) => setAktivtRammevedtakIdx(newValue)}
+                        value={aktivUtbetalingIdx < utbetalingListe.length ? aktivUtbetalingIdx : utbetalingListe.length - 1}
+                        onChange={(event: unknown, newValue: number) => setAktivUtbetalingIdx(newValue)}
                         indicatorColor="primary"
                         textColor="primary"
                         variant="fullWidth"
@@ -131,8 +133,8 @@ const RammevedtakOversiktView: React.FC<Props> = (props: Props) => {
                 </AppBar>
                 <SwipeableViews
                     axis={theme.direction === 'rtl' ? 'x-reverse' : 'x'}
-                    index={aktivtRammevedtakIdx}
-                    onChangeIndex={(newValue: number) => setAktivtRammevedtakIdx(newValue)}
+                    index={aktivUtbetalingIdx < utbetalingListe.length ? aktivUtbetalingIdx : utbetalingListe.length - 1}
+                    onChangeIndex={(newValue: number) => setAktivUtbetalingIdx(newValue)}
                 >
                     { listTabPanels}
                 </SwipeableViews>
@@ -149,4 +151,4 @@ const mapDispatchToProps = (dispatch: any) => {
 
 export default connect(
     mapDispatchToProps
-)(RammevedtakOversiktView);
+)(UtbetalingOversiktView);

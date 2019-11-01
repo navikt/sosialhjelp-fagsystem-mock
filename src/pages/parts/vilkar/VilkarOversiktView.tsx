@@ -81,6 +81,12 @@ const VilkarOversiktView: React.FC<Props> = (props: Props) => {
     const theme = useTheme();
     const {soknad, dispatch} = props;
     const [aktivtVilkarIdx, setAktivtVilkarIdx] = useState(0);
+    const [antallVilkar, setAntallVilkar] = useState(0);
+
+    if (antallVilkar !== soknad.vilkar.length) {
+        setAktivtVilkarIdx(soknad.vilkar.length - 1);
+        setAntallVilkar(soknad.vilkar.length);
+    }
 
     const addNyttVilkarButton = () => {
         return (

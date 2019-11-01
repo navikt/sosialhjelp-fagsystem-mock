@@ -18,12 +18,13 @@ import Tab from "@material-ui/core/Tab";
 import AppBar from "@material-ui/core/AppBar/AppBar";
 import Tabs from "@material-ui/core/Tabs";
 import SwipeableViews from "react-swipeable-views";
-import UtbetalingTabView from "./UtbetalingTabView";
+import UtbetalingTabView from "../utbetaling/UtbetalingTabView";
 import TextField from "@material-ui/core/TextField";
 import EndreSaksstatusModal from "./EndreSaksstatusModal";
 import VedtakFattetModal from "./VedtakFattetModal";
 import {oHendelser} from "../../../redux/v3/v3Optics";
 import RammevedtakOversiktView from "../rammevedtak/RammevedtakOversiktView";
+import UtbetalingOversiktView from "../utbetaling/UtbetalingOversiktView";
 
 interface TabPanelProps {
     children?: React.ReactNode;
@@ -126,7 +127,7 @@ const SaksTabView: React.FC<Props> = (props: Props) => {
         return (
             <Box className={classes.addbox}>
                 <Fab aria-label="add" className={classes.fab} color="primary"
-                     onClick={() => dispatch(visNyUtbetalingModal())}>
+                     onClick={() => dispatch(visNyUtbetalingModal(sak.referanse))}>
                     <AddIcon/>
                 </Fab>
                 <Typography>Legg til ny utbetaling</Typography>
@@ -226,10 +227,8 @@ const SaksTabView: React.FC<Props> = (props: Props) => {
 
             <br/>
             <Typography>Utbetaling</Typography>
-
-            {addNyUtbetalingButton()}
+            <UtbetalingOversiktView utbetalingListe={sak.utbetalinger} saksreferanse={sak.referanse}/>
             <br/>
-            {insertUtbetalingsOversikt()}
             <Typography>Vedtak fattet</Typography>
             <VedtakFattetModal soknad={soknad} sak={sak}/>
             <br/>

@@ -81,6 +81,12 @@ const DokumentasjonkravOversiktView: React.FC<Props> = (props: Props) => {
     const theme = useTheme();
     const {soknad, dispatch} = props;
     const [aktivtDokumentasjonkravIdx, setAktivtDokumentasjonkravIdx] = useState(0);
+    const [antallDokumentasjonkrav, setAntallDokumentasjonkrav] = useState(0);
+
+    if (antallDokumentasjonkrav !== soknad.dokumentasjonkrav.length) {
+        setAktivtDokumentasjonkravIdx(soknad.dokumentasjonkrav.length - 1);
+        setAntallDokumentasjonkrav(soknad.dokumentasjonkrav.length);
+    }
 
     const addNyttDokumentasjonkravButton = () => {
         return (

@@ -51,15 +51,15 @@ export const oFsDokumentasjonkravTraversal = fromTraversable(array)<Dokumentasjo
 export const oFsDokumentasjonkravPrism = (referanse: string): Prism<Dokumentasjonkrav, Dokumentasjonkrav> => Prism.fromPredicate(dokumentasjonkrav => dokumentasjonkrav.dokumentasjonkravreferanse === referanse);
 
 // Rammevedtak
-export const oFsRammevedtak = Lens.fromProp<FsSoknad>()('rammevedtak');
+export const oFsRammevedtak = Lens.fromProp<FsSoknad>()('rammevedtakUtenSaksreferanse');
+export const oFsSaksStatusRammevedtak = Lens.fromProp<FsSaksStatus>()('rammevedtak');
 export const oFsRammevedtakTraversal = fromTraversable(array)<Rammevedtak>();
 export const oFsRammevedtakPrism = (referanse: string): Prism<Rammevedtak, Rammevedtak> => Prism.fromPredicate(rammevedtak => rammevedtak.rammevedtaksreferanse === referanse);
 
+export const oFsUtbetalinger = Lens.fromProp<FsSoknad>()('utbetalingerUtenSaksreferanse');
 export const oFsSaksStatusUtbetalinger = Lens.fromProp<FsSaksStatus>()('utbetalinger');
-export const oFsSaksStatusUtbetalingerTraversal = fromTraversable(array)<Utbetaling>();
+export const oFsUtbetalingerTraversal = fromTraversable(array)<Utbetaling>();
 export const oFsUtbetalingPrism = (referanse: string): Prism<Utbetaling, Utbetaling> => Prism.fromPredicate(utbetaling => utbetaling.utbetalingsreferanse === referanse);
-
-export const oFsSaksStatusRammevedtak = Lens.fromProp<FsSaksStatus>()('rammevedtak');
 
 export const oGetFsSaksStatus = (forFsSaksStatusReferanse: string) => {
     return oFsSaker

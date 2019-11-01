@@ -14,6 +14,11 @@ import {getFsSoknadByFiksDigisosId} from "../../../utils/utilityFunctions";
 import {V3State} from "../../../redux/v3/v3Types";
 import {oHendelser} from "../../../redux/v3/v3Optics";
 import Hendelse from "../../../types/hendelseTypes";
+import TextField from "@material-ui/core/TextField";
+import Fab from "@material-ui/core/Fab";
+import Box from "@material-ui/core/Box";
+import AddIcon from '@material-ui/icons/Add';
+import Typography from "@material-ui/core/Typography";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -27,6 +32,18 @@ const useStyles = makeStyles((theme: Theme) =>
             border: '2px solid #000',
             boxShadow: theme.shadows[5],
             padding: theme.spacing(2, 4, 3),
+        },
+        textField: {
+            marginRight: theme.spacing(2),
+        },
+        addbox: {
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'flex-start',
+            alignItems: 'center'
+        },
+        fab: {
+            marginRight: theme.spacing(1),
         },
     }),
 );
@@ -65,32 +82,53 @@ const NySakModal: React.FC<Props> = (props: Props) => {
         >
             <Fade in={visNySakModal}>
                 <div className={classes.paper}>
-                    <input onChange={(evt) => setTittel(evt.target.value)} />
-                    <button onClick={() => {
-                        const fsSoknader = v3.soknader;
-                        if (fsSoknader){
-                            const fsSoknad: FsSoknad | undefined = getFsSoknadByFiksDigisosId(fsSoknader, v2.aktivSoknad);
-                            if (fsSoknad) {
-                                const fsSaksStatus = generateNyFsSaksStatus(tittel.length !== 0 ? tittel : null);
-                                const nyHendelse = fsSaksStatusToSaksStatus(fsSaksStatus);
-                                const soknadUpdated = oHendelser.modify((a: Hendelse[]) => [...a, nyHendelse])(fsSoknad);
+                    <Box className={classes.addbox}>
+                        <TextField
+                            id="nySakTittel"
+                            label={'Tittel på ny sak'}
+                            className={classes.textField}
+                            value={tittel}
+                            onChange={(evt) => setTittel(evt.target.value)}
+                            // InputLabelProps={{
+                            //     shrink: true,
+                            // }}
+                            margin="dense"
+                            variant="filled"
+                            autoComplete="off"
+                        />
+                        <Fab size={'small'} aria-label='Add' className={classes.fab} color='primary' onClick={() => {
+                            const fsSoknader = v3.soknader;
+                            if (fsSoknader){
+                                const fsSoknad: FsSoknad | undefined = getFsSoknadByFiksDigisosId(fsSoknader, v2.aktivSoknad);
+                                if (fsSoknad) {
+                                    const fsSaksStatus = generateNyFsSaksStatus(tittel.length !== 0 ? tittel : null);
+                                    const nyHendelse = fsSaksStatusToSaksStatus(fsSaksStatus);
+                                    const soknadUpdated = oHendelser.modify((a: Hendelse[]) => [...a, nyHendelse])(fsSoknad);
 
-                                dispatch(
-                                    aiuuur(
-                                        v2.aktivSoknad,
-                                        soknadUpdated.fiksDigisosSokerJson,
-                                        v2,
-                                        nyFsSaksStatus(v2.aktivSoknad, fsSaksStatus)
-                                    )
-                                );
+                                    dispatch(
+                                        aiuuur(
+                                            v2.aktivSoknad,
+                                            soknadUpdated.fiksDigisosSokerJson,
+                                            v2,
+                                            nyFsSaksStatus(v2.aktivSoknad, fsSaksStatus)
+                                        )
+                                    );
 
-                                if (soknadUpdated.saker.length === 0) {
-                                    dispatch(setAktivSak(fsSaksStatus.referanse));
+                                    if (soknadUpdated.saker.length === 0) {
+                                        dispatch(setAktivSak(fsSaksStatus.referanse));
+                                    }
+
+                                    setTittel('');
                                 }
                             }
-                        }
-                        dispatch(skjulNySakModal());
-                    }}>Opprett</button>
+                            dispatch(skjulNySakModal());
+                        }}>
+                            <AddIcon/>
+                        </Fab>
+                        <Typography>
+                            Opprett sak
+                        </Typography>
+                    </Box>
                 </div>
             </Fade>
         </Modal>

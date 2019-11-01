@@ -189,9 +189,11 @@ const NyttVilkarModal: React.FC<Props> = (props: Props) => {
             );
         }
 
-        resetStateValues();
-
         dispatch(dispatch(skjulNyVilkarModal()));
+
+        setTimeout(() => {
+            resetStateValues();
+        }, 500);
     };
 
     const setDefaultVilkar = () => {
@@ -262,8 +264,10 @@ const NyttVilkarModal: React.FC<Props> = (props: Props) => {
             open={visNyVilkarModal}
             onRendered={() => fyllInnAktivtVilkar()}
             onClose={() => {
-                resetStateValues();
                 props.dispatch(skjulNyVilkarModal());
+                setTimeout(() => {
+                    resetStateValues();
+                }, 500);
             }}
         >
             <Fade in={visNyVilkarModal}>

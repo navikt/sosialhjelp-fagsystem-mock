@@ -189,9 +189,11 @@ const NyttDokumentasjonkravModal: React.FC<Props> = (props: Props) => {
             );
         }
 
-        resetStateValues();
-
         dispatch(dispatch(skjulNyDokumentasjonkravModal()));
+
+        setTimeout(() => {
+            resetStateValues();
+        }, 500);
     };
 
     const setDefaultDokumentasjonkrav = () => {
@@ -262,8 +264,10 @@ const NyttDokumentasjonkravModal: React.FC<Props> = (props: Props) => {
             open={visNyDokumentasjonkravModal}
             onRendered={() => fyllInnAktivtDokumentasjonkrav()}
             onClose={() => {
-                resetStateValues();
                 props.dispatch(skjulNyDokumentasjonkravModal());
+                setTimeout(() => {
+                    resetStateValues();
+                }, 500);
             }}
         >
             <Fade in={visNyDokumentasjonkravModal}>

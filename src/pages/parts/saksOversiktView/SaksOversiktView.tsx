@@ -16,7 +16,7 @@ import {setAktivSak, visNySakModal} from "../../../redux/v2/v2Actions";
 import NySakModal from "../nySak/NySak";
 import SaksTabView from "./SaksTabView";
 import {FsSaksStatus, FsSoknad} from "../../../redux/v3/v3FsTypes";
-import NyUtbetalingModal from "../utbetaling/NyUtbetaling";
+import NyUtbetalingModal from "../utbetaling/NyUtbetalingModal";
 
 
 interface TabPanelProps {
@@ -53,11 +53,6 @@ const useStyles = makeStyles((theme: Theme) =>
         },
         fab: {
             marginRight: theme.spacing(1),
-            // position: 'absolute',
-            // bottom: theme.spacing(5),
-            // top: theme.spacing(2),
-            // marginBottom: theme.spacing(4),
-            // right: theme.spacing(2),
         },
         fabGreen: {
             color: theme.palette.common.white,
@@ -98,6 +93,12 @@ const SaksOversiktView: React.FC<Props> = (props: Props) => {
     const theme = useTheme();
     const {soknad, dispatch} = props;
     const [aktivSakIndex, setAktivSakIndex] = useState(0);
+    const [antallSaker, setAntallSaker] = useState(0);
+
+    if (antallSaker !== soknad.saker.length) {
+        setAktivSakIndex(soknad.saker.length - 1);
+        setAntallSaker(soknad.saker.length);
+    }
 
     function handleChange(event: unknown, newValue: number) {
         setAktivSakIndex(newValue);
@@ -116,7 +117,7 @@ const SaksOversiktView: React.FC<Props> = (props: Props) => {
                     <AddIcon/>
                 </Fab>
                 <Typography>
-                    Opprett sak
+                    Opprett ny sak
                 </Typography>
             </Box>
         )
@@ -183,8 +184,8 @@ const SaksOversiktView: React.FC<Props> = (props: Props) => {
 
                 { insertSaksOversikt() }
                 <NySakModal />
-                {(soknad.saker.length > 0) && <NyUtbetalingModal soknad={soknad}/>
-                }
+                {/*{(soknad.saker.length > 0) && <NyUtbetalingModal soknad={soknad}/>*/}
+                {/*}*/}
             </Paper>
         </div>
     );

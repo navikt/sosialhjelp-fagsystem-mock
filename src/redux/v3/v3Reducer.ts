@@ -13,7 +13,7 @@ import {
     oFsSakerTraversal,
     oFsSaksStatusPrism, oFsSaksStatusRammevedtak,
     oFsSaksStatusUtbetalinger,
-    oFsSaksStatusUtbetalingerTraversal,
+    oFsUtbetalingerTraversal, oFsUtbetalinger,
     oFsUtbetalingPrism,
     oFsVilkar,
     oFsVilkarPrism,
@@ -152,31 +152,75 @@ const v3Reducer: Reducer<V3State, V3Action> = (
             const {forFiksDigisosId, nyUtbetaling} = action;
 
             const s1 = oGetSoknad(forFiksDigisosId)
-                .composeLens(oFsSaker)
-                .composeTraversal(oFsSakerTraversal)
-                .composePrism(oFsSaksStatusPrism(nyUtbetaling.saksreferanse))
-                .composeLens(oFsSaksStatusUtbetalinger)
-                .modify((utbetalinger: Utbetaling[]) => [...utbetalinger, nyUtbetaling])(state);
-
-            return oGetSoknad(forFiksDigisosId)
                 .composeLens(oHendelser)
-                .modify((a: Hendelse[]) => [...a, nyUtbetaling])(s1);
+                .modify((a: Hendelse[]) => [...a, nyUtbetaling])(state);
+
+            if (nyUtbetaling.saksreferanse) {
+                return oGetSoknad(forFiksDigisosId)
+                    .composeLens(oFsSaker)
+                    .composeTraversal(oFsSakerTraversal)
+                    .composePrism(oFsSaksStatusPrism(nyUtbetaling.saksreferanse))
+                    .composeLens(oFsSaksStatusUtbetalinger)
+                    .modify((utbetalinger: Utbetaling[]) => [...utbetalinger, nyUtbetaling])(s1);
+            } else {
+                return oGetSoknad(forFiksDigisosId)
+                    .composeLens(oFsUtbetalinger)
+                    .modify((utbetalingListe: Utbetaling[]) => [...utbetalingListe, nyUtbetaling])(s1);
+            }
         }
         case V3ActionTypeKeys.OPPDATER_UTBETALING: {
             const {forFiksDigisosId, oppdatertUtbetaling} = action;
 
             const s1 = oGetSoknad(forFiksDigisosId)
-                .composeLens(oFsSaker)
-                .composeTraversal(oFsSakerTraversal)
-                .composePrism(oFsSaksStatusPrism(oppdatertUtbetaling.saksreferanse))
-                .composeLens(oFsSaksStatusUtbetalinger)
-                .composeTraversal(oFsSaksStatusUtbetalingerTraversal)
-                .composePrism(oFsUtbetalingPrism(oppdatertUtbetaling.utbetalingsreferanse))
-                .set(oppdatertUtbetaling)(state);
-
-            return oGetSoknad(forFiksDigisosId)
                 .composeLens(oHendelser)
-                .modify((a: Hendelse[]) => [...a, oppdatertUtbetaling])(s1);
+                .modify((a: Hendelse[]) => [...a, oppdatertUtbetaling])(state);
+
+            if (oppdatertUtbetaling.saksreferanse) {
+                if (state.soknader.find(s => s.fiksDigisosId === forFiksDigisosId)!.utbetalingerUtenSaksreferanse
+                    .find(r => r.utbetalingsreferanse === oppdatertUtbetaling.utbetalingsreferanse)) {
+                    // Fjern fra liste over utbetalinger uten saksreferanse
+                    const s2 = oGetSoknad(forFiksDigisosId)
+                        .composeLens(oFsUtbetalinger)
+                        .modify((utbetalingliste) => utbetalingliste.filter(
+                            (utbetaling) => utbetaling.utbetalingsreferanse !== oppdatertUtbetaling.utbetalingsreferanse))(s1);
+                    // Legg til i liste over utbetalinger under den valgte saken
+                    return oGetSoknad(forFiksDigisosId)
+                        .composeLens(oFsSaker)
+                        .composeTraversal(oFsSakerTraversal)
+                        .composePrism(oFsSaksStatusPrism(oppdatertUtbetaling.saksreferanse))
+                        .composeLens(oFsSaksStatusUtbetalinger)
+                        .modify((utbetaling: Utbetaling[]) => [...utbetaling, oppdatertUtbetaling])(s2);
+                } else {
+                    return oGetSoknad(forFiksDigisosId)
+                        .composeLens(oFsSaker)
+                        .composeTraversal(oFsSakerTraversal)
+                        .composePrism(oFsSaksStatusPrism(oppdatertUtbetaling.saksreferanse))
+                        .composeLens(oFsSaksStatusUtbetalinger)
+                        .composeTraversal(oFsUtbetalingerTraversal)
+                        .composePrism(oFsUtbetalingPrism(oppdatertUtbetaling.utbetalingsreferanse))
+                        .set(oppdatertUtbetaling)(s1);
+                }
+            } else {
+                return oGetSoknad(forFiksDigisosId)
+                    .composeLens(oFsUtbetalinger)
+                    .composeTraversal(oFsUtbetalingerTraversal)
+                    .composePrism(oFsUtbetalingPrism(oppdatertUtbetaling.utbetalingsreferanse))
+                    .set(oppdatertUtbetaling)(s1);
+            }
+            // const {forFiksDigisosId, oppdatertUtbetaling} = action;
+            //
+            // const s1 = oGetSoknad(forFiksDigisosId)
+            //     .composeLens(oFsSaker)
+            //     .composeTraversal(oFsSakerTraversal)
+            //     .composePrism(oFsSaksStatusPrism(oppdatertUtbetaling.saksreferanse))
+            //     .composeLens(oFsSaksStatusUtbetalinger)
+            //     .composeTraversal(oFsUtbetalingerTraversal)
+            //     .composePrism(oFsUtbetalingPrism(oppdatertUtbetaling.utbetalingsreferanse))
+            //     .set(oppdatertUtbetaling)(state);
+            //
+            // return oGetSoknad(forFiksDigisosId)
+            //     .composeLens(oHendelser)
+            //     .modify((a: Hendelse[]) => [...a, oppdatertUtbetaling])(s1);
         }
         case V3ActionTypeKeys.NYTT_DOKUMENTASJONKRAV: {
             const {forFiksDigisosId, nyttDokumentasjonkrav} = action;
@@ -244,7 +288,7 @@ const v3Reducer: Reducer<V3State, V3Action> = (
                 .modify((a: Hendelse[]) => [...a, oppdatertRammevedtak])(state);
 
             if (oppdatertRammevedtak.saksreferanse) {
-                if (state.soknader.find(s => s.fiksDigisosId === forFiksDigisosId)!.rammevedtak
+                if (state.soknader.find(s => s.fiksDigisosId === forFiksDigisosId)!.rammevedtakUtenSaksreferanse
                     .find(r => r.rammevedtaksreferanse === oppdatertRammevedtak.rammevedtaksreferanse)) {
                     // Fjern fra liste over rammevedtak uten saksreferanse
                     const s2 = oGetSoknad(forFiksDigisosId)

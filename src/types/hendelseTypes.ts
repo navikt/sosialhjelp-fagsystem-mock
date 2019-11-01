@@ -80,7 +80,7 @@ export interface Utbetaling {
     type: HendelseType.Utbetaling;
     hendelsestidspunkt: string; // f eks "2018-10-08T21:47:00.134Z"
     utbetalingsreferanse: string; // unik string ref
-    saksreferanse: string; // "Referanse utbetalingen skal tilknyttes til (samme som i vedtak fattet og saksstatus)"
+    saksreferanse: string|null; // "Referanse utbetalingen skal tilknyttes til (samme som i vedtak fattet og saksstatus)"
     rammevedtaksreferanse: string | null; // "Settes dersom utbetalingen er en del av et rammevedtak"
     status: UtbetalingStatus | null;
     belop: number | null; // belop i kr

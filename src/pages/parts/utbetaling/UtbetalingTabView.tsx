@@ -104,6 +104,7 @@ const UtbetalingTabView: React.FC<Props> = (props: Props) => {
                     </TableHead>
                     <TableBody>
                         {makeTableRow("Utbetalingsreferanse", utbetaling.utbetalingsreferanse)}
+                        {makeTableRow("Saksreferanse", utbetaling.saksreferanse)}
                         {makeTableRow("Rammevedtaksreferanse", utbetaling.rammevedtaksreferanse)}
                         {makeTableRowOfStatus("Status", utbetaling.status)}
                         {makeTableRow("Beløp", utbetaling.belop)}
@@ -122,7 +123,7 @@ const UtbetalingTabView: React.FC<Props> = (props: Props) => {
                 <Typography className={classes.paperRoute}>
                     <Fab size="small" aria-label="add" className={classes.fab} color="primary" onClick={() => {
                         dispatch(setAktivUtbetaling(utbetaling.utbetalingsreferanse));
-                        dispatch(visNyUtbetalingModal());
+                        dispatch(visNyUtbetalingModal(utbetaling.saksreferanse));
                     }}>
                         <AddIcon/>
                     </Fab>

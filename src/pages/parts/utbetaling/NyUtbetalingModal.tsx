@@ -10,8 +10,7 @@ import {V2Model} from "../../../redux/v2/v2Types";
 import {
     formatDateString,
     generateFilreferanseId,
-    getFsSaksStatusByReferanse,
-    getNow,
+    getNow, getSakTittelFraSaksreferanse,
     getShortDateISOString,
     getUtbetalingByUtbetalingsreferanse
 } from "../../../utils/utilityFunctions";
@@ -86,7 +85,17 @@ const useStyles = makeStyles((theme: Theme) =>
         formControl: {
             marginLeft: theme.spacing(2),
             marginRight: theme.spacing(2),
-            minWidth: 250,
+            '@media (min-width: 1100px)': {
+                minWidth: 200
+            },
+            '@media (max-width: 1099px)': {
+                width: '100%'
+            },
+        },
+        formControl2: {
+            marginLeft: theme.spacing(2),
+            marginRight: theme.spacing(2),
+            minWidth: '80%',
         },
         fab: {
             marginLeft: theme.spacing(1),
@@ -106,6 +115,7 @@ interface StoreProps {
     v2: V2Model;
     aktivSak: string | null;
     aktivUtbetaling: string | undefined | null;
+    modalSaksreferanse: string|null;
 }
 
 type Props = DispatchProps & OwnProps & StoreProps;
@@ -148,7 +158,7 @@ const defaultUtbetaling: Utbetaling = {
     type: HendelseType.Utbetaling,
     hendelsestidspunkt: '',
     utbetalingsreferanse: generateFilreferanseId(),
-    saksreferanse: '',
+    saksreferanse: null,
     rammevedtaksreferanse: generateFilreferanseId(),
     status: UtbetalingStatus.PLANLAGT_UTBETALING,
     belop: 1337,
@@ -161,7 +171,7 @@ const defaultUtbetaling: Utbetaling = {
     annenMottaker: false,
     mottaker: "Jim Raynor",
     kontonummer: "12345678903",
-    utbetalingsmetode: "Buttcoin",
+    utbetalingsmetode: "Kronekort",
 };
 
 const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
@@ -178,7 +188,7 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
 
 
     const classes = useStyles();
-    const {visNyUtbetalingModal, dispatch, v2, soknad, aktivSak, aktivUtbetaling} = props;
+    const {visNyUtbetalingModal, dispatch, v2, soknad, aktivSak, aktivUtbetaling, modalSaksreferanse} = props;
 
     function resetStateValues() {
         setModalUtbetaling({...initialUtbetaling, utbetalingsreferanse: generateFilreferanseId()});
@@ -196,10 +206,11 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
     }
 
     const sendUtbetaling = () => {
-        const sak = getFsSaksStatusByReferanse(soknad.saker, aktivSak);
-        const nyHendelse: Utbetaling = {...modalUtbetaling};
+        let nyHendelse: Utbetaling = {...modalUtbetaling};
+        if (modalSaksreferanse) {
+            nyHendelse = {...nyHendelse, saksreferanse: modalSaksreferanse};
+        }
         nyHendelse.hendelsestidspunkt = getNow();
-        nyHendelse.saksreferanse = sak.referanse;
         nyHendelse.kontonummer = modalUtbetaling.kontonummer && modalUtbetaling.kontonummer.length === 11 ? modalUtbetaling.kontonummer : null;
         nyHendelse.forfallsdato = formatDateString(nyHendelse.forfallsdato);
         nyHendelse.utbetalingsdato = formatDateString(nyHendelse.utbetalingsdato);
@@ -228,13 +239,19 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
             );
         }
 
-        resetStateValues();
-
         dispatch(dispatch(skjulNyUtbetalingModal()));
+
+        setTimeout(() => {
+            resetStateValues();
+        }, 500);
     };
 
     const setDefaultUtbetaling = () => {
-        setModalUtbetaling({...defaultUtbetaling, utbetalingsreferanse: generateFilreferanseId()});
+        setModalUtbetaling({...defaultUtbetaling, utbetalingsreferanse: generateFilreferanseId(), saksreferanse: modalUtbetaling.saksreferanse});
+
+        if (soknad.saker.length > 0 && modalUtbetaling.saksreferanse == null) {
+            setModalUtbetaling({...defaultUtbetaling, saksreferanse: soknad.saker[0].referanse});
+        }
 
         setAnnenMottakerTrueVariant('text');
         setAnnenMottakerFalseVariant('contained');
@@ -249,8 +266,7 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
 
     const fyllInnAktivUtbetaling = () => {
         if (aktivUtbetaling) {
-            const sak = getFsSaksStatusByReferanse(soknad.saker, aktivSak);
-            let utbetaling = getUtbetalingByUtbetalingsreferanse(sak.utbetalinger, aktivUtbetaling);
+            let utbetaling = getUtbetalingByUtbetalingsreferanse(soknad, aktivUtbetaling);
             if (utbetaling){
                 setModalUtbetaling(utbetaling);
 
@@ -261,6 +277,8 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
                     setReferansefeltDisabled(true);
                 }, 10);
             }
+        } else {
+            setModalUtbetaling({...modalUtbetaling, saksreferanse: modalSaksreferanse});
         }
     };
 
@@ -296,7 +314,7 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
     }
 
     function getKeyboardDatePickerGrid(label: string, value: any, setValue: (v: string) => any, isOpen: boolean, setIsOpen: any) {
-        return <Grid item key={"grid: " + label} xs={6} zeroMinWidth>
+        return <Grid item key={"grid: " + label} xs={3} zeroMinWidth>
             <MuiPickersUtilsProvider utils={DateFnsUtils}>
                 <KeyboardDatePicker
                     className={classes.otherField}
@@ -313,6 +331,9 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
                     onChange={(date: any) => {
                         setValue(date);
                         setIsOpen(false);
+                    }}
+                    InputLabelProps={{
+                        shrink: true,
                     }}
                     KeyboardButtonProps={{
                         'aria-label': 'change date',
@@ -335,8 +356,10 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
             open={visNyUtbetalingModal}
             onRendered={() => fyllInnAktivUtbetaling()}
             onClose={() => {
-                resetStateValues();
                 props.dispatch(skjulNyUtbetalingModal());
+                setTimeout(() => {
+                    resetStateValues();
+                }, 500);
             }}
         >
             <Fade in={visNyUtbetalingModal}>
@@ -345,9 +368,37 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
                         <Grid container spacing={3} justify="center" alignItems="center">
                             {getTextFieldGrid("Utbetalingsreferanse", modalUtbetaling.utbetalingsreferanse,
                                 (verdi: string) => setModalUtbetaling({...modalUtbetaling, utbetalingsreferanse: verdi}), "text", true)}
+                            <Grid item key={'Saksreferanse'} xs={6} zeroMinWidth>
+                                <FormControl className={classes.formControl2} disabled={modalSaksreferanse != null}>
+                                    <InputLabel htmlFor="age-simple" shrink={true}>Saksreferanse</InputLabel>
+                                    <Select
+                                        value={modalUtbetaling.saksreferanse ? modalUtbetaling.saksreferanse : ''}
+                                        onChange={(evt) => setModalUtbetaling({...modalUtbetaling, saksreferanse: evt.target.value as string})}
+                                        inputProps={{
+                                            name: 'setSaksreferanse',
+                                            id: 'saksreferanse',
+                                        }}
+                                    >
+                                        {soknad.saker.map(sak => (
+                                            <MenuItem key={sak.referanse} value={sak.referanse}>{sak.referanse + ' ' + getSakTittelFraSaksreferanse(soknad, sak.referanse)}</MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+                            </Grid>
                             {getTextFieldGrid("Rammevedtaksreferanse", modalUtbetaling.rammevedtaksreferanse,
                                 (verdi: string) => setModalUtbetaling({...modalUtbetaling, rammevedtaksreferanse: verdi}))}
-                            <Grid item key={'Status'} xs={6} zeroMinWidth>
+                            {getTextFieldGrid("Beløp", modalUtbetaling.belop, (verdi: number) => setModalUtbetaling({...modalUtbetaling, belop: +verdi}), "number")}
+                            {getTextFieldGrid("Beskrivelse", modalUtbetaling.beskrivelse, (verdi: string) => setModalUtbetaling({...modalUtbetaling, beskrivelse: verdi}))}
+                            {getKeyboardDatePickerGrid("Forfallsdato", modalUtbetaling.forfallsdato, (verdi: string) => setModalUtbetaling({...modalUtbetaling, forfallsdato: verdi}),
+                                forfallsdatoDatePickerIsOpen, setForfallsdatoDatePickerIsOpen)}
+                            {getKeyboardDatePickerGrid("Utbetalingsdato", modalUtbetaling.utbetalingsdato, (verdi: string) => setModalUtbetaling({...modalUtbetaling, utbetalingsdato: verdi}),
+                                utbetalingsdatoDatePickerIsOpen, setUtbetalingsdatoDatePickerIsOpen)}
+                            {getTextFieldGrid("Stønadstype", modalUtbetaling.stonadstype, (verdi: string) => setModalUtbetaling({...modalUtbetaling, stonadstype: verdi}))}
+                            {getKeyboardDatePickerGrid("fom", modalUtbetaling.fom, (verdi: string) => setModalUtbetaling({...modalUtbetaling, fom: verdi}),
+                                fomDatePickerIsOpen, setFomDatePickerIsOpen)}
+                            {getKeyboardDatePickerGrid("tom", modalUtbetaling.tom, (verdi: string) => setModalUtbetaling({...modalUtbetaling, tom: verdi}),
+                                tomDatePickerIsOpen, setTomDatePickerIsOpen)}
+                            <Grid item key={'Status'} xs={3} zeroMinWidth>
                                 <FormControl className={classes.formControl}>
                                     <InputLabel htmlFor="age-simple" shrink={true}>Status</InputLabel>
                                     <Select
@@ -365,18 +416,7 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
                                     </Select>
                                 </FormControl>
                             </Grid>
-                            {getTextFieldGrid("Beløp", modalUtbetaling.belop, (verdi: number) => setModalUtbetaling({...modalUtbetaling, belop: +verdi}), "number")}
-                            {getTextFieldGrid("Beskrivelse", modalUtbetaling.beskrivelse, (verdi: string) => setModalUtbetaling({...modalUtbetaling, beskrivelse: verdi}))}
-                            {getKeyboardDatePickerGrid("Forfallsdato", modalUtbetaling.forfallsdato, (verdi: string) => setModalUtbetaling({...modalUtbetaling, forfallsdato: verdi}),
-                                forfallsdatoDatePickerIsOpen, setForfallsdatoDatePickerIsOpen)}
-                            {getTextFieldGrid("Stønadstype", modalUtbetaling.stonadstype, (verdi: string) => setModalUtbetaling({...modalUtbetaling, stonadstype: verdi}))}
-                            {getKeyboardDatePickerGrid("Utbetalingsdato", modalUtbetaling.utbetalingsdato, (verdi: string) => setModalUtbetaling({...modalUtbetaling, utbetalingsdato: verdi}),
-                                utbetalingsdatoDatePickerIsOpen, setUtbetalingsdatoDatePickerIsOpen)}
-                            {getKeyboardDatePickerGrid("fom", modalUtbetaling.fom, (verdi: string) => setModalUtbetaling({...modalUtbetaling, fom: verdi}),
-                                fomDatePickerIsOpen, setFomDatePickerIsOpen)}
-                            {getKeyboardDatePickerGrid("tom", modalUtbetaling.tom, (verdi: string) => setModalUtbetaling({...modalUtbetaling, tom: verdi}),
-                                tomDatePickerIsOpen, setTomDatePickerIsOpen)}
-                            <Grid item key={'Annen mottaker'} xs={6} zeroMinWidth>
+                            <Grid item key={'Annen mottaker'} xs={3} zeroMinWidth>
                                 <Typography variant={"subtitle1"} className={classes.otherField}>
                                     {"Annen mottaker:  "}
                                     <ButtonGroup
@@ -455,7 +495,8 @@ const mapStateToProps = (state: AppState) => ({
     visNyUtbetalingModal: state.v2.visNyUtbetalingModal,
     v2: state.v2,
     aktivSak: state.v2.aktivSak,
-    aktivUtbetaling: state.v2.aktivUtbetaling
+    aktivUtbetaling: state.v2.aktivUtbetaling,
+    modalSaksreferanse: state.v2.modalSaksreferanse
 });
 
 const mapDispatchToProps = (dispatch: any) => {
