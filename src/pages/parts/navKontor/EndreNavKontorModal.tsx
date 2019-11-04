@@ -63,7 +63,7 @@ const EndreNavKontorModal: React.FC<Props> = (props: Props) => {
         if (id == null) {
             return '';
         }
-        const navKontoret = navKontorListe.filter(navkontor => navkontor.id.toString() == id);
+        const navKontoret = navKontorListe.filter(navkontor => navkontor.id.toString() === id);
         if (navKontoret.length === 0) {
             return '';
         } else {
