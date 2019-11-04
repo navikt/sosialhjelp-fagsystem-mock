@@ -82,8 +82,12 @@ export const formatDateString = (dateString: string|null) => {
     return date ? getShortDateISOString(date) : null;
 };
 
+const isValidDate = (str: string|null) => {
+    return str ? !isNaN(Date.parse(str)) : false;
+};
+
 export const getDateOrNullFromDateString = (date: string|null) => {
-    if (date === null || date === 'Invalid Date') {
+    if (date === null || !isValidDate(date)) {
         return null;
     } else {
         let dateNumber = Date.parse(date);
