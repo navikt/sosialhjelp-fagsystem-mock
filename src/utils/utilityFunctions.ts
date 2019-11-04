@@ -83,7 +83,8 @@ export const formatDateString = (dateString: string|null) => {
 };
 
 export const getDateOrNullFromDateString = (date: string|null) => {
-    if (date === null || date === 'Invalid Date') {
+    // eslint-disable-next-line eqeqeq
+    if (date === null || date == 'Invalid Date') {
         return null;
     } else {
         let dateNumber = Date.parse(date);
