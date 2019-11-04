@@ -114,6 +114,7 @@ const V3: React.FC<Props> = (props: Props) => {
                 </Grid>
             </div>
 
+            {/*{window.location.href.includes('https://www.digisos-test.com/')}*/}
             <SystemSettingsModal soknad={getFsSoknadByFiksDigisosId(props.v3.soknader,props.v2.aktivSoknad)} />
 
             <StatusSnackBarView />

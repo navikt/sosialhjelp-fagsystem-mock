@@ -45,11 +45,13 @@ const AppBarView: React.FC<Props> = (props: Props) => {
                     <Typography variant="h6" className={classes.title}>
                         Woldena™
                     </Typography>
+                    {!window.location.href.includes('https://www.digisos-test.com/') &&
                     <IconButton className={classes.menuButton} color="inherit" aria-label="menu"
                                 onClick={() => dispatch(visSystemSettingsModal())}
                     >
                         <Build/>
                     </IconButton>
+                    }
                     <IconButton
                         color="inherit"
                         onClick={() => {

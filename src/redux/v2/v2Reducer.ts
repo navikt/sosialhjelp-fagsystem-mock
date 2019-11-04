@@ -71,7 +71,7 @@ export const initialV2Model: V2Model = {
         q0: backendUrlsQ0Template,
         q1: backendUrlsQTemplate
     },
-    backendUrlTypeToUse: 'lokalt',
+    backendUrlTypeToUse: 'digisostest',
     oppdaterDigisosSakUrl: '/api/v1/digisosapi/oppdaterDigisosSak',
     nyNavEnhetUrl: '/api/v1/mock/nyNavEnhet',
     filreferanselager: initialFilreferanselager,
@@ -89,7 +89,7 @@ export const initialV2Model: V2Model = {
     visNyRammevedtakModal: false,
     modalSaksreferanse: null,
     visEndreNavKontorModal: false,
-    visSystemSettingsModal: true,
+    visSystemSettingsModal: !window.location.href.includes('https://www.digisos-test.com/'),
     visSnackbar: false,
     snackbarVariant: 'success',
 
