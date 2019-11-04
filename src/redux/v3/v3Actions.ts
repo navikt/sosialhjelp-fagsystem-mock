@@ -53,6 +53,16 @@ import {getNow} from "../../utils/utilityFunctions";
 import {oHendelser} from "./v3Optics";
 
 
+const removeNullFieldsFromHendelser = (fiksDigisosSokerJson: FiksDigisosSokerJson) : FiksDigisosSokerJson => {
+    let hednelserUtenNull = JSON.parse(JSON.stringify(fiksDigisosSokerJson.sak.soker.hendelser, (key, value) => {
+        if (value !== null) return value
+    }));
+    return {...fiksDigisosSokerJson,
+        sak: {...fiksDigisosSokerJson.sak,
+            soker: {...fiksDigisosSokerJson.sak.soker,
+                hendelser: hednelserUtenNull}}};
+};
+
 export const aiuuur = (
     fiksDigisosId: string,
     fiksDigisosSokerJson: FiksDigisosSokerJson,
@@ -60,18 +70,13 @@ export const aiuuur = (
     actionToDispatchIfSuccess: AnyAction
 ): (dispatch: Dispatch<AnyAction>) => void => {
 
-    // @ts-ignore
     const backendUrl = v2.backendUrls[v2.backendUrlTypeToUse];
     const oppdaterDigisosSakUrl = v2.oppdaterDigisosSakUrl;
 
     return (dispatch: Dispatch) => {
         dispatch(turnOnLoader());
-        // const url = getDigisosApiControllerPath();
         const queryParam = `?fiksDigisosId=${fiksDigisosId}`;
-        let hednelserUtenNull = JSON.parse(JSON.stringify(fiksDigisosSokerJson.sak.soker.hendelser, (key, value) => {
-            if (value !== null) return value
-        }));
-        let fiksDigisosSokerJsonUtenNull = {...fiksDigisosSokerJson, sak: {...fiksDigisosSokerJson.sak, soker: {...fiksDigisosSokerJson.sak.soker, hendelser: hednelserUtenNull}}};
+        const fiksDigisosSokerJsonUtenNull = removeNullFieldsFromHendelser(fiksDigisosSokerJson);
         fetchPost(`${backendUrl}${oppdaterDigisosSakUrl}${queryParam}`, JSON.stringify(fiksDigisosSokerJsonUtenNull)).then((response: any) => {
             if (v2.fiksDigisosSokerJson.sak.soker.hendelser.length < fiksDigisosSokerJson.sak.soker.hendelser.length) {
                 dispatch(visSuccessSnackbar());
@@ -91,14 +96,20 @@ export const zeruuus = (
     v2: V2Model
 ): (dispatch: Dispatch<AnyAction>) => void => {
 
-    // @ts-ignore
     const backendUrl = v2.backendUrls[v2.backendUrlTypeToUse];
     const nyNavEnhetUrl = v2.nyNavEnhetUrl;
 
     return (dispatch: Dispatch) => {
         dispatch(turnOnLoader());
-        fetchPost(`${backendUrl}${nyNavEnhetUrl}`, JSON.stringify(navKontorListe))
-            .catch((reason) => runOnErrorResponse(reason, dispatch))
+        fetch(`${backendUrl}${nyNavEnhetUrl}`, {
+            method: 'POST',
+            body: JSON.stringify(navKontorListe),
+            headers: new Headers({
+                "Content-Type": "application/json",
+                "Authorization": "Bearer 1234",
+                "Accept": "*/*"
+            })
+        }).catch((reason) => runOnErrorResponse(reason, dispatch))
             .finally(() => dispatch(turnOffLoader()));
     }
 };
@@ -215,10 +226,7 @@ export const tarsoniiis = (
                 const queryParam = `?fiksDigisosId=${fiksDigisosId}`;
                 const fiksDigisosSokerJson = soknadUpdated.fiksDigisosSokerJson;
 
-                let hednelserUtenNull = JSON.parse(JSON.stringify(fiksDigisosSokerJson.sak.soker.hendelser, (key, value) => {
-                    if (value !== null) return value
-                }));
-                let fiksDigisosSokerJsonUtenNull = {...fiksDigisosSokerJson, sak: {...fiksDigisosSokerJson.sak, soker: {...fiksDigisosSokerJson.sak.soker, hendelser: hednelserUtenNull}}};
+                const fiksDigisosSokerJsonUtenNull = removeNullFieldsFromHendelser(fiksDigisosSokerJson);
 
                 fetchPost(`${backendUrl}${oppdaterDigisosSakUrl}${queryParam}`, JSON.stringify(fiksDigisosSokerJsonUtenNull)).then((response: any) => {
                     if (v2.fiksDigisosSokerJson.sak.soker.hendelser.length < fiksDigisosSokerJson.sak.soker.hendelser.length) {
@@ -281,10 +289,7 @@ export const shakuraaas = (
                 const queryParam = `?fiksDigisosId=${fiksDigisosId}`;
                 const fiksDigisosSokerJson = soknadUpdated.fiksDigisosSokerJson;
 
-                let hednelserUtenNull = JSON.parse(JSON.stringify(fiksDigisosSokerJson.sak.soker.hendelser, (key, value) => {
-                    if (value !== null) return value
-                }));
-                let fiksDigisosSokerJsonUtenNull = {...fiksDigisosSokerJson, sak: {...fiksDigisosSokerJson.sak, soker: {...fiksDigisosSokerJson.sak.soker, hendelser: hednelserUtenNull}}};
+                const fiksDigisosSokerJsonUtenNull = removeNullFieldsFromHendelser(fiksDigisosSokerJson);
 
                 fetchPost(`${backendUrl}${oppdaterDigisosSakUrl}${queryParam}`, JSON.stringify(fiksDigisosSokerJsonUtenNull)).then((response: any) => {
                     if (v2.fiksDigisosSokerJson.sak.soker.hendelser.length < fiksDigisosSokerJson.sak.soker.hendelser.length) {
@@ -316,10 +321,7 @@ export const opprettEllerOppdaterDigisosSak = (
         dispatch(turnOnLoader());
         const queryParam = `?fiksDigisosId=${soknad.fiksDigisosId}`;
 
-        let hednelserUtenNull = JSON.parse(JSON.stringify(soknad.fiksDigisosSokerJson.sak.soker.hendelser, (key, value) => {
-            if (value !== null) return value
-        }));
-        let fiksDigisosSokerJsonUtenNull = {...soknad.fiksDigisosSokerJson, sak: {...soknad.fiksDigisosSokerJson.sak, soker: {...soknad.fiksDigisosSokerJson.sak.soker, hendelser: hednelserUtenNull}}};
+        const fiksDigisosSokerJsonUtenNull = removeNullFieldsFromHendelser(soknad.fiksDigisosSokerJson);
 
         fetchPost(`${backendUrl}${oppdaterDigisosSakUrl}${queryParam}`, JSON.stringify(fiksDigisosSokerJsonUtenNull)).then((response: any) => {
             let fiksId = response.fiksDigisosId;
@@ -332,21 +334,20 @@ export const opprettEllerOppdaterDigisosSak = (
 
 const runOnErrorResponse = (reason: any, dispatch: Dispatch) => {
     dispatch(visErrorSnackbar());
-    return (reason: any) => {
-        switch (reason.message) {
-            case "Not Found": {
-                console.warn("Got 404. Specify a valid backend url...");
-                break;
-            }
-            case "Failed to fetch": {
-                console.warn("Got 404. Specify a valid backend url...");
-                break;
-            }
-            default: {
-                console.warn("Unhandled reason with message: " + reason.message);
-            }
+    console.warn("RunOnErrorResponse");
+    switch (reason.message) {
+        case "Not Found": {
+            console.warn("Got 404. Specify a valid backend url...");
+            break;
         }
-    };
+        case "Failed to fetch": {
+            console.warn("Got 404. Specify a valid backend url...");
+            break;
+        }
+        default: {
+            console.warn("Unhandled reason with message: " + reason.message);
+        }
+    }
 };
 
 
