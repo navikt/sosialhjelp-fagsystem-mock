@@ -78,7 +78,7 @@ const V3: React.FC<Props> = (props: Props) => {
         if (window.location.href.includes('https://www.digisos-test.com/')) {
             props.dispatch(opprettEllerOppdaterDigisosSak(getFsSoknadByFiksDigisosId(props.v3.soknader,props.v2.aktivSoknad)!, props.v2, props.v2.backendUrlTypeToUse));
         }
-    });
+    }, []);
 
     const loaderOn = props.v2.loaderOn;
     const muiTheme = createMuiTheme({
