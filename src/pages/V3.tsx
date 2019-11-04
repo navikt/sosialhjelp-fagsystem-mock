@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {V2Model} from "../redux/v2/v2Types";
 import Hendelse from "../types/hendelseTypes";
 import {AppState, DispatchProps} from "../redux/reduxTypes";
@@ -21,6 +21,7 @@ import deepOrange from "@material-ui/core/colors/deepOrange";
 import indigo from "@material-ui/core/colors/indigo";
 import Fab from "@material-ui/core/Fab";
 import {SettingsEthernet} from "@material-ui/icons";
+import {opprettEllerOppdaterDigisosSak} from "../redux/v3/v3Actions";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -73,6 +74,12 @@ type Props = DispatchProps & V3Props;
 
 const V3: React.FC<Props> = (props: Props) => {
 
+    useEffect(() => {
+        if (window.location.href.includes('https://www.digisos-test.com/')) {
+            props.dispatch(opprettEllerOppdaterDigisosSak(getFsSoknadByFiksDigisosId(props.v3.soknader,props.v2.aktivSoknad)!, props.v2, props.v2.backendUrlTypeToUse));
+        }
+    });
+
     const loaderOn = props.v2.loaderOn;
     const muiTheme = createMuiTheme({
         palette: {
@@ -114,7 +121,6 @@ const V3: React.FC<Props> = (props: Props) => {
                 </Grid>
             </div>
 
-            {/*{window.location.href.includes('https://www.digisos-test.com/')}*/}
             <SystemSettingsModal soknad={getFsSoknadByFiksDigisosId(props.v3.soknader,props.v2.aktivSoknad)} />
 
             <StatusSnackBarView />
