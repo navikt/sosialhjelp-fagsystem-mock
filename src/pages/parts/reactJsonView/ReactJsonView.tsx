@@ -17,19 +17,11 @@ import ReactJson from "react-json-view";
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         root: {
-            // backgroundColor: theme.palette.background.paper,
             position: 'relative',
             bottom: theme.spacing(2),
             right: theme.spacing(2),
-            minWidth: '40%'
         },
         fab: {
-            marginRight: theme.spacing(1),
-            // position: 'absolute',
-            // bottom: theme.spacing(5),
-            // top: theme.spacing(2),
-            // marginBottom: theme.spacing(4),
-            // right: theme.spacing(2),
         },
         fabGreen: {
             color: theme.palette.common.white,
@@ -166,7 +158,7 @@ const ReactJsonView: React.FC<Props> = (props: Props) => {
                 {fab.icon}
             </Fab>
             <div>
-                {/*<Button onClick={toggleDrawer('left', true)}>Open Left</Button>*/}
+                {/*<Button onClick={toggleDrawer('left', true)}>Open raw</Button>*/}
                 {/*<Button onClick={toggleDrawer('right', true)}>Open Right</Button>*/}
                 {/*<Button onClick={toggleDrawer('top', true)}>Open Top</Button>*/}
                 {/*<Button onClick={toggleDrawer('bottom', true)}>Open Bottom</Button>*/}

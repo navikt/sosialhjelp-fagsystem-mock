@@ -15,7 +15,6 @@ import {
     getSoknadByFiksDigisosId,
     updateSoknadInSoknader
 } from "../../utils/utilityFunctions";
-import {soknadMockData} from "../../pages/parts/soknadsOversiktPanel/soknadsoversikt-mockdata";
 import {Soknad} from "../../types/additionalTypes";
 import {array} from "fp-ts/lib/Array";
 import {fromTraversable, Lens, Prism, Traversal} from "monocle-ts/es6";
@@ -78,7 +77,7 @@ export const initialV2Model: V2Model = {
     filreferanselager: initialFilreferanselager,
 
     // V3
-    soknader: soknadMockData.map(s => s) as Soknad[],
+    soknader: [],
 
     // Visnings
     thememode: 'light',

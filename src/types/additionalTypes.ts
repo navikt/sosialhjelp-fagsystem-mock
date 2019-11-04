@@ -11,6 +11,6 @@ export interface Soknad {
 }
 
 export interface NavKontor {
-    id: number,
+    id: string,
     name: string
 }

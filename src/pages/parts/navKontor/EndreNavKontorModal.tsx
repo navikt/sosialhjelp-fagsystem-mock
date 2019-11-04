@@ -46,15 +46,15 @@ const EndreNavKontorModal: React.FC<Props> = (props: Props) => {
     const {dispatch, soknad, v2} = props;
 
     const navKontor0: NavKontor = {
-        id: 1208,
+        id: '1208',
         name: "NAV Årstad"
     };
     const navKontor1: NavKontor = {
-        id: 1209,
+        id: '1209',
         name: "NAV Bergenhus"
     };
     const navKontor2: NavKontor = {
-        id: 1210,
+        id: '1210',
         name: "NAV Ytrebygda"
     };
     const navKontorListe = [navKontor0, navKontor1, navKontor2];
@@ -63,7 +63,7 @@ const EndreNavKontorModal: React.FC<Props> = (props: Props) => {
         if (id == null) {
             return '';
         }
-        const navKontoret = navKontorListe.filter(navkontor => navkontor.id.toString() === id);
+        const navKontoret = navKontorListe.filter(navkontor => navkontor.id === id);
         if (navKontoret.length === 0) {
             return '';
         } else {

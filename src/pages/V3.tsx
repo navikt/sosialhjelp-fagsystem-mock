@@ -19,6 +19,8 @@ import ToppPanel from "./parts/panel/ToppPanel";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import deepOrange from "@material-ui/core/colors/deepOrange";
 import indigo from "@material-ui/core/colors/indigo";
+import Fab from "@material-ui/core/Fab";
+import {SettingsEthernet} from "@material-ui/icons";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -40,6 +42,16 @@ const useStyles = makeStyles((theme: Theme) =>
             position: 'fixed',
             bottom: '1rem',
             right: '1rem'
+        },
+        colRawJson: {
+            position: 'fixed',
+            bottom: '6rem',
+            right: '1rem'
+        },
+        rawJson: {
+            position: 'relative',
+            bottom: theme.spacing(2),
+            right: theme.spacing(2),
         },
         progressBar: {
             position: 'fixed',
@@ -112,6 +124,20 @@ const V3: React.FC<Props> = (props: Props) => {
 
             <div className={classes.colJson}>
                 <ReactJsonView json={getFsSoknadByFiksDigisosId(props.v3.soknader,props.v2.aktivSoknad)}/>
+            </div>
+
+            <div className={classes.colRawJson}>
+                <div className={classes.rawJson}>
+                    <Fab aria-label="add" color="primary" onClick={() => {
+                        const jsonString = JSON.stringify(getFsSoknadByFiksDigisosId(props.v3.soknader,props.v2.aktivSoknad)!.fiksDigisosSokerJson);
+                        const x = window.open("data:text/json, _blank");
+                        x!.document.open();
+                        x!.document.write('<html><body><pre>' + jsonString + '</pre></body></html>');
+                        x!.document.close();
+                    }}>
+                        <SettingsEthernet/>
+                    </Fab>
+                </div>
             </div>
 
         </MuiThemeProvider>

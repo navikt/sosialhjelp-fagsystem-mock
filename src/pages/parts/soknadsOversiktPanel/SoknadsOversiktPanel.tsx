@@ -5,11 +5,13 @@ import makeStyles from "@material-ui/core/styles/makeStyles";
 import ListItemText from "@material-ui/core/ListItemText";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
-import {Button, Input, Typography} from "@material-ui/core";
+import {Button, Typography} from "@material-ui/core";
 import Paper from "@material-ui/core/Paper";
 import {FsSoknad} from "../../../redux/v3/v3FsTypes";
 import {V2Model} from "../../../redux/v2/v2Types";
 import {nyFsSoknad, opprettEllerOppdaterDigisosSak} from "../../../redux/v3/v3Actions";
+import TextField from "@material-ui/core/TextField";
+import {generateFilreferanseId} from "../../../utils/utilityFunctions";
 
 const useStyles = makeStyles(theme => ({
     paper: {
@@ -59,16 +61,23 @@ const SoknadsOversiktPanel: React.FC<Props> = (props: Props) => {
             <List className={classes.soknadliste} component="nav" aria-label="mailbox folders">
                 {getSoknadListItems(soknader)}
             </List>
-            <Input
+            <TextField
                 id='ny_soknad_input'
-                onChange={(evt) => {
-                    setFiksDigisosId(evt.target.value);
-                }}
+                label={'Ny fiksDigisosId'}
+                value={fiksDigisosId}
+                onChange={(evt) => setFiksDigisosId(evt.target.value)}
+                margin="dense"
+                autoComplete="off"
             />
             <Button
                 id='opprett_ny_soknad_knapp'
                 onClick={() => {
-                    props.dispatch(nyFsSoknad(fiksDigisosId, '26104500284', 'Natalie Emberland'))
+                    if (fiksDigisosId.length !== 0) {
+                        props.dispatch(nyFsSoknad(fiksDigisosId, '26104500284', 'Natalie Emberland'));
+                    } else {
+                        props.dispatch(nyFsSoknad(generateFilreferanseId(), '26104500284', 'Natalie Emberland'));
+                    }
+                    setFiksDigisosId('');
                 }}
             >
                 Opprett
