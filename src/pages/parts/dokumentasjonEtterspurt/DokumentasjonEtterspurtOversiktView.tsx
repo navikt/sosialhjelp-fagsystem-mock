@@ -62,7 +62,9 @@ const useStyles = makeStyles((theme: Theme) =>
             alignItems: 'center'
         },
         table: {
-            minWidth: 650,
+            '@media (min-width: 860px)': {
+                minWidth: '650px',
+            },
         },
         paperRoute: {
             display: 'flex',

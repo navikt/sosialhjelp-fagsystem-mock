@@ -22,7 +22,12 @@ const useStyles = makeStyles(theme => ({
     },
     formControl: {
         margin: theme.spacing(1),
-        minWidth: 120,
+        '@media (min-width: 860px)': {
+            minWidth: 120,
+        },
+        '@media (max-width: 859px)': {
+            minWidth: 40,
+        },
     },
     selectEmpty: {
         marginTop: theme.spacing(2),

@@ -78,6 +78,7 @@ const V3: React.FC<Props> = (props: Props) => {
         if (window.location.href.includes('https://www.digisos-test.com/')) {
             props.dispatch(opprettEllerOppdaterDigisosSak(getFsSoknadByFiksDigisosId(props.v3.soknader,props.v2.aktivSoknad)!, props.v2, props.v2.backendUrlTypeToUse));
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const loaderOn = props.v2.loaderOn;
@@ -104,18 +105,18 @@ const V3: React.FC<Props> = (props: Props) => {
             <AppBarView />
             <div className={classes.root}>
                 <Grid container={true} spacing={6} className={classes.maingrid}>
-                    <Grid item sm={2} className={classes.left}>
+                    <Grid item sm={2} className={classes.left} zeroMinWidth>
                         <SoknadsOversiktPanel />
                     </Grid>
-                    <Grid item sm={1} className={classes.left}>
+                    <Grid item sm={1} className={classes.left} zeroMinWidth>
                         <br />
                     </Grid>
-                    <Grid item sm={9} className={classes.right}>
+                    <Grid item sm={9} className={classes.right} zeroMinWidth>
                         <ToppPanel />
                     </Grid>
                 </Grid>
                 <Grid container={true} spacing={6} className={classes.maingrid}>
-                    <Grid item sm={12} className={classes.right}>
+                    <Grid item sm={12} className={classes.right} zeroMinWidth>
                         <BehandleSoknadPanel />
                     </Grid>
                 </Grid>

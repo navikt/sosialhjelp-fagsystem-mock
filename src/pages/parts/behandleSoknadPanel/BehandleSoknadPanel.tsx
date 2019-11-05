@@ -41,7 +41,7 @@ const useStyles = makeStyles(theme => ({
         },
         height: '100%'
     },
-    dokumentasjonEtterspurtBoks: {
+    root4: {
         flex: 1,
         '@media (min-width: 1920px)': {
             marginLeft: theme.spacing(2),
@@ -88,7 +88,7 @@ const BehandleSoknadPanel: React.FC<Props> = (props: Props) => {
                         <SaksOversiktView soknad={soknad}/>
                     </div>
 
-                    <div className={classes.dokumentasjonEtterspurtBoks}>
+                    <div className={classes.root4}>
                         <DokumentasjonEtterspurtOversiktView soknad={soknad}/>
                     </div>
                 </div>
@@ -108,7 +108,7 @@ const BehandleSoknadPanel: React.FC<Props> = (props: Props) => {
                         <VilkarOversiktView soknad={soknad}/>
                     </div>
 
-                    <div className={classes.dokumentasjonEtterspurtBoks}>
+                    <div className={classes.root4}>
                         <DokumentasjonkravOversiktView soknad={soknad}/>
                     </div>
                 </div>
@@ -121,7 +121,7 @@ const BehandleSoknadPanel: React.FC<Props> = (props: Props) => {
                         </Paper>
                     </div>
 
-                    <div className={classes.dokumentasjonEtterspurtBoks}>
+                    <div className={classes.root4}>
                         <Paper className={classes.paper3}>
                             <Typography variant={"h5"}>Rammevedtak uten saksreferanse</Typography>
                             <RammevedtakOversiktView rammevedtakListe={soknad.rammevedtakUtenSaksreferanse} saksreferanse={null}/>

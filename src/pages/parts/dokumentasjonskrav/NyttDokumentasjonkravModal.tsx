@@ -77,7 +77,12 @@ const useStyles = makeStyles((theme: Theme) =>
         formControl: {
             marginLeft: theme.spacing(2),
             marginRight: theme.spacing(2),
-            minWidth: 250,
+            '@media (min-width: 860px)': {
+                minWidth: 200,
+            },
+            '@media (max-width: 859px)': {
+                minWidth: '50%',
+            },
         },
         formControl2: {
             marginLeft: theme.spacing(2),

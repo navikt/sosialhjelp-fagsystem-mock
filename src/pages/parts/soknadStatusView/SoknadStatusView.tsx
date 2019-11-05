@@ -23,29 +23,41 @@ const useStyles = makeStyles((theme) => {
     return createStyles({
         root: {
             display: 'flex',
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            // paddingTop: theme.spacing(2)
+            '@media (min-width: 520px)': {
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+            },
+            '@media (max-width: 519px)': {
+                flexDirection: 'column',
+                alignItems: 'center',
+                width:'100%'
+            },
         },
         paper: {
-            margin: theme.spacing(2, 2),
+            '@media (min-width: 1130px)': {
+                margin: theme.spacing(2, 2),
+            },
+            '@media (min-width: 520px)': {
+                '@media (max-width: 1129px)': {
+                    margin: theme.spacing(2, 2, 2,0),
+                },
+            },
+            '@media (max-width: 519px)': {
+                margin: theme.spacing(2, 2),
+            },
             padding: theme.spacing(3, 2),
             display: 'flex',
             flexDirection: 'row',
             justifyContent: 'center',
-            // minWidth:
         },
         paper2: {
             margin: theme.spacing(2, 0),
             padding: theme.spacing(3, 2),
             display: 'flex',
             flexWrap: 'wrap',
-            // flexDirection: 'row',
             justifyContent: 'center',
-            // marginLeft: theme.spacing(2)
         },
         box: {
-            // marginTop: theme.spacing(1),
             padding: theme.spacing(0, 1, 0, 1),
         },
         formControl: {
@@ -66,9 +78,6 @@ const useStyles = makeStyles((theme) => {
         horizontalWrapper: {
             display: 'flex',
             flexDirection: 'column'
-        },
-        horizontalBox: {
-            // display: 'inline-block'
         }
     });
 });
@@ -189,7 +198,7 @@ const SoknadStatusView: React.FC<Props> = (props: Props) => {
             </Paper>
             <Paper className={classes.paper2}>
                 <div className={classes.horizontalWrapper}>
-                    <Box className={classes.horizontalBox}>
+                    <Box>
                         <Typography variant={'h5'}>Foreløpig svar</Typography>
                         {addNyttForelopigSvarButton()}
                         <Typography>{"Antall sendt: " + getAntallForelopigSvarHendelser()}</Typography>

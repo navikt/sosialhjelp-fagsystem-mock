@@ -30,7 +30,9 @@ const useStyles = makeStyles((theme) => {
             marginBottom: theme.spacing(2),
         },
         table: {
-            minWidth: 650,
+            '@media (min-width: 860px)': {
+                minWidth: '650px',
+            },
         },
         fab: {
             marginLeft: theme.spacing(1),
