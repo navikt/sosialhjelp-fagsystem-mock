@@ -49,19 +49,8 @@ import {
 import {BackendUrls, V2Model} from "../v2/v2Types";
 import {FsSaksStatus, FsSoknad} from "./v3FsTypes";
 import {NavKontor} from "../../types/additionalTypes";
-import {getNow} from "../../utils/utilityFunctions";
+import {getNow, removeNullFieldsFromHendelser} from "../../utils/utilityFunctions";
 import {oHendelser} from "./v3Optics";
-
-
-const removeNullFieldsFromHendelser = (fiksDigisosSokerJson: FiksDigisosSokerJson) : FiksDigisosSokerJson => {
-    let hednelserUtenNull = JSON.parse(JSON.stringify(fiksDigisosSokerJson.sak.soker.hendelser, (key, value) => {
-        if (value !== null) return value
-    }));
-    return {...fiksDigisosSokerJson,
-        sak: {...fiksDigisosSokerJson.sak,
-            soker: {...fiksDigisosSokerJson.sak.soker,
-                hendelser: hednelserUtenNull}}};
-};
 
 export const aiuuur = (
     fiksDigisosId: string,
@@ -156,7 +145,9 @@ export const chaaar = (
                 const queryParam = `?fiksDigisosId=${fiksDigisosId}`;
                 const fiksDigisosSokerJson = soknadUpdated.fiksDigisosSokerJson;
 
-                fetchPost(`${backendUrl}${oppdaterDigisosSakUrl}${queryParam}`, JSON.stringify(fiksDigisosSokerJson)).then((response: any) => {
+                const fiksDigisosSokerJsonUtenNull = removeNullFieldsFromHendelser(fiksDigisosSokerJson);
+
+                fetchPost(`${backendUrl}${oppdaterDigisosSakUrl}${queryParam}`, JSON.stringify(fiksDigisosSokerJsonUtenNull)).then((response: any) => {
                     if (v2.fiksDigisosSokerJson.sak.soker.hendelser.length < fiksDigisosSokerJson.sak.soker.hendelser.length) {
                         dispatch(visSuccessSnackbar());
                     }

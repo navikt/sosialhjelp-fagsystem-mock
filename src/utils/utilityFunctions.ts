@@ -51,6 +51,15 @@ export function mergeListsToLengthN<T> (
     return outputList
 }
 
+export const removeNullFieldsFromHendelser = (fiksDigisosSokerJson: FiksDigisosSokerJson) : FiksDigisosSokerJson => {
+    let hednelserUtenNull = JSON.parse(JSON.stringify(fiksDigisosSokerJson.sak.soker.hendelser, (key, value) => {
+        if (value !== null) return value
+    }));
+    return {...fiksDigisosSokerJson,
+        sak: {...fiksDigisosSokerJson.sak,
+            soker: {...fiksDigisosSokerJson.sak.soker,
+                hendelser: hednelserUtenNull}}};
+};
 
 export function getSchemaByHendelseType(type: any) {
     switch (type){

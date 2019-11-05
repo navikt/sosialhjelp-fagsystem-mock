@@ -112,7 +112,7 @@ const VilkarOversiktView: React.FC<Props> = (props: Props) => {
                     </Typography>
                 </Box>
 
-                {(soknad.dokumentasjonkrav.length > 0) &&
+                {(soknad.vilkar.length > 0) &&
                 <>
                     <AppBar position="static" color="default">
                         <Tabs

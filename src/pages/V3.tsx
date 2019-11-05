@@ -14,7 +14,7 @@ import SystemSettingsModal from "./parts/systemSettings/SystemSettingsModal";
 import StatusSnackBarView from "./parts/statusSnackBar/StatusSnackBarView";
 import {V3State} from "../redux/v3/v3Types";
 import ReactJsonView from "./parts/reactJsonView/ReactJsonView";
-import {getFsSoknadByFiksDigisosId} from "../utils/utilityFunctions";
+import {getFsSoknadByFiksDigisosId, removeNullFieldsFromHendelser} from "../utils/utilityFunctions";
 import ToppPanel from "./parts/panel/ToppPanel";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import deepOrange from "@material-ui/core/colors/deepOrange";
@@ -136,7 +136,9 @@ const V3: React.FC<Props> = (props: Props) => {
             <div className={classes.colRawJson}>
                 <div className={classes.rawJson}>
                     <Fab aria-label="add" color="primary" onClick={() => {
-                        const jsonString = JSON.stringify(getFsSoknadByFiksDigisosId(props.v3.soknader,props.v2.aktivSoknad)!.fiksDigisosSokerJson);
+                        const fiksDigisosSokerJson = getFsSoknadByFiksDigisosId(props.v3.soknader,props.v2.aktivSoknad)!.fiksDigisosSokerJson;
+                        const fiksDigisosSokerJsonUtenNull = removeNullFieldsFromHendelser(fiksDigisosSokerJson);
+                        const jsonString = JSON.stringify(fiksDigisosSokerJsonUtenNull);
                         const x = window.open("data:text/json, _blank");
                         x!.document.open();
                         x!.document.write('<html><body><pre>' + jsonString + '</pre></body></html>');
