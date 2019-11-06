@@ -138,7 +138,7 @@ const V3: React.FC<Props> = (props: Props) => {
                     <Fab aria-label="add" color="primary" onClick={() => {
                         const fiksDigisosSokerJson = getFsSoknadByFiksDigisosId(props.model.soknader,props.model.aktivSoknad)!.fiksDigisosSokerJson;
                         const fiksDigisosSokerJsonUtenNull = removeNullFieldsFromHendelser(fiksDigisosSokerJson);
-                        const jsonString = JSON.stringify(fiksDigisosSokerJsonUtenNull);
+                        const jsonString = JSON.stringify(fiksDigisosSokerJsonUtenNull, null, 2);
                         const x = window.open("data:text/json, _blank");
                         x!.document.open();
                         x!.document.write('<html><body><pre>' + jsonString + '</pre></body></html>');
