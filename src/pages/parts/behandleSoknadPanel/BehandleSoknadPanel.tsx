@@ -5,7 +5,7 @@ import SaksOversiktView from "../saksOversiktView/SaksOversiktView";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import {getFsSoknadByFiksDigisosId} from "../../../utils/utilityFunctions";
 import Paper from "@material-ui/core/Paper";
-import {FsSoknad} from "../../../redux/v3/v3FsTypes";
+import {FsSoknad} from "../../../redux/types";
 import Typography from "@material-ui/core/Typography";
 import VilkarOversiktView from "../vilkar/VilkarOversiktView";
 import DokumentasjonkravOversiktView from "../dokumentasjonskrav/DokumentasjonkravOversiktView";
@@ -100,7 +100,7 @@ const BehandleSoknadPanel: React.FC<Props> = (props: Props) => {
                     Ting som ikke er knyttet til en sak:
                 </Typography>
                 <Typography variant={"subtitle1"}>
-                    Obs: Hvis du setter en saksreferanse på rammevedtak blir rammevedtaket flyttet inn under den valgte saken i saksoversikten over.
+                    Obs: Hvis du setter en saksreferanse på et rammevedtak eller en utbetaling blir de flyttet inn under den valgte saken i saksoversikten over.
                 </Typography>
 
                 <div className={classes.root2}>
@@ -147,8 +147,8 @@ const BehandleSoknadPanel: React.FC<Props> = (props: Props) => {
 };
 
 const mapStateToProps = (state: AppState) => {
-    const {aktivSoknad} = state.v2;
-    const {soknader} = state.v3;
+    const {aktivSoknad} = state.model;
+    const {soknader} = state.model;
     return {
         soknad: getFsSoknadByFiksDigisosId(soknader, aktivSoknad)
     };

@@ -180,8 +180,8 @@ const ReactJsonView: React.FC<Props> = (props: Props) => {
 };
 
 const mapStateToProps = (state: AppState) => ({
-    v2: state.v2,
-    hendelserUpdated: JSON.parse(JSON.stringify(state.v2.fiksDigisosSokerJson.sak.soker.hendelser))
+    model: state.model,
+    hendelserUpdated: JSON.parse(JSON.stringify(state.model.fiksDigisosSokerJson.sak.soker.hendelser))
 });
 
 const mapDispatchToProps = (dispatch: any) => {

@@ -13,7 +13,7 @@ import Paper from '@material-ui/core/Paper';
 import Fab from "@material-ui/core/Fab";
 import AddIcon from '@material-ui/icons/Add';
 import Typography from "@material-ui/core/Typography";
-import {setAktivtRammevedtak, visNyRammevedtakModal} from "../../../redux/v2/v2Actions";
+import {setAktivtRammevedtak, visNyRammevedtakModal} from "../../../redux/actions";
 
 const useStyles = makeStyles((theme) => {
     return createStyles({

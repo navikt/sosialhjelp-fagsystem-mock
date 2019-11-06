@@ -12,9 +12,9 @@ import AddIcon from '@material-ui/icons/Add';
 import {green} from '@material-ui/core/colors';
 import Box from '@material-ui/core/Box';
 import {Paper} from "@material-ui/core";
-import {visNySakModal} from "../../../redux/v2/v2Actions";
+import {visNySakModal} from "../../../redux/actions";
 import SaksTabView from "./SaksTabView";
-import {FsSaksStatus, FsSoknad} from "../../../redux/v3/v3FsTypes";
+import {FsSaksStatus, FsSoknad} from "../../../redux/types";
 
 
 interface TabPanelProps {

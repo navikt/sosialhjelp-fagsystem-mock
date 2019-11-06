@@ -6,15 +6,15 @@ import Hendelse, {HendelseType, SaksStatus} from "../../../types/hendelseTypes";
 import Box from "@material-ui/core/Box";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import {createStyles} from "@material-ui/core";
-import {V2Model} from "../../../redux/v2/v2Types";
+import {Model} from "../../../redux/types";
 import Button from "@material-ui/core/Button";
-import {aiuuur, oppdaterFsSaksStatus} from "../../../redux/v3/v3Actions";
+import {aiuuur, oppdaterFsSaksStatus} from "../../../redux/actions";
 import {getNow} from "../../../utils/utilityFunctions";
-import {FsSaksStatus, FsSoknad} from "../../../redux/v3/v3FsTypes";
+import {FsSaksStatus, FsSoknad} from "../../../redux/types";
 import TextField from "@material-ui/core/TextField";
 import EndreSaksstatusModal from "./EndreSaksstatusModal";
 import VedtakFattetModal from "./VedtakFattetModal";
-import {oHendelser} from "../../../redux/v3/v3Optics";
+import {oHendelser} from "../../../redux/optics";
 import RammevedtakOversiktView from "../rammevedtak/RammevedtakOversiktView";
 import UtbetalingOversiktView from "../utbetaling/UtbetalingOversiktView";
 
@@ -79,7 +79,7 @@ interface OwnProps {
 }
 
 interface StoreProps {
-    v2: V2Model
+    model: Model
 }
 
 type Props = DispatchProps & OwnProps & StoreProps;
@@ -87,7 +87,7 @@ type Props = DispatchProps & OwnProps & StoreProps;
 
 const SaksTabView: React.FC<Props> = (props: Props) => {
     const [tittel, setTittel] = useState('');
-    const {sak, dispatch, v2, soknad}  = props;
+    const {sak, dispatch, model, soknad}  = props;
     const classes = useStyles();
 
     return (
@@ -116,11 +116,11 @@ const SaksTabView: React.FC<Props> = (props: Props) => {
 
                     dispatch(
                         aiuuur(
-                            v2.aktivSoknad,
+                            model.aktivSoknad,
                             soknadUpdated.fiksDigisosSokerJson,
-                            v2,
+                            model,
                             oppdaterFsSaksStatus(
-                                v2.aktivSoknad,
+                                model.aktivSoknad,
                                 nyHendelse
                             )
                         )
@@ -151,7 +151,7 @@ const SaksTabView: React.FC<Props> = (props: Props) => {
 };
 
 const mapStateToProps = (state: AppState) => ({
-    v2: state.v2
+    model: state.model
 });
 
 const mapDispatchToProps = (dispatch: any) => {

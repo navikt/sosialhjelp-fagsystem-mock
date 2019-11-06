@@ -7,9 +7,9 @@ import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import {Button, Typography} from "@material-ui/core";
 import Paper from "@material-ui/core/Paper";
-import {FsSoknad} from "../../../redux/v3/v3FsTypes";
-import {V2Model} from "../../../redux/v2/v2Types";
-import {nyFsSoknad, opprettEllerOppdaterDigisosSak} from "../../../redux/v3/v3Actions";
+import {FsSoknad} from "../../../redux/types";
+import {Model} from "../../../redux/types";
+import {nyFsSoknad, opprettEllerOppdaterDigisosSak} from "../../../redux/actions";
 import TextField from "@material-ui/core/TextField";
 import {generateFilreferanseId} from "../../../utils/utilityFunctions";
 
@@ -27,14 +27,14 @@ const useStyles = makeStyles(theme => ({
 interface StoreProps {
     soknader: FsSoknad[],
     aktivSoknad: string,
-    v2: V2Model
+    model: Model
 }
 
 type Props = DispatchProps & StoreProps;
 
 
 const SoknadsOversiktPanel: React.FC<Props> = (props: Props) => {
-    const {soknader, aktivSoknad, v2} = props;
+    const {soknader, aktivSoknad, model} = props;
 
     const classes = useStyles();
 
@@ -45,7 +45,7 @@ const SoknadsOversiktPanel: React.FC<Props> = (props: Props) => {
             return (
                 <ListItem id={"soknad_" + index} key={"SoknadItem: " + soknad.fiksDigisosId} selected={soknad.fiksDigisosId === aktivSoknad} button
                           divider
-                          onClick={() => props.dispatch(opprettEllerOppdaterDigisosSak(soknad, v2, v2.backendUrlTypeToUse))}>
+                          onClick={() => props.dispatch(opprettEllerOppdaterDigisosSak(soknad, model, model.backendUrlTypeToUse))}>
                     <ListItemText primary={soknad.fiksDigisosId}/>
                 </ListItem>
             )
@@ -88,9 +88,9 @@ const SoknadsOversiktPanel: React.FC<Props> = (props: Props) => {
 
 
 const mapStateToProps = (state: AppState) => ({
-    soknader: state.v3.soknader,
-    aktivSoknad: state.v2.aktivSoknad,
-    v2: state.v2
+    soknader: state.model.soknader,
+    aktivSoknad: state.model.aktivSoknad,
+    model: state.model
 });
 
 const mapDispatchToProps = (dispatch: any) => {

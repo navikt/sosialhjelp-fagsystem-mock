@@ -11,10 +11,9 @@ import SnackbarContent from '@material-ui/core/SnackbarContent';
 import WarningIcon from '@material-ui/icons/Warning';
 import {makeStyles, Theme} from '@material-ui/core/styles';
 import {AppState, DispatchProps} from "../../../redux/reduxTypes";
-import {V2Model} from "../../../redux/v2/v2Types";
-import {V3State} from "../../../redux/v3/v3Types";
+import {Model} from "../../../redux/types";
 import {connect} from "react-redux";
-import {skjulSnackbar} from "../../../redux/v2/v2Actions";
+import {skjulSnackbar} from "../../../redux/actions";
 
 const variantIcon = {
     success: CheckCircleIcon,
@@ -52,8 +51,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 interface StoreProps {
     visSnackbar: boolean;
     snackbarVariant: 'success'|'warning'|'error'|'info';
-    v2: V2Model;
-    v3: V3State;
+    model: Model
 }
 
 export interface InterfaceProps {
@@ -125,10 +123,9 @@ const StatusSnackBarView: React.FC<Props> = (props: Props) => {
 };
 
 const mapStateToProps = (state: AppState) => ({
-    visSnackbar: state.v2.visSnackbar,
-    snackbarVariant: state.v2.snackbarVariant,
-    v2: state.v2,
-    v3: state.v3
+    visSnackbar: state.model.visSnackbar,
+    snackbarVariant: state.model.snackbarVariant,
+    model: state.model
 });
 
 const mapDispatchToProps = (dispatch: any) => {

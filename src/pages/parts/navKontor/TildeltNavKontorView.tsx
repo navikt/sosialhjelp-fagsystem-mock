@@ -3,7 +3,7 @@ import {DispatchProps} from "../../../redux/reduxTypes";
 import {connect} from "react-redux";
 import Typography from "@material-ui/core/Typography";
 import EndreNavKontorModal from "./EndreNavKontorModal";
-import {FsSoknad} from "../../../redux/v3/v3FsTypes";
+import {FsSoknad} from "../../../redux/types";
 import {makeStyles} from "@material-ui/core";
 
 

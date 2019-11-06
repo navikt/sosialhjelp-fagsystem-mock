@@ -14,42 +14,9 @@ import Hendelse, {
     VedtakFattet,
     Vilkar
 } from "../types/hendelseTypes";
-import {Filreferanselager} from "../redux/v2/v2Types";
+import {Filreferanselager, FsSaksStatus, FsSoknad} from "../redux/types";
 import {Soknad} from "../types/additionalTypes";
-import {FsSaksStatus, FsSoknad} from "../redux/v3/v3FsTypes";
-import {generateNyFsSaksStatus} from "../redux/v3/v3UtilityFunctions";
 
-const tildeltNavKontorSchema = require('../digisos/hendelse/tildeltNavKontor');
-const soknadsStatusSchema = require('../digisos/hendelse/soknadsStatus');
-const vedtakFattetSchema = require('../digisos/hendelse/vedtakFattet');
-const dokumentasjonEtterspurtSchema = require('../digisos/hendelse/dokumentasjonEtterspurt');
-const forelopigSvarSchema = require('../digisos/hendelse/forelopigSvar');
-const saksStatusSchema = require('../digisos/hendelse/saksStatus');
-const utbetalingSchema = require('../digisos/hendelse/utbetaling');
-const vilkarSchema = require('../digisos/hendelse/vilkar');
-const rammevedtakSchema = require('../digisos/hendelse/rammevedtak');
-
-
-export function mergeListsToLengthN<T> (
-    inputList: T[],
-    maximumList: T[],
-    n: number
-): T[] {
-
-    const m: number = inputList.length;
-    let outputList: T[];
-
-    if (n < m){
-        // Fjern overflødige elementer i lista. Siden det spoles tilbake i tid.
-        outputList = inputList.slice(0, n);
-    } else {
-        // Legg til nye elementer i lista fra komplett liste, men ikke endre de som allerede er der
-        const listOfElementsToAdd: T[] = maximumList.slice(m, n);
-        outputList = inputList.concat(listOfElementsToAdd);
-    }
-
-    return outputList
-}
 
 export const removeNullFieldsFromHendelser = (fiksDigisosSokerJson: FiksDigisosSokerJson) : FiksDigisosSokerJson => {
     let hednelserUtenNull = JSON.parse(JSON.stringify(fiksDigisosSokerJson.sak.soker.hendelser, (key, value) => {
@@ -60,21 +27,6 @@ export const removeNullFieldsFromHendelser = (fiksDigisosSokerJson: FiksDigisosS
             soker: {...fiksDigisosSokerJson.sak.soker,
                 hendelser: hednelserUtenNull}}};
 };
-
-export function getSchemaByHendelseType(type: any) {
-    switch (type){
-        case HendelseType.TildeltNavKontor: return tildeltNavKontorSchema;
-        case HendelseType.SoknadsStatus: return soknadsStatusSchema;
-        case HendelseType.VedtakFattet: return vedtakFattetSchema;
-        case HendelseType.DokumentasjonEtterspurt: return dokumentasjonEtterspurtSchema;
-        case HendelseType.ForelopigSvar: return forelopigSvarSchema;
-        case HendelseType.SaksStatus: return saksStatusSchema;
-        case HendelseType.Utbetaling: return utbetalingSchema;
-        case HendelseType.Vilkar: return vilkarSchema;
-        case HendelseType.Rammevedtak: return rammevedtakSchema;
-        default: return soknadsStatusSchema;
-    }
-}
 
 
 export const getLastHendelseOfType = (fiksDigisosSokerJson: FiksDigisosSokerJson, hendelseType: HendelseType): Hendelse | undefined => {
@@ -268,6 +220,31 @@ export const getFsSoknadByFiksDigisosId = (soknader: FsSoknad[], fiksDigisosId: 
     return soknader.find(s => {
         return s.fiksDigisosId === fiksDigisosId
     })
+};
+
+export const fsSaksStatusToSaksStatus = (fsSaksStatus: FsSaksStatus): SaksStatus => {
+    return {
+        type: HendelseType.SaksStatus,
+        hendelsestidspunkt: fsSaksStatus.hendelsestidspunkt,
+        referanse: fsSaksStatus.referanse,
+        tittel: fsSaksStatus.tittel,
+        status: fsSaksStatus.status
+    } as SaksStatus;
+};
+
+export const generateNyFsSaksStatus = (tittel: string|null): FsSaksStatus => {
+    return {
+        type: HendelseType.SaksStatus,
+        hendelsestidspunkt: getNow(),
+        referanse: generateFilreferanseId(),
+        tittel: tittel,
+        status: null,
+        utbetalinger: [],
+        vedtakFattet: undefined,
+        rammevedtak: [],
+        vilkar: [],
+        dokumentasjonskrav: [],
+    } as FsSaksStatus;
 };
 
 export const getFsSaksStatusByReferanse = (saker: FsSaksStatus[], saksreferanse: string|null): FsSaksStatus => {

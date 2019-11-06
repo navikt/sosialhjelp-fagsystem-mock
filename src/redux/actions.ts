@@ -1,4 +1,10 @@
 import {
+    Action,
+    ActionTypeKeys,
+    BackendUrls,
+    FsSaksStatus,
+    FsSoknad,
+    Model,
     NyFsSaksStatus,
     NyFsSoknad,
     NyttDokumentasjonkrav,
@@ -16,9 +22,8 @@ import {
     OppdaterUtbetaling,
     OppdaterVedtakFattet,
     OppdaterVilkar,
-    SlettFsSoknad,
-    V3ActionTypeKeys
-} from "./v3Types";
+    SlettFsSoknad
+} from "./types";
 import Hendelse, {
     Dokument,
     DokumentasjonEtterspurt,
@@ -35,39 +40,36 @@ import Hendelse, {
     Utfall,
     VedtakFattet,
     Vilkar
-} from "../../types/hendelseTypes";
+} from "../types/hendelseTypes";
 import {AnyAction, Dispatch} from "redux";
-import {fetchPost} from "../../utils/restUtils";
-import {
-    setAktivSoknad,
-    setFiksDigisosSokerJson,
-    turnOffLoader,
-    turnOnLoader,
-    visErrorSnackbar,
-    visSuccessSnackbar
-} from "../v2/v2Actions";
-import {BackendUrls, V2Model} from "../v2/v2Types";
-import {FsSaksStatus, FsSoknad} from "./v3FsTypes";
-import {NavKontor} from "../../types/additionalTypes";
-import {getNow, removeNullFieldsFromHendelser} from "../../utils/utilityFunctions";
-import {oHendelser} from "./v3Optics";
+import {getNow, removeNullFieldsFromHendelser} from "../utils/utilityFunctions";
+import {fetchPost} from "../utils/restUtils";
+import {NavKontor} from "../types/additionalTypes";
+import {oHendelser} from "./optics";
+
+export enum NotificationLevel {
+    INFO = "INFO",
+    SUCCESS = "SUCCESS",
+    ERROR = "ERROR",
+    WARNING = "WARNING"
+}
 
 export const aiuuur = (
     fiksDigisosId: string,
     fiksDigisosSokerJson: FiksDigisosSokerJson,
-    v2: V2Model,
+    model: Model,
     actionToDispatchIfSuccess: AnyAction
 ): (dispatch: Dispatch<AnyAction>) => void => {
 
-    const backendUrl = v2.backendUrls[v2.backendUrlTypeToUse];
-    const oppdaterDigisosSakUrl = v2.oppdaterDigisosSakUrl;
+    const backendUrl = model.backendUrls[model.backendUrlTypeToUse];
+    const oppdaterDigisosSakUrl = model.oppdaterDigisosSakUrl;
 
     return (dispatch: Dispatch) => {
         dispatch(turnOnLoader());
         const queryParam = `?fiksDigisosId=${fiksDigisosId}`;
         const fiksDigisosSokerJsonUtenNull = removeNullFieldsFromHendelser(fiksDigisosSokerJson);
         fetchPost(`${backendUrl}${oppdaterDigisosSakUrl}${queryParam}`, JSON.stringify(fiksDigisosSokerJsonUtenNull)).then((response: any) => {
-            if (v2.fiksDigisosSokerJson.sak.soker.hendelser.length < fiksDigisosSokerJson.sak.soker.hendelser.length) {
+            if (model.fiksDigisosSokerJson.sak.soker.hendelser.length < fiksDigisosSokerJson.sak.soker.hendelser.length) {
                 dispatch(visSuccessSnackbar());
             }
             dispatch(setFiksDigisosSokerJson(fiksDigisosSokerJson));
@@ -82,11 +84,11 @@ export const aiuuur = (
 
 export const zeruuus = (
     navKontorListe: NavKontor[],
-    v2: V2Model
+    model: Model
 ): (dispatch: Dispatch<AnyAction>) => void => {
 
-    const backendUrl = v2.backendUrls[v2.backendUrlTypeToUse];
-    const nyNavEnhetUrl = v2.nyNavEnhetUrl;
+    const backendUrl = model.backendUrls[model.backendUrlTypeToUse];
+    const nyNavEnhetUrl = model.nyNavEnhetUrl;
 
     return (dispatch: Dispatch) => {
         dispatch(turnOnLoader());
@@ -106,11 +108,11 @@ export const zeruuus = (
 export const chaaar = (
     fiksDigisosId: string,
     formData: FormData,
-    v2: V2Model,
+    model: Model,
     soknad: FsSoknad
 ): (dispatch: Dispatch<AnyAction>) => void => {
 
-    const backendUrl = v2.backendUrls[v2.backendUrlTypeToUse];
+    const backendUrl = model.backendUrls[model.backendUrlTypeToUse];
 
     return (dispatch: Dispatch) => {
         dispatch(turnOnLoader());
@@ -139,8 +141,8 @@ export const chaaar = (
 
                 const soknadUpdated = oHendelser.modify((a: Hendelse[]) => [...a, nyHendelse])(soknad);
 
-                const backendUrl = v2.backendUrls[v2.backendUrlTypeToUse];
-                const oppdaterDigisosSakUrl = v2.oppdaterDigisosSakUrl;
+                const backendUrl = model.backendUrls[model.backendUrlTypeToUse];
+                const oppdaterDigisosSakUrl = model.oppdaterDigisosSakUrl;
 
                 const queryParam = `?fiksDigisosId=${fiksDigisosId}`;
                 const fiksDigisosSokerJson = soknadUpdated.fiksDigisosSokerJson;
@@ -148,7 +150,7 @@ export const chaaar = (
                 const fiksDigisosSokerJsonUtenNull = removeNullFieldsFromHendelser(fiksDigisosSokerJson);
 
                 fetchPost(`${backendUrl}${oppdaterDigisosSakUrl}${queryParam}`, JSON.stringify(fiksDigisosSokerJsonUtenNull)).then((response: any) => {
-                    if (v2.fiksDigisosSokerJson.sak.soker.hendelser.length < fiksDigisosSokerJson.sak.soker.hendelser.length) {
+                    if (model.fiksDigisosSokerJson.sak.soker.hendelser.length < fiksDigisosSokerJson.sak.soker.hendelser.length) {
                         dispatch(visSuccessSnackbar());
                     }
                     dispatch(setFiksDigisosSokerJson(fiksDigisosSokerJson));
@@ -170,11 +172,11 @@ export const tarsoniiis = (
     formData: FormData,
     vedtakFattetUtfall: Utfall|null,
     saksreferanse: string,
-    v2: V2Model,
+    model: Model,
     soknad: FsSoknad
 ): (dispatch: Dispatch<AnyAction>) => void => {
 
-    const backendUrl = v2.backendUrls[v2.backendUrlTypeToUse];
+    const backendUrl = model.backendUrls[model.backendUrlTypeToUse];
 
     return (dispatch: Dispatch) => {
         dispatch(turnOnLoader());
@@ -211,8 +213,8 @@ export const tarsoniiis = (
 
                 const soknadUpdated = oHendelser.modify((a: Hendelse[]) => [...a, nyHendelse])(soknad);
 
-                const backendUrl = v2.backendUrls[v2.backendUrlTypeToUse];
-                const oppdaterDigisosSakUrl = v2.oppdaterDigisosSakUrl;
+                const backendUrl = model.backendUrls[model.backendUrlTypeToUse];
+                const oppdaterDigisosSakUrl = model.oppdaterDigisosSakUrl;
 
                 const queryParam = `?fiksDigisosId=${fiksDigisosId}`;
                 const fiksDigisosSokerJson = soknadUpdated.fiksDigisosSokerJson;
@@ -220,7 +222,7 @@ export const tarsoniiis = (
                 const fiksDigisosSokerJsonUtenNull = removeNullFieldsFromHendelser(fiksDigisosSokerJson);
 
                 fetchPost(`${backendUrl}${oppdaterDigisosSakUrl}${queryParam}`, JSON.stringify(fiksDigisosSokerJsonUtenNull)).then((response: any) => {
-                    if (v2.fiksDigisosSokerJson.sak.soker.hendelser.length < fiksDigisosSokerJson.sak.soker.hendelser.length) {
+                    if (model.fiksDigisosSokerJson.sak.soker.hendelser.length < fiksDigisosSokerJson.sak.soker.hendelser.length) {
                         dispatch(visSuccessSnackbar());
                     }
                     dispatch(setFiksDigisosSokerJson(fiksDigisosSokerJson));
@@ -240,11 +242,11 @@ export const shakuraaas = (
     fiksDigisosId: string,
     formData: FormData,
     dokumenter: Dokument[],
-    v2: V2Model,
+    model: Model,
     soknad: FsSoknad
 ): (dispatch: Dispatch<AnyAction>) => void => {
 
-    const backendUrl = v2.backendUrls[v2.backendUrlTypeToUse];
+    const backendUrl = model.backendUrls[model.backendUrlTypeToUse];
 
     return (dispatch: Dispatch) => {
         dispatch(turnOnLoader());
@@ -274,8 +276,8 @@ export const shakuraaas = (
 
                 const soknadUpdated = oHendelser.modify((a: Hendelse[]) => [...a, nyHendelse])(soknad);
 
-                const backendUrl = v2.backendUrls[v2.backendUrlTypeToUse];
-                const oppdaterDigisosSakUrl = v2.oppdaterDigisosSakUrl;
+                const backendUrl = model.backendUrls[model.backendUrlTypeToUse];
+                const oppdaterDigisosSakUrl = model.oppdaterDigisosSakUrl;
 
                 const queryParam = `?fiksDigisosId=${fiksDigisosId}`;
                 const fiksDigisosSokerJson = soknadUpdated.fiksDigisosSokerJson;
@@ -283,7 +285,7 @@ export const shakuraaas = (
                 const fiksDigisosSokerJsonUtenNull = removeNullFieldsFromHendelser(fiksDigisosSokerJson);
 
                 fetchPost(`${backendUrl}${oppdaterDigisosSakUrl}${queryParam}`, JSON.stringify(fiksDigisosSokerJsonUtenNull)).then((response: any) => {
-                    if (v2.fiksDigisosSokerJson.sak.soker.hendelser.length < fiksDigisosSokerJson.sak.soker.hendelser.length) {
+                    if (model.fiksDigisosSokerJson.sak.soker.hendelser.length < fiksDigisosSokerJson.sak.soker.hendelser.length) {
                         dispatch(visSuccessSnackbar());
                     }
                     dispatch(setFiksDigisosSokerJson(fiksDigisosSokerJson));
@@ -301,12 +303,12 @@ export const shakuraaas = (
 
 export const opprettEllerOppdaterDigisosSak = (
     soknad: FsSoknad,
-    v2: V2Model,
+    model: Model,
     backendUrlTypeToUse: keyof BackendUrls
 ): (dispatch: Dispatch<AnyAction>) => void => {
 
-    const backendUrl = v2.backendUrls[backendUrlTypeToUse];
-    const oppdaterDigisosSakUrl = v2.oppdaterDigisosSakUrl;
+    const backendUrl = model.backendUrls[backendUrlTypeToUse];
+    const oppdaterDigisosSakUrl = model.oppdaterDigisosSakUrl;
 
     return (dispatch: Dispatch) => {
         dispatch(turnOnLoader());
@@ -341,10 +343,194 @@ const runOnErrorResponse = (reason: any, dispatch: Dispatch) => {
     }
 };
 
+export const setFiksDigisosSokerJson = (fiksDigisosSokerJson: any): Action => {
+    return {
+        type: ActionTypeKeys.SET_FIKS_DIGISOS_SOKER_JSON,
+        fiksDigisosSokerJson: fiksDigisosSokerJson
+    }
+};
+
+
+export const turnOnLoader = (): Action => {
+    return {
+        type: ActionTypeKeys.TURN_ON_LOADER
+    }
+};
+
+export const turnOffLoader = (): Action => {
+    return {
+        type: ActionTypeKeys.TURN_OFF_LOADER
+    }
+};
+
+export const setBackendUrlTypeToUse = (backendUrlTypeToUse: keyof BackendUrls): Action => {return {type: ActionTypeKeys.SET_BACKEND_URL_TYPE_TO_USE, backendUrlTypeToUse}};
+
+export const switchToDarkMode = (): Action => {
+    return {
+        type: ActionTypeKeys.SWITCH_TO_DARK_MODE,
+    }
+};
+
+export const switchToLightMode = (): Action => {
+    return {
+        type: ActionTypeKeys.SWITCH_TO_LIGHT_MODE,
+    }
+};
+
+export const setAktivSoknad = (fiksDigisosId: string): Action => {
+    return {
+        type: ActionTypeKeys.SET_AKTIV_SOKNAD,
+        fiksDigisosId
+    }
+};
+
+export const setAktivUtbetaling = (referanse: string | null): Action => {
+    return {
+        type: ActionTypeKeys.SET_AKTIV_UTBETALING,
+        referanse
+    }
+};
+
+export const setAktivtVilkar = (referanse: string | null): Action => {
+    return {
+        type: ActionTypeKeys.SET_AKTIVT_VILKAR,
+        referanse
+    }
+};
+
+export const setAktivtDokumentasjonkrav = (referanse: string | null): Action => {
+    return {
+        type: ActionTypeKeys.SET_AKTIVT_DOKUMENTASJONKRAV,
+        referanse
+    }
+};
+
+export const setAktivtRammevedtak = (referanse: string | null): Action => {
+    return {
+        type: ActionTypeKeys.SET_AKTIVT_RAMMEVEDTAK,
+        referanse
+    }
+};
+
+export const visNySakModal = (): Action => {
+    return {
+        type: ActionTypeKeys.VIS_NY_SAK_MODAL
+    }
+};
+
+export const skjulNySakModal = (): Action => {
+    return {
+        type: ActionTypeKeys.SKJUL_NY_SAK_MODAL
+    }
+};
+
+export const visNyDokumentasjonEtterspurtModal = (): Action => {
+    return {
+        type: ActionTypeKeys.VIS_NY_DOKUMENTASJON_ETTERSPURT_MODAL
+    }
+};
+
+export const visNyUtbetalingModal = (saksreferanse: string|null): Action => {
+    return {
+        type: ActionTypeKeys.VIS_NY_UTBETALING_MODAL,
+        saksreferanse
+    }
+};
+
+export const skjulNyUtbetalingModal = (): Action => {
+    return {
+        type: ActionTypeKeys.SKJUL_NY_UTBETALING_MODAL
+    }
+};
+
+export const visNyVilkarModal = (): Action => {
+    return {
+        type: ActionTypeKeys.VIS_NY_VILKAR_MODAL
+    }
+};
+
+export const skjulNyVilkarModal = (): Action => {
+    return {
+        type: ActionTypeKeys.SKJUL_NY_VILKAR_MODAL
+    }
+};
+
+export const visNyDokumentasjonkravModal = (): Action => {
+    return {
+        type: ActionTypeKeys.VIS_NY_DOKUMENTASJONKRAV_MODAL
+    }
+};
+
+export const skjulNyDokumentasjonkravModal = (): Action => {
+    return {
+        type: ActionTypeKeys.SKJUL_NY_DOKUMENTASJONKRAV_MODAL
+    }
+};
+
+export const visNyRammevedtakModal = (saksreferanse: string|null): Action => {
+    return {
+        type: ActionTypeKeys.VIS_NY_RAMMEVEDTAK_MODAL,
+        saksreferanse
+    }
+};
+
+export const skjulNyRammevedtakModal = (): Action => {
+    return {
+        type: ActionTypeKeys.SKJUL_NY_RAMMEVEDTAK_MODAL
+    }
+};
+
+export const skjulNyDokumentasjonEtterspurtModal = (): Action => {
+    return {
+        type: ActionTypeKeys.SKJUL_NY_DOKUMENTASJON_ETTERSPURT_MODAL
+    }
+};
+
+export const visEndreNavKontorModal = (): Action => {
+    return {
+        type: ActionTypeKeys.VIS_ENDRE_NAV_KONTOR_MODAL
+    }
+};
+
+export const skjulEndreNavKontorModal = (): Action => {
+    return {
+        type: ActionTypeKeys.SKJUL_ENDRE_NAV_KONTOR_MODAL
+    }
+};
+
+export const visSystemSettingsModal = () => {
+    return {
+        type: ActionTypeKeys.VIS_SYSTEM_SETTINGS_MODAL,
+    }
+};
+
+export const skjulSystemSettingsModal = () => {
+    return {
+        type: ActionTypeKeys.SKJUL_SYSTEM_SETTINGS_MODAL,
+    }
+};
+
+export const visSuccessSnackbar = () => {
+    return {
+        type: ActionTypeKeys.VIS_SUCCESS_SNACKBAR,
+    }
+};
+
+export const visErrorSnackbar = () => {
+    return {
+        type: ActionTypeKeys.VIS_ERROR_SNACKBAR,
+    }
+};
+
+export const skjulSnackbar = () => {
+    return {
+        type: ActionTypeKeys.SKJUL_SNACKBAR,
+    }
+};
 
 export const nyFsSoknad = (nyFiksDigisosId: string, nyttFnr: string, nyttNavn: string): NyFsSoknad => {
     return {
-        type: V3ActionTypeKeys.NY_SOKNAD,
+        type: ActionTypeKeys.NY_SOKNAD,
         nyFiksDigisosId,
         nyttFnr,
         nyttNavn
@@ -352,20 +538,20 @@ export const nyFsSoknad = (nyFiksDigisosId: string, nyttFnr: string, nyttNavn: s
 };
 export const slettFsSoknad = (forFiksDigisosId: string): SlettFsSoknad => {
     return {
-        type: V3ActionTypeKeys.SLETT_SOKNAD,
+        type: ActionTypeKeys.SLETT_SOKNAD,
         forFiksDigisosId
     }
 };
 export const oppdaterSoknadsStatus = (forFiksDigisosId: string, nySoknadsStatus: SoknadsStatus): OppdaterSoknadsStatus => {
     return {
-        type: V3ActionTypeKeys.OPPDATER_SOKNADS_STATUS,
+        type: ActionTypeKeys.OPPDATER_SOKNADS_STATUS,
         forFiksDigisosId,
         nySoknadsStatus
     }
 };
 export const oppdaterNavKontor = (forFiksDigisosId: string, nyttNavKontor: TildeltNavKontor): OppdaterNavKontor => {
     return {
-        type: V3ActionTypeKeys.OPPDATER_NAV_KONTOR,
+        type: ActionTypeKeys.OPPDATER_NAV_KONTOR,
         forFiksDigisosId,
         nyttNavKontor
     }
@@ -373,7 +559,7 @@ export const oppdaterNavKontor = (forFiksDigisosId: string, nyttNavKontor: Tilde
 
 export const oppdaterFixId = (forFiksDigisosId: string, nyFiksId: string): OppdaterFiksId => {
     return {
-        type: V3ActionTypeKeys.OPPDATER_FIKS_ID,
+        type: ActionTypeKeys.OPPDATER_FIKS_ID,
         forFiksDigisosId,
         nyFiksId
     }
@@ -381,7 +567,7 @@ export const oppdaterFixId = (forFiksDigisosId: string, nyFiksId: string): Oppda
 
 export const oppdaterDokumentasjonEtterspurt = (forFiksDigisosId: string, nyDokumentasjonEtterspurt: DokumentasjonEtterspurt): OppdaterDokumentasjonEtterspurt => {
     return {
-        type: V3ActionTypeKeys.OPPDATER_DOKUMENTASJON_ETTERSPURT,
+        type: ActionTypeKeys.OPPDATER_DOKUMENTASJON_ETTERSPURT,
         forFiksDigisosId,
         nyDokumentasjonEtterspurt
     }
@@ -389,14 +575,14 @@ export const oppdaterDokumentasjonEtterspurt = (forFiksDigisosId: string, nyDoku
 
 export const oppdaterForelopigSvar = (forFiksDigisosId: string, nyttForelopigSvar: ForelopigSvar): OppdaterForelopigSvar => {
     return {
-        type: V3ActionTypeKeys.OPPDATER_FORELOPIG_SVAR,
+        type: ActionTypeKeys.OPPDATER_FORELOPIG_SVAR,
         forFiksDigisosId,
         nyttForelopigSvar
     }
 };
 export const nyFsSaksStatus = (forFiksDigisosId: string, nyFsSaksStatus: FsSaksStatus): NyFsSaksStatus => {
     return {
-        type: V3ActionTypeKeys.NY_FS_SAKS_STATUS,
+        type: ActionTypeKeys.NY_FS_SAKS_STATUS,
         forFiksDigisosId,
         nyFsSaksStatus
     }
@@ -406,70 +592,70 @@ export const oppdaterFsSaksStatus = (
     oppdatertSaksstatus: SaksStatus,
 ): OppdaterFsSaksStatus => {
     return {
-        type: V3ActionTypeKeys.OPPDATER_FS_SAKS_STATUS,
+        type: ActionTypeKeys.OPPDATER_FS_SAKS_STATUS,
         forFiksDigisosId,
         oppdatertSaksstatus
     }
 };
 export const nyUtbetaling = (forFiksDigisosId: string, nyUtbetaling: Utbetaling): NyUtbetaling => {
     return {
-        type: V3ActionTypeKeys.NY_UTBETALING,
+        type: ActionTypeKeys.NY_UTBETALING,
         forFiksDigisosId,
         nyUtbetaling
     }
 };
 export const oppdaterUtbetaling = (forFiksDigisosId: string, oppdatertUtbetaling: Utbetaling): OppdaterUtbetaling => {
     return {
-        type: V3ActionTypeKeys.OPPDATER_UTBETALING,
+        type: ActionTypeKeys.OPPDATER_UTBETALING,
         forFiksDigisosId,
         oppdatertUtbetaling
     }
 };
 export const nyttDokumentasjonkrav = (forFiksDigisosId: string, nyttDokumentasjonkrav: Dokumentasjonkrav): NyttDokumentasjonkrav => {
     return {
-        type: V3ActionTypeKeys.NYTT_DOKUMENTASJONKRAV,
+        type: ActionTypeKeys.NYTT_DOKUMENTASJONKRAV,
         forFiksDigisosId,
         nyttDokumentasjonkrav
     }
 };
 export const oppdaterDokumentasjonkrav = (forFiksDigisosId: string, oppdatertDokumentasjonkrav: Dokumentasjonkrav): OppdaterDokumentasjonkrav => {
     return {
-        type: V3ActionTypeKeys.OPPDATER_DOKUMENTASJONKRAV,
+        type: ActionTypeKeys.OPPDATER_DOKUMENTASJONKRAV,
         forFiksDigisosId,
         oppdatertDokumentasjonkrav
     }
 };
 export const oppdaterVedtakFattet = (forFiksDigisosId: string, oppdatertVedtakFattet: VedtakFattet): OppdaterVedtakFattet => {
     return {
-        type: V3ActionTypeKeys.OPPDATER_VEDTAK_FATTET,
+        type: ActionTypeKeys.OPPDATER_VEDTAK_FATTET,
         forFiksDigisosId,
         oppdatertVedtakFattet
     }
 };
 export const nyttRammevedtak = (forFiksDigisosId: string, nyttRammevedtak: Rammevedtak): NyttRammevedtak => {
     return {
-        type: V3ActionTypeKeys.NYTT_RAMMEVEDTAK,
+        type: ActionTypeKeys.NYTT_RAMMEVEDTAK,
         forFiksDigisosId,
         nyttRammevedtak
     }
 };
 export const oppdaterRammevedtak = (forFiksDigisosId: string, oppdatertRammevedtak: Rammevedtak): OppdaterRammevedtak => {
     return {
-        type: V3ActionTypeKeys.OPPDATER_RAMMEVEDTAK,
+        type: ActionTypeKeys.OPPDATER_RAMMEVEDTAK,
         forFiksDigisosId,
         oppdatertRammevedtak
     }
 };
 export const nyttVilkar = (forFiksDigisosId: string, nyttVilkar: Vilkar): NyttVilkar => {
     return {
-        type: V3ActionTypeKeys.NYTT_VILKAR,
+        type: ActionTypeKeys.NYTT_VILKAR,
         forFiksDigisosId,
         nyttVilkar
     }
 };
 export const oppdaterVilkar = (forFiksDigisosId: string, oppdatertVilkar: Vilkar): OppdaterVilkar => {
     return {
-        type: V3ActionTypeKeys.OPPDATER_VILKAR,
+        type: ActionTypeKeys.OPPDATER_VILKAR,
         forFiksDigisosId,
         oppdatertVilkar
     }

@@ -2,7 +2,6 @@ import React, {ChangeEvent} from 'react';
 import {Panel} from "nav-frontend-paneler";
 import {Input} from "nav-frontend-skjema";
 import {Knapp} from "nav-frontend-knapper";
-import Cog from "../components/ikoner/TannHjul";
 import {AppState, DispatchProps} from "../redux/reduxTypes";
 import {connect} from "react-redux";
 import {ExampleModel} from "../redux/example/exampleTypes";
@@ -46,26 +45,6 @@ class Example extends React.Component<Props, ExampleState> {
 
         return (
             <div className={"margintop"}>
-                {/*<Panel>*/}
-                {/*    <div className={"column"}>*/}
-                {/*        <Form schema={hendelseSchemaTest}*/}
-                {/*              formData={this.state.digisosSoker}*/}
-                {/*              uiSchema={uiSchema}*/}
-                {/*            // @ts-disable*/}
-                {/*            //additionalMetaSchemas={[additionalMetaSchemas]}*/}
-                {/*              onChange={(json) => this.handleChange(json)}*/}
-                {/*              onSubmit={(json) => this.handleSubmit(json)}*/}
-                {/*              onError={log("errors")}*/}
-                {/*        />*/}
-                {/*    </div>*/}
-                {/*</Panel>*/}
-                {/*<Panel>*/}
-                {/*    <div className={"column"}>*/}
-                {/*        <div className={"jsonView"}>*/}
-                {/*            <ReactJson src={this.state.digisosSoker}/>*/}
-                {/*        </div>*/}
-                {/*    </div>*/}
-                {/*</Panel>*/}
 
                 <Panel>
                     <h3>
@@ -84,7 +63,6 @@ class Example extends React.Component<Props, ExampleState> {
                         form="kompakt"
                         onClick={() => this.handleClickSystemButton()}
                     >
-                        <Cog/>
                         <span className="sr-only">Submit</span>
                     </Knapp>
 

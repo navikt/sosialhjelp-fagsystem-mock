@@ -2,11 +2,11 @@ import React, {useState} from 'react';
 import {AppState, DispatchProps} from "../../../redux/reduxTypes";
 import {connect} from "react-redux";
 import {createStyles, Modal, Theme} from "@material-ui/core";
-import {setAktivtDokumentasjonkrav, skjulNyDokumentasjonkravModal} from "../../../redux/v2/v2Actions";
+import {setAktivtDokumentasjonkrav, skjulNyDokumentasjonkravModal} from "../../../redux/actions";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import Fade from "@material-ui/core/Fade";
 import Backdrop from "@material-ui/core/Backdrop";
-import {V2Model} from "../../../redux/v2/v2Types";
+import {Model} from "../../../redux/types";
 import {
     generateFilreferanseId,
     getAllUtbetalingsreferanser,
@@ -17,14 +17,14 @@ import {
 import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
 import Hendelse, {Dokumentasjonkrav, DokumentasjonkravStatus, HendelseType} from "../../../types/hendelseTypes";
-import {oHendelser} from "../../../redux/v3/v3Optics";
-import {aiuuur, nyttDokumentasjonkrav, oppdaterDokumentasjonkrav} from "../../../redux/v3/v3Actions";
+import {oHendelser} from "../../../redux/optics";
+import {aiuuur, nyttDokumentasjonkrav, oppdaterDokumentasjonkrav} from "../../../redux/actions";
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
 import Typography from "@material-ui/core/Typography";
 import Fab from "@material-ui/core/Fab";
 import AddIcon from '@material-ui/icons/Add';
-import {FsSoknad} from "../../../redux/v3/v3FsTypes";
+import {FsSoknad} from "../../../redux/types";
 import InputLabel from "@material-ui/core/InputLabel";
 import FormControl from "@material-ui/core/FormControl";
 import Input from '@material-ui/core/Input';
@@ -119,7 +119,7 @@ interface OwnProps {
 
 interface StoreProps {
     visNyDokumentasjonkravModal: boolean;
-    v2: V2Model;
+    model: Model
     aktivtDokumentasjonkrav: string | undefined | null;
 }
 
@@ -161,7 +161,7 @@ const NyttDokumentasjonkravModal: React.FC<Props> = (props: Props) => {
     const theme = useTheme();
 
     const classes = useStyles();
-    const {visNyDokumentasjonkravModal, dispatch, v2, soknad, aktivtDokumentasjonkrav} = props;
+    const {visNyDokumentasjonkravModal, dispatch, model, soknad, aktivtDokumentasjonkrav} = props;
 
     function resetStateValues() {
         setModalDokumentasjonkrav({...initialDokumentasjonkrav, dokumentasjonkravreferanse: generateFilreferanseId()});
@@ -182,7 +182,7 @@ const NyttDokumentasjonkravModal: React.FC<Props> = (props: Props) => {
                 aiuuur(
                     soknad.fiksDigisosId,
                     soknadUpdated.fiksDigisosSokerJson,
-                    v2,
+                    model,
                     nyttDokumentasjonkrav(soknad.fiksDigisosId, nyHendelse)
                 )
             );
@@ -191,7 +191,7 @@ const NyttDokumentasjonkravModal: React.FC<Props> = (props: Props) => {
                 aiuuur(
                     soknad.fiksDigisosId,
                     soknadUpdated.fiksDigisosSokerJson,
-                    v2,
+                    model,
                     oppdaterDokumentasjonkrav(soknad.fiksDigisosId, nyHendelse)
                 )
             );
@@ -363,9 +363,9 @@ const NyttDokumentasjonkravModal: React.FC<Props> = (props: Props) => {
 };
 
 const mapStateToProps = (state: AppState) => ({
-    visNyDokumentasjonkravModal: state.v2.visNyDokumentasjonkravModal,
-    v2: state.v2,
-    aktivtDokumentasjonkrav: state.v2.aktivtDokumentasjonkrav
+    visNyDokumentasjonkravModal: state.model.visNyDokumentasjonkravModal,
+    model: state.model,
+    aktivtDokumentasjonkrav: state.model.aktivtDokumentasjonkrav
 });
 
 const mapDispatchToProps = (dispatch: any) => {

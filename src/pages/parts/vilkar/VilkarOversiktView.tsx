@@ -11,8 +11,8 @@ import Fab from '@material-ui/core/Fab';
 import AddIcon from '@material-ui/icons/Add';
 import Box from '@material-ui/core/Box';
 import {Paper} from "@material-ui/core";
-import {visNyVilkarModal} from "../../../redux/v2/v2Actions";
-import {FsSoknad} from "../../../redux/v3/v3FsTypes";
+import {visNyVilkarModal} from "../../../redux/actions";
+import {FsSoknad} from "../../../redux/types";
 import VilkarTabView from "./VilkarTabView";
 import {Vilkar} from "../../../types/hendelseTypes";
 

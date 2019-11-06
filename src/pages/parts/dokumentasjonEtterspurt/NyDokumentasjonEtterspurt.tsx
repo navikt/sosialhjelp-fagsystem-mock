@@ -2,11 +2,11 @@ import React, {useRef, useState} from 'react';
 import {AppState, DispatchProps} from "../../../redux/reduxTypes";
 import {connect} from "react-redux";
 import {createStyles, Modal, Paper, Theme} from "@material-ui/core";
-import {setAktivtRammevedtak, skjulNyDokumentasjonEtterspurtModal} from "../../../redux/v2/v2Actions";
+import {setAktivtRammevedtak, skjulNyDokumentasjonEtterspurtModal} from "../../../redux/actions";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import Fade from "@material-ui/core/Fade";
 import Backdrop from "@material-ui/core/Backdrop";
-import {V2Model} from "../../../redux/v2/v2Types";
+import {Model} from "../../../redux/types";
 import TextField from '@material-ui/core/TextField';
 import 'date-fns';
 import DateFnsUtils from '@date-io/date-fns';
@@ -23,9 +23,9 @@ import Hendelse, {
 } from "../../../types/hendelseTypes";
 import Grid from "@material-ui/core/Grid";
 import {formatDateString, getDateOrNullFromDateString, getNow} from "../../../utils/utilityFunctions";
-import {aiuuur, oppdaterDokumentasjonEtterspurt, shakuraaas} from "../../../redux/v3/v3Actions";
-import {FsSoknad} from "../../../redux/v3/v3FsTypes";
-import {oHendelser} from "../../../redux/v3/v3Optics";
+import {aiuuur, oppdaterDokumentasjonEtterspurt, shakuraaas} from "../../../redux/actions";
+import {FsSoknad} from "../../../redux/types";
+import {oHendelser} from "../../../redux/optics";
 import TableRow from "@material-ui/core/TableRow";
 import TableCell from "@material-ui/core/TableCell";
 import Table from "@material-ui/core/Table";
@@ -130,7 +130,7 @@ interface OwnProps {
 
 interface StoreProps {
     visNyDokumentasjonEtterspurtModal: boolean;
-    v2: V2Model;
+    model: Model
 }
 
 type Props = DispatchProps & OwnProps & StoreProps;
@@ -162,7 +162,7 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
     const [visFeilmeldingDatePicker, setVisFeilmeldingDatePicker] = useState(false);
     const [datePickerIsOpen, setDatePickerIsOpen] = useState(false);
     const classes = useStyles();
-    const {visNyDokumentasjonEtterspurtModal, dispatch, v2, soknad} = props;
+    const {visNyDokumentasjonEtterspurtModal, dispatch, model, soknad} = props;
     const inputEl = useRef<HTMLInputElement>(null);
     const smallScreen = useMediaQuery('(max-width:1200px)');
 
@@ -182,7 +182,7 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
         const formData = new FormData();
         formData.append("file", files[0], files[0].name);
 
-        dispatch(shakuraaas(soknad.fiksDigisosId, formData, modalDokumentasjonEtterspurt.dokumenter, v2, soknad));
+        dispatch(shakuraaas(soknad.fiksDigisosId, formData, modalDokumentasjonEtterspurt.dokumenter, model, soknad));
 
         setVisFeilmelding(false);
         setVisFeilmeldingDatePicker(false);
@@ -202,7 +202,7 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
     };
 
     function skalLasteOppFil() {
-        return (v2.backendUrlTypeToUse === 'q0' || v2.backendUrlTypeToUse === 'q1')
+        return (model.backendUrlTypeToUse === 'q0' || model.backendUrlTypeToUse === 'q1')
             && modalDokumentasjonEtterspurt.forvaltningsbrev.referanse.id === standardRef;
     }
 
@@ -224,7 +224,7 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
                 aiuuur(
                     soknad.fiksDigisosId,
                     soknadUpdated.fiksDigisosSokerJson,
-                    v2,
+                    model,
                     oppdaterDokumentasjonEtterspurt(soknad.fiksDigisosId, nyHendelse)
                 )
             );
@@ -452,8 +452,8 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
 };
 
 const mapStateToProps = (state: AppState) => ({
-    visNyDokumentasjonEtterspurtModal: state.v2.visNyDokumentasjonEtterspurtModal,
-    v2: state.v2
+    visNyDokumentasjonEtterspurtModal: state.model.visNyDokumentasjonEtterspurtModal,
+    model: state.model
 });
 
 const mapDispatchToProps = (dispatch: any) => {

@@ -2,17 +2,15 @@ import React, {useState} from 'react';
 import {AppState, DispatchProps} from "../../../redux/reduxTypes";
 import {connect} from "react-redux";
 import {createStyles, Modal, Theme} from "@material-ui/core";
-import {skjulNySakModal} from "../../../redux/v2/v2Actions";
+import {skjulNySakModal} from "../../../redux/actions";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import Fade from "@material-ui/core/Fade";
 import Backdrop from "@material-ui/core/Backdrop";
-import {aiuuur, nyFsSaksStatus} from "../../../redux/v3/v3Actions";
-import {V2Model} from "../../../redux/v2/v2Types";
-import {fsSaksStatusToSaksStatus, generateNyFsSaksStatus} from "../../../redux/v3/v3UtilityFunctions";
-import {FsSoknad} from "../../../redux/v3/v3FsTypes";
-import {getFsSoknadByFiksDigisosId} from "../../../utils/utilityFunctions";
-import {V3State} from "../../../redux/v3/v3Types";
-import {oHendelser} from "../../../redux/v3/v3Optics";
+import {aiuuur, nyFsSaksStatus} from "../../../redux/actions";
+import {Model} from "../../../redux/types";
+import {FsSoknad} from "../../../redux/types";
+import {fsSaksStatusToSaksStatus, generateNyFsSaksStatus, getFsSoknadByFiksDigisosId} from "../../../utils/utilityFunctions";
+import {oHendelser} from "../../../redux/optics";
 import Hendelse from "../../../types/hendelseTypes";
 import TextField from "@material-ui/core/TextField";
 import Fab from "@material-ui/core/Fab";
@@ -54,8 +52,7 @@ interface OwnProps {
 
 interface StoreProps {
     visNySakModal: boolean;
-    v2: V2Model;
-    v3: V3State;
+    model: Model
 }
 
 type Props = DispatchProps & OwnProps & StoreProps;
@@ -64,7 +61,7 @@ type Props = DispatchProps & OwnProps & StoreProps;
 const NySakModal: React.FC<Props> = (props: Props) => {
     const [tittel, setTittel] = useState('');
     const classes = useStyles();
-    const {visNySakModal, dispatch, v2, v3} = props;
+    const {visNySakModal, dispatch, model} = props;
 
 
     return (
@@ -97,9 +94,9 @@ const NySakModal: React.FC<Props> = (props: Props) => {
                             autoComplete="off"
                         />
                         <Fab size={'small'} aria-label='Add' className={classes.fab} color='primary' onClick={() => {
-                            const fsSoknader = v3.soknader;
+                            const fsSoknader = model.soknader;
                             if (fsSoknader){
-                                const fsSoknad: FsSoknad | undefined = getFsSoknadByFiksDigisosId(fsSoknader, v2.aktivSoknad);
+                                const fsSoknad: FsSoknad | undefined = getFsSoknadByFiksDigisosId(fsSoknader, model.aktivSoknad);
                                 if (fsSoknad) {
                                     const fsSaksStatus = generateNyFsSaksStatus(tittel.length !== 0 ? tittel : null);
                                     const nyHendelse = fsSaksStatusToSaksStatus(fsSaksStatus);
@@ -107,10 +104,10 @@ const NySakModal: React.FC<Props> = (props: Props) => {
 
                                     dispatch(
                                         aiuuur(
-                                            v2.aktivSoknad,
+                                            model.aktivSoknad,
                                             soknadUpdated.fiksDigisosSokerJson,
-                                            v2,
-                                            nyFsSaksStatus(v2.aktivSoknad, fsSaksStatus)
+                                            model,
+                                            nyFsSaksStatus(model.aktivSoknad, fsSaksStatus)
                                         )
                                     );
 
@@ -132,9 +129,8 @@ const NySakModal: React.FC<Props> = (props: Props) => {
 };
 
 const mapStateToProps = (state: AppState) => ({
-    visNySakModal: state.v2.visNySakModal,
-    v2: state.v2,
-    v3: state.v3
+    visNySakModal: state.model.visNySakModal,
+    model: state.model
 });
 
 const mapDispatchToProps = (dispatch: any) => {

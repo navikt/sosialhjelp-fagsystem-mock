@@ -7,8 +7,8 @@ import Fab from '@material-ui/core/Fab';
 import AddIcon from '@material-ui/icons/Add';
 import Box from '@material-ui/core/Box';
 import {Paper} from "@material-ui/core";
-import {visNyDokumentasjonEtterspurtModal} from "../../../redux/v2/v2Actions";
-import {FsSoknad} from "../../../redux/v3/v3FsTypes";
+import {visNyDokumentasjonEtterspurtModal} from "../../../redux/actions";
+import {FsSoknad} from "../../../redux/types";
 import Hendelse, {Dokument, DokumentasjonEtterspurt, HendelseType} from "../../../types/hendelseTypes";
 import Table from "@material-ui/core/Table";
 import TableHead from "@material-ui/core/TableHead";
@@ -16,9 +16,9 @@ import TableRow from "@material-ui/core/TableRow";
 import TableCell from "@material-ui/core/TableCell";
 import TableBody from "@material-ui/core/TableBody";
 import {getNow, getShortDateISOString} from "../../../utils/utilityFunctions";
-import {oHendelser} from "../../../redux/v3/v3Optics";
-import {aiuuur, oppdaterDokumentasjonEtterspurt} from "../../../redux/v3/v3Actions";
-import {V2Model} from "../../../redux/v2/v2Types";
+import {oHendelser} from "../../../redux/optics";
+import {aiuuur, oppdaterDokumentasjonEtterspurt} from "../../../redux/actions";
+import {Model} from "../../../redux/types";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -77,7 +77,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 
 interface StoreProps {
-    v2: V2Model;
+    model: Model
 }
 
 interface OwnProps {
@@ -89,7 +89,7 @@ type Props = DispatchProps & StoreProps & OwnProps;
 
 const DokumentasjonEtterspurtOversiktView: React.FC<Props> = (props: Props) => {
     const classes = useStyles();
-    const {soknad, v2, dispatch} = props;
+    const {soknad, model, dispatch} = props;
 
     const makeTableRow = (dokument: Dokument) => {
         return <TableRow key={dokument.dokumenttype + dokument.tilleggsinformasjon}>
@@ -123,7 +123,7 @@ const DokumentasjonEtterspurtOversiktView: React.FC<Props> = (props: Props) => {
                 aiuuur(
                     soknad.fiksDigisosId,
                     soknadUpdated.fiksDigisosSokerJson,
-                    v2,
+                    model,
                     oppdaterDokumentasjonEtterspurt(soknad.fiksDigisosId, nyHendelse)
                 )
             );
@@ -180,7 +180,7 @@ const DokumentasjonEtterspurtOversiktView: React.FC<Props> = (props: Props) => {
 };
 
 const mapStateToProps = (state: AppState) => ({
-    v2: state.v2
+    model: state.model
 });
 
 const mapDispatchToProps = (dispatch: any) => {

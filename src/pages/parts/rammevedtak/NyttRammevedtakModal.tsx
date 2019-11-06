@@ -2,11 +2,11 @@ import React, {useState} from 'react';
 import {AppState, DispatchProps} from "../../../redux/reduxTypes";
 import {connect} from "react-redux";
 import {createStyles, Modal, Theme} from "@material-ui/core";
-import {setAktivtRammevedtak, skjulNyRammevedtakModal} from "../../../redux/v2/v2Actions";
+import {setAktivtRammevedtak, skjulNyRammevedtakModal} from "../../../redux/actions";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import Fade from "@material-ui/core/Fade";
 import Backdrop from "@material-ui/core/Backdrop";
-import {V2Model} from "../../../redux/v2/v2Types";
+import {Model} from "../../../redux/types";
 import {
     formatDateString,
     generateFilreferanseId,
@@ -18,14 +18,14 @@ import {
 import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
 import Hendelse, {HendelseType, Rammevedtak} from "../../../types/hendelseTypes";
-import {oHendelser} from "../../../redux/v3/v3Optics";
-import {aiuuur, nyttRammevedtak, oppdaterRammevedtak} from "../../../redux/v3/v3Actions";
+import {oHendelser} from "../../../redux/optics";
+import {aiuuur, nyttRammevedtak, oppdaterRammevedtak} from "../../../redux/actions";
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
 import Typography from "@material-ui/core/Typography";
 import Fab from "@material-ui/core/Fab";
 import AddIcon from '@material-ui/icons/Add';
-import {FsSoknad} from "../../../redux/v3/v3FsTypes";
+import {FsSoknad} from "../../../redux/types";
 import InputLabel from "@material-ui/core/InputLabel";
 import FormControl from "@material-ui/core/FormControl";
 import {KeyboardDatePicker, MuiPickersUtilsProvider} from "@material-ui/pickers";
@@ -109,7 +109,7 @@ interface OwnProps {
 
 interface StoreProps {
     visNyRammevedtakModal: boolean;
-    v2: V2Model;
+    model: Model
     aktivtRammevedtak: string | undefined | null;
     modalSaksreferanse: string|null;
 }
@@ -154,7 +154,7 @@ const NyttRammevedtakModal: React.FC<Props> = (props: Props) => {
     const [referansefeltDisabled, setReferansefeltDisabled] = useState(false);
 
     const classes = useStyles();
-    const {visNyRammevedtakModal, dispatch, v2, soknad, aktivtRammevedtak, modalSaksreferanse} = props;
+    const {visNyRammevedtakModal, dispatch, model, soknad, aktivtRammevedtak, modalSaksreferanse} = props;
 
     function resetStateValues() {
         setModalRammevedtak({...initialRammevedtak, rammevedtaksreferanse: generateFilreferanseId()});
@@ -183,7 +183,7 @@ const NyttRammevedtakModal: React.FC<Props> = (props: Props) => {
                 aiuuur(
                     soknad.fiksDigisosId,
                     soknadUpdated.fiksDigisosSokerJson,
-                    v2,
+                    model,
                     nyttRammevedtak(soknad.fiksDigisosId, nyHendelse)
                 )
             );
@@ -192,7 +192,7 @@ const NyttRammevedtakModal: React.FC<Props> = (props: Props) => {
                 aiuuur(
                     soknad.fiksDigisosId,
                     soknadUpdated.fiksDigisosSokerJson,
-                    v2,
+                    model,
                     oppdaterRammevedtak(soknad.fiksDigisosId, nyHendelse)
                 )
             );
@@ -373,10 +373,10 @@ const NyttRammevedtakModal: React.FC<Props> = (props: Props) => {
 };
 
 const mapStateToProps = (state: AppState) => ({
-    visNyRammevedtakModal: state.v2.visNyRammevedtakModal,
-    v2: state.v2,
-    aktivtRammevedtak: state.v2.aktivtRammevedtak,
-    modalSaksreferanse: state.v2.modalSaksreferanse
+    visNyRammevedtakModal: state.model.visNyRammevedtakModal,
+    model: state.model,
+    aktivtRammevedtak: state.model.aktivtRammevedtak,
+    modalSaksreferanse: state.model.modalSaksreferanse
 });
 
 const mapDispatchToProps = (dispatch: any) => {

@@ -2,11 +2,11 @@ import React, {useState} from 'react';
 import {AppState, DispatchProps} from "../../../redux/reduxTypes";
 import {connect} from "react-redux";
 import {createStyles, Modal, Theme} from "@material-ui/core";
-import {setAktivUtbetaling, skjulNyUtbetalingModal} from "../../../redux/v2/v2Actions";
+import {setAktivUtbetaling, skjulNyUtbetalingModal} from "../../../redux/actions";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import Fade from "@material-ui/core/Fade";
 import Backdrop from "@material-ui/core/Backdrop";
-import {V2Model} from "../../../redux/v2/v2Types";
+import {Model} from "../../../redux/types";
 import {
     formatDateString,
     generateFilreferanseId,
@@ -18,8 +18,8 @@ import {
 import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
 import Hendelse, {HendelseType, Utbetaling, UtbetalingStatus} from "../../../types/hendelseTypes";
-import {oHendelser} from "../../../redux/v3/v3Optics";
-import {aiuuur, nyUtbetaling, oppdaterUtbetaling} from "../../../redux/v3/v3Actions";
+import {oHendelser} from "../../../redux/optics";
+import {aiuuur, nyUtbetaling, oppdaterUtbetaling} from "../../../redux/actions";
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
 import DateFnsUtils from "@date-io/date-fns";
@@ -29,7 +29,7 @@ import ButtonGroup from "@material-ui/core/ButtonGroup";
 import Button from "@material-ui/core/Button";
 import Fab from "@material-ui/core/Fab";
 import AddIcon from '@material-ui/icons/Add';
-import {FsSoknad} from "../../../redux/v3/v3FsTypes";
+import {FsSoknad} from "../../../redux/types";
 import InputLabel from "@material-ui/core/InputLabel";
 import FormControl from "@material-ui/core/FormControl";
 
@@ -116,7 +116,7 @@ interface OwnProps {
 
 interface StoreProps {
     visNyUtbetalingModal: boolean;
-    v2: V2Model;
+    model: Model
     aktivUtbetaling: string | undefined | null;
     modalSaksreferanse: string|null;
 }
@@ -191,7 +191,7 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
 
 
     const classes = useStyles();
-    const {visNyUtbetalingModal, dispatch, v2, soknad, aktivUtbetaling, modalSaksreferanse} = props;
+    const {visNyUtbetalingModal, dispatch, model, soknad, aktivUtbetaling, modalSaksreferanse} = props;
 
     function resetStateValues() {
         setModalUtbetaling({...initialUtbetaling, utbetalingsreferanse: generateFilreferanseId()});
@@ -227,7 +227,7 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
                 aiuuur(
                     soknad.fiksDigisosId,
                     soknadUpdated.fiksDigisosSokerJson,
-                    v2,
+                    model,
                     nyUtbetaling(soknad.fiksDigisosId, nyHendelse)
                 )
             );
@@ -236,7 +236,7 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
                 aiuuur(
                     soknad.fiksDigisosId,
                     soknadUpdated.fiksDigisosSokerJson,
-                    v2,
+                    model,
                     oppdaterUtbetaling(soknad.fiksDigisosId, nyHendelse)
                 )
             );
@@ -495,10 +495,10 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
 };
 
 const mapStateToProps = (state: AppState) => ({
-    visNyUtbetalingModal: state.v2.visNyUtbetalingModal,
-    v2: state.v2,
-    aktivUtbetaling: state.v2.aktivUtbetaling,
-    modalSaksreferanse: state.v2.modalSaksreferanse
+    visNyUtbetalingModal: state.model.visNyUtbetalingModal,
+    model: state.model,
+    aktivUtbetaling: state.model.aktivUtbetaling,
+    modalSaksreferanse: state.model.modalSaksreferanse
 });
 
 const mapDispatchToProps = (dispatch: any) => {

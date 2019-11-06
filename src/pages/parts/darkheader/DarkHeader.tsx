@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {V2Model} from "../../../redux/v2/v2Types";
+import {Model} from "../../../redux/types";
 import Hendelse from "../../../types/hendelseTypes";
 import {AppState, DispatchProps} from "../../../redux/reduxTypes";
 import {connect} from "react-redux";
@@ -8,7 +8,7 @@ import {Button} from "@material-ui/core";
 
 
 interface DarkHeaderProps {
-    v2: V2Model
+    model: Model
     hendelserUpdated: Hendelse[]
 }
 
@@ -45,8 +45,8 @@ const DarkHeader: React.FC<Props> = (props: Props) => {
 };
 
 const mapStateToProps = (state: AppState) => ({
-    v2: state.v2,
-    hendelserUpdated: JSON.parse(JSON.stringify(state.v2.fiksDigisosSokerJson.sak.soker.hendelser))
+    model: state.model,
+    hendelserUpdated: JSON.parse(JSON.stringify(state.model.fiksDigisosSokerJson.sak.soker.hendelser))
 });
 
 const mapDispatchToProps = (dispatch: any) => {

@@ -6,12 +6,12 @@ import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
-import {aiuuur, oppdaterVedtakFattet, tarsoniiis} from "../../../redux/v3/v3Actions";
+import {aiuuur, oppdaterVedtakFattet, tarsoniiis} from "../../../redux/actions";
 import Hendelse, {HendelseType, Utfall, VedtakFattet} from "../../../types/hendelseTypes";
 import {getNow} from "../../../utils/utilityFunctions";
-import {V2Model} from "../../../redux/v2/v2Types";
-import {oHendelser} from "../../../redux/v3/v3Optics";
-import {FsSaksStatus, FsSoknad} from "../../../redux/v3/v3FsTypes";
+import {Model} from "../../../redux/types";
+import {oHendelser} from "../../../redux/optics";
+import {FsSaksStatus, FsSoknad} from "../../../redux/types";
 import Box from "@material-ui/core/Box";
 import Fab from "@material-ui/core/Fab";
 import AddIcon from '@material-ui/icons/Add';
@@ -55,7 +55,7 @@ interface OwnProps {
 }
 
 interface StoreProps {
-    v2: V2Model
+    model: Model
 }
 
 type Props = DispatchProps & OwnProps & StoreProps;
@@ -64,8 +64,8 @@ type Props = DispatchProps & OwnProps & StoreProps;
 const VedtakFattetModal: React.FC<Props> = (props: Props) => {
     const classes = useStyles();
     const [vedtakFattetUtfall, setVedtakFattetUtfall] = useState<Utfall|null>(null);
-    const {dispatch, soknad, v2, sak} = props;
-    const filreferanselager = v2.filreferanselager;
+    const {dispatch, soknad, model, sak} = props;
+    const filreferanselager = model.filreferanselager;
     const inputEl = useRef<HTMLInputElement>(null);
 
     const handleFileUpload = (files: FileList) => {
@@ -75,7 +75,7 @@ const VedtakFattetModal: React.FC<Props> = (props: Props) => {
         const formData = new FormData();
         formData.append("file", files[0], files[0].name);
 
-        dispatch(tarsoniiis(soknad.fiksDigisosId, formData, vedtakFattetUtfall, sak.referanse, v2, soknad));
+        dispatch(tarsoniiis(soknad.fiksDigisosId, formData, vedtakFattetUtfall, sak.referanse, model, soknad));
     };
 
     return (
@@ -109,7 +109,7 @@ const VedtakFattetModal: React.FC<Props> = (props: Props) => {
             </form>
             <Fab size="small" aria-label="add" className={classes.fab} color="primary"
                  onClick={() => {
-                     if((v2.backendUrlTypeToUse === 'q0' || v2.backendUrlTypeToUse === 'q1') && inputEl && inputEl.current) {
+                     if((model.backendUrlTypeToUse === 'q0' || model.backendUrlTypeToUse === 'q1') && inputEl && inputEl.current) {
                          inputEl.current.click();
                      } else {
                          const nyHendelse: VedtakFattet = {
@@ -129,17 +129,17 @@ const VedtakFattetModal: React.FC<Props> = (props: Props) => {
 
                          dispatch(
                              aiuuur(
-                                 v2.aktivSoknad,
+                                 model.aktivSoknad,
                                  soknadUpdated.fiksDigisosSokerJson,
-                                 v2,
-                                 oppdaterVedtakFattet(v2.aktivSoknad, nyHendelse)
+                                 model,
+                                 oppdaterVedtakFattet(model.aktivSoknad, nyHendelse)
                              )
                          );
                      }
                  }}>
                 <AddIcon/>
             </Fab>
-            <Typography>{(v2.backendUrlTypeToUse === 'q0' || v2.backendUrlTypeToUse === 'q1') ? "Send vedtak fattet og velg vedtaksbrev" : "Send vedtak fattet"}</Typography>
+            <Typography>{(model.backendUrlTypeToUse === 'q0' || model.backendUrlTypeToUse === 'q1') ? "Send vedtak fattet og velg vedtaksbrev" : "Send vedtak fattet"}</Typography>
             <input
                 id={'inputField vedtakFattet'}
                 ref={inputEl}
@@ -163,7 +163,7 @@ const VedtakFattetModal: React.FC<Props> = (props: Props) => {
 };
 
 const mapStateToProps = (state: AppState) => ({
-    v2: state.v2
+    model: state.model
 });
 
 const mapDispatchToProps = (dispatch: any) => {

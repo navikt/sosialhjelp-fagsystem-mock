@@ -11,8 +11,8 @@ import Fab from '@material-ui/core/Fab';
 import AddIcon from '@material-ui/icons/Add';
 import Box from '@material-ui/core/Box';
 import {Paper} from "@material-ui/core";
-import {visNyDokumentasjonkravModal} from "../../../redux/v2/v2Actions";
-import {FsSoknad} from "../../../redux/v3/v3FsTypes";
+import {visNyDokumentasjonkravModal} from "../../../redux/actions";
+import {FsSoknad} from "../../../redux/types";
 import DokumentasjonkravTabView from "./DokumentasjonkravTabView";
 import {Dokumentasjonkrav} from "../../../types/hendelseTypes";
 

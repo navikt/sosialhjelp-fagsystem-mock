@@ -1,6 +1,4 @@
 import React, {useEffect} from 'react';
-import {V2Model} from "../redux/v2/v2Types";
-import Hendelse from "../types/hendelseTypes";
 import {AppState, DispatchProps} from "../redux/reduxTypes";
 import {connect} from "react-redux";
 import SoknadsOversiktPanel from "./parts/soknadsOversiktPanel/SoknadsOversiktPanel";
@@ -12,7 +10,6 @@ import makeStyles from "@material-ui/core/styles/makeStyles";
 import Grid from "@material-ui/core/Grid";
 import SystemSettingsModal from "./parts/systemSettings/SystemSettingsModal";
 import StatusSnackBarView from "./parts/statusSnackBar/StatusSnackBarView";
-import {V3State} from "../redux/v3/v3Types";
 import ReactJsonView from "./parts/reactJsonView/ReactJsonView";
 import {getFsSoknadByFiksDigisosId, removeNullFieldsFromHendelser} from "../utils/utilityFunctions";
 import ToppPanel from "./parts/panel/ToppPanel";
@@ -21,7 +18,8 @@ import deepOrange from "@material-ui/core/colors/deepOrange";
 import indigo from "@material-ui/core/colors/indigo";
 import Fab from "@material-ui/core/Fab";
 import {SettingsEthernet} from "@material-ui/icons";
-import {opprettEllerOppdaterDigisosSak} from "../redux/v3/v3Actions";
+import {opprettEllerOppdaterDigisosSak} from "../redux/actions";
+import {Model} from "../redux/types";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -64,24 +62,22 @@ const useStyles = makeStyles((theme: Theme) =>
     }),
 );
 
-interface V3Props {
-    v2: V2Model;
-    v3: V3State;
-    hendelserUpdated: Hendelse[];
+interface StoreProps {
+    model: Model;
 }
 
-type Props = DispatchProps & V3Props;
+type Props = DispatchProps & StoreProps;
 
 const V3: React.FC<Props> = (props: Props) => {
 
     useEffect(() => {
         if (window.location.href.includes('https://www.digisos-test.com/')) {
-            props.dispatch(opprettEllerOppdaterDigisosSak(getFsSoknadByFiksDigisosId(props.v3.soknader,props.v2.aktivSoknad)!, props.v2, props.v2.backendUrlTypeToUse));
+            props.dispatch(opprettEllerOppdaterDigisosSak(getFsSoknadByFiksDigisosId(props.model.soknader,props.model.aktivSoknad)!, props.model, props.model.backendUrlTypeToUse));
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    const loaderOn = props.v2.loaderOn;
+    const loaderOn = props.model.loaderOn;
     const muiTheme = createMuiTheme({
         palette: {
             primary: {
@@ -94,7 +90,7 @@ const V3: React.FC<Props> = (props: Props) => {
                 main: deepOrange[500],
                 dark: deepOrange[700]
             },
-            type: props.v2.thememode
+            type: props.model.thememode
         }
     });
     const classes = useStyles();
@@ -122,7 +118,7 @@ const V3: React.FC<Props> = (props: Props) => {
                 </Grid>
             </div>
 
-            <SystemSettingsModal soknad={getFsSoknadByFiksDigisosId(props.v3.soknader,props.v2.aktivSoknad)} />
+            <SystemSettingsModal soknad={getFsSoknadByFiksDigisosId(props.model.soknader, props.model.aktivSoknad)} />
 
             <StatusSnackBarView />
 
@@ -131,13 +127,13 @@ const V3: React.FC<Props> = (props: Props) => {
             </div>
 
             <div className={classes.colJson}>
-                <ReactJsonView json={getFsSoknadByFiksDigisosId(props.v3.soknader,props.v2.aktivSoknad)}/>
+                <ReactJsonView json={getFsSoknadByFiksDigisosId(props.model.soknader, props.model.aktivSoknad)}/>
             </div>
 
             <div className={classes.colRawJson}>
                 <div className={classes.rawJson}>
                     <Fab aria-label="add" color="primary" onClick={() => {
-                        const fiksDigisosSokerJson = getFsSoknadByFiksDigisosId(props.v3.soknader,props.v2.aktivSoknad)!.fiksDigisosSokerJson;
+                        const fiksDigisosSokerJson = getFsSoknadByFiksDigisosId(props.model.soknader,props.model.aktivSoknad)!.fiksDigisosSokerJson;
                         const fiksDigisosSokerJsonUtenNull = removeNullFieldsFromHendelser(fiksDigisosSokerJson);
                         const jsonString = JSON.stringify(fiksDigisosSokerJsonUtenNull);
                         const x = window.open("data:text/json, _blank");
@@ -155,9 +151,7 @@ const V3: React.FC<Props> = (props: Props) => {
 };
 
 const mapStateToProps = (state: AppState) => ({
-    v2: state.v2,
-    v3: state.v3,
-    hendelserUpdated: JSON.parse(JSON.stringify(state.v2.fiksDigisosSokerJson.sak.soker.hendelser)) // brukes ikke
+    model: state.model
 });
 
 const mapDispatchToProps = (dispatch: any) => {

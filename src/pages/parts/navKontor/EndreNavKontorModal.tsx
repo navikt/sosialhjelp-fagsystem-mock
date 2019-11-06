@@ -6,12 +6,12 @@ import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
-import {aiuuur, oppdaterNavKontor, zeruuus} from "../../../redux/v3/v3Actions";
+import {aiuuur, oppdaterNavKontor, zeruuus} from "../../../redux/actions";
 import Hendelse, {HendelseType, TildeltNavKontor} from "../../../types/hendelseTypes";
 import {getNow} from "../../../utils/utilityFunctions";
-import {V2Model} from "../../../redux/v2/v2Types";
-import {oHendelser} from "../../../redux/v3/v3Optics";
-import {FsSoknad} from "../../../redux/v3/v3FsTypes";
+import {Model} from "../../../redux/types";
+import {oHendelser} from "../../../redux/optics";
+import {FsSoknad} from "../../../redux/types";
 import {NavKontor} from "../../../types/additionalTypes";
 
 
@@ -35,7 +35,7 @@ interface OwnProps {
 }
 
 interface StoreProps {
-    v2: V2Model
+    model: Model
 }
 
 type Props = DispatchProps & OwnProps & StoreProps;
@@ -43,7 +43,7 @@ type Props = DispatchProps & OwnProps & StoreProps;
 
 const EndreNavKontorModal: React.FC<Props> = (props: Props) => {
     const classes = useStyles();
-    const {dispatch, soknad, v2} = props;
+    const {dispatch, soknad, model} = props;
 
     const navKontor0: NavKontor = {
         id: '1208',
@@ -91,15 +91,15 @@ const EndreNavKontorModal: React.FC<Props> = (props: Props) => {
                         };
 
                         const soknadUpdated = oHendelser.modify((a: Hendelse[]) => [...a, nyHendelse])(soknad);
-                        if (v2.backendUrlTypeToUse !== 'q0' && v2.backendUrlTypeToUse !== 'q1') {
-                            dispatch(zeruuus(navKontorListe, v2));
+                        if (model.backendUrlTypeToUse !== 'q0' && model.backendUrlTypeToUse !== 'q1') {
+                            dispatch(zeruuus(navKontorListe, model));
                         }
 
                         dispatch(
                             aiuuur(
                                 soknad.fiksDigisosId,
                                 soknadUpdated.fiksDigisosSokerJson,
-                                props.v2,
+                                props.model,
                                 oppdaterNavKontor(soknad.fiksDigisosId, nyHendelse)
                             )
                         )
@@ -117,7 +117,7 @@ const EndreNavKontorModal: React.FC<Props> = (props: Props) => {
 };
 
 const mapStateToProps = (state: AppState) => ({
-    v2: state.v2
+    model: state.model
 });
 
 const mapDispatchToProps = (dispatch: any) => {

@@ -6,12 +6,12 @@ import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
-import {aiuuur, oppdaterFsSaksStatus} from "../../../redux/v3/v3Actions";
+import {aiuuur, oppdaterFsSaksStatus} from "../../../redux/actions";
 import Hendelse, {HendelseType, SaksStatus, SaksStatusType} from "../../../types/hendelseTypes";
 import {getNow} from "../../../utils/utilityFunctions";
-import {V2Model} from "../../../redux/v2/v2Types";
-import {oHendelser} from "../../../redux/v3/v3Optics";
-import {FsSaksStatus, FsSoknad} from "../../../redux/v3/v3FsTypes";
+import {Model} from "../../../redux/types";
+import {oHendelser} from "../../../redux/optics";
+import {FsSaksStatus, FsSoknad} from "../../../redux/types";
 
 
 const useStyles = makeStyles(theme => ({
@@ -40,7 +40,7 @@ interface OwnProps {
 }
 
 interface StoreProps {
-    v2: V2Model
+    model: Model
 }
 
 type Props = DispatchProps & OwnProps & StoreProps;
@@ -48,7 +48,7 @@ type Props = DispatchProps & OwnProps & StoreProps;
 
 const EndreSaksstatusModal: React.FC<Props> = (props: Props) => {
     const classes = useStyles();
-    const {dispatch, soknad, v2, sak} = props;
+    const {dispatch, soknad, model, sak} = props;
 
     return (
         <form className={classes.root} autoComplete="off">
@@ -75,11 +75,11 @@ const EndreSaksstatusModal: React.FC<Props> = (props: Props) => {
 
                             dispatch(
                                 aiuuur(
-                                    v2.aktivSoknad,
+                                    model.aktivSoknad,
                                     soknadUpdated.fiksDigisosSokerJson,
-                                    v2,
+                                    model,
                                     oppdaterFsSaksStatus(
-                                        v2.aktivSoknad,
+                                        model.aktivSoknad,
                                         nyHendelse
                                     )
                                 )
@@ -102,7 +102,7 @@ const EndreSaksstatusModal: React.FC<Props> = (props: Props) => {
 };
 
 const mapStateToProps = (state: AppState) => ({
-    v2: state.v2
+    model: state.model
 });
 
 const mapDispatchToProps = (dispatch: any) => {

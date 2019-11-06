@@ -10,7 +10,7 @@ import Typography from '@material-ui/core/Typography';
 import Fab from '@material-ui/core/Fab';
 import AddIcon from '@material-ui/icons/Add';
 import Box from '@material-ui/core/Box';
-import {setAktivtRammevedtak, visNyRammevedtakModal} from "../../../redux/v2/v2Actions";
+import {setAktivtRammevedtak, visNyRammevedtakModal} from "../../../redux/actions";
 import RammevedtakTabView from "./RammevedtakTabView";
 import {Rammevedtak} from "../../../types/hendelseTypes";
 

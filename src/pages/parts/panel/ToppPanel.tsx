@@ -5,10 +5,10 @@ import makeStyles from "@material-ui/core/styles/makeStyles";
 import {getFsSoknadByFiksDigisosId} from "../../../utils/utilityFunctions";
 import Paper from "@material-ui/core/Paper";
 import SoknadStatusView from "../soknadStatusView/SoknadStatusView";
-import {FsSoknad} from "../../../redux/v3/v3FsTypes";
+import {FsSoknad} from "../../../redux/types";
 import Typography from "@material-ui/core/Typography";
 import TildeldeltNavkontorView from "../navKontor/TildeltNavKontorView";
-import {BackendUrls} from "../../../redux/v2/v2Types";
+import {BackendUrls} from "../../../redux/types";
 
 
 const useStyles = makeStyles(theme => ({
@@ -88,12 +88,12 @@ const ToppPanel: React.FC<Props> = (props: Props) => {
 };
 
 const mapStateToProps = (state: AppState) => {
-    const {aktivSoknad} = state.v2;
-    const {soknader} = state.v3;
+    const {aktivSoknad} = state.model;
+    const {soknader} = state.model;
     return {
         soknad: getFsSoknadByFiksDigisosId(soknader, aktivSoknad),
-        backendUrls: state.v2.backendUrls,
-        backendUrlTypeToUse: state.v2.backendUrlTypeToUse
+        backendUrls: state.model.backendUrls,
+        backendUrlTypeToUse: state.model.backendUrlTypeToUse
     };
 };
 

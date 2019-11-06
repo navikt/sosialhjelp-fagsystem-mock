@@ -12,11 +12,11 @@ import Typography from "@material-ui/core/Typography";
 import AddIcon from '@material-ui/icons/Add';
 import Box from "@material-ui/core/Box";
 import Fab from "@material-ui/core/Fab";
-import {FsSoknad} from "../../../redux/v3/v3FsTypes";
-import {aiuuur, chaaar, oppdaterForelopigSvar, oppdaterSoknadsStatus} from "../../../redux/v3/v3Actions";
+import {FsSoknad} from "../../../redux/types";
+import {aiuuur, chaaar, oppdaterForelopigSvar, oppdaterSoknadsStatus} from "../../../redux/actions";
 import {getNow} from "../../../utils/utilityFunctions";
-import {V2Model} from "../../../redux/v2/v2Types";
-import {oHendelser} from "../../../redux/v3/v3Optics";
+import {Model} from "../../../redux/types";
+import {oHendelser} from "../../../redux/optics";
 
 
 const useStyles = makeStyles((theme) => {
@@ -87,7 +87,7 @@ interface OwnProps {
 }
 
 interface StoreProps {
-    v2: V2Model
+    model: Model
 }
 
 type Props = DispatchProps & OwnProps & StoreProps;
@@ -95,7 +95,7 @@ type Props = DispatchProps & OwnProps & StoreProps;
 
 const SoknadStatusView: React.FC<Props> = (props: Props) => {
     const classes = useStyles();
-    const {dispatch, soknad, v2} = props;
+    const {dispatch, soknad, model} = props;
     const inputEl = useRef<HTMLInputElement>(null);
 
     const handleFileUpload = (files: FileList) => {
@@ -105,7 +105,7 @@ const SoknadStatusView: React.FC<Props> = (props: Props) => {
         const formData = new FormData();
         formData.append("file", files[0], files[0].name);
 
-        dispatch(chaaar(soknad.fiksDigisosId, formData, v2, soknad));
+        dispatch(chaaar(soknad.fiksDigisosId, formData, model, soknad));
     };
 
     const addNyttForelopigSvarButton = () => {
@@ -113,7 +113,7 @@ const SoknadStatusView: React.FC<Props> = (props: Props) => {
             <Box className={classes.addbox}>
                 <Fab aria-label='Add' className={classes.fab} color='primary'
                      onClick={() => {
-                         if((v2.backendUrlTypeToUse === 'q0' || v2.backendUrlTypeToUse === 'q1') && inputEl && inputEl.current) {
+                         if((model.backendUrlTypeToUse === 'q0' || model.backendUrlTypeToUse === 'q1') && inputEl && inputEl.current) {
                              inputEl.current.click();
                          } else {
                              const nyHendelse: ForelopigSvar = {
@@ -121,8 +121,8 @@ const SoknadStatusView: React.FC<Props> = (props: Props) => {
                                  hendelsestidspunkt: getNow(),
                                  forvaltningsbrev: {
                                      referanse: {
-                                         type: v2.filreferanselager.dokumentlager[0].type,
-                                         id: v2.filreferanselager.dokumentlager[0].id
+                                         type: model.filreferanselager.dokumentlager[0].type,
+                                         id: model.filreferanselager.dokumentlager[0].id
                                      }
                                  },
                                  vedlegg: []
@@ -134,7 +134,7 @@ const SoknadStatusView: React.FC<Props> = (props: Props) => {
                                  aiuuur(
                                      soknad.fiksDigisosId,
                                      soknadUpdated.fiksDigisosSokerJson,
-                                     v2,
+                                     model,
                                      oppdaterForelopigSvar(soknad.fiksDigisosId, nyHendelse)
                                  )
                              );
@@ -142,7 +142,7 @@ const SoknadStatusView: React.FC<Props> = (props: Props) => {
                      }}>
                     <AddIcon/>
                 </Fab>
-                <Typography>{(v2.backendUrlTypeToUse === 'q0' || v2.backendUrlTypeToUse === 'q1') ? "Send pdf med foreløpig svar" : "Send foreløpig svar"}</Typography>
+                <Typography>{(model.backendUrlTypeToUse === 'q0' || model.backendUrlTypeToUse === 'q1') ? "Send pdf med foreløpig svar" : "Send foreløpig svar"}</Typography>
             </Box>
         )
     };
@@ -178,7 +178,7 @@ const SoknadStatusView: React.FC<Props> = (props: Props) => {
                                                 aiuuur(
                                                     soknad.fiksDigisosId,
                                                     soknadUpdated.fiksDigisosSokerJson,
-                                                    props.v2,
+                                                    props.model,
                                                     oppdaterSoknadsStatus(soknad.fiksDigisosId, nyHendelse)
                                                 )
                                             )
@@ -228,7 +228,7 @@ const SoknadStatusView: React.FC<Props> = (props: Props) => {
 };
 
 const mapStateToProps = (state: AppState) => ({
-    v2: state.v2
+    model: state.model
 });
 
 const mapDispatchToProps = (dispatch: any) => {

@@ -1,12 +1,11 @@
-import {array} from "fp-ts/es6/Array";
 import {fromTraversable, Lens, Prism} from "monocle-ts/es6";
+import {Model} from "./types";
+import {FsSaksStatus, FsSoknad} from "./types";
+import Hendelse, {Dokumentasjonkrav, Rammevedtak, Utbetaling, Vilkar} from "../types/hendelseTypes";
+import {array} from "fp-ts/lib/Array";
 
-import {V3State} from "./v3Types";
-import {FsSaksStatus, FsSoknad} from "./v3FsTypes";
-import Hendelse, {Dokumentasjonkrav, Rammevedtak, Utbetaling, Vilkar} from "../../types/hendelseTypes";
 
-
-export const oFsSoknader = Lens.fromProp<V3State>()('soknader');
+export const oFsSoknader = Lens.fromProp<Model>()('soknader');
 export const oFsSoknaderTraversal = fromTraversable(array)<FsSoknad>();
 export const oGetFsSoknadPrism = (fiksDigisosId: string): Prism<FsSoknad, FsSoknad> => Prism.fromPredicate(fsSoknad => fsSoknad.fiksDigisosId === fiksDigisosId);
 
@@ -19,11 +18,6 @@ export const oGetSoknad = (forFiksDigisosId: string) => {
         .composeTraversal(oFsSoknaderTraversal)
         .composePrism(oGetFsSoknadPrism(forFiksDigisosId))
 };
-
-// Hendelser
-export const oGetHendelser = () => {
-    return
-}
 
 // TildelNavKontor
 export const oNavKontor = Lens.fromProp<FsSoknad>()('navKontor');

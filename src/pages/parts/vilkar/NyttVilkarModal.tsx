@@ -2,11 +2,11 @@ import React, {useState} from 'react';
 import {AppState, DispatchProps} from "../../../redux/reduxTypes";
 import {connect} from "react-redux";
 import {createStyles, Modal, Theme} from "@material-ui/core";
-import {setAktivtVilkar, skjulNyVilkarModal} from "../../../redux/v2/v2Actions";
+import {setAktivtVilkar, skjulNyVilkarModal} from "../../../redux/actions";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import Fade from "@material-ui/core/Fade";
 import Backdrop from "@material-ui/core/Backdrop";
-import {V2Model} from "../../../redux/v2/v2Types";
+import {Model} from "../../../redux/types";
 import {
     generateFilreferanseId,
     getAllUtbetalingsreferanser,
@@ -17,14 +17,14 @@ import {
 import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
 import Hendelse, {HendelseType, Vilkar, VilkarStatus} from "../../../types/hendelseTypes";
-import {oHendelser} from "../../../redux/v3/v3Optics";
-import {aiuuur, nyttVilkar, oppdaterVilkar} from "../../../redux/v3/v3Actions";
+import {oHendelser} from "../../../redux/optics";
+import {aiuuur, nyttVilkar, oppdaterVilkar} from "../../../redux/actions";
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
 import Typography from "@material-ui/core/Typography";
 import Fab from "@material-ui/core/Fab";
 import AddIcon from '@material-ui/icons/Add';
-import {FsSoknad} from "../../../redux/v3/v3FsTypes";
+import {FsSoknad} from "../../../redux/types";
 import InputLabel from "@material-ui/core/InputLabel";
 import FormControl from "@material-ui/core/FormControl";
 import Input from '@material-ui/core/Input';
@@ -119,7 +119,7 @@ interface OwnProps {
 
 interface StoreProps {
     visNyVilkarModal: boolean;
-    v2: V2Model;
+    model: Model
     aktivtVilkar: string | undefined | null;
 }
 
@@ -161,7 +161,7 @@ const NyttVilkarModal: React.FC<Props> = (props: Props) => {
     const theme = useTheme();
 
     const classes = useStyles();
-    const {visNyVilkarModal, dispatch, v2, soknad, aktivtVilkar} = props;
+    const {visNyVilkarModal, dispatch, model, soknad, aktivtVilkar} = props;
 
     function resetStateValues() {
         setModalVilkar({...initialVilkar, vilkarreferanse: generateFilreferanseId()});
@@ -182,7 +182,7 @@ const NyttVilkarModal: React.FC<Props> = (props: Props) => {
                 aiuuur(
                     soknad.fiksDigisosId,
                     soknadUpdated.fiksDigisosSokerJson,
-                    v2,
+                    model,
                     nyttVilkar(soknad.fiksDigisosId, nyHendelse)
                 )
             );
@@ -191,7 +191,7 @@ const NyttVilkarModal: React.FC<Props> = (props: Props) => {
                 aiuuur(
                     soknad.fiksDigisosId,
                     soknadUpdated.fiksDigisosSokerJson,
-                    v2,
+                    model,
                     oppdaterVilkar(soknad.fiksDigisosId, nyHendelse)
                 )
             );
@@ -363,9 +363,9 @@ const NyttVilkarModal: React.FC<Props> = (props: Props) => {
 };
 
 const mapStateToProps = (state: AppState) => ({
-    visNyVilkarModal: state.v2.visNyVilkarModal,
-    v2: state.v2,
-    aktivtVilkar: state.v2.aktivtVilkar
+    visNyVilkarModal: state.model.visNyVilkarModal,
+    model: state.model,
+    aktivtVilkar: state.model.aktivtVilkar
 });
 
 const mapDispatchToProps = (dispatch: any) => {
