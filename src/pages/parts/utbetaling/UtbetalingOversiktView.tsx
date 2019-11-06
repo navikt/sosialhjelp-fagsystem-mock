@@ -34,7 +34,7 @@ function TabPanel(props: TabPanelProps) {
             aria-labelledby={`action-tab-${index}`}
             {...other}
         >
-            <Box p={3}>{children}</Box>
+            <Box p={0.5}>{children}</Box>
         </Typography>
     );
 }

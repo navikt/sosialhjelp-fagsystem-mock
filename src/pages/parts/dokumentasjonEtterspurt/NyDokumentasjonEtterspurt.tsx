@@ -64,7 +64,7 @@ const useStyles = makeStyles((theme: Theme) =>
         },
         paperback2: {
             backgroundColor: theme.palette.background.paper,
-            width:'100%',
+            // width:'100%',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',

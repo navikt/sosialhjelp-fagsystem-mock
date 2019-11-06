@@ -20,6 +20,7 @@ import Fab from "@material-ui/core/Fab";
 import {SettingsEthernet} from "@material-ui/icons";
 import {opprettDigisosSakHvisDenIkkeFinnes} from "../redux/actions";
 import {Model} from "../redux/types";
+import useMediaQuery from "@material-ui/core/useMediaQuery/useMediaQuery";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -77,6 +78,8 @@ const V3: React.FC<Props> = (props: Props) => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
+    const smallScreen = useMediaQuery('(max-width:610px)');
+
     const loaderOn = props.model.loaderOn;
     const muiTheme = createMuiTheme({
         palette: {
@@ -104,9 +107,9 @@ const V3: React.FC<Props> = (props: Props) => {
                     <Grid item sm={2} className={classes.left} zeroMinWidth>
                         <SoknadsOversiktPanel />
                     </Grid>
-                    <Grid item sm={1} className={classes.left} zeroMinWidth>
+                    {!smallScreen && <Grid item sm={1} className={classes.left} zeroMinWidth>
                         <br />
-                    </Grid>
+                    </Grid>}
                     <Grid item sm={9} className={classes.right} zeroMinWidth>
                         <ToppPanel />
                     </Grid>

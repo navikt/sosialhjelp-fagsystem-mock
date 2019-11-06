@@ -42,17 +42,18 @@ const useStyles = makeStyles((theme: Theme) =>
             marginTop: theme.spacing(3),
             overflowX: 'auto',
             marginBottom: theme.spacing(2),
+            '@media (max-width: 500px)': {
+                maxWidth: 280,
+            },
         },
         tableBox: {
-            padding: theme.spacing(2, 2),
             marginTop: theme.spacing(2),
             position: 'relative',
             display: 'flex',
             flexDirection: 'row',
             paddingTop: theme.spacing(2),
             alignItems: 'center',
-            justifyContent: 'center',
-            marginLeft: theme.spacing(2),
+            justifyContent: 'center'
         },
         addbox: {
             margin: theme.spacing(2, 0, 2, 0),
@@ -62,8 +63,8 @@ const useStyles = makeStyles((theme: Theme) =>
             alignItems: 'center'
         },
         table: {
-            '@media (min-width: 860px)': {
-                minWidth: '650px',
+            '@media (min-width: 1000px)': {
+                minWidth: 650,
             },
         },
         paperRoute: {

@@ -28,6 +28,9 @@ const useStyles = makeStyles((theme) => {
             marginTop: theme.spacing(3),
             overflowX: 'auto',
             marginBottom: theme.spacing(2),
+            '@media (max-width: 500px)': {
+                maxWidth: 280,
+            },
         },
         table: {
             '@media (min-width: 860px)': {

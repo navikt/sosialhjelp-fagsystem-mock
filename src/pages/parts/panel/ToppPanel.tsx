@@ -36,6 +36,12 @@ const useStyles = makeStyles(theme => ({
         flexDirection: 'row',
         justifyContent: 'space-between',
     },
+    frontendLink: {
+        display: 'flex',
+        flexWrap: 'wrap',
+        overflowWrap: 'break-word',
+        wordBreak: 'break-word'
+    },
 }));
 
 
@@ -66,7 +72,7 @@ const ToppPanel: React.FC<Props> = (props: Props) => {
                         <Typography variant={"subtitle1"}>
                             FiksDigisosId: {soknad.fiksDigisosId}
                         </Typography>
-                        <Typography variant={"subtitle1"}>
+                        <Typography variant={"subtitle1"} className={classes.frontendLink}>
                             <a href={frontendUrl} target="_blank" rel="noopener noreferrer">{frontendUrl}</a>
                         </Typography>
                         <br/>
