@@ -51,18 +51,17 @@ export interface FsSoknad {
     navn: string;
 
     // FS Hendelser
-    soknadsStatus: SoknadsStatus; // Default mottatt, se minimum hendelse.json
-    navKontor: TildeltNavKontor | undefined; // If undefined => vis knapp for "send til annet Nav kontor"
-    dokumentasjonEtterspurt: DokumentasjonEtterspurt | undefined; // If undefined => vis knapp for "Etterspør dokumentasjon"
-    forelopigSvar: ForelopigSvar | undefined; // If undefined => vis knapp for "Opprett og send foreløpig svar"
+    soknadsStatus: SoknadsStatus; // Default mottatt
+    navKontor: TildeltNavKontor | undefined;
+    dokumentasjonEtterspurt: DokumentasjonEtterspurt | undefined;
+    forelopigSvar: ForelopigSvar | undefined;
     vilkar: Vilkar[];
     dokumentasjonkrav: Dokumentasjonkrav[];
     rammevedtakUtenSaksreferanse: Rammevedtak[];
     utbetalingerUtenSaksreferanse: Utbetaling[];
     saker: FsSaksStatus[];
 
-    // hendelseJson, den som skal shippes avgårde
-    fiksDigisosSokerJson: FiksDigisosSokerJson; // Default inneholder minimum hendelse.json
+    fiksDigisosSokerJson: FiksDigisosSokerJson;
 }
 
 export interface FsSaksStatus extends SaksStatus {
@@ -88,36 +87,36 @@ export interface Filreferanselager {
 export type Action
     = SetFiksDigisosId
     | SetDigisosSokerJson
-    | TurnOnLoader
-    | TurnOffLoader
-    | SetBackendUrlTypeToUse
-    | SwitchToDarkMode
-    | SwitchToLightMode
-    | VisNySakModal
-    | SkjulNySakModal
-    | VisNyDokumentasjonEtterspurtModal
-    | SkjulNyDokumentasjonEtterspurtModal
-    | VisNyUtbetalingModal
-    | SkjulNyUtbetalingModal
-    | VisNyVilkarModal
-    | SkjulNyVilkarModal
-    | VisNyDokumentasjonkravModal
-    | SkjulNyDokumentasjonkravModal
-    | VisNyRammevedtakModal
-    | SkjulNyRammevedtakModal
-    | VisEndreNavKontorModal
-    | SkjulEndreNavKontorModal
-    | VisSystemSettingsModal
-    | SkjulSystemSettingsModal
-    | VisSuccessSnackbar
-    | VisErrorSnackbar
-    | SkjulSnackbar
     | SetAktivSoknad
     | SetAktivUtbetaling
     | SetAktivtVilkar
     | SetAktivtDokumentasjonkrav
     | SetAktivtRammevedtak
-    // v3
+    | SetBackendUrlTypeToUse
+    | TurnOnLoader
+    | TurnOffLoader
+    | SwitchToDarkMode
+    | SwitchToLightMode
+    | VisNySakModal
+    | VisNyDokumentasjonEtterspurtModal
+    | VisNyUtbetalingModal
+    | VisNyVilkarModal
+    | VisNyDokumentasjonkravModal
+    | VisNyRammevedtakModal
+    | VisEndreNavKontorModal
+    | VisSystemSettingsModal
+    | VisSuccessSnackbar
+    | VisErrorSnackbar
+    | SkjulNySakModal
+    | SkjulNyDokumentasjonEtterspurtModal
+    | SkjulNyUtbetalingModal
+    | SkjulNyVilkarModal
+    | SkjulNyDokumentasjonkravModal
+    | SkjulNyRammevedtakModal
+    | SkjulEndreNavKontorModal
+    | SkjulSystemSettingsModal
+    | SkjulSnackbar
+    // oppdater hendelse.json
     | NyFsSoknad
     | SlettFsSoknad
     | OppdaterSoknadsStatus
