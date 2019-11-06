@@ -7,11 +7,10 @@ import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import {Button, Typography} from "@material-ui/core";
 import Paper from "@material-ui/core/Paper";
-import {FsSoknad} from "../../../redux/types";
-import {Model} from "../../../redux/types";
-import {nyFsSoknad, opprettEllerOppdaterDigisosSak} from "../../../redux/actions";
+import {FsSoknad, Model} from "../../../redux/types";
+import {nyFsSoknad, opprettDigisosSakHvisDenIkkeFinnes} from "../../../redux/actions";
 import TextField from "@material-ui/core/TextField";
-import {generateFilreferanseId} from "../../../utils/utilityFunctions";
+import {generateRandomId} from "../../../utils/utilityFunctions";
 
 const useStyles = makeStyles(theme => ({
     paper: {
@@ -45,7 +44,7 @@ const SoknadsOversiktPanel: React.FC<Props> = (props: Props) => {
             return (
                 <ListItem id={"soknad_" + index} key={"SoknadItem: " + soknad.fiksDigisosId} selected={soknad.fiksDigisosId === aktivSoknad} button
                           divider
-                          onClick={() => props.dispatch(opprettEllerOppdaterDigisosSak(soknad, model, model.backendUrlTypeToUse))}>
+                          onClick={() => props.dispatch(opprettDigisosSakHvisDenIkkeFinnes(soknad, model, model.backendUrlTypeToUse))}>
                     <ListItemText primary={soknad.fiksDigisosId}/>
                 </ListItem>
             )
@@ -73,9 +72,9 @@ const SoknadsOversiktPanel: React.FC<Props> = (props: Props) => {
                 id='opprett_ny_soknad_knapp'
                 onClick={() => {
                     if (fiksDigisosId.length !== 0) {
-                        props.dispatch(nyFsSoknad(fiksDigisosId, '26104500284', 'Natalie Emberland'));
+                        props.dispatch(nyFsSoknad(fiksDigisosId));
                     } else {
-                        props.dispatch(nyFsSoknad(generateFilreferanseId(), '26104500284', 'Natalie Emberland'));
+                        props.dispatch(nyFsSoknad(generateRandomId(11)));
                     }
                     setFiksDigisosId('');
                 }}

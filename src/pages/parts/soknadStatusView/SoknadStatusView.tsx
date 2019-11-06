@@ -17,6 +17,7 @@ import {aiuuur, chaaar, oppdaterForelopigSvar, oppdaterSoknadsStatus} from "../.
 import {getNow} from "../../../utils/utilityFunctions";
 import {Model} from "../../../redux/types";
 import {oHendelser} from "../../../redux/optics";
+import {defaultDokumentlagerRef} from "../../../redux/reducer";
 
 
 const useStyles = makeStyles((theme) => {
@@ -121,8 +122,8 @@ const SoknadStatusView: React.FC<Props> = (props: Props) => {
                                  hendelsestidspunkt: getNow(),
                                  forvaltningsbrev: {
                                      referanse: {
-                                         type: model.filreferanselager.dokumentlager[0].type,
-                                         id: model.filreferanselager.dokumentlager[0].id
+                                         type: defaultDokumentlagerRef.type,
+                                         id: defaultDokumentlagerRef.id
                                      }
                                  },
                                  vedlegg: []

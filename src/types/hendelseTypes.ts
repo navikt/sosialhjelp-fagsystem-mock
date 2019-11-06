@@ -179,11 +179,6 @@ export enum UtbetalingStatus {
     ANNULLERT = "ANNULLERT"
 }
 
-
-// export interface Filreferanse {
-//     type: SvarUt | DokumentLager;
-// }
-
 export enum FilreferanseType {
     svarut = "svarut",
     dokumentlager = "dokumentlager"

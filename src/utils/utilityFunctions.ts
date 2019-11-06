@@ -1,21 +1,13 @@
 import Hendelse, {
     Dokumentasjonkrav,
-    Dokumentlager,
-    DokumentlagerExtended,
     FiksDigisosSokerJson,
-    FilreferanseType,
     HendelseType,
     Rammevedtak,
     SaksStatus,
-    Svarut,
-    SvarutExtended,
     Utbetaling,
-    Vedlegg,
-    VedtakFattet,
     Vilkar
 } from "../types/hendelseTypes";
-import {Filreferanselager, FsSaksStatus, FsSoknad} from "../redux/types";
-import {Soknad} from "../types/additionalTypes";
+import {FsSaksStatus, FsSoknad} from "../redux/types";
 
 
 export const removeNullFieldsFromHendelser = (fiksDigisosSokerJson: FiksDigisosSokerJson) : FiksDigisosSokerJson => {
@@ -146,15 +138,6 @@ export const getAllSaksStatuser = (hendelser: Hendelse[]): SaksStatus[] => {
         });
 };
 
-export const sakEksistererOgEtVedtakErIkkeFattet = (hendelser: Hendelse[], saksReferanse: string): boolean => {
-    const saksStatus: Hendelse | undefined = hendelser.find((hendelse) => hendelse.type === HendelseType.SaksStatus && (hendelse as SaksStatus).referanse === saksReferanse);
-    const vedtakForSaksStatus: Hendelse | undefined = hendelser.find((hendelse) => {
-        return hendelse.type === HendelseType.VedtakFattet && (hendelse as VedtakFattet).saksreferanse === saksReferanse;
-    });
-
-    return !!(saksStatus && !vedtakForSaksStatus);
-};
-
 export const generateFilreferanseId = (): string => {
 
     const listOfCharacters: string[] = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0"];
@@ -170,50 +153,14 @@ export const generateFilreferanseId = (): string => {
     return `${r.slice(0, 8).join(jp)}-${r.slice(8, 12).join(jp)}-${r.slice(12, 16).join(jp)}-${r.slice(16, 20).join(jp)}-${r.slice(20).join(jp)}`;
 };
 
-export const convertToFilreferanse = (extended: SvarutExtended | DokumentlagerExtended): Svarut | Dokumentlager => {
-    switch (extended.type) {
-        case FilreferanseType.svarut: {
-            return {
-                type: FilreferanseType.svarut,
-                id: extended.id,
-                nr: extended.nr
-            } as Svarut;
-        }
-        default: {
-            return {
-                type: FilreferanseType.dokumentlager,
-                id: extended.id
-            } as Dokumentlager
-        }
+export const generateRandomId = (length: number) => {
+    let result           = '';
+    const characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const charactersLength = characters.length;
+    for ( var i = 0; i < length; i++ ) {
+        result += characters.charAt(Math.floor(Math.random() * charactersLength));
     }
-};
-
-export const convertToListOfVedlegg = (vedleggsliste: (SvarutExtended | DokumentlagerExtended)[]): Vedlegg[] => {
-    return vedleggsliste.map((vedlegg: (SvarutExtended | DokumentlagerExtended)) => {
-        return {
-            tittel: vedlegg.tittel,
-            referanse: convertToFilreferanse(vedlegg)
-
-        } as Vedlegg
-    }) as Vedlegg[];
-};
-
-export const getFilreferanseExtended = (id: string, filreferanselager: Filreferanselager) => {
-    let filreferanse: SvarutExtended | DokumentlagerExtended | undefined = filreferanselager.dokumentlager.find((d) => {
-        return d.id === id;
-    });
-    if (filreferanse === undefined){
-        filreferanse = filreferanselager.svarutlager.find((d) => {
-            return d.id === id;
-        });
-    }
-    return filreferanse;
-};
-
-export const getSoknadByFiksDigisosId = (soknader: Soknad[], fiksDigisosId: string) => {
-    return soknader.find(s => {
-        return s.fiksDigisosId === fiksDigisosId
-    })
+    return result;
 };
 
 export const getFsSoknadByFiksDigisosId = (soknader: FsSoknad[], fiksDigisosId: string): FsSoknad | undefined => {
@@ -245,23 +192,6 @@ export const generateNyFsSaksStatus = (tittel: string|null): FsSaksStatus => {
         vilkar: [],
         dokumentasjonskrav: [],
     } as FsSaksStatus;
-};
-
-export const getFsSaksStatusByReferanse = (saker: FsSaksStatus[], saksreferanse: string|null): FsSaksStatus => {
-    if (saksreferanse == null || saker.length === 0) {
-        return generateNyFsSaksStatus("");
-    }
-    const fsSaksStatus = saker.find(s => {
-        return s.referanse === saksreferanse
-    });
-    return fsSaksStatus ? fsSaksStatus : generateNyFsSaksStatus("");
-};
-
-export const getFsSaksStatusByIdx = (saker: FsSaksStatus[], idx: number|undefined): FsSaksStatus => {
-    if (typeof idx == 'undefined' || saker.length === 0) {
-        return generateNyFsSaksStatus("");
-    }
-    return saker[idx];
 };
 
 export const getAlleUtbetalingerFraSaker = (saker: FsSaksStatus[]): Utbetaling[] => {
@@ -311,33 +241,3 @@ export const getRammevedtakByRammevedtaksreferanse = (soknad: FsSoknad, referans
     let alleRammevedtak = getAlleRammevedtak(soknad);
     return alleRammevedtak.find(s => s.rammevedtaksreferanse === referanse)
 };
-
-export const getSaksStatusByReferanse = (soknad: Soknad, referanse: string) => {
-    return soknad.saker.find((sak: SaksStatus) => {
-        return sak.referanse === referanse;
-    })
-};
-
-export const updateSoknadInSoknader = (soknad: Soknad, soknader: Soknad[]) => {
-    return soknader.map((s) => {
-        if (s.fiksDigisosId === soknad.fiksDigisosId){
-            return soknad;
-        } else {
-            return s;
-        }
-    })
-};
-
-// export const asdf = (): V2Model => {
-//     const hendelserUpdated = soknadUpdated.fiksDigisosSokerJson.sak.soker.hendelser.map(h => h);
-//     hendelserUpdated.push(nySaksStatus);
-//     const soknaderUpdated = state.soknader.map((soknad: Soknad) => {
-//         if (soknad.fnr === soknadUpdated.fnr){
-//             return soknadUpdated
-//         }
-//         return soknad
-//     });
-//
-// };
-
-

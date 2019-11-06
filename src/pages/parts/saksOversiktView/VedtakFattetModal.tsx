@@ -9,13 +9,13 @@ import Select from '@material-ui/core/Select';
 import {aiuuur, oppdaterVedtakFattet, tarsoniiis} from "../../../redux/actions";
 import Hendelse, {HendelseType, Utfall, VedtakFattet} from "../../../types/hendelseTypes";
 import {getNow} from "../../../utils/utilityFunctions";
-import {Model} from "../../../redux/types";
+import {FsSaksStatus, FsSoknad, Model} from "../../../redux/types";
 import {oHendelser} from "../../../redux/optics";
-import {FsSaksStatus, FsSoknad} from "../../../redux/types";
 import Box from "@material-ui/core/Box";
 import Fab from "@material-ui/core/Fab";
 import AddIcon from '@material-ui/icons/Add';
 import Typography from "@material-ui/core/Typography";
+import {defaultDokumentlagerRef} from "../../../redux/reducer";
 
 
 const useStyles = makeStyles(theme => ({
@@ -65,7 +65,6 @@ const VedtakFattetModal: React.FC<Props> = (props: Props) => {
     const classes = useStyles();
     const [vedtakFattetUtfall, setVedtakFattetUtfall] = useState<Utfall|null>(null);
     const {dispatch, soknad, model, sak} = props;
-    const filreferanselager = model.filreferanselager;
     const inputEl = useRef<HTMLInputElement>(null);
 
     const handleFileUpload = (files: FileList) => {
@@ -119,8 +118,8 @@ const VedtakFattetModal: React.FC<Props> = (props: Props) => {
                              utfall:  vedtakFattetUtfall ,
                              vedtaksfil: {
                                  referanse: {
-                                     type: filreferanselager.dokumentlager[0].type,
-                                     id: filreferanselager.dokumentlager[0].id
+                                     type: defaultDokumentlagerRef.type,
+                                     id: defaultDokumentlagerRef.id
                                  }
                              },
                              vedlegg: []

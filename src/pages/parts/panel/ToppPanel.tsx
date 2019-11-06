@@ -9,6 +9,7 @@ import {FsSoknad} from "../../../redux/types";
 import Typography from "@material-ui/core/Typography";
 import TildeldeltNavkontorView from "../navKontor/TildeltNavKontorView";
 import {BackendUrls} from "../../../redux/types";
+import {backendUrls} from "../../../redux/reducer";
 
 
 const useStyles = makeStyles(theme => ({
@@ -40,7 +41,6 @@ const useStyles = makeStyles(theme => ({
 
 interface StoreProps {
     soknad: FsSoknad | undefined;
-    backendUrls: BackendUrls;
     backendUrlTypeToUse: keyof BackendUrls;
 }
 
@@ -48,7 +48,7 @@ type Props = DispatchProps & StoreProps;
 
 const ToppPanel: React.FC<Props> = (props: Props) => {
     const classes = useStyles();
-    const {soknad, backendUrls, backendUrlTypeToUse} = props;
+    const {soknad, backendUrlTypeToUse} = props;
     const backendUrl = backendUrls[backendUrlTypeToUse];
     if (soknad) {
         let frontendUrl = backendUrl.substring(0, backendUrl.search('/sosialhjelp/')) + '/sosialhjelp/innsyn/' + soknad.fiksDigisosId + '/status';
@@ -92,7 +92,6 @@ const mapStateToProps = (state: AppState) => {
     const {soknader} = state.model;
     return {
         soknad: getFsSoknadByFiksDigisosId(soknader, aktivSoknad),
-        backendUrls: state.model.backendUrls,
         backendUrlTypeToUse: state.model.backendUrlTypeToUse
     };
 };

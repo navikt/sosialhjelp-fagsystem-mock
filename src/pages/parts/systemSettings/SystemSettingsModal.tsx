@@ -2,18 +2,21 @@ import React, {useState} from 'react';
 import {AppState, DispatchProps} from "../../../redux/reduxTypes";
 import {connect} from "react-redux";
 import {createStyles, Modal, Theme} from "@material-ui/core";
-import {setBackendUrlTypeToUse, skjulSystemSettingsModal} from "../../../redux/actions";
+import {
+    opprettDigisosSakHvisDenIkkeFinnes,
+    setBackendUrlTypeToUse,
+    skjulSystemSettingsModal
+} from "../../../redux/actions";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import Backdrop from "@material-ui/core/Backdrop/Backdrop";
 import Fade from "@material-ui/core/Fade";
-import {BackendUrls, Model} from "../../../redux/types";
+import {BackendUrls, FsSoknad, Model} from "../../../redux/types";
 import FormControl from "@material-ui/core/FormControl";
 import FormLabel from "@material-ui/core/FormLabel";
 import RadioGroup from "@material-ui/core/RadioGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Radio from "@material-ui/core/Radio";
-import {FsSoknad} from "../../../redux/types";
-import {opprettEllerOppdaterDigisosSak} from "../../../redux/actions";
+import {backendUrls} from "../../../redux/reducer";
 
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -41,7 +44,6 @@ interface OwnProps {
 
 interface StoreProps {
     visSystemSettingsModal: boolean;
-    backendUrls: BackendUrls;
     model: Model
 }
 
@@ -50,7 +52,7 @@ type Props = DispatchProps & OwnProps & StoreProps;
 
 const SystemSettingsModal: React.FC<Props> = (props: Props) => {
     const classes = useStyles();
-    const {visSystemSettingsModal, dispatch, backendUrls, soknad, model} = props;
+    const {visSystemSettingsModal, dispatch, soknad, model} = props;
     const [typeToUse, setTypeToUse] = useState<keyof BackendUrls | null>(null);
 
     const radios = Object.keys(backendUrls).map((backendUrlType: string) => {
@@ -98,7 +100,7 @@ const SystemSettingsModal: React.FC<Props> = (props: Props) => {
                                     setTypeToUse(value as keyof BackendUrls);
                                     dispatch(setBackendUrlTypeToUse(value as keyof BackendUrls));
                                     if (soknad) {
-                                        dispatch(opprettEllerOppdaterDigisosSak(soknad, model, value as keyof BackendUrls));
+                                        dispatch(opprettDigisosSakHvisDenIkkeFinnes(soknad, model, value as keyof BackendUrls));
                                     }
                                 }}
                         >
@@ -113,7 +115,6 @@ const SystemSettingsModal: React.FC<Props> = (props: Props) => {
 
 const mapStateToProps = (state: AppState) => ({
     visSystemSettingsModal: state.model.visSystemSettingsModal,
-    backendUrls: state.model.backendUrls,
     model: state.model
 });
 

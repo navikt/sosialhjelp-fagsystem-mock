@@ -1,7 +1,8 @@
 import {Reducer} from "redux";
-import {Action, ActionTypeKeys, Filreferanselager, FsSaksStatus, FsSoknad, Model} from "./types";
+import {Action, ActionTypeKeys, BackendUrls, FsSaksStatus, FsSoknad, Model} from "./types";
 import Hendelse, {
     Dokumentasjonkrav,
+    DokumentlagerExtended,
     FiksDigisosSokerJson,
     FilreferanseType,
     HendelseType,
@@ -9,10 +10,11 @@ import Hendelse, {
     SaksStatusType,
     SoknadsStatus,
     SoknadsStatusType,
+    SvarutExtended,
     Utbetaling,
     Vilkar
 } from "../types/hendelseTypes";
-import {fsSaksStatusToSaksStatus, generateFilreferanseId, getNow} from "../utils/utilityFunctions";
+import {fsSaksStatusToSaksStatus, generateFilreferanseId, generateRandomId, getNow} from "../utils/utilityFunctions";
 import {
     oDokumentasjonEtterspurt,
     oForelopigSvar,
@@ -39,39 +41,13 @@ import {
 } from "./optics";
 
 
-const minimal: FiksDigisosSokerJson = {
-    sak: {
-        soker: {
-            version: "1.0.0",
-            avsender: {
-                systemnavn: "Testsystemet",
-                systemversjon: "1.0.0"
-            },
-            hendelser: [
-                {
-                    type: HendelseType.SoknadsStatus,
-                    hendelsestidspunkt: getNow(),
-                    status: SoknadsStatusType.MOTTATT
-                } as SoknadsStatus
-            ]
-        }
-    },
-    type: "no.nav.digisos.digisos.soker.v1"
+export const defaultDokumentlagerRef: DokumentlagerExtended = {
+    type: FilreferanseType.dokumentlager, id: "2c75227d-64f8-4db6-b718-3b6dd6beb450", tittel: "01 - qwer - dokumentalger"
 };
 
-const initialFilreferanselager: Filreferanselager = {
-    svarutlager: [
-        {type: FilreferanseType.svarut, id: generateFilreferanseId(), nr: 1, tittel: "DOC1 - Nødhjelp innvilget - svarut"},
-        {type: FilreferanseType.svarut, id: generateFilreferanseId(), nr: 2, tittel: "DOC2 - Vedtak om delvis innvilget - svarut"},
-        {type: FilreferanseType.svarut, id: generateFilreferanseId(), nr: 3, tittel: "En random pdf fra fagsystemet - svarut"},
-        {type: FilreferanseType.svarut, id: generateFilreferanseId(), nr: 4, tittel: "01 - vedtak - asdf - svarut"},
-    ],
-    dokumentlager: [
-        // {type: FilreferanseType.dokumentlager, id: "12v915rd-l1b9-8xn7-z539-afuvtami0oc6", tittel: "Test_PDF"},
-        {type: FilreferanseType.dokumentlager, id: "2c75227d-64f8-4db6-b718-3b6dd6beb450", tittel: "01 - qwer - dokumentalger"},
-        {type: FilreferanseType.dokumentlager, id: generateFilreferanseId(), tittel: "02 - asdf - dokumentlager"},
-        {type: FilreferanseType.dokumentlager, id: generateFilreferanseId(), tittel: "03 - zxcv - dokumentlager"},
-    ]
+// OBS: defaultSvarutRef er ikke testet
+export const defaultSvarutRef: SvarutExtended = {
+    type: FilreferanseType.svarut, id: generateFilreferanseId(), nr: 1, tittel: "DOC1 - Nødhjelp innvilget - svarut"
 };
 
 export const backendUrlsLocalTemplate: string = "http://localhost:8080/sosialhjelp/innsyn-api";
@@ -79,10 +55,18 @@ export const backendUrlsDigisostestTemplate: string = "https://www.digisos-test.
 export const backendUrlsQTemplate: string = "https://www-q1.nav.no/sosialhjelp/innsyn-api";
 export const backendUrlsQ0Template: string = "https://www-q0.nav.no/sosialhjelp/innsyn-api";
 
+export const oppdaterDigisosSakUrl: string = '/api/v1/digisosapi/oppdaterDigisosSak';
+export const nyNavEnhetUrl: string = '/api/v1/mock/nyNavEnhet';
+
+export const backendUrls: BackendUrls = {
+    lokalt: backendUrlsLocalTemplate,
+    digisostest: backendUrlsDigisostestTemplate,
+    q0: backendUrlsQ0Template,
+    q1: backendUrlsQTemplate
+};
+
 const getInitialFsSoknad = (
-    fiksDigisosId: string,
-    fnr: string,
-    navn: string
+    fiksDigisosId: string
 ): FsSoknad => {
 
     const initialSoknadsStatusHendelse: SoknadsStatus = {
@@ -93,8 +77,6 @@ const getInitialFsSoknad = (
 
     return {
         fiksDigisosId,
-        fnr,
-        navn,
         soknadsStatus: initialSoknadsStatusHendelse,
         navKontor: undefined,
         dokumentasjonEtterspurt: undefined,
@@ -122,24 +104,14 @@ const getInitialFsSoknad = (
     }
 };
 
+const initialId: string = generateRandomId(11);
+
 export const initialModel: Model = {
-    fiksDigisosId: "1337",
-    fiksDigisosSokerJson: minimal,
     loaderOn: false,
-    setFiksDigisosIdIsEnabled: false,
-    backendUrls: {
-        lokalt: backendUrlsLocalTemplate,
-        digisostest: backendUrlsDigisostestTemplate,
-        q0: backendUrlsQ0Template,
-        q1: backendUrlsQTemplate
-    },
     backendUrlTypeToUse: 'digisostest',
-    oppdaterDigisosSakUrl: '/api/v1/digisosapi/oppdaterDigisosSak',
-    nyNavEnhetUrl: '/api/v1/mock/nyNavEnhet',
-    filreferanselager: initialFilreferanselager,
 
     // 
-    soknader: [getInitialFsSoknad("001", "01018012345", "Admiral Beckett Brass")],
+    soknader: [getInitialFsSoknad(initialId)],
 
     // Visnings
     thememode: 'light',
@@ -150,13 +122,12 @@ export const initialModel: Model = {
     visNyDokumentasjonkravModal: false,
     visNyRammevedtakModal: false,
     modalSaksreferanse: null,
-    visEndreNavKontorModal: false,
     visSystemSettingsModal: !window.location.href.includes('https://www.digisos-test.com/'),
     visSnackbar: false,
     snackbarVariant: 'success',
 
     // Aktive ting
-    aktivSoknad: '001',
+    aktivSoknad: initialId,
     aktivUtbetaling: null,
     aktivtVilkar: null,
     aktivtDokumentasjonkrav: null,
@@ -169,51 +140,38 @@ const reducer: Reducer<Model, Action> = (
     action: Action
 ) => {
     switch (action.type) {
-        case ActionTypeKeys.SET_FIKS_DIGISOS_ID: return {...state, fiksDigisosId: action.fiksDigisosId, fiksDigisosSokerJson: minimal};
-        case ActionTypeKeys.SET_FIKS_DIGISOS_SOKER_JSON: {
-            return {
-                ...state,
-                fiksDigisosSokerJson: action.fiksDigisosSokerJson
-            };
-        }
-        case ActionTypeKeys.TURN_ON_LOADER: return {...state, loaderOn: true};
-        case ActionTypeKeys.TURN_OFF_LOADER: return {...state, loaderOn: false};
-        case ActionTypeKeys.SET_BACKEND_URL_TYPE_TO_USE: return {...state, backendUrlTypeToUse: action.backendUrlTypeToUse};
-
-        // Visnings ting
-        case ActionTypeKeys.SWITCH_TO_LIGHT_MODE: {return {...state, thememode: 'light'}}
-        case ActionTypeKeys.SWITCH_TO_DARK_MODE: {return {...state, thememode: 'dark'}}
-        case ActionTypeKeys.VIS_NY_SAK_MODAL: {return {...state, visNySakModal: true}}
-        case ActionTypeKeys.SKJUL_NY_SAK_MODAL: {return {...state, visNySakModal: false}}
-        case ActionTypeKeys.VIS_NY_DOKUMENTASJON_ETTERSPURT_MODAL: {return {...state, visNyDokumentasjonEtterspurtModal: true}}
-        case ActionTypeKeys.SKJUL_NY_DOKUMENTASJON_ETTERSPURT_MODAL: {return {...state, visNyDokumentasjonEtterspurtModal: false}}
-        case ActionTypeKeys.VIS_NY_UTBETALING_MODAL: {return {...state, visNyUtbetalingModal: true, modalSaksreferanse: action.saksreferanse}}
-        case ActionTypeKeys.SKJUL_NY_UTBETALING_MODAL: {return {...state, visNyUtbetalingModal: false}}
-        case ActionTypeKeys.VIS_NY_VILKAR_MODAL: {return {...state, visNyVilkarModal: true}}
-        case ActionTypeKeys.SKJUL_NY_VILKAR_MODAL: {return {...state, visNyVilkarModal: false}}
-        case ActionTypeKeys.VIS_NY_DOKUMENTASJONKRAV_MODAL: {return {...state, visNyDokumentasjonkravModal: true}}
-        case ActionTypeKeys.SKJUL_NY_DOKUMENTASJONKRAV_MODAL: {return {...state, visNyDokumentasjonkravModal: false}}
-        case ActionTypeKeys.VIS_NY_RAMMEVEDTAK_MODAL: {return {...state, visNyRammevedtakModal: true, modalSaksreferanse: action.saksreferanse}}
-        case ActionTypeKeys.SKJUL_NY_RAMMEVEDTAK_MODAL: {return {...state, visNyRammevedtakModal: false}}
-        case ActionTypeKeys.VIS_ENDRE_NAV_KONTOR_MODAL: {return {...state, visEndreNavKontorModal: true}}
-        case ActionTypeKeys.SKJUL_ENDRE_NAV_KONTOR_MODAL: {return {...state, visEndreNavKontorModal: false}}
-        case ActionTypeKeys.VIS_SYSTEM_SETTINGS_MODAL: {return {...state, visSystemSettingsModal: true}}
-        case ActionTypeKeys.SKJUL_SYSTEM_SETTINGS_MODAL: {return {...state, visSystemSettingsModal: false}}
-        case ActionTypeKeys.VIS_SUCCESS_SNACKBAR: {return {...state, visSnackbar: true, snackbarVariant: 'success'}}
-        case ActionTypeKeys.VIS_ERROR_SNACKBAR: {return {...state, visSnackbar: true, snackbarVariant: 'error'}}
-        case ActionTypeKeys.SKJUL_SNACKBAR: {return {...state, visSnackbar: false}}
-
-        // Aktive ting
         case ActionTypeKeys.SET_AKTIV_SOKNAD: {return {...state, aktivSoknad: action.fiksDigisosId}}
         case ActionTypeKeys.SET_AKTIV_UTBETALING: {return {...state, aktivUtbetaling: action.referanse}}
         case ActionTypeKeys.SET_AKTIVT_VILKAR: {return {...state, aktivtVilkar: action.referanse}}
         case ActionTypeKeys.SET_AKTIVT_DOKUMENTASJONKRAV: {return {...state, aktivtDokumentasjonkrav: action.referanse}}
         case ActionTypeKeys.SET_AKTIVT_RAMMEVEDTAK: {return {...state, aktivtRammevedtak: action.referanse}}
+        case ActionTypeKeys.SET_BACKEND_URL_TYPE_TO_USE: return {...state, backendUrlTypeToUse: action.backendUrlTypeToUse};
+        case ActionTypeKeys.TURN_ON_LOADER: return {...state, loaderOn: true};
+        case ActionTypeKeys.TURN_OFF_LOADER: return {...state, loaderOn: false};
+        case ActionTypeKeys.SWITCH_TO_LIGHT_MODE: {return {...state, thememode: 'light'}}
+        case ActionTypeKeys.SWITCH_TO_DARK_MODE: {return {...state, thememode: 'dark'}}
+        case ActionTypeKeys.VIS_NY_SAK_MODAL: {return {...state, visNySakModal: true}}
+        case ActionTypeKeys.VIS_NY_DOKUMENTASJON_ETTERSPURT_MODAL: {return {...state, visNyDokumentasjonEtterspurtModal: true}}
+        case ActionTypeKeys.VIS_NY_UTBETALING_MODAL: {return {...state, visNyUtbetalingModal: true, modalSaksreferanse: action.saksreferanse}}
+        case ActionTypeKeys.VIS_NY_VILKAR_MODAL: {return {...state, visNyVilkarModal: true}}
+        case ActionTypeKeys.VIS_NY_DOKUMENTASJONKRAV_MODAL: {return {...state, visNyDokumentasjonkravModal: true}}
+        case ActionTypeKeys.VIS_NY_RAMMEVEDTAK_MODAL: {return {...state, visNyRammevedtakModal: true, modalSaksreferanse: action.saksreferanse}}
+        case ActionTypeKeys.VIS_SYSTEM_SETTINGS_MODAL: {return {...state, visSystemSettingsModal: true}}
+        case ActionTypeKeys.VIS_SUCCESS_SNACKBAR: {return {...state, visSnackbar: true, snackbarVariant: 'success'}}
+        case ActionTypeKeys.VIS_ERROR_SNACKBAR: {return {...state, visSnackbar: true, snackbarVariant: 'error'}}
+        case ActionTypeKeys.SKJUL_NY_SAK_MODAL: {return {...state, visNySakModal: false}}
+        case ActionTypeKeys.SKJUL_NY_DOKUMENTASJON_ETTERSPURT_MODAL: {return {...state, visNyDokumentasjonEtterspurtModal: false}}
+        case ActionTypeKeys.SKJUL_NY_UTBETALING_MODAL: {return {...state, visNyUtbetalingModal: false}}
+        case ActionTypeKeys.SKJUL_NY_VILKAR_MODAL: {return {...state, visNyVilkarModal: false}}
+        case ActionTypeKeys.SKJUL_NY_DOKUMENTASJONKRAV_MODAL: {return {...state, visNyDokumentasjonkravModal: false}}
+        case ActionTypeKeys.SKJUL_NY_RAMMEVEDTAK_MODAL: {return {...state, visNyRammevedtakModal: false}}
+        case ActionTypeKeys.SKJUL_SYSTEM_SETTINGS_MODAL: {return {...state, visSystemSettingsModal: false}}
+        case ActionTypeKeys.SKJUL_SNACKBAR: {return {...state, visSnackbar: false}}
 
         case ActionTypeKeys.NY_SOKNAD: {
-            const {nyFiksDigisosId, nyttFnr, nyttNavn} = action;
+            const {nyFiksDigisosId} = action;
 
-            const newFsSoknad: FsSoknad = getInitialFsSoknad(nyFiksDigisosId, nyttFnr, nyttNavn);
+            const newFsSoknad: FsSoknad = getInitialFsSoknad(nyFiksDigisosId);
 
             return {
                 ...state,
@@ -300,18 +258,6 @@ const reducer: Reducer<Model, Action> = (
             return oGetSoknad(forFiksDigisosId)
                 .composeLens(oHendelser)
                 .modify((a: Hendelse[]) => [...a, fsSaksStatusToSaksStatus(nyFsSaksStatus)])(s1)
-        }
-        case ActionTypeKeys.OPPDATER_FIKS_ID: {
-            const {forFiksDigisosId, nyFiksId} = action;
-            return {
-                ...state,
-                soknader: state.soknader.map((s: FsSoknad) => {
-                    if (s.fiksDigisosId === forFiksDigisosId) {
-                        s.fiksDigisosId = nyFiksId;
-                    }
-                    return s;
-                })
-            }
         }
         case ActionTypeKeys.OPPDATER_FS_SAKS_STATUS: {
             const {forFiksDigisosId, oppdatertSaksstatus} = action;
@@ -515,9 +461,5 @@ const reducer: Reducer<Model, Action> = (
             return state;
     }
 };
-
-
-
-
 
 export default reducer

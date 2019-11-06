@@ -18,7 +18,7 @@ import deepOrange from "@material-ui/core/colors/deepOrange";
 import indigo from "@material-ui/core/colors/indigo";
 import Fab from "@material-ui/core/Fab";
 import {SettingsEthernet} from "@material-ui/icons";
-import {opprettEllerOppdaterDigisosSak} from "../redux/actions";
+import {opprettDigisosSakHvisDenIkkeFinnes} from "../redux/actions";
 import {Model} from "../redux/types";
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -72,7 +72,7 @@ const V3: React.FC<Props> = (props: Props) => {
 
     useEffect(() => {
         if (window.location.href.includes('https://www.digisos-test.com/')) {
-            props.dispatch(opprettEllerOppdaterDigisosSak(getFsSoknadByFiksDigisosId(props.model.soknader,props.model.aktivSoknad)!, props.model, props.model.backendUrlTypeToUse));
+            props.dispatch(opprettDigisosSakHvisDenIkkeFinnes(getFsSoknadByFiksDigisosId(props.model.soknader,props.model.aktivSoknad)!, props.model, props.model.backendUrlTypeToUse));
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);

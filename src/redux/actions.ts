@@ -13,7 +13,6 @@ import {
     NyUtbetaling,
     OppdaterDokumentasjonEtterspurt,
     OppdaterDokumentasjonkrav,
-    OppdaterFiksId,
     OppdaterForelopigSvar,
     OppdaterFsSaksStatus,
     OppdaterNavKontor,
@@ -46,13 +45,7 @@ import {getNow, removeNullFieldsFromHendelser} from "../utils/utilityFunctions";
 import {fetchPost} from "../utils/restUtils";
 import {NavKontor} from "../types/additionalTypes";
 import {oHendelser} from "./optics";
-
-export enum NotificationLevel {
-    INFO = "INFO",
-    SUCCESS = "SUCCESS",
-    ERROR = "ERROR",
-    WARNING = "WARNING"
-}
+import {backendUrls, nyNavEnhetUrl, oppdaterDigisosSakUrl} from "./reducer";
 
 export const aiuuur = (
     fiksDigisosId: string,
@@ -60,22 +53,14 @@ export const aiuuur = (
     model: Model,
     actionToDispatchIfSuccess: AnyAction
 ): (dispatch: Dispatch<AnyAction>) => void => {
-
-    const backendUrl = model.backendUrls[model.backendUrlTypeToUse];
-    const oppdaterDigisosSakUrl = model.oppdaterDigisosSakUrl;
-
     return (dispatch: Dispatch) => {
         dispatch(turnOnLoader());
+        const backendUrl = backendUrls[model.backendUrlTypeToUse];
         const queryParam = `?fiksDigisosId=${fiksDigisosId}`;
         const fiksDigisosSokerJsonUtenNull = removeNullFieldsFromHendelser(fiksDigisosSokerJson);
         fetchPost(`${backendUrl}${oppdaterDigisosSakUrl}${queryParam}`, JSON.stringify(fiksDigisosSokerJsonUtenNull)).then((response: any) => {
-            if (model.fiksDigisosSokerJson.sak.soker.hendelser.length < fiksDigisosSokerJson.sak.soker.hendelser.length) {
-                dispatch(visSuccessSnackbar());
-            }
-            dispatch(setFiksDigisosSokerJson(fiksDigisosSokerJson));
-            let fiksId = response.fiksDigisosId;
-            dispatch(oppdaterFixId(fiksDigisosId, fiksId.toString()));
-            dispatch(setAktivSoknad(fiksId.toString()));
+            dispatch(visSuccessSnackbar());
+            dispatch(setAktivSoknad(response.fiksDigisosId.toString()));
             dispatch(actionToDispatchIfSuccess);
         }).catch((reason) => runOnErrorResponse(reason, dispatch))
             .finally(() => dispatch(turnOffLoader()));
@@ -86,12 +71,9 @@ export const zeruuus = (
     navKontorListe: NavKontor[],
     model: Model
 ): (dispatch: Dispatch<AnyAction>) => void => {
-
-    const backendUrl = model.backendUrls[model.backendUrlTypeToUse];
-    const nyNavEnhetUrl = model.nyNavEnhetUrl;
-
     return (dispatch: Dispatch) => {
         dispatch(turnOnLoader());
+        const backendUrl = backendUrls[model.backendUrlTypeToUse];
         fetch(`${backendUrl}${nyNavEnhetUrl}`, {
             method: 'POST',
             body: JSON.stringify(navKontorListe),
@@ -111,12 +93,9 @@ export const chaaar = (
     model: Model,
     soknad: FsSoknad
 ): (dispatch: Dispatch<AnyAction>) => void => {
-
-    const backendUrl = model.backendUrls[model.backendUrlTypeToUse];
-
     return (dispatch: Dispatch) => {
         dispatch(turnOnLoader());
-
+        const backendUrl = backendUrls[model.backendUrlTypeToUse];
         fetch(`${backendUrl}/api/v1/digisosapi/${fiksDigisosId}/filOpplasting`, {
             method: 'POST',
             body: formData,
@@ -140,26 +119,13 @@ export const chaaar = (
                 };
 
                 const soknadUpdated = oHendelser.modify((a: Hendelse[]) => [...a, nyHendelse])(soknad);
-
-                const backendUrl = model.backendUrls[model.backendUrlTypeToUse];
-                const oppdaterDigisosSakUrl = model.oppdaterDigisosSakUrl;
+                const fiksDigisosSokerJsonUtenNull = removeNullFieldsFromHendelser(soknadUpdated.fiksDigisosSokerJson);
 
                 const queryParam = `?fiksDigisosId=${fiksDigisosId}`;
-                const fiksDigisosSokerJson = soknadUpdated.fiksDigisosSokerJson;
-
-                const fiksDigisosSokerJsonUtenNull = removeNullFieldsFromHendelser(fiksDigisosSokerJson);
-
                 fetchPost(`${backendUrl}${oppdaterDigisosSakUrl}${queryParam}`, JSON.stringify(fiksDigisosSokerJsonUtenNull)).then((response: any) => {
-                    if (model.fiksDigisosSokerJson.sak.soker.hendelser.length < fiksDigisosSokerJson.sak.soker.hendelser.length) {
-                        dispatch(visSuccessSnackbar());
-                    }
-                    dispatch(setFiksDigisosSokerJson(fiksDigisosSokerJson));
-                    let fiksId = response.fiksDigisosId;
-                    dispatch(
-                        oppdaterFixId(fiksDigisosId, fiksId.toString()));
-                    dispatch(setAktivSoknad(fiksId.toString()));
+                    dispatch(visSuccessSnackbar());
+                    dispatch(setAktivSoknad(response.fiksDigisosId.toString()));
                     dispatch(oppdaterForelopigSvar(soknad.fiksDigisosId, nyHendelse));
-
                 }).catch((reason) => runOnErrorResponse(reason, dispatch));
             });
         }).catch((reason) => runOnErrorResponse(reason, dispatch))
@@ -175,12 +141,9 @@ export const tarsoniiis = (
     model: Model,
     soknad: FsSoknad
 ): (dispatch: Dispatch<AnyAction>) => void => {
-
-    const backendUrl = model.backendUrls[model.backendUrlTypeToUse];
-
     return (dispatch: Dispatch) => {
         dispatch(turnOnLoader());
-
+        const backendUrl = backendUrls[model.backendUrlTypeToUse];
         fetch(`${backendUrl}/api/v1/digisosapi/${fiksDigisosId}/filOpplasting`, {
             method: 'POST',
             body: formData,
@@ -212,24 +175,12 @@ export const tarsoniiis = (
                 };
 
                 const soknadUpdated = oHendelser.modify((a: Hendelse[]) => [...a, nyHendelse])(soknad);
-
-                const backendUrl = model.backendUrls[model.backendUrlTypeToUse];
-                const oppdaterDigisosSakUrl = model.oppdaterDigisosSakUrl;
+                const fiksDigisosSokerJsonUtenNull = removeNullFieldsFromHendelser(soknadUpdated.fiksDigisosSokerJson);
 
                 const queryParam = `?fiksDigisosId=${fiksDigisosId}`;
-                const fiksDigisosSokerJson = soknadUpdated.fiksDigisosSokerJson;
-
-                const fiksDigisosSokerJsonUtenNull = removeNullFieldsFromHendelser(fiksDigisosSokerJson);
-
                 fetchPost(`${backendUrl}${oppdaterDigisosSakUrl}${queryParam}`, JSON.stringify(fiksDigisosSokerJsonUtenNull)).then((response: any) => {
-                    if (model.fiksDigisosSokerJson.sak.soker.hendelser.length < fiksDigisosSokerJson.sak.soker.hendelser.length) {
-                        dispatch(visSuccessSnackbar());
-                    }
-                    dispatch(setFiksDigisosSokerJson(fiksDigisosSokerJson));
-                    let fiksId = response.fiksDigisosId;
-                    dispatch(
-                        oppdaterFixId(fiksDigisosId, fiksId.toString()));
-                    dispatch(setAktivSoknad(fiksId.toString()));
+                    dispatch(visSuccessSnackbar());
+                    dispatch(setAktivSoknad(response.fiksDigisosId.toString()));
                     dispatch(oppdaterVedtakFattet(soknad.fiksDigisosId, nyHendelse));
                 }).catch((reason) => runOnErrorResponse(reason, dispatch));
             });
@@ -245,12 +196,9 @@ export const shakuraaas = (
     model: Model,
     soknad: FsSoknad
 ): (dispatch: Dispatch<AnyAction>) => void => {
-
-    const backendUrl = model.backendUrls[model.backendUrlTypeToUse];
-
     return (dispatch: Dispatch) => {
         dispatch(turnOnLoader());
-
+        const backendUrl = backendUrls[model.backendUrlTypeToUse];
         fetch(`${backendUrl}/api/v1/digisosapi/${fiksDigisosId}/filOpplasting`, {
             method: 'POST',
             body: formData,
@@ -275,24 +223,12 @@ export const shakuraaas = (
                 };
 
                 const soknadUpdated = oHendelser.modify((a: Hendelse[]) => [...a, nyHendelse])(soknad);
-
-                const backendUrl = model.backendUrls[model.backendUrlTypeToUse];
-                const oppdaterDigisosSakUrl = model.oppdaterDigisosSakUrl;
+                const fiksDigisosSokerJsonUtenNull = removeNullFieldsFromHendelser(soknadUpdated.fiksDigisosSokerJson);
 
                 const queryParam = `?fiksDigisosId=${fiksDigisosId}`;
-                const fiksDigisosSokerJson = soknadUpdated.fiksDigisosSokerJson;
-
-                const fiksDigisosSokerJsonUtenNull = removeNullFieldsFromHendelser(fiksDigisosSokerJson);
-
                 fetchPost(`${backendUrl}${oppdaterDigisosSakUrl}${queryParam}`, JSON.stringify(fiksDigisosSokerJsonUtenNull)).then((response: any) => {
-                    if (model.fiksDigisosSokerJson.sak.soker.hendelser.length < fiksDigisosSokerJson.sak.soker.hendelser.length) {
-                        dispatch(visSuccessSnackbar());
-                    }
-                    dispatch(setFiksDigisosSokerJson(fiksDigisosSokerJson));
-                    let fiksId = response.fiksDigisosId;
-                    dispatch(
-                        oppdaterFixId(fiksDigisosId, fiksId.toString()));
-                    dispatch(setAktivSoknad(fiksId.toString()));
+                    dispatch(visSuccessSnackbar());
+                    dispatch(setAktivSoknad(response.fiksDigisosId.toString()));
                     dispatch(oppdaterDokumentasjonEtterspurt(soknad.fiksDigisosId, nyHendelse));
                 }).catch((reason) => runOnErrorResponse(reason, dispatch));
             });
@@ -301,24 +237,19 @@ export const shakuraaas = (
     }
 };
 
-export const opprettEllerOppdaterDigisosSak = (
+export const opprettDigisosSakHvisDenIkkeFinnes = (
     soknad: FsSoknad,
     model: Model,
     backendUrlTypeToUse: keyof BackendUrls
 ): (dispatch: Dispatch<AnyAction>) => void => {
-
-    const backendUrl = model.backendUrls[backendUrlTypeToUse];
-    const oppdaterDigisosSakUrl = model.oppdaterDigisosSakUrl;
-
     return (dispatch: Dispatch) => {
         dispatch(turnOnLoader());
-        const queryParam = `?fiksDigisosId=${soknad.fiksDigisosId}`;
-
+        const backendUrl = backendUrls[backendUrlTypeToUse];
         const fiksDigisosSokerJsonUtenNull = removeNullFieldsFromHendelser(soknad.fiksDigisosSokerJson);
 
+        const queryParam = `?fiksDigisosId=${soknad.fiksDigisosId}`;
         fetchPost(`${backendUrl}${oppdaterDigisosSakUrl}${queryParam}`, JSON.stringify(fiksDigisosSokerJsonUtenNull)).then((response: any) => {
             let fiksId = response.fiksDigisosId;
-            dispatch(oppdaterFixId(soknad.fiksDigisosId, fiksId.toString()));
             dispatch(setAktivSoknad(fiksId.toString()));
         }).catch((reason) => runOnErrorResponse(reason, dispatch))
             .finally(() => dispatch(turnOffLoader()));
@@ -342,14 +273,6 @@ const runOnErrorResponse = (reason: any, dispatch: Dispatch) => {
         }
     }
 };
-
-export const setFiksDigisosSokerJson = (fiksDigisosSokerJson: any): Action => {
-    return {
-        type: ActionTypeKeys.SET_FIKS_DIGISOS_SOKER_JSON,
-        fiksDigisosSokerJson: fiksDigisosSokerJson
-    }
-};
-
 
 export const turnOnLoader = (): Action => {
     return {
@@ -486,18 +409,6 @@ export const skjulNyDokumentasjonEtterspurtModal = (): Action => {
     }
 };
 
-export const visEndreNavKontorModal = (): Action => {
-    return {
-        type: ActionTypeKeys.VIS_ENDRE_NAV_KONTOR_MODAL
-    }
-};
-
-export const skjulEndreNavKontorModal = (): Action => {
-    return {
-        type: ActionTypeKeys.SKJUL_ENDRE_NAV_KONTOR_MODAL
-    }
-};
-
 export const visSystemSettingsModal = () => {
     return {
         type: ActionTypeKeys.VIS_SYSTEM_SETTINGS_MODAL,
@@ -528,12 +439,10 @@ export const skjulSnackbar = () => {
     }
 };
 
-export const nyFsSoknad = (nyFiksDigisosId: string, nyttFnr: string, nyttNavn: string): NyFsSoknad => {
+export const nyFsSoknad = (nyFiksDigisosId: string): NyFsSoknad => {
     return {
         type: ActionTypeKeys.NY_SOKNAD,
-        nyFiksDigisosId,
-        nyttFnr,
-        nyttNavn
+        nyFiksDigisosId
     }
 };
 export const slettFsSoknad = (forFiksDigisosId: string): SlettFsSoknad => {
@@ -554,14 +463,6 @@ export const oppdaterNavKontor = (forFiksDigisosId: string, nyttNavKontor: Tilde
         type: ActionTypeKeys.OPPDATER_NAV_KONTOR,
         forFiksDigisosId,
         nyttNavKontor
-    }
-};
-
-export const oppdaterFixId = (forFiksDigisosId: string, nyFiksId: string): OppdaterFiksId => {
-    return {
-        type: ActionTypeKeys.OPPDATER_FIKS_ID,
-        forFiksDigisosId,
-        nyFiksId
     }
 };
 
