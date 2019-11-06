@@ -23,7 +23,7 @@ const App: React.FC = () => {
 					<div className="informasjon-side">
 						<ConnectedRouter history={history}>
 							<Switch>
-								<Route exact path={""} component={V3}/>
+								<Route exact path="/" component={V3}/>
 								<Route exact path="/userguide" component={UserGuide}/>
 								<Route exact path="/examplepage" component={Example}/>
 								<Route component={NotFound}/>
