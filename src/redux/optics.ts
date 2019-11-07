@@ -9,6 +9,8 @@ export const oFsSoknader = Lens.fromProp<Model>()('soknader');
 export const oFsSoknaderTraversal = fromTraversable(array)<FsSoknad>();
 export const oGetFsSoknadPrism = (fiksDigisosId: string): Prism<FsSoknad, FsSoknad> => Prism.fromPredicate(fsSoknad => fsSoknad.fiksDigisosId === fiksDigisosId);
 
+export const oFiksDigisosId = Lens.fromPath<FsSoknad>()(['fiksDigisosId']);
+
 export const oHendelser = Lens.fromPath<FsSoknad>()(['fiksDigisosSokerJson', 'sak', 'soker', 'hendelser']);
 export const oHendelserTraversal = fromTraversable(array)<Hendelse>();
 

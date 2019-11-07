@@ -104,6 +104,7 @@ export type Action
     | NyttRammevedtak
     | NyttVilkar
     | SlettFsSoknad
+    | OppdaterFiksDigisosId
     | OppdaterSoknadsStatus
     | OppdaterNavKontor
     | OppdaterDokumentasjonEtterspurt
@@ -153,6 +154,7 @@ export enum ActionTypeKeys {
     NYTT_RAMMEVEDTAK = "NYTT_RAMMEVEDTAK",
     NYTT_VILKAR = "NYTT_VILKAR",
     SLETT_SOKNAD = "SLETT_SOKNAD",
+    OPPDATER_FIKS_DIGISOS_ID = "OPPDATER_FIKS_DIGISOS_ID",
     OPPDATER_SOKNADS_STATUS = "OPPDATER_SOKNADS_STATUS",
     OPPDATER_NAV_KONTOR = "OPPDATER_NAV_KONTOR",
     OPPDATER_DOKUMENTASJON_ETTERSPURT = "OPPDATER_DOKUMENTASJON_ETTERSPURT",
@@ -291,6 +293,12 @@ export interface NyFsSoknad {
 export interface SlettFsSoknad {
     type: ActionTypeKeys.SLETT_SOKNAD;
     forFiksDigisosId: string;
+}
+
+export interface OppdaterFiksDigisosId {
+    type: ActionTypeKeys.OPPDATER_FIKS_DIGISOS_ID;
+    forFiksDigisosId: string;
+    nyFiksDigisosId: string;
 }
 
 export interface OppdaterSoknadsStatus {

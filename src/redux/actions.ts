@@ -13,6 +13,7 @@ import {
     NyUtbetaling,
     OppdaterDokumentasjonEtterspurt,
     OppdaterDokumentasjonkrav,
+    OppdaterFiksDigisosId,
     OppdaterForelopigSvar,
     OppdaterFsSaksStatus,
     OppdaterNavKontor,
@@ -250,6 +251,7 @@ export const opprettDigisosSakHvisDenIkkeFinnes = (
         const queryParam = `?fiksDigisosId=${soknad.fiksDigisosId}`;
         fetchPost(`${backendUrl}${oppdaterDigisosSakUrl}${queryParam}`, JSON.stringify(fiksDigisosSokerJsonUtenNull)).then((response: any) => {
             let fiksId = response.fiksDigisosId;
+            dispatch(oppdaterFiksDigisosId(soknad.fiksDigisosId, fiksId));
             dispatch(setAktivSoknad(fiksId.toString()));
         }).catch((reason) => runOnErrorResponse(reason, dispatch))
             .finally(() => dispatch(turnOffLoader()));
@@ -448,6 +450,13 @@ export const slettFsSoknad = (forFiksDigisosId: string): SlettFsSoknad => {
     return {
         type: ActionTypeKeys.SLETT_SOKNAD,
         forFiksDigisosId
+    }
+};
+export const oppdaterFiksDigisosId = (forFiksDigisosId: string, nyFiksDigisosId: string): OppdaterFiksDigisosId => {
+    return {
+        type: ActionTypeKeys.OPPDATER_FIKS_DIGISOS_ID,
+        forFiksDigisosId,
+        nyFiksDigisosId
     }
 };
 export const oppdaterSoknadsStatus = (forFiksDigisosId: string, nySoknadsStatus: SoknadsStatus): OppdaterSoknadsStatus => {

@@ -86,9 +86,7 @@ const ToppPanel: React.FC<Props> = (props: Props) => {
     }
 
     return (
-        <Paper className={classes.paper}>
-            Velg en søknad fra innboksen for å behandle den.
-        </Paper>
+        <div/>
     )
 
 };

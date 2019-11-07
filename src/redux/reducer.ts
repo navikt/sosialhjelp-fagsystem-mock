@@ -188,6 +188,23 @@ const reducer: Reducer<Model, Action> = (
                 })
             }
         }
+        case ActionTypeKeys.OPPDATER_FIKS_DIGISOS_ID: {
+            const {forFiksDigisosId, nyFiksDigisosId} = action;
+
+            return {
+                ...state,
+                soknader: state.soknader.map((s: FsSoknad) => {
+                    if (s.fiksDigisosId === forFiksDigisosId) {
+                        return {
+                            ...s,
+                            fiksDigisosId: nyFiksDigisosId
+                        }
+                    } else {
+                        return s;
+                    }
+                })
+            };
+        }
         case ActionTypeKeys.OPPDATER_SOKNADS_STATUS: {
             const {forFiksDigisosId, nySoknadsStatus} = action;
 
