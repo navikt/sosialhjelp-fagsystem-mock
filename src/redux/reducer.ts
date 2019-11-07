@@ -127,7 +127,7 @@ export const initialModel: Model = {
     snackbarVariant: 'success',
 
     // Aktive ting
-    aktivSoknad: initialId,
+    aktivSoknad: window.location.href.includes('www-q') ? '001' : initialId,
     aktivUtbetaling: null,
     aktivtVilkar: null,
     aktivtDokumentasjonkrav: null,
