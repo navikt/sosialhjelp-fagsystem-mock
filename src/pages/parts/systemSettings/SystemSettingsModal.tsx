@@ -100,7 +100,7 @@ const SystemSettingsModal: React.FC<Props> = (props: Props) => {
                                     setTypeToUse(value as keyof BackendUrls);
                                     dispatch(setBackendUrlTypeToUse(value as keyof BackendUrls));
                                     if (soknad) {
-                                        dispatch(opprettDigisosSakHvisDenIkkeFinnes(soknad, model, value as keyof BackendUrls));
+                                        opprettDigisosSakHvisDenIkkeFinnes(soknad, model, value as keyof BackendUrls, dispatch);
                                     }
                                 }}
                         >

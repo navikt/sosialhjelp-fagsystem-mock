@@ -40,14 +40,21 @@ import Hendelse, {
     VedtakFattet,
     Vilkar
 } from "../types/hendelseTypes";
-import {AnyAction, Dispatch} from "redux";
+import {AnyAction} from "redux";
 import {getFsSoknadByFiksDigisosId, getNow, removeNullFieldsFromHendelser} from "../utils/utilityFunctions";
 import {fetchPost} from "../utils/restUtils";
 import {NavKontor} from "../types/additionalTypes";
 import {oHendelser} from "./optics";
 import {backendUrls, nyNavEnhetUrl, oppdaterDigisosSakUrl} from "./reducer";
+import {Dispatch} from "./reduxTypes";
 
-const sendNyHendelseOgOppdaterModel = (nyHendelse: Hendelse, model: Model, dispatch: Dispatch, actionToDispatchIfSuccess: AnyAction) => {
+export const sendNyHendelseOgOppdaterModel = (
+    nyHendelse: Hendelse,
+    model: Model,
+    dispatch: Dispatch,
+    actionToDispatchIfSuccess: AnyAction
+) => {
+    dispatch(turnOnLoader());
     const soknad = getFsSoknadByFiksDigisosId(model.soknader, model.aktivSoknad)!;
     const soknadUpdated = oHendelser.modify((a: Hendelse[]) => [...a, nyHendelse])(soknad);
     const fiksDigisosSokerJsonUtenNull = removeNullFieldsFromHendelser(soknadUpdated.fiksDigisosSokerJson);
@@ -57,182 +64,167 @@ const sendNyHendelseOgOppdaterModel = (nyHendelse: Hendelse, model: Model, dispa
     fetchPost(`${backendUrl}${oppdaterDigisosSakUrl}${queryParam}`, JSON.stringify(fiksDigisosSokerJsonUtenNull)).then(() => {
         dispatch(visSuccessSnackbar());
         dispatch(actionToDispatchIfSuccess);
-    }).catch((reason) => runOnErrorResponse(reason, dispatch));
+    }).catch((reason) => runOnErrorResponse(reason, dispatch))
+        .finally(() => dispatch(turnOffLoader()));
 };
 
-export const aiuuur = (
-    nyHendelse: Hendelse,
-    model: Model,
-    actionToDispatchIfSuccess: AnyAction
-): (dispatch: Dispatch<AnyAction>) => void => {
-    return (dispatch: Dispatch) => {
-        dispatch(turnOnLoader());
-        sendNyHendelseOgOppdaterModel(nyHendelse, model, dispatch, actionToDispatchIfSuccess);
-        dispatch(turnOffLoader());
-    }
-};
-
-export const zeruuus = (
+export const sendValgbareNavkontorTilMockBackend = (
     navKontorListe: NavKontor[],
-    model: Model
-): (dispatch: Dispatch<AnyAction>) => void => {
-    return (dispatch: Dispatch) => {
-        dispatch(turnOnLoader());
-        const backendUrl = backendUrls[model.backendUrlTypeToUse];
-        fetch(`${backendUrl}${nyNavEnhetUrl}`, {
-            method: 'POST',
-            body: JSON.stringify(navKontorListe),
-            headers: new Headers({
-                "Content-Type": "application/json",
-                "Authorization": "Bearer 1234",
-                "Accept": "*/*"
-            })
-        }).catch((reason) => runOnErrorResponse(reason, dispatch))
-            .finally(() => dispatch(turnOffLoader()));
-    }
+    model: Model,
+    dispatch: Dispatch
+) => {
+    dispatch(turnOnLoader());
+    const backendUrl = backendUrls[model.backendUrlTypeToUse];
+    fetch(`${backendUrl}${nyNavEnhetUrl}`, {
+        method: 'POST',
+        body: JSON.stringify(navKontorListe),
+        headers: new Headers({
+            "Content-Type": "application/json",
+            "Authorization": "Bearer 1234",
+            "Accept": "*/*"
+        })
+    }).catch((reason) => {
+        runOnErrorResponse(reason, dispatch);
+        dispatch(turnOffLoader());
+    });
 };
 
-export const chaaar = (
+export const sendPdfOgLeggPdfRefTilHendelseOgSend = (
+    formData: FormData,
+    model: Model,
+    dispatch: Dispatch,
+    sendHendelseMedRef: (id: string) => void
+) => {
+    dispatch(turnOnLoader());
+    const backendUrl = backendUrls[model.backendUrlTypeToUse];
+    fetch(`${backendUrl}/api/v1/digisosapi/${model.aktivSoknad}/filOpplasting`, {
+        method: 'POST',
+        body: formData,
+        headers: new Headers({
+            "Authorization": "Bearer 1234",
+            "Accept": "*/*"
+        })
+    }).then((response: Response) => {
+        response.text().then((id: string) => {
+            sendHendelseMedRef(id);
+        });
+    }).catch((reason) => {
+        runOnErrorResponse(reason, dispatch);
+        dispatch(turnOffLoader());
+    });
+};
+
+export const sendPdfOgOppdaterForelopigSvar = (
     fiksDigisosId: string,
     formData: FormData,
     model: Model,
-    soknad: FsSoknad
-): (dispatch: Dispatch<AnyAction>) => void => {
-    return (dispatch: Dispatch) => {
-        dispatch(turnOnLoader());
-        const backendUrl = backendUrls[model.backendUrlTypeToUse];
-        fetch(`${backendUrl}/api/v1/digisosapi/${fiksDigisosId}/filOpplasting`, {
-            method: 'POST',
-            body: formData,
-            headers: new Headers({
-                "Authorization": "Bearer 1234",
-                "Accept": "*/*"
-            })
-        }).then((response: Response) => {
-            response.text().then((id: string) => {
+    soknad: FsSoknad,
+    dispatch: Dispatch
+) => {
+    dispatch(turnOnLoader());
 
-                const nyHendelse: ForelopigSvar = {
-                    type: HendelseType.ForelopigSvar,
-                    hendelsestidspunkt: getNow(),
-                    forvaltningsbrev: {
-                        referanse: {
-                            type: FilreferanseType.dokumentlager,
-                            id: id
-                        }
-                    },
-                    vedlegg: []
-                };
-                sendNyHendelseOgOppdaterModel(nyHendelse, model, dispatch, oppdaterForelopigSvar(soknad.fiksDigisosId, nyHendelse));
-            });
-        }).catch((reason) => runOnErrorResponse(reason, dispatch))
-            .finally(() => dispatch(turnOffLoader()));
-    }
+    const sendForelopigSvarMedRef = (id: string) => {
+        const nyHendelse: ForelopigSvar = {
+            type: HendelseType.ForelopigSvar,
+            hendelsestidspunkt: getNow(),
+            forvaltningsbrev: {
+                referanse: {
+                    type: FilreferanseType.dokumentlager,
+                    id: id
+                }
+            },
+            vedlegg: []
+        };
+
+        sendNyHendelseOgOppdaterModel(nyHendelse, model, dispatch, oppdaterForelopigSvar(soknad.fiksDigisosId, nyHendelse));
+    };
+
+    sendPdfOgLeggPdfRefTilHendelseOgSend(formData, model, dispatch, sendForelopigSvarMedRef);
 };
 
-export const tarsoniiis = (
+export const sendPdfOgOppdaterVedtakFattet = (
     fiksDigisosId: string,
     formData: FormData,
     vedtakFattetUtfall: Utfall|null,
     saksreferanse: string,
     model: Model,
-    soknad: FsSoknad
-): (dispatch: Dispatch<AnyAction>) => void => {
-    return (dispatch: Dispatch) => {
-        dispatch(turnOnLoader());
-        const backendUrl = backendUrls[model.backendUrlTypeToUse];
-        fetch(`${backendUrl}/api/v1/digisosapi/${fiksDigisosId}/filOpplasting`, {
-            method: 'POST',
-            body: formData,
-            headers: new Headers({
-                "Authorization": "Bearer 1234",
-                "Accept": "*/*"
-            })
-        }).then((response: Response) => {
-            response.text().then((id: string) => {
+    soknad: FsSoknad,
+    dispatch: Dispatch
+) => {
+    dispatch(turnOnLoader());
 
-                const nyHendelse: VedtakFattet = {
-                    type: HendelseType.VedtakFattet,
-                    hendelsestidspunkt: getNow(),
-                    saksreferanse: saksreferanse,
-                    utfall:  vedtakFattetUtfall ,
-                    vedtaksfil: {
-                        referanse: {
-                            type: FilreferanseType.dokumentlager,
-                            id: id
-                        }
-                    },
-                    vedlegg: [
-                        {tittel: '',
-                            referanse: {
-                                type: FilreferanseType.dokumentlager,
-                                id: id
-                            }}
-                    ]
-                };
-                sendNyHendelseOgOppdaterModel(nyHendelse, model, dispatch, oppdaterVedtakFattet(soknad.fiksDigisosId, nyHendelse));
-            });
-        }).catch((reason) => runOnErrorResponse(reason, dispatch))
-            .finally(() => dispatch(turnOffLoader()));
-    }
+    const sendForelopigSvarMedRef = (id: string) => {
+        const nyHendelse: VedtakFattet = {
+            type: HendelseType.VedtakFattet,
+            hendelsestidspunkt: getNow(),
+            saksreferanse: saksreferanse,
+            utfall:  vedtakFattetUtfall ,
+            vedtaksfil: {
+                referanse: {
+                    type: FilreferanseType.dokumentlager,
+                    id: id
+                }
+            },
+            vedlegg: [
+                {tittel: '',
+                    referanse: {
+                        type: FilreferanseType.dokumentlager,
+                        id: id
+                    }}
+            ]
+        };
+        sendNyHendelseOgOppdaterModel(nyHendelse, model, dispatch, oppdaterVedtakFattet(soknad.fiksDigisosId, nyHendelse));
+    };
+
+    sendPdfOgLeggPdfRefTilHendelseOgSend(formData, model, dispatch, sendForelopigSvarMedRef);
 };
 
-export const shakuraaas = (
+export const sendPdfOgOppdaterDokumentasjonEtterspurt = (
     fiksDigisosId: string,
     formData: FormData,
     dokumenter: Dokument[],
     model: Model,
-    soknad: FsSoknad
-): (dispatch: Dispatch<AnyAction>) => void => {
-    return (dispatch: Dispatch) => {
-        dispatch(turnOnLoader());
-        const backendUrl = backendUrls[model.backendUrlTypeToUse];
-        fetch(`${backendUrl}/api/v1/digisosapi/${fiksDigisosId}/filOpplasting`, {
-            method: 'POST',
-            body: formData,
-            headers: new Headers({
-                "Authorization": "Bearer 1234",
-                "Accept": "*/*"
-            })
-        }).then((response: Response) => {
-            response.text().then((id: string) => {
+    soknad: FsSoknad,
+    dispatch: Dispatch
+) => {
+    dispatch(turnOnLoader());
 
-                const nyHendelse: DokumentasjonEtterspurt = {
-                    type: HendelseType.DokumentasjonEtterspurt,
-                    hendelsestidspunkt: getNow(),
-                    forvaltningsbrev: {
-                        referanse: {
-                            type: FilreferanseType.dokumentlager,
-                            id: id
-                        }
-                    },
-                    vedlegg: [],
-                    dokumenter: dokumenter
-                };
-                sendNyHendelseOgOppdaterModel(nyHendelse, model, dispatch, oppdaterDokumentasjonEtterspurt(soknad.fiksDigisosId, nyHendelse));
-            });
-        }).catch(reason => runOnErrorResponse(reason, dispatch))
-            .finally(() => dispatch(turnOffLoader()));
-    }
+    const sendForelopigSvarMedRef = (id: string) => {
+        const nyHendelse: DokumentasjonEtterspurt = {
+            type: HendelseType.DokumentasjonEtterspurt,
+            hendelsestidspunkt: getNow(),
+            forvaltningsbrev: {
+                referanse: {
+                    type: FilreferanseType.dokumentlager,
+                    id: id
+                }
+            },
+            vedlegg: [],
+            dokumenter: dokumenter
+        };
+        sendNyHendelseOgOppdaterModel(nyHendelse, model, dispatch, oppdaterDokumentasjonEtterspurt(soknad.fiksDigisosId, nyHendelse));
+    };
+
+    sendPdfOgLeggPdfRefTilHendelseOgSend(formData, model, dispatch, sendForelopigSvarMedRef);
 };
 
 export const opprettDigisosSakHvisDenIkkeFinnes = (
     soknad: FsSoknad,
     model: Model,
-    backendUrlTypeToUse: keyof BackendUrls
-): (dispatch: Dispatch<AnyAction>) => void => {
-    return (dispatch: Dispatch) => {
-        dispatch(turnOnLoader());
-        const backendUrl = backendUrls[backendUrlTypeToUse];
-        const fiksDigisosSokerJsonUtenNull = removeNullFieldsFromHendelser(soknad.fiksDigisosSokerJson);
+    backendUrlTypeToUse: keyof BackendUrls,
+    dispatch: Dispatch
+) => {
+    dispatch(turnOnLoader());
+    const backendUrl = backendUrls[backendUrlTypeToUse];
+    const fiksDigisosSokerJsonUtenNull = removeNullFieldsFromHendelser(soknad.fiksDigisosSokerJson);
 
-        const queryParam = `?fiksDigisosId=${soknad.fiksDigisosId}`;
-        fetchPost(`${backendUrl}${oppdaterDigisosSakUrl}${queryParam}`, JSON.stringify(fiksDigisosSokerJsonUtenNull)).then((response: any) => {
-            let fiksId = response.fiksDigisosId;
-            dispatch(oppdaterFiksDigisosId(soknad.fiksDigisosId, fiksId));
-            dispatch(setAktivSoknad(fiksId.toString()));
-        }).catch((reason) => runOnErrorResponse(reason, dispatch))
-            .finally(() => dispatch(turnOffLoader()));
-    }
+    const queryParam = `?fiksDigisosId=${soknad.fiksDigisosId}`;
+    fetchPost(`${backendUrl}${oppdaterDigisosSakUrl}${queryParam}`, JSON.stringify(fiksDigisosSokerJsonUtenNull)).then((response: any) => {
+        let fiksId = response.fiksDigisosId;
+        dispatch(oppdaterFiksDigisosId(soknad.fiksDigisosId, fiksId));
+        dispatch(setAktivSoknad(fiksId.toString()));
+    }).catch((reason) => runOnErrorResponse(reason, dispatch))
+        .finally(() => dispatch(turnOffLoader()));
 };
 
 const runOnErrorResponse = (reason: any, dispatch: Dispatch) => {

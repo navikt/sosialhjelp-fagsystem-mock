@@ -11,7 +11,7 @@ import InputLabel from "@material-ui/core/InputLabel";
 import Select from "@material-ui/core/Select";
 import {HendelseType, TildeltNavKontor} from "../../../types/hendelseTypes";
 import {getNow} from "../../../utils/utilityFunctions";
-import {aiuuur, oppdaterNavKontor, zeruuus} from "../../../redux/actions";
+import {sendNyHendelseOgOppdaterModel, oppdaterNavKontor, sendValgbareNavkontorTilMockBackend} from "../../../redux/actions";
 
 
 interface OwnProps {
@@ -96,10 +96,10 @@ const TildeldeltNavkontorView: React.FC<Props> = (props: Props) => {
                             };
 
                             if (model.backendUrlTypeToUse !== 'q0' && model.backendUrlTypeToUse !== 'q1') {
-                                dispatch(zeruuus(navKontorListe, model));
+                                sendValgbareNavkontorTilMockBackend(navKontorListe, model, dispatch);
                             }
 
-                            dispatch(aiuuur(nyHendelse, model, oppdaterNavKontor(soknad.fiksDigisosId, nyHendelse)));
+                            sendNyHendelseOgOppdaterModel(nyHendelse, model, dispatch, oppdaterNavKontor(soknad.fiksDigisosId, nyHendelse));
                         }}
                         inputProps={{
                             name: 'tildeltNavKontor',

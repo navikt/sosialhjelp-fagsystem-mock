@@ -3,7 +3,7 @@ import {AppState, DispatchProps} from "../../../redux/reduxTypes";
 import {connect} from "react-redux";
 import {createStyles, Modal, Theme} from "@material-ui/core";
 import {
-    aiuuur,
+    sendNyHendelseOgOppdaterModel,
     nyttRammevedtak,
     oppdaterRammevedtak,
     setAktivtRammevedtak,
@@ -180,9 +180,9 @@ const NyttRammevedtakModal: React.FC<Props> = (props: Props) => {
         nyHendelse.tom = formatDateString(nyHendelse.tom);
 
         if (aktivtRammevedtak == null) {
-            dispatch(aiuuur(nyHendelse, model, nyttRammevedtak(soknad.fiksDigisosId, nyHendelse)));
+            sendNyHendelseOgOppdaterModel(nyHendelse, model, dispatch, nyttRammevedtak(soknad.fiksDigisosId, nyHendelse));
         } else {
-            dispatch(aiuuur(nyHendelse, model, oppdaterRammevedtak(soknad.fiksDigisosId, nyHendelse)));
+            sendNyHendelseOgOppdaterModel(nyHendelse, model, dispatch, oppdaterRammevedtak(soknad.fiksDigisosId, nyHendelse));
         }
 
         dispatch(dispatch(skjulNyRammevedtakModal()));

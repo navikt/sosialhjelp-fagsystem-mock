@@ -3,10 +3,10 @@ import {AppState, DispatchProps} from "../../../redux/reduxTypes";
 import {connect} from "react-redux";
 import {createStyles, Modal, Paper, Theme} from "@material-ui/core";
 import {
-    aiuuur,
+    sendNyHendelseOgOppdaterModel,
     oppdaterDokumentasjonEtterspurt,
     setAktivtRammevedtak,
-    shakuraaas,
+    sendPdfOgOppdaterDokumentasjonEtterspurt,
     skjulNyDokumentasjonEtterspurtModal
 } from "../../../redux/actions";
 import makeStyles from "@material-ui/core/styles/makeStyles";
@@ -180,7 +180,7 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
         const formData = new FormData();
         formData.append("file", files[0], files[0].name);
 
-        dispatch(shakuraaas(soknad.fiksDigisosId, formData, modalDokumentasjonEtterspurt.dokumenter, model, soknad));
+        sendPdfOgOppdaterDokumentasjonEtterspurt(soknad.fiksDigisosId, formData, modalDokumentasjonEtterspurt.dokumenter, model, soknad, dispatch);
 
         setVisFeilmelding(false);
         setVisFeilmeldingDatePicker(false);
@@ -216,7 +216,7 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
                 dokumenter: modalDokumentasjonEtterspurt.dokumenter
             };
 
-            dispatch(aiuuur(nyHendelse, model, oppdaterDokumentasjonEtterspurt(soknad.fiksDigisosId, nyHendelse)));
+            sendNyHendelseOgOppdaterModel(nyHendelse, model, dispatch, oppdaterDokumentasjonEtterspurt(soknad.fiksDigisosId, nyHendelse));
 
             dispatch(dispatch(skjulNyDokumentasjonEtterspurtModal()));
 

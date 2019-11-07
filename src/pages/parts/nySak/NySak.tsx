@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import {AppState, DispatchProps} from "../../../redux/reduxTypes";
 import {connect} from "react-redux";
 import {createStyles, Modal, Theme} from "@material-ui/core";
-import {aiuuur, nyFsSaksStatus, skjulNySakModal} from "../../../redux/actions";
+import {sendNyHendelseOgOppdaterModel, nyFsSaksStatus, skjulNySakModal} from "../../../redux/actions";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import Fade from "@material-ui/core/Fade";
 import Backdrop from "@material-ui/core/Backdrop";
@@ -101,7 +101,7 @@ const NySakModal: React.FC<Props> = (props: Props) => {
                                     const fsSaksStatus = generateNyFsSaksStatus(tittel.length !== 0 ? tittel : null);
                                     const nyHendelse = fsSaksStatusToSaksStatus(fsSaksStatus);
 
-                                    dispatch(aiuuur(nyHendelse, model, nyFsSaksStatus(model.aktivSoknad, fsSaksStatus)));
+                                    sendNyHendelseOgOppdaterModel(nyHendelse, model, dispatch, nyFsSaksStatus(model.aktivSoknad, fsSaksStatus));
 
                                     setTittel('');
                                 }

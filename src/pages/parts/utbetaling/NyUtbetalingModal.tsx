@@ -3,7 +3,7 @@ import {AppState, DispatchProps} from "../../../redux/reduxTypes";
 import {connect} from "react-redux";
 import {createStyles, Modal, Theme} from "@material-ui/core";
 import {
-    aiuuur,
+    sendNyHendelseOgOppdaterModel,
     nyUtbetaling,
     oppdaterUtbetaling,
     setAktivUtbetaling,
@@ -224,9 +224,9 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
         nyHendelse.tom = formatDateString(nyHendelse.tom);
 
         if (aktivUtbetaling == null) {
-            dispatch(aiuuur(nyHendelse, model, nyUtbetaling(soknad.fiksDigisosId, nyHendelse)));
+            sendNyHendelseOgOppdaterModel(nyHendelse, model, dispatch, nyUtbetaling(soknad.fiksDigisosId, nyHendelse));
         } else {
-            dispatch(aiuuur(nyHendelse, model, oppdaterUtbetaling(soknad.fiksDigisosId, nyHendelse)));
+            sendNyHendelseOgOppdaterModel(nyHendelse, model, dispatch, oppdaterUtbetaling(soknad.fiksDigisosId, nyHendelse));
         }
 
         dispatch(dispatch(skjulNyUtbetalingModal()));

@@ -8,7 +8,7 @@ import makeStyles from "@material-ui/core/styles/makeStyles";
 import {createStyles} from "@material-ui/core";
 import {FsSaksStatus, FsSoknad, Model} from "../../../redux/types";
 import Button from "@material-ui/core/Button";
-import {aiuuur, oppdaterFsSaksStatus} from "../../../redux/actions";
+import {sendNyHendelseOgOppdaterModel, oppdaterFsSaksStatus} from "../../../redux/actions";
 import {getNow} from "../../../utils/utilityFunctions";
 import TextField from "@material-ui/core/TextField";
 import EndreSaksstatusModal from "./EndreSaksstatusModal";
@@ -110,7 +110,7 @@ const SaksTabView: React.FC<Props> = (props: Props) => {
                         status: sak.status
                     };
 
-                    dispatch(aiuuur(nyHendelse, model, oppdaterFsSaksStatus(soknad.fiksDigisosId, nyHendelse)));
+                    sendNyHendelseOgOppdaterModel(nyHendelse, model, dispatch, oppdaterFsSaksStatus(soknad.fiksDigisosId, nyHendelse));
                 }
             } }>Oppdater tittel</Button>
 

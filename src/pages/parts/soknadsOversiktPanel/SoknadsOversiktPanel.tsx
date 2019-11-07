@@ -44,7 +44,7 @@ const SoknadsOversiktPanel: React.FC<Props> = (props: Props) => {
             return (
                 <ListItem id={"soknad_" + index} key={"SoknadItem: " + soknad.fiksDigisosId} selected={soknad.fiksDigisosId === aktivSoknad} button
                           divider
-                          onClick={() => props.dispatch(opprettDigisosSakHvisDenIkkeFinnes(soknad, model, model.backendUrlTypeToUse))}>
+                          onClick={() => opprettDigisosSakHvisDenIkkeFinnes(soknad, model, model.backendUrlTypeToUse, props.dispatch)}>
                     <ListItemText primary={soknad.fiksDigisosId}/>
                 </ListItem>
             )

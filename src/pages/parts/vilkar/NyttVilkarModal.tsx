@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import {AppState, DispatchProps} from "../../../redux/reduxTypes";
 import {connect} from "react-redux";
 import {createStyles, Modal, Theme} from "@material-ui/core";
-import {aiuuur, nyttVilkar, oppdaterVilkar, setAktivtVilkar, skjulNyVilkarModal} from "../../../redux/actions";
+import {sendNyHendelseOgOppdaterModel, nyttVilkar, oppdaterVilkar, setAktivtVilkar, skjulNyVilkarModal} from "../../../redux/actions";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import Fade from "@material-ui/core/Fade";
 import Backdrop from "@material-ui/core/Backdrop";
@@ -173,9 +173,9 @@ const NyttVilkarModal: React.FC<Props> = (props: Props) => {
         nyHendelse.hendelsestidspunkt = getNow();
 
         if (aktivtVilkar == null) {
-            dispatch(aiuuur(nyHendelse, model, nyttVilkar(soknad.fiksDigisosId, nyHendelse)));
+            sendNyHendelseOgOppdaterModel(nyHendelse, model, dispatch, nyttVilkar(soknad.fiksDigisosId, nyHendelse));
         } else {
-            dispatch(aiuuur(nyHendelse, model, oppdaterVilkar(soknad.fiksDigisosId, nyHendelse)));
+            sendNyHendelseOgOppdaterModel(nyHendelse, model, dispatch, oppdaterVilkar(soknad.fiksDigisosId, nyHendelse));
         }
 
         dispatch(dispatch(skjulNyVilkarModal()));

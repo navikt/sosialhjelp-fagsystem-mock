@@ -13,7 +13,7 @@ import AddIcon from '@material-ui/icons/Add';
 import Box from "@material-ui/core/Box";
 import Fab from "@material-ui/core/Fab";
 import {FsSoknad, Model} from "../../../redux/types";
-import {aiuuur, chaaar, oppdaterForelopigSvar, oppdaterSoknadsStatus} from "../../../redux/actions";
+import {sendNyHendelseOgOppdaterModel, sendPdfOgOppdaterForelopigSvar, oppdaterForelopigSvar, oppdaterSoknadsStatus} from "../../../redux/actions";
 import {getNow} from "../../../utils/utilityFunctions";
 import {defaultDokumentlagerRef} from "../../../redux/reducer";
 
@@ -104,7 +104,7 @@ const SoknadStatusView: React.FC<Props> = (props: Props) => {
         const formData = new FormData();
         formData.append("file", files[0], files[0].name);
 
-        dispatch(chaaar(soknad.fiksDigisosId, formData, model, soknad));
+        dispatch(sendPdfOgOppdaterForelopigSvar(soknad.fiksDigisosId, formData, model, soknad, dispatch));
     };
 
     const addNyttForelopigSvarButton = () => {
@@ -127,7 +127,7 @@ const SoknadStatusView: React.FC<Props> = (props: Props) => {
                                  vedlegg: []
                              };
 
-                             dispatch(aiuuur(nyHendelse, model, oppdaterForelopigSvar(soknad.fiksDigisosId, nyHendelse)));
+                             sendNyHendelseOgOppdaterModel(nyHendelse, model, dispatch, oppdaterForelopigSvar(soknad.fiksDigisosId, nyHendelse));
                          }
                      }}>
                     <AddIcon/>
@@ -162,7 +162,7 @@ const SoknadStatusView: React.FC<Props> = (props: Props) => {
                                                 status: value
                                             };
 
-                                            dispatch(aiuuur(nyHendelse, model, oppdaterSoknadsStatus(soknad.fiksDigisosId, nyHendelse)));
+                                            sendNyHendelseOgOppdaterModel(nyHendelse, model, dispatch, oppdaterSoknadsStatus(soknad.fiksDigisosId, nyHendelse));
                                         }
                                     }}
                         >

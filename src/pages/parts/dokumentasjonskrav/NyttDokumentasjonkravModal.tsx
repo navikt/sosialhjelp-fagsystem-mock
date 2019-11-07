@@ -3,7 +3,7 @@ import {AppState, DispatchProps} from "../../../redux/reduxTypes";
 import {connect} from "react-redux";
 import {createStyles, Modal, Theme} from "@material-ui/core";
 import {
-    aiuuur,
+    sendNyHendelseOgOppdaterModel,
     nyttDokumentasjonkrav,
     oppdaterDokumentasjonkrav,
     setAktivtDokumentasjonkrav,
@@ -179,9 +179,9 @@ const NyttDokumentasjonkravModal: React.FC<Props> = (props: Props) => {
         nyHendelse.hendelsestidspunkt = getNow();
 
         if (aktivtDokumentasjonkrav == null) {
-            dispatch(aiuuur(nyHendelse, model, nyttDokumentasjonkrav(soknad.fiksDigisosId, nyHendelse)));
+            sendNyHendelseOgOppdaterModel(nyHendelse, model, dispatch, nyttDokumentasjonkrav(soknad.fiksDigisosId, nyHendelse));
         } else {
-            dispatch(aiuuur(nyHendelse, model, oppdaterDokumentasjonkrav(soknad.fiksDigisosId, nyHendelse)));
+            sendNyHendelseOgOppdaterModel(nyHendelse, model, dispatch, oppdaterDokumentasjonkrav(soknad.fiksDigisosId, nyHendelse));
         }
 
         dispatch(dispatch(skjulNyDokumentasjonkravModal()));

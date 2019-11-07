@@ -6,7 +6,7 @@ import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
-import {aiuuur, oppdaterFsSaksStatus} from "../../../redux/actions";
+import {sendNyHendelseOgOppdaterModel, oppdaterFsSaksStatus} from "../../../redux/actions";
 import {HendelseType, SaksStatus, SaksStatusType} from "../../../types/hendelseTypes";
 import {getNow} from "../../../utils/utilityFunctions";
 import {FsSaksStatus, FsSoknad, Model} from "../../../redux/types";
@@ -70,7 +70,7 @@ const EndreSaksstatusModal: React.FC<Props> = (props: Props) => {
                                 status: value
                             };
 
-                            dispatch(aiuuur(nyHendelse, model, oppdaterFsSaksStatus(soknad.fiksDigisosId, nyHendelse)));
+                            sendNyHendelseOgOppdaterModel(nyHendelse, model, dispatch, oppdaterFsSaksStatus(soknad.fiksDigisosId, nyHendelse));
                         }
                     }}
                     inputProps={{

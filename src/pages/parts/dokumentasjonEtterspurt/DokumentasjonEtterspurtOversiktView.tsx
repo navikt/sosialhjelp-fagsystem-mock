@@ -7,7 +7,7 @@ import Fab from '@material-ui/core/Fab';
 import AddIcon from '@material-ui/icons/Add';
 import Box from '@material-ui/core/Box';
 import {Paper} from "@material-ui/core";
-import {aiuuur, oppdaterDokumentasjonEtterspurt, visNyDokumentasjonEtterspurtModal} from "../../../redux/actions";
+import {sendNyHendelseOgOppdaterModel, oppdaterDokumentasjonEtterspurt, visNyDokumentasjonEtterspurtModal} from "../../../redux/actions";
 import {FsSoknad, Model} from "../../../redux/types";
 import {Dokument, DokumentasjonEtterspurt, HendelseType} from "../../../types/hendelseTypes";
 import Table from "@material-ui/core/Table";
@@ -115,7 +115,7 @@ const DokumentasjonEtterspurtOversiktView: React.FC<Props> = (props: Props) => {
                 dokumenter: []
             };
 
-            dispatch(aiuuur(nyHendelse, model, oppdaterDokumentasjonEtterspurt(soknad.fiksDigisosId, nyHendelse)));
+            sendNyHendelseOgOppdaterModel(nyHendelse, model, dispatch, oppdaterDokumentasjonEtterspurt(soknad.fiksDigisosId, nyHendelse));
         }
     }
 

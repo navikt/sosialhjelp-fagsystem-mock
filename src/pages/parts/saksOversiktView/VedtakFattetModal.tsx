@@ -6,7 +6,7 @@ import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
-import {aiuuur, oppdaterVedtakFattet, tarsoniiis} from "../../../redux/actions";
+import {sendNyHendelseOgOppdaterModel, oppdaterVedtakFattet, sendPdfOgOppdaterVedtakFattet} from "../../../redux/actions";
 import {HendelseType, Utfall, VedtakFattet} from "../../../types/hendelseTypes";
 import {getNow} from "../../../utils/utilityFunctions";
 import {FsSaksStatus, FsSoknad, Model} from "../../../redux/types";
@@ -73,7 +73,7 @@ const VedtakFattetModal: React.FC<Props> = (props: Props) => {
         const formData = new FormData();
         formData.append("file", files[0], files[0].name);
 
-        dispatch(tarsoniiis(soknad.fiksDigisosId, formData, vedtakFattetUtfall, sak.referanse, model, soknad));
+        sendPdfOgOppdaterVedtakFattet(soknad.fiksDigisosId, formData, vedtakFattetUtfall, sak.referanse, model, soknad, dispatch);
     };
 
     return (
@@ -124,7 +124,7 @@ const VedtakFattetModal: React.FC<Props> = (props: Props) => {
                              vedlegg: []
                          };
 
-                         dispatch(aiuuur(nyHendelse, model, oppdaterVedtakFattet(soknad.fiksDigisosId, nyHendelse)));
+                         sendNyHendelseOgOppdaterModel(nyHendelse, model, dispatch, oppdaterVedtakFattet(soknad.fiksDigisosId, nyHendelse));
                      }
                  }}>
                 <AddIcon/>
