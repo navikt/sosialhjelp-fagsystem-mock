@@ -258,7 +258,6 @@ export const opprettDigisosSakHvisDenIkkeFinnes = (
 
 const runOnErrorResponse = (reason: any, dispatch: Dispatch) => {
     dispatch(visErrorSnackbar());
-    console.warn("RunOnErrorResponse");
     switch (reason.message) {
         case "Not Found": {
             console.warn("Got 404. Specify a valid backend url...");

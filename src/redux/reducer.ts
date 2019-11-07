@@ -111,7 +111,7 @@ export const initialModel: Model = {
     backendUrlTypeToUse: 'digisostest',
 
     // 
-    soknader: [getInitialFsSoknad(initialId)],
+    soknader: [getInitialFsSoknad(window.location.href.includes('www-q') ? '001' : initialId)],
 
     // Visnings
     thememode: 'light',
