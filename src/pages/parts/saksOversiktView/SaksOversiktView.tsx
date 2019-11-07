@@ -7,14 +7,13 @@ import AppBar from '@material-ui/core/AppBar';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
-import Fab from '@material-ui/core/Fab';
-import AddIcon from '@material-ui/icons/Add';
 import {green} from '@material-ui/core/colors';
 import Box from '@material-ui/core/Box';
 import {Paper} from "@material-ui/core";
 import {visNySakModal} from "../../../redux/actions";
 import SaksTabView from "./SaksTabView";
 import {FsSaksStatus, FsSoknad} from "../../../redux/types";
+import Button from "@material-ui/core/Button";
 
 
 interface TabPanelProps {
@@ -123,12 +122,9 @@ const SaksOversiktView: React.FC<Props> = (props: Props) => {
                     Saksoversikt:
                 </Typography>
                 <Box className={classes.addbox}>
-                    <Fab aria-label='Add' className={classes.fab} color='primary' onClick={() => dispatch(visNySakModal())}>
-                        <AddIcon/>
-                    </Fab>
-                    <Typography>
+                    <Button variant="contained" color={'primary'} onClick={() => dispatch(visNySakModal())}>
                         Opprett ny sak
-                    </Typography>
+                    </Button>
                 </Box>
 
                 {(soknad.saker.length > 0) &&

@@ -6,15 +6,17 @@ import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
-import {sendNyHendelseOgOppdaterModel, oppdaterVedtakFattet, sendPdfOgOppdaterVedtakFattet} from "../../../redux/actions";
+import {
+    oppdaterVedtakFattet,
+    sendNyHendelseOgOppdaterModel,
+    sendPdfOgOppdaterVedtakFattet
+} from "../../../redux/actions";
 import {HendelseType, Utfall, VedtakFattet} from "../../../types/hendelseTypes";
 import {getNow} from "../../../utils/utilityFunctions";
 import {FsSaksStatus, FsSoknad, Model} from "../../../redux/types";
 import Box from "@material-ui/core/Box";
-import Fab from "@material-ui/core/Fab";
-import AddIcon from '@material-ui/icons/Add';
-import Typography from "@material-ui/core/Typography";
 import {defaultDokumentlagerRef} from "../../../redux/reducer";
+import Button from "@material-ui/core/Button";
 
 
 const useStyles = makeStyles(theme => ({
@@ -43,7 +45,6 @@ const useStyles = makeStyles(theme => ({
         color: 'inherit'
     },
     fab: {
-        marginRight: theme.spacing(1),
         marginLeft: theme.spacing(2)
     },
 }));
@@ -73,7 +74,7 @@ const VedtakFattetModal: React.FC<Props> = (props: Props) => {
         const formData = new FormData();
         formData.append("file", files[0], files[0].name);
 
-        sendPdfOgOppdaterVedtakFattet(soknad.fiksDigisosId, formData, vedtakFattetUtfall, sak.referanse, model, soknad, dispatch);
+        sendPdfOgOppdaterVedtakFattet(formData, vedtakFattetUtfall, sak.referanse, model, dispatch);
     };
 
     return (
@@ -105,8 +106,7 @@ const VedtakFattetModal: React.FC<Props> = (props: Props) => {
                     </Select>
                 </FormControl>
             </form>
-            <Fab size="small" aria-label="add" className={classes.fab} color="primary"
-                 onClick={() => {
+            <Button className={classes.fab} variant="contained" color={'default'} onClick={() => {
                      if((model.backendUrlTypeToUse === 'q0' || model.backendUrlTypeToUse === 'q1') && inputEl && inputEl.current) {
                          inputEl.current.click();
                      } else {
@@ -127,9 +127,8 @@ const VedtakFattetModal: React.FC<Props> = (props: Props) => {
                          sendNyHendelseOgOppdaterModel(nyHendelse, model, dispatch, oppdaterVedtakFattet(soknad.fiksDigisosId, nyHendelse));
                      }
                  }}>
-                <AddIcon/>
-            </Fab>
-            <Typography>{(model.backendUrlTypeToUse === 'q0' || model.backendUrlTypeToUse === 'q1') ? "Send vedtak fattet og velg vedtaksbrev" : "Send vedtak fattet"}</Typography>
+                {(model.backendUrlTypeToUse === 'q0' || model.backendUrlTypeToUse === 'q1') ? "Send vedtak fattet og velg vedtaksbrev" : "Send vedtak fattet"}
+            </Button>
             <input
                 id={'inputField vedtakFattet'}
                 ref={inputEl}

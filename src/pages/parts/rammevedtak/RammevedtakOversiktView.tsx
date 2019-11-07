@@ -7,12 +7,11 @@ import AppBar from '@material-ui/core/AppBar';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
-import Fab from '@material-ui/core/Fab';
-import AddIcon from '@material-ui/icons/Add';
 import Box from '@material-ui/core/Box';
 import {setAktivtRammevedtak, visNyRammevedtakModal} from "../../../redux/actions";
 import RammevedtakTabView from "./RammevedtakTabView";
 import {Rammevedtak} from "../../../types/hendelseTypes";
+import Button from "@material-ui/core/Button";
 
 
 interface TabPanelProps {
@@ -102,15 +101,12 @@ const RammevedtakOversiktView: React.FC<Props> = (props: Props) => {
     return (
         <div>
             <Box className={classes.addbox}>
-                <Typography>
-                    <Fab aria-label="add" className={classes.fab} color="primary" onClick={() => {
-                        dispatch(setAktivtRammevedtak(null));
-                        dispatch(visNyRammevedtakModal(saksreferanse));
-                    }}>
-                        <AddIcon/>
-                    </Fab>
+                <Button variant="contained" color={'primary'} onClick={() => {
+                    dispatch(setAktivtRammevedtak(null));
+                    dispatch(visNyRammevedtakModal(saksreferanse));
+                }}>
                     Nytt rammevedtak
-                </Typography>
+                </Button>
             </Box>
 
             {(rammevedtakListe.length > 0) &&

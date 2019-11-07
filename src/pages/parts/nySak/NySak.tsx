@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import {AppState, DispatchProps} from "../../../redux/reduxTypes";
 import {connect} from "react-redux";
 import {createStyles, Modal, Theme} from "@material-ui/core";
-import {sendNyHendelseOgOppdaterModel, nyFsSaksStatus, skjulNySakModal} from "../../../redux/actions";
+import {nyFsSaksStatus, sendNyHendelseOgOppdaterModel, skjulNySakModal} from "../../../redux/actions";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import Fade from "@material-ui/core/Fade";
 import Backdrop from "@material-ui/core/Backdrop";
@@ -13,10 +13,8 @@ import {
     getFsSoknadByFiksDigisosId
 } from "../../../utils/utilityFunctions";
 import TextField from "@material-ui/core/TextField";
-import Fab from "@material-ui/core/Fab";
 import Box from "@material-ui/core/Box";
-import AddIcon from '@material-ui/icons/Add';
-import Typography from "@material-ui/core/Typography";
+import Button from "@material-ui/core/Button";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -93,7 +91,7 @@ const NySakModal: React.FC<Props> = (props: Props) => {
                             variant="filled"
                             autoComplete="off"
                         />
-                        <Fab size={'small'} aria-label='Add' className={classes.fab} color='primary' onClick={() => {
+                        <Button variant="contained" color={'default'} onClick={() => {
                             const fsSoknader = model.soknader;
                             if (fsSoknader){
                                 const fsSoknad: FsSoknad | undefined = getFsSoknadByFiksDigisosId(fsSoknader, model.aktivSoknad);
@@ -108,11 +106,8 @@ const NySakModal: React.FC<Props> = (props: Props) => {
                             }
                             dispatch(skjulNySakModal());
                         }}>
-                            <AddIcon/>
-                        </Fab>
-                        <Typography>
                             Opprett sak
-                        </Typography>
+                        </Button>
                     </Box>
                 </div>
             </Fade>

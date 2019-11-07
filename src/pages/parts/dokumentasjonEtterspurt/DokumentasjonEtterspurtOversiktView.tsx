@@ -3,11 +3,13 @@ import {AppState, DispatchProps} from "../../../redux/reduxTypes";
 import {connect} from "react-redux";
 import {createStyles, makeStyles, Theme} from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-import Fab from '@material-ui/core/Fab';
-import AddIcon from '@material-ui/icons/Add';
 import Box from '@material-ui/core/Box';
 import {Paper} from "@material-ui/core";
-import {sendNyHendelseOgOppdaterModel, oppdaterDokumentasjonEtterspurt, visNyDokumentasjonEtterspurtModal} from "../../../redux/actions";
+import {
+    oppdaterDokumentasjonEtterspurt,
+    sendNyHendelseOgOppdaterModel,
+    visNyDokumentasjonEtterspurtModal
+} from "../../../redux/actions";
 import {FsSoknad, Model} from "../../../redux/types";
 import {Dokument, DokumentasjonEtterspurt, HendelseType} from "../../../types/hendelseTypes";
 import Table from "@material-ui/core/Table";
@@ -16,6 +18,7 @@ import TableRow from "@material-ui/core/TableRow";
 import TableCell from "@material-ui/core/TableCell";
 import TableBody from "@material-ui/core/TableBody";
 import {getNow, getShortDateISOString} from "../../../utils/utilityFunctions";
+import Button from "@material-ui/core/Button";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -124,18 +127,15 @@ const DokumentasjonEtterspurtOversiktView: React.FC<Props> = (props: Props) => {
             <Paper className={classes.paper}>
                 <Typography variant={"h5"}>Dokumentasjon som er etterspurt</Typography>
                 <Box className={classes.addbox}>
-                    <Typography>
-                        <Fab id={'etterspor_mer_dokumentasjon_knapp'} aria-label="add" className={classes.fab} color="primary" onClick={() => {
-                            if (soknad.dokumentasjonEtterspurt && soknad.dokumentasjonEtterspurt.dokumenter.length > 0) {
-                                dispatchNyHendelseMedTomDokumentasjonEtterspurt();
-                            } else {
-                                dispatch(visNyDokumentasjonEtterspurtModal());
-                            }
-                        }}>
-                            <AddIcon/>
-                        </Fab>
+                    <Button variant="contained" color={'primary'} onClick={() => {
+                        if (soknad.dokumentasjonEtterspurt && soknad.dokumentasjonEtterspurt.dokumenter.length > 0) {
+                            dispatchNyHendelseMedTomDokumentasjonEtterspurt();
+                        } else {
+                            dispatch(visNyDokumentasjonEtterspurtModal());
+                        }
+                    }}>
                         {(soknad.dokumentasjonEtterspurt && soknad.dokumentasjonEtterspurt.dokumenter.length > 0) ? "Slett etterspurt dokumentasjon" : "Etterspør mer dokumentasjon"}
-                    </Typography>
+                    </Button>
                 </Box>
 
                 {(soknad.dokumentasjonEtterspurt && soknad.dokumentasjonEtterspurt.dokumenter.length > 0) &&
@@ -153,14 +153,13 @@ const DokumentasjonEtterspurtOversiktView: React.FC<Props> = (props: Props) => {
                                 {soknad.dokumentasjonEtterspurt && soknad.dokumentasjonEtterspurt.dokumenter.map(dokument => makeTableRow(dokument))}
                             </TableBody>
                         </Table>
-                        <Typography className={classes.paperRoute}>
-                            <Fab size="small" aria-label="add" className={classes.fab2} color="primary" onClick={() => {
+                        <Box className={classes.paperRoute}>
+                            <Button color={'secondary'} onClick={() => {
                                 dispatch(visNyDokumentasjonEtterspurtModal());
                             }}>
-                                <AddIcon/>
-                            </Fab>
-                            Endre etterspurt dokumentasjon
-                        </Typography>
+                                Endre etterspurt dokumentasjon
+                            </Button>
+                        </Box>
                     </Paper>
                 </Box>}
             </Paper>

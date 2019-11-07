@@ -10,10 +10,9 @@ import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
-import Fab from "@material-ui/core/Fab";
-import AddIcon from '@material-ui/icons/Add';
-import Typography from "@material-ui/core/Typography";
 import {setAktivtRammevedtak, visNyRammevedtakModal} from "../../../redux/actions";
+import Button from "@material-ui/core/Button";
+import Box from "@material-ui/core/Box";
 
 const useStyles = makeStyles((theme) => {
     return createStyles({
@@ -96,15 +95,14 @@ const RammevedtakTabView: React.FC<Props> = (props: Props) => {
                         {makeTableRow("tom", rammevedtak.tom)}
                     </TableBody>
                 </Table>
-                <Typography className={classes.paperRoute}>
-                    <Fab size="small" aria-label="add" className={classes.fab} color="primary" onClick={() => {
+                <Box className={classes.paperRoute}>
+                    <Button color={'secondary'} onClick={() => {
                         dispatch(setAktivtRammevedtak(rammevedtak.rammevedtaksreferanse));
                         dispatch(visNyRammevedtakModal(rammevedtak.saksreferanse));
                     }}>
-                        <AddIcon/>
-                    </Fab>
-                    Endre rammevedtak
-                </Typography>
+                        Endre rammevedtak
+                    </Button>
+                </Box>
             </Paper>
         </div>
     );

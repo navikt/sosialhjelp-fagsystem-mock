@@ -9,13 +9,17 @@ import {ForelopigSvar, HendelseType, SoknadsStatus, SoknadsStatusType} from "../
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Radio from "@material-ui/core/Radio";
 import Typography from "@material-ui/core/Typography";
-import AddIcon from '@material-ui/icons/Add';
 import Box from "@material-ui/core/Box";
-import Fab from "@material-ui/core/Fab";
 import {FsSoknad, Model} from "../../../redux/types";
-import {sendNyHendelseOgOppdaterModel, sendPdfOgOppdaterForelopigSvar, oppdaterForelopigSvar, oppdaterSoknadsStatus} from "../../../redux/actions";
+import {
+    oppdaterForelopigSvar,
+    oppdaterSoknadsStatus,
+    sendNyHendelseOgOppdaterModel,
+    sendPdfOgOppdaterForelopigSvar
+} from "../../../redux/actions";
 import {getNow} from "../../../utils/utilityFunctions";
 import {defaultDokumentlagerRef} from "../../../redux/reducer";
+import Button from "@material-ui/core/Button";
 
 
 const useStyles = makeStyles((theme) => {
@@ -104,14 +108,13 @@ const SoknadStatusView: React.FC<Props> = (props: Props) => {
         const formData = new FormData();
         formData.append("file", files[0], files[0].name);
 
-        dispatch(sendPdfOgOppdaterForelopigSvar(soknad.fiksDigisosId, formData, model, soknad, dispatch));
+        dispatch(sendPdfOgOppdaterForelopigSvar(formData, model, dispatch));
     };
 
     const addNyttForelopigSvarButton = () => {
         return (
             <Box className={classes.addbox}>
-                <Fab aria-label='Add' className={classes.fab} color='primary'
-                     onClick={() => {
+                <Button variant="contained" color={'primary'} onClick={() => {
                          if((model.backendUrlTypeToUse === 'q0' || model.backendUrlTypeToUse === 'q1') && inputEl && inputEl.current) {
                              inputEl.current.click();
                          } else {
@@ -130,9 +133,8 @@ const SoknadStatusView: React.FC<Props> = (props: Props) => {
                              sendNyHendelseOgOppdaterModel(nyHendelse, model, dispatch, oppdaterForelopigSvar(soknad.fiksDigisosId, nyHendelse));
                          }
                      }}>
-                    <AddIcon/>
-                </Fab>
-                <Typography>{(model.backendUrlTypeToUse === 'q0' || model.backendUrlTypeToUse === 'q1') ? "Send pdf med foreløpig svar" : "Send foreløpig svar"}</Typography>
+                    {(model.backendUrlTypeToUse === 'q0' || model.backendUrlTypeToUse === 'q1') ? "Send pdf med foreløpig svar" : "Send foreløpig svar"}
+                </Button>
             </Box>
         )
     };

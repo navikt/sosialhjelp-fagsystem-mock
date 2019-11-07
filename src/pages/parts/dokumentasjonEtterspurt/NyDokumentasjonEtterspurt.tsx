@@ -180,7 +180,7 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
         const formData = new FormData();
         formData.append("file", files[0], files[0].name);
 
-        sendPdfOgOppdaterDokumentasjonEtterspurt(soknad.fiksDigisosId, formData, modalDokumentasjonEtterspurt.dokumenter, model, soknad, dispatch);
+        sendPdfOgOppdaterDokumentasjonEtterspurt(formData, modalDokumentasjonEtterspurt.dokumenter, model, dispatch);
 
         setVisFeilmelding(false);
         setVisFeilmeldingDatePicker(false);

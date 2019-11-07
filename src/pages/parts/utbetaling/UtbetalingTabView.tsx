@@ -10,10 +10,9 @@ import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
-import Fab from "@material-ui/core/Fab";
-import AddIcon from '@material-ui/icons/Add';
-import Typography from "@material-ui/core/Typography";
 import {setAktivUtbetaling, visNyUtbetalingModal} from "../../../redux/actions";
+import Button from "@material-ui/core/Button";
+import Box from "@material-ui/core/Box";
 
 const useStyles = makeStyles((theme) => {
     return createStyles({
@@ -125,15 +124,14 @@ const UtbetalingTabView: React.FC<Props> = (props: Props) => {
                         {makeTableRow("Utbetalingsmetode", utbetaling.utbetalingsmetode)}
                     </TableBody>
                 </Table>
-                <Typography className={classes.paperRoute}>
-                    <Fab size="small" aria-label="add" className={classes.fab} color="primary" onClick={() => {
+                <Box className={classes.paperRoute}>
+                    <Button color={'secondary'} onClick={() => {
                         dispatch(setAktivUtbetaling(utbetaling.utbetalingsreferanse));
                         dispatch(visNyUtbetalingModal(utbetaling.saksreferanse));
                     }}>
-                        <AddIcon/>
-                    </Fab>
-                    Endre utbetaling
-                </Typography>
+                        Endre utbetaling
+                    </Button>
+                </Box>
             </Paper>
         </div>
     );

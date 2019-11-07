@@ -115,10 +115,8 @@ export const sendPdfOgLeggPdfRefTilHendelseOgSend = (
 };
 
 export const sendPdfOgOppdaterForelopigSvar = (
-    fiksDigisosId: string,
     formData: FormData,
     model: Model,
-    soknad: FsSoknad,
     dispatch: Dispatch
 ) => {
     dispatch(turnOnLoader());
@@ -136,19 +134,17 @@ export const sendPdfOgOppdaterForelopigSvar = (
             vedlegg: []
         };
 
-        sendNyHendelseOgOppdaterModel(nyHendelse, model, dispatch, oppdaterForelopigSvar(soknad.fiksDigisosId, nyHendelse));
+        sendNyHendelseOgOppdaterModel(nyHendelse, model, dispatch, oppdaterForelopigSvar(model.aktivSoknad, nyHendelse));
     };
 
     sendPdfOgLeggPdfRefTilHendelseOgSend(formData, model, dispatch, sendForelopigSvarMedRef);
 };
 
 export const sendPdfOgOppdaterVedtakFattet = (
-    fiksDigisosId: string,
     formData: FormData,
     vedtakFattetUtfall: Utfall|null,
     saksreferanse: string,
     model: Model,
-    soknad: FsSoknad,
     dispatch: Dispatch
 ) => {
     dispatch(turnOnLoader());
@@ -173,18 +169,16 @@ export const sendPdfOgOppdaterVedtakFattet = (
                     }}
             ]
         };
-        sendNyHendelseOgOppdaterModel(nyHendelse, model, dispatch, oppdaterVedtakFattet(soknad.fiksDigisosId, nyHendelse));
+        sendNyHendelseOgOppdaterModel(nyHendelse, model, dispatch, oppdaterVedtakFattet(model.aktivSoknad, nyHendelse));
     };
 
     sendPdfOgLeggPdfRefTilHendelseOgSend(formData, model, dispatch, sendForelopigSvarMedRef);
 };
 
 export const sendPdfOgOppdaterDokumentasjonEtterspurt = (
-    fiksDigisosId: string,
     formData: FormData,
     dokumenter: Dokument[],
     model: Model,
-    soknad: FsSoknad,
     dispatch: Dispatch
 ) => {
     dispatch(turnOnLoader());
@@ -202,7 +196,7 @@ export const sendPdfOgOppdaterDokumentasjonEtterspurt = (
             vedlegg: [],
             dokumenter: dokumenter
         };
-        sendNyHendelseOgOppdaterModel(nyHendelse, model, dispatch, oppdaterDokumentasjonEtterspurt(soknad.fiksDigisosId, nyHendelse));
+        sendNyHendelseOgOppdaterModel(nyHendelse, model, dispatch, oppdaterDokumentasjonEtterspurt(model.aktivSoknad, nyHendelse));
     };
 
     sendPdfOgLeggPdfRefTilHendelseOgSend(formData, model, dispatch, sendForelopigSvarMedRef);
