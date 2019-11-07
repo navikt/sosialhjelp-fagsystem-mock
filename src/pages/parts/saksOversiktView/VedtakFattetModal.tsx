@@ -7,10 +7,9 @@ import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import {aiuuur, oppdaterVedtakFattet, tarsoniiis} from "../../../redux/actions";
-import Hendelse, {HendelseType, Utfall, VedtakFattet} from "../../../types/hendelseTypes";
+import {HendelseType, Utfall, VedtakFattet} from "../../../types/hendelseTypes";
 import {getNow} from "../../../utils/utilityFunctions";
 import {FsSaksStatus, FsSoknad, Model} from "../../../redux/types";
-import {oHendelser} from "../../../redux/optics";
 import Box from "@material-ui/core/Box";
 import Fab from "@material-ui/core/Fab";
 import AddIcon from '@material-ui/icons/Add';
@@ -124,16 +123,8 @@ const VedtakFattetModal: React.FC<Props> = (props: Props) => {
                              },
                              vedlegg: []
                          };
-                         const soknadUpdated = oHendelser.modify((a: Hendelse[]) => [...a, nyHendelse])(soknad);
 
-                         dispatch(
-                             aiuuur(
-                                 model.aktivSoknad,
-                                 soknadUpdated.fiksDigisosSokerJson,
-                                 model,
-                                 oppdaterVedtakFattet(model.aktivSoknad, nyHendelse)
-                             )
-                         );
+                         dispatch(aiuuur(nyHendelse, model, oppdaterVedtakFattet(soknad.fiksDigisosId, nyHendelse)));
                      }
                  }}>
                 <AddIcon/>

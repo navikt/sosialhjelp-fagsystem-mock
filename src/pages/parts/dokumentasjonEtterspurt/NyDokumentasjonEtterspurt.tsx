@@ -2,11 +2,17 @@ import React, {useRef, useState} from 'react';
 import {AppState, DispatchProps} from "../../../redux/reduxTypes";
 import {connect} from "react-redux";
 import {createStyles, Modal, Paper, Theme} from "@material-ui/core";
-import {setAktivtRammevedtak, skjulNyDokumentasjonEtterspurtModal} from "../../../redux/actions";
+import {
+    aiuuur,
+    oppdaterDokumentasjonEtterspurt,
+    setAktivtRammevedtak,
+    shakuraaas,
+    skjulNyDokumentasjonEtterspurtModal
+} from "../../../redux/actions";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import Fade from "@material-ui/core/Fade";
 import Backdrop from "@material-ui/core/Backdrop";
-import {Model} from "../../../redux/types";
+import {FsSoknad, Model} from "../../../redux/types";
 import TextField from '@material-ui/core/TextField';
 import 'date-fns';
 import DateFnsUtils from '@date-io/date-fns';
@@ -15,17 +21,9 @@ import Fab from "@material-ui/core/Fab";
 import Typography from "@material-ui/core/Typography";
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
-import Hendelse, {
-    Dokument,
-    DokumentasjonEtterspurt,
-    FilreferanseType,
-    HendelseType
-} from "../../../types/hendelseTypes";
+import {Dokument, DokumentasjonEtterspurt, FilreferanseType, HendelseType} from "../../../types/hendelseTypes";
 import Grid from "@material-ui/core/Grid";
 import {formatDateString, getDateOrNullFromDateString, getNow} from "../../../utils/utilityFunctions";
-import {aiuuur, oppdaterDokumentasjonEtterspurt, shakuraaas} from "../../../redux/actions";
-import {FsSoknad} from "../../../redux/types";
-import {oHendelser} from "../../../redux/optics";
 import TableRow from "@material-ui/core/TableRow";
 import TableCell from "@material-ui/core/TableCell";
 import Table from "@material-ui/core/Table";
@@ -218,16 +216,7 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
                 dokumenter: modalDokumentasjonEtterspurt.dokumenter
             };
 
-            const soknadUpdated = oHendelser.modify((a: Hendelse[]) => [...a, nyHendelse])(soknad);
-
-            dispatch(
-                aiuuur(
-                    soknad.fiksDigisosId,
-                    soknadUpdated.fiksDigisosSokerJson,
-                    model,
-                    oppdaterDokumentasjonEtterspurt(soknad.fiksDigisosId, nyHendelse)
-                )
-            );
+            dispatch(aiuuur(nyHendelse, model, oppdaterDokumentasjonEtterspurt(soknad.fiksDigisosId, nyHendelse)));
 
             dispatch(dispatch(skjulNyDokumentasjonEtterspurtModal()));
 

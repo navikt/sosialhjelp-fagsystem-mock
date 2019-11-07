@@ -2,19 +2,17 @@ import React, {useState} from 'react';
 import {AppState, DispatchProps} from "../../../redux/reduxTypes";
 import {connect} from "react-redux";
 import Typography from "@material-ui/core/Typography";
-import Hendelse, {HendelseType, SaksStatus} from "../../../types/hendelseTypes";
+import {HendelseType, SaksStatus} from "../../../types/hendelseTypes";
 import Box from "@material-ui/core/Box";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import {createStyles} from "@material-ui/core";
-import {Model} from "../../../redux/types";
+import {FsSaksStatus, FsSoknad, Model} from "../../../redux/types";
 import Button from "@material-ui/core/Button";
 import {aiuuur, oppdaterFsSaksStatus} from "../../../redux/actions";
 import {getNow} from "../../../utils/utilityFunctions";
-import {FsSaksStatus, FsSoknad} from "../../../redux/types";
 import TextField from "@material-ui/core/TextField";
 import EndreSaksstatusModal from "./EndreSaksstatusModal";
 import VedtakFattetModal from "./VedtakFattetModal";
-import {oHendelser} from "../../../redux/optics";
 import RammevedtakOversiktView from "../rammevedtak/RammevedtakOversiktView";
 import UtbetalingOversiktView from "../utbetaling/UtbetalingOversiktView";
 
@@ -112,19 +110,7 @@ const SaksTabView: React.FC<Props> = (props: Props) => {
                         status: sak.status
                     };
 
-                    const soknadUpdated = oHendelser.modify((a: Hendelse[]) => [...a, nyHendelse])(soknad);
-
-                    dispatch(
-                        aiuuur(
-                            model.aktivSoknad,
-                            soknadUpdated.fiksDigisosSokerJson,
-                            model,
-                            oppdaterFsSaksStatus(
-                                model.aktivSoknad,
-                                nyHendelse
-                            )
-                        )
-                    )
+                    dispatch(aiuuur(nyHendelse, model, oppdaterFsSaksStatus(soknad.fiksDigisosId, nyHendelse)));
                 }
             } }>Oppdater tittel</Button>
 

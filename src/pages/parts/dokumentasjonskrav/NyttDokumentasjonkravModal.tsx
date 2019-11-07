@@ -2,11 +2,17 @@ import React, {useState} from 'react';
 import {AppState, DispatchProps} from "../../../redux/reduxTypes";
 import {connect} from "react-redux";
 import {createStyles, Modal, Theme} from "@material-ui/core";
-import {setAktivtDokumentasjonkrav, skjulNyDokumentasjonkravModal} from "../../../redux/actions";
+import {
+    aiuuur,
+    nyttDokumentasjonkrav,
+    oppdaterDokumentasjonkrav,
+    setAktivtDokumentasjonkrav,
+    skjulNyDokumentasjonkravModal
+} from "../../../redux/actions";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import Fade from "@material-ui/core/Fade";
 import Backdrop from "@material-ui/core/Backdrop";
-import {Model} from "../../../redux/types";
+import {FsSoknad, Model} from "../../../redux/types";
 import {
     generateFilreferanseId,
     getAllUtbetalingsreferanser,
@@ -16,15 +22,12 @@ import {
 } from "../../../utils/utilityFunctions";
 import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
-import Hendelse, {Dokumentasjonkrav, DokumentasjonkravStatus, HendelseType} from "../../../types/hendelseTypes";
-import {oHendelser} from "../../../redux/optics";
-import {aiuuur, nyttDokumentasjonkrav, oppdaterDokumentasjonkrav} from "../../../redux/actions";
+import {Dokumentasjonkrav, DokumentasjonkravStatus, HendelseType} from "../../../types/hendelseTypes";
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
 import Typography from "@material-ui/core/Typography";
 import Fab from "@material-ui/core/Fab";
 import AddIcon from '@material-ui/icons/Add';
-import {FsSoknad} from "../../../redux/types";
 import InputLabel from "@material-ui/core/InputLabel";
 import FormControl from "@material-ui/core/FormControl";
 import Input from '@material-ui/core/Input';
@@ -175,26 +178,10 @@ const NyttDokumentasjonkravModal: React.FC<Props> = (props: Props) => {
         const nyHendelse: Dokumentasjonkrav = {...modalDokumentasjonkrav};
         nyHendelse.hendelsestidspunkt = getNow();
 
-        const soknadUpdated = oHendelser.modify((a: Hendelse[]) => [...a, nyHendelse])(soknad);
-
         if (aktivtDokumentasjonkrav == null) {
-            dispatch(
-                aiuuur(
-                    soknad.fiksDigisosId,
-                    soknadUpdated.fiksDigisosSokerJson,
-                    model,
-                    nyttDokumentasjonkrav(soknad.fiksDigisosId, nyHendelse)
-                )
-            );
+            dispatch(aiuuur(nyHendelse, model, nyttDokumentasjonkrav(soknad.fiksDigisosId, nyHendelse)));
         } else {
-            dispatch(
-                aiuuur(
-                    soknad.fiksDigisosId,
-                    soknadUpdated.fiksDigisosSokerJson,
-                    model,
-                    oppdaterDokumentasjonkrav(soknad.fiksDigisosId, nyHendelse)
-                )
-            );
+            dispatch(aiuuur(nyHendelse, model, oppdaterDokumentasjonkrav(soknad.fiksDigisosId, nyHendelse)));
         }
 
         dispatch(dispatch(skjulNyDokumentasjonkravModal()));

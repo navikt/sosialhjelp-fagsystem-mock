@@ -28,7 +28,6 @@ import Hendelse, {
     Dokument,
     DokumentasjonEtterspurt,
     Dokumentasjonkrav,
-    FiksDigisosSokerJson,
     FilreferanseType,
     ForelopigSvar,
     HendelseType,
@@ -42,29 +41,34 @@ import Hendelse, {
     Vilkar
 } from "../types/hendelseTypes";
 import {AnyAction, Dispatch} from "redux";
-import {getNow, removeNullFieldsFromHendelser} from "../utils/utilityFunctions";
+import {getFsSoknadByFiksDigisosId, getNow, removeNullFieldsFromHendelser} from "../utils/utilityFunctions";
 import {fetchPost} from "../utils/restUtils";
 import {NavKontor} from "../types/additionalTypes";
 import {oHendelser} from "./optics";
 import {backendUrls, nyNavEnhetUrl, oppdaterDigisosSakUrl} from "./reducer";
 
+const sendNyHendelseOgOppdaterModel = (nyHendelse: Hendelse, model: Model, dispatch: Dispatch, actionToDispatchIfSuccess: AnyAction) => {
+    const soknad = getFsSoknadByFiksDigisosId(model.soknader, model.aktivSoknad)!;
+    const soknadUpdated = oHendelser.modify((a: Hendelse[]) => [...a, nyHendelse])(soknad);
+    const fiksDigisosSokerJsonUtenNull = removeNullFieldsFromHendelser(soknadUpdated.fiksDigisosSokerJson);
+
+    const backendUrl = backendUrls[model.backendUrlTypeToUse];
+    const queryParam = `?fiksDigisosId=${model.aktivSoknad}`;
+    fetchPost(`${backendUrl}${oppdaterDigisosSakUrl}${queryParam}`, JSON.stringify(fiksDigisosSokerJsonUtenNull)).then(() => {
+        dispatch(visSuccessSnackbar());
+        dispatch(actionToDispatchIfSuccess);
+    }).catch((reason) => runOnErrorResponse(reason, dispatch));
+};
+
 export const aiuuur = (
-    fiksDigisosId: string,
-    fiksDigisosSokerJson: FiksDigisosSokerJson,
+    nyHendelse: Hendelse,
     model: Model,
     actionToDispatchIfSuccess: AnyAction
 ): (dispatch: Dispatch<AnyAction>) => void => {
     return (dispatch: Dispatch) => {
         dispatch(turnOnLoader());
-        const backendUrl = backendUrls[model.backendUrlTypeToUse];
-        const queryParam = `?fiksDigisosId=${fiksDigisosId}`;
-        const fiksDigisosSokerJsonUtenNull = removeNullFieldsFromHendelser(fiksDigisosSokerJson);
-        fetchPost(`${backendUrl}${oppdaterDigisosSakUrl}${queryParam}`, JSON.stringify(fiksDigisosSokerJsonUtenNull)).then((response: any) => {
-            dispatch(visSuccessSnackbar());
-            dispatch(setAktivSoknad(response.fiksDigisosId.toString()));
-            dispatch(actionToDispatchIfSuccess);
-        }).catch((reason) => runOnErrorResponse(reason, dispatch))
-            .finally(() => dispatch(turnOffLoader()));
+        sendNyHendelseOgOppdaterModel(nyHendelse, model, dispatch, actionToDispatchIfSuccess);
+        dispatch(turnOffLoader());
     }
 };
 
@@ -118,16 +122,7 @@ export const chaaar = (
                     },
                     vedlegg: []
                 };
-
-                const soknadUpdated = oHendelser.modify((a: Hendelse[]) => [...a, nyHendelse])(soknad);
-                const fiksDigisosSokerJsonUtenNull = removeNullFieldsFromHendelser(soknadUpdated.fiksDigisosSokerJson);
-
-                const queryParam = `?fiksDigisosId=${fiksDigisosId}`;
-                fetchPost(`${backendUrl}${oppdaterDigisosSakUrl}${queryParam}`, JSON.stringify(fiksDigisosSokerJsonUtenNull)).then((response: any) => {
-                    dispatch(visSuccessSnackbar());
-                    dispatch(setAktivSoknad(response.fiksDigisosId.toString()));
-                    dispatch(oppdaterForelopigSvar(soknad.fiksDigisosId, nyHendelse));
-                }).catch((reason) => runOnErrorResponse(reason, dispatch));
+                sendNyHendelseOgOppdaterModel(nyHendelse, model, dispatch, oppdaterForelopigSvar(soknad.fiksDigisosId, nyHendelse));
             });
         }).catch((reason) => runOnErrorResponse(reason, dispatch))
             .finally(() => dispatch(turnOffLoader()));
@@ -174,16 +169,7 @@ export const tarsoniiis = (
                             }}
                     ]
                 };
-
-                const soknadUpdated = oHendelser.modify((a: Hendelse[]) => [...a, nyHendelse])(soknad);
-                const fiksDigisosSokerJsonUtenNull = removeNullFieldsFromHendelser(soknadUpdated.fiksDigisosSokerJson);
-
-                const queryParam = `?fiksDigisosId=${fiksDigisosId}`;
-                fetchPost(`${backendUrl}${oppdaterDigisosSakUrl}${queryParam}`, JSON.stringify(fiksDigisosSokerJsonUtenNull)).then((response: any) => {
-                    dispatch(visSuccessSnackbar());
-                    dispatch(setAktivSoknad(response.fiksDigisosId.toString()));
-                    dispatch(oppdaterVedtakFattet(soknad.fiksDigisosId, nyHendelse));
-                }).catch((reason) => runOnErrorResponse(reason, dispatch));
+                sendNyHendelseOgOppdaterModel(nyHendelse, model, dispatch, oppdaterVedtakFattet(soknad.fiksDigisosId, nyHendelse));
             });
         }).catch((reason) => runOnErrorResponse(reason, dispatch))
             .finally(() => dispatch(turnOffLoader()));
@@ -222,16 +208,7 @@ export const shakuraaas = (
                     vedlegg: [],
                     dokumenter: dokumenter
                 };
-
-                const soknadUpdated = oHendelser.modify((a: Hendelse[]) => [...a, nyHendelse])(soknad);
-                const fiksDigisosSokerJsonUtenNull = removeNullFieldsFromHendelser(soknadUpdated.fiksDigisosSokerJson);
-
-                const queryParam = `?fiksDigisosId=${fiksDigisosId}`;
-                fetchPost(`${backendUrl}${oppdaterDigisosSakUrl}${queryParam}`, JSON.stringify(fiksDigisosSokerJsonUtenNull)).then((response: any) => {
-                    dispatch(visSuccessSnackbar());
-                    dispatch(setAktivSoknad(response.fiksDigisosId.toString()));
-                    dispatch(oppdaterDokumentasjonEtterspurt(soknad.fiksDigisosId, nyHendelse));
-                }).catch((reason) => runOnErrorResponse(reason, dispatch));
+                sendNyHendelseOgOppdaterModel(nyHendelse, model, dispatch, oppdaterDokumentasjonEtterspurt(soknad.fiksDigisosId, nyHendelse));
             });
         }).catch(reason => runOnErrorResponse(reason, dispatch))
             .finally(() => dispatch(turnOffLoader()));

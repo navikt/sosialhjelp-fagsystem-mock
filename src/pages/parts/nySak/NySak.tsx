@@ -2,16 +2,16 @@ import React, {useState} from 'react';
 import {AppState, DispatchProps} from "../../../redux/reduxTypes";
 import {connect} from "react-redux";
 import {createStyles, Modal, Theme} from "@material-ui/core";
-import {skjulNySakModal} from "../../../redux/actions";
+import {aiuuur, nyFsSaksStatus, skjulNySakModal} from "../../../redux/actions";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import Fade from "@material-ui/core/Fade";
 import Backdrop from "@material-ui/core/Backdrop";
-import {aiuuur, nyFsSaksStatus} from "../../../redux/actions";
-import {Model} from "../../../redux/types";
-import {FsSoknad} from "../../../redux/types";
-import {fsSaksStatusToSaksStatus, generateNyFsSaksStatus, getFsSoknadByFiksDigisosId} from "../../../utils/utilityFunctions";
-import {oHendelser} from "../../../redux/optics";
-import Hendelse from "../../../types/hendelseTypes";
+import {FsSoknad, Model} from "../../../redux/types";
+import {
+    fsSaksStatusToSaksStatus,
+    generateNyFsSaksStatus,
+    getFsSoknadByFiksDigisosId
+} from "../../../utils/utilityFunctions";
 import TextField from "@material-ui/core/TextField";
 import Fab from "@material-ui/core/Fab";
 import Box from "@material-ui/core/Box";
@@ -100,16 +100,8 @@ const NySakModal: React.FC<Props> = (props: Props) => {
                                 if (fsSoknad) {
                                     const fsSaksStatus = generateNyFsSaksStatus(tittel.length !== 0 ? tittel : null);
                                     const nyHendelse = fsSaksStatusToSaksStatus(fsSaksStatus);
-                                    const soknadUpdated = oHendelser.modify((a: Hendelse[]) => [...a, nyHendelse])(fsSoknad);
 
-                                    dispatch(
-                                        aiuuur(
-                                            model.aktivSoknad,
-                                            soknadUpdated.fiksDigisosSokerJson,
-                                            model,
-                                            nyFsSaksStatus(model.aktivSoknad, fsSaksStatus)
-                                        )
-                                    );
+                                    dispatch(aiuuur(nyHendelse, model, nyFsSaksStatus(model.aktivSoknad, fsSaksStatus)));
 
                                     setTittel('');
                                 }

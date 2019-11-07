@@ -5,18 +5,16 @@ import {createStyles, Paper} from "@material-ui/core";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import FormControl from "@material-ui/core/FormControl";
 import RadioGroup from "@material-ui/core/RadioGroup";
-import Hendelse, {ForelopigSvar, HendelseType, SoknadsStatus, SoknadsStatusType} from "../../../types/hendelseTypes";
+import {ForelopigSvar, HendelseType, SoknadsStatus, SoknadsStatusType} from "../../../types/hendelseTypes";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Radio from "@material-ui/core/Radio";
 import Typography from "@material-ui/core/Typography";
 import AddIcon from '@material-ui/icons/Add';
 import Box from "@material-ui/core/Box";
 import Fab from "@material-ui/core/Fab";
-import {FsSoknad} from "../../../redux/types";
+import {FsSoknad, Model} from "../../../redux/types";
 import {aiuuur, chaaar, oppdaterForelopigSvar, oppdaterSoknadsStatus} from "../../../redux/actions";
 import {getNow} from "../../../utils/utilityFunctions";
-import {Model} from "../../../redux/types";
-import {oHendelser} from "../../../redux/optics";
 import {defaultDokumentlagerRef} from "../../../redux/reducer";
 
 
@@ -129,16 +127,7 @@ const SoknadStatusView: React.FC<Props> = (props: Props) => {
                                  vedlegg: []
                              };
 
-                             const soknadUpdated = oHendelser.modify((a: Hendelse[]) => [...a, nyHendelse])(soknad);
-
-                             dispatch(
-                                 aiuuur(
-                                     soknad.fiksDigisosId,
-                                     soknadUpdated.fiksDigisosSokerJson,
-                                     model,
-                                     oppdaterForelopigSvar(soknad.fiksDigisosId, nyHendelse)
-                                 )
-                             );
+                             dispatch(aiuuur(nyHendelse, model, oppdaterForelopigSvar(soknad.fiksDigisosId, nyHendelse)));
                          }
                      }}>
                     <AddIcon/>
@@ -173,16 +162,7 @@ const SoknadStatusView: React.FC<Props> = (props: Props) => {
                                                 status: value
                                             };
 
-                                            const soknadUpdated = oHendelser.modify((a: Hendelse[]) => [...a, nyHendelse])(soknad);
-
-                                            dispatch(
-                                                aiuuur(
-                                                    soknad.fiksDigisosId,
-                                                    soknadUpdated.fiksDigisosSokerJson,
-                                                    props.model,
-                                                    oppdaterSoknadsStatus(soknad.fiksDigisosId, nyHendelse)
-                                                )
-                                            )
+                                            dispatch(aiuuur(nyHendelse, model, oppdaterSoknadsStatus(soknad.fiksDigisosId, nyHendelse)));
                                         }
                                     }}
                         >

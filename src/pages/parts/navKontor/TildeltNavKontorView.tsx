@@ -9,9 +9,8 @@ import MenuItem from "@material-ui/core/MenuItem";
 import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
 import Select from "@material-ui/core/Select";
-import Hendelse, {HendelseType, TildeltNavKontor} from "../../../types/hendelseTypes";
+import {HendelseType, TildeltNavKontor} from "../../../types/hendelseTypes";
 import {getNow} from "../../../utils/utilityFunctions";
-import {oHendelser} from "../../../redux/optics";
 import {aiuuur, oppdaterNavKontor, zeruuus} from "../../../redux/actions";
 
 
@@ -96,19 +95,11 @@ const TildeldeltNavkontorView: React.FC<Props> = (props: Props) => {
                                 navKontor: navKontorEnhetsNr.toString()
                             };
 
-                            const soknadUpdated = oHendelser.modify((a: Hendelse[]) => [...a, nyHendelse])(soknad);
                             if (model.backendUrlTypeToUse !== 'q0' && model.backendUrlTypeToUse !== 'q1') {
                                 dispatch(zeruuus(navKontorListe, model));
                             }
 
-                            dispatch(
-                                aiuuur(
-                                    soknad.fiksDigisosId,
-                                    soknadUpdated.fiksDigisosSokerJson,
-                                    props.model,
-                                    oppdaterNavKontor(soknad.fiksDigisosId, nyHendelse)
-                                )
-                            )
+                            dispatch(aiuuur(nyHendelse, model, oppdaterNavKontor(soknad.fiksDigisosId, nyHendelse)));
                         }}
                         inputProps={{
                             name: 'tildeltNavKontor',

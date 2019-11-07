@@ -7,18 +7,15 @@ import Fab from '@material-ui/core/Fab';
 import AddIcon from '@material-ui/icons/Add';
 import Box from '@material-ui/core/Box';
 import {Paper} from "@material-ui/core";
-import {visNyDokumentasjonEtterspurtModal} from "../../../redux/actions";
-import {FsSoknad} from "../../../redux/types";
-import Hendelse, {Dokument, DokumentasjonEtterspurt, HendelseType} from "../../../types/hendelseTypes";
+import {aiuuur, oppdaterDokumentasjonEtterspurt, visNyDokumentasjonEtterspurtModal} from "../../../redux/actions";
+import {FsSoknad, Model} from "../../../redux/types";
+import {Dokument, DokumentasjonEtterspurt, HendelseType} from "../../../types/hendelseTypes";
 import Table from "@material-ui/core/Table";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import TableCell from "@material-ui/core/TableCell";
 import TableBody from "@material-ui/core/TableBody";
 import {getNow, getShortDateISOString} from "../../../utils/utilityFunctions";
-import {oHendelser} from "../../../redux/optics";
-import {aiuuur, oppdaterDokumentasjonEtterspurt} from "../../../redux/actions";
-import {Model} from "../../../redux/types";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -118,16 +115,7 @@ const DokumentasjonEtterspurtOversiktView: React.FC<Props> = (props: Props) => {
                 dokumenter: []
             };
 
-            const soknadUpdated = oHendelser.modify((a: Hendelse[]) => [...a, nyHendelse])(soknad);
-
-            dispatch(
-                aiuuur(
-                    soknad.fiksDigisosId,
-                    soknadUpdated.fiksDigisosSokerJson,
-                    model,
-                    oppdaterDokumentasjonEtterspurt(soknad.fiksDigisosId, nyHendelse)
-                )
-            );
+            dispatch(aiuuur(nyHendelse, model, oppdaterDokumentasjonEtterspurt(soknad.fiksDigisosId, nyHendelse)));
         }
     }
 

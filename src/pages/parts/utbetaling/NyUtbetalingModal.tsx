@@ -2,11 +2,17 @@ import React, {useState} from 'react';
 import {AppState, DispatchProps} from "../../../redux/reduxTypes";
 import {connect} from "react-redux";
 import {createStyles, Modal, Theme} from "@material-ui/core";
-import {setAktivUtbetaling, skjulNyUtbetalingModal} from "../../../redux/actions";
+import {
+    aiuuur,
+    nyUtbetaling,
+    oppdaterUtbetaling,
+    setAktivUtbetaling,
+    skjulNyUtbetalingModal
+} from "../../../redux/actions";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import Fade from "@material-ui/core/Fade";
 import Backdrop from "@material-ui/core/Backdrop";
-import {Model} from "../../../redux/types";
+import {FsSoknad, Model} from "../../../redux/types";
 import {
     formatDateString,
     generateFilreferanseId,
@@ -17,9 +23,7 @@ import {
 } from "../../../utils/utilityFunctions";
 import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
-import Hendelse, {HendelseType, Utbetaling, UtbetalingStatus} from "../../../types/hendelseTypes";
-import {oHendelser} from "../../../redux/optics";
-import {aiuuur, nyUtbetaling, oppdaterUtbetaling} from "../../../redux/actions";
+import {HendelseType, Utbetaling, UtbetalingStatus} from "../../../types/hendelseTypes";
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
 import DateFnsUtils from "@date-io/date-fns";
@@ -29,7 +33,6 @@ import ButtonGroup from "@material-ui/core/ButtonGroup";
 import Button from "@material-ui/core/Button";
 import Fab from "@material-ui/core/Fab";
 import AddIcon from '@material-ui/icons/Add';
-import {FsSoknad} from "../../../redux/types";
 import InputLabel from "@material-ui/core/InputLabel";
 import FormControl from "@material-ui/core/FormControl";
 
@@ -220,26 +223,10 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
         nyHendelse.fom = formatDateString(nyHendelse.fom);
         nyHendelse.tom = formatDateString(nyHendelse.tom);
 
-        const soknadUpdated = oHendelser.modify((a: Hendelse[]) => [...a, nyHendelse])(soknad);
-
         if (aktivUtbetaling == null) {
-            dispatch(
-                aiuuur(
-                    soknad.fiksDigisosId,
-                    soknadUpdated.fiksDigisosSokerJson,
-                    model,
-                    nyUtbetaling(soknad.fiksDigisosId, nyHendelse)
-                )
-            );
+            dispatch(aiuuur(nyHendelse, model, nyUtbetaling(soknad.fiksDigisosId, nyHendelse)));
         } else {
-            dispatch(
-                aiuuur(
-                    soknad.fiksDigisosId,
-                    soknadUpdated.fiksDigisosSokerJson,
-                    model,
-                    oppdaterUtbetaling(soknad.fiksDigisosId, nyHendelse)
-                )
-            );
+            dispatch(aiuuur(nyHendelse, model, oppdaterUtbetaling(soknad.fiksDigisosId, nyHendelse)));
         }
 
         dispatch(dispatch(skjulNyUtbetalingModal()));

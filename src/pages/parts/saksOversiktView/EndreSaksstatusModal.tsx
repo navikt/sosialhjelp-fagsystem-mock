@@ -7,11 +7,9 @@ import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import {aiuuur, oppdaterFsSaksStatus} from "../../../redux/actions";
-import Hendelse, {HendelseType, SaksStatus, SaksStatusType} from "../../../types/hendelseTypes";
+import {HendelseType, SaksStatus, SaksStatusType} from "../../../types/hendelseTypes";
 import {getNow} from "../../../utils/utilityFunctions";
-import {Model} from "../../../redux/types";
-import {oHendelser} from "../../../redux/optics";
-import {FsSaksStatus, FsSoknad} from "../../../redux/types";
+import {FsSaksStatus, FsSoknad, Model} from "../../../redux/types";
 
 
 const useStyles = makeStyles(theme => ({
@@ -71,19 +69,8 @@ const EndreSaksstatusModal: React.FC<Props> = (props: Props) => {
                                 tittel: sak.tittel,
                                 status: value
                             };
-                            const soknadUpdated = oHendelser.modify((a: Hendelse[]) => [...a, nyHendelse])(soknad);
 
-                            dispatch(
-                                aiuuur(
-                                    model.aktivSoknad,
-                                    soknadUpdated.fiksDigisosSokerJson,
-                                    model,
-                                    oppdaterFsSaksStatus(
-                                        model.aktivSoknad,
-                                        nyHendelse
-                                    )
-                                )
-                            )
+                            dispatch(aiuuur(nyHendelse, model, oppdaterFsSaksStatus(soknad.fiksDigisosId, nyHendelse)));
                         }
                     }}
                     inputProps={{
