@@ -10,7 +10,6 @@ import UserGuide from "./pages/UserGuide";
 import NotFound from "./components/notFound";
 import Example from "./pages/Example";
 import V3 from "./pages/V3";
-import SplashScreen from "./components/splashScreen";
 
 const store = configureStore();
 
@@ -19,18 +18,16 @@ const App: React.FC = () => {
 	return (
 		<Provider store={store}>
 			<IntlProvider defaultLocale={language} locale={language} messages={tekster[language]}>
-				<SplashScreen>
-					<div className="informasjon-side">
-						<ConnectedRouter history={history}>
-							<Switch>
-								<Route exact path="/" component={V3}/>
-								<Route exact path="/userguide" component={UserGuide}/>
-								<Route exact path="/examplepage" component={Example}/>
-								<Route component={NotFound}/>
-							</Switch>
-						</ConnectedRouter>
-					</div>
-				</SplashScreen>
+				<div className="informasjon-side">
+					<ConnectedRouter history={history}>
+						<Switch>
+							<Route exact path="/" component={V3}/>
+							<Route exact path="/userguide" component={UserGuide}/>
+							<Route exact path="/examplepage" component={Example}/>
+							<Route component={NotFound}/>
+						</Switch>
+					</ConnectedRouter>
+				</div>
 			</IntlProvider>
 		</Provider>
 	);

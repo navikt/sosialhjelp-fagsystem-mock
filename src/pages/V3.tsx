@@ -21,6 +21,7 @@ import {SettingsEthernet} from "@material-ui/icons";
 import {opprettDigisosSakHvisDenIkkeFinnes} from "../redux/actions";
 import {Model} from "../redux/types";
 import useMediaQuery from "@material-ui/core/useMediaQuery/useMediaQuery";
+import SplashScreen from "../components/splashScreen";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -99,57 +100,59 @@ const V3: React.FC<Props> = (props: Props) => {
     const classes = useStyles();
 
     return (
-        <MuiThemeProvider theme={muiTheme}>
-            <CssBaseline />
-            <AppBarView />
-            <div className={classes.root}>
-                <Grid container={true} spacing={6} className={classes.maingrid}>
-                    <Grid item sm={2} className={classes.left} zeroMinWidth>
-                        <SoknadsOversiktPanel />
+        <SplashScreen>
+            <MuiThemeProvider theme={muiTheme}>
+                <CssBaseline />
+                <AppBarView />
+                <div className={classes.root}>
+                    <Grid container={true} spacing={6} className={classes.maingrid}>
+                        <Grid item sm={2} className={classes.left} zeroMinWidth>
+                            <SoknadsOversiktPanel />
+                        </Grid>
+                        {!smallScreen && <Grid item sm={1} className={classes.left} zeroMinWidth>
+                            <br />
+                        </Grid>}
+                        <Grid item sm={9} className={classes.right} zeroMinWidth>
+                            <ToppPanel />
+                        </Grid>
                     </Grid>
-                    {!smallScreen && <Grid item sm={1} className={classes.left} zeroMinWidth>
-                        <br />
-                    </Grid>}
-                    <Grid item sm={9} className={classes.right} zeroMinWidth>
-                        <ToppPanel />
+                    <Grid container={true} spacing={6} className={classes.maingrid}>
+                        <Grid item sm={12} className={classes.right} zeroMinWidth>
+                            <BehandleSoknadPanel />
+                        </Grid>
                     </Grid>
-                </Grid>
-                <Grid container={true} spacing={6} className={classes.maingrid}>
-                    <Grid item sm={12} className={classes.right} zeroMinWidth>
-                        <BehandleSoknadPanel />
-                    </Grid>
-                </Grid>
-            </div>
-
-            <SystemSettingsModal soknad={getFsSoknadByFiksDigisosId(props.model.soknader, props.model.aktivSoknad)} />
-
-            <StatusSnackBarView />
-
-            <div hidden={!loaderOn} className={classes.progressBar}>
-                <CircularProgress size={100} thickness={3} disableShrink color={'secondary'} />
-            </div>
-
-            <div className={classes.colJson}>
-                <ReactJsonView json={getFsSoknadByFiksDigisosId(props.model.soknader, props.model.aktivSoknad)}/>
-            </div>
-
-            <div className={classes.colRawJson}>
-                <div className={classes.rawJson}>
-                    <Fab aria-label="add" color="primary" onClick={() => {
-                        const fiksDigisosSokerJson = getFsSoknadByFiksDigisosId(props.model.soknader,props.model.aktivSoknad)!.fiksDigisosSokerJson;
-                        const fiksDigisosSokerJsonUtenNull = removeNullFieldsFromHendelser(fiksDigisosSokerJson);
-                        const jsonString = JSON.stringify(fiksDigisosSokerJsonUtenNull, null, 2);
-                        const x = window.open("data:text/json, _blank");
-                        x!.document.open();
-                        x!.document.write('<html><body><pre>' + jsonString + '</pre></body></html>');
-                        x!.document.close();
-                    }}>
-                        <SettingsEthernet/>
-                    </Fab>
                 </div>
-            </div>
 
-        </MuiThemeProvider>
+                <SystemSettingsModal soknad={getFsSoknadByFiksDigisosId(props.model.soknader, props.model.aktivSoknad)} />
+
+                <StatusSnackBarView />
+
+                <div hidden={!loaderOn} className={classes.progressBar}>
+                    <CircularProgress size={100} thickness={3} disableShrink color={'secondary'} />
+                </div>
+
+                <div className={classes.colJson}>
+                    <ReactJsonView json={getFsSoknadByFiksDigisosId(props.model.soknader, props.model.aktivSoknad)}/>
+                </div>
+
+                <div className={classes.colRawJson}>
+                    <div className={classes.rawJson}>
+                        <Fab aria-label="add" color="primary" onClick={() => {
+                            const fiksDigisosSokerJson = getFsSoknadByFiksDigisosId(props.model.soknader,props.model.aktivSoknad)!.fiksDigisosSokerJson;
+                            const fiksDigisosSokerJsonUtenNull = removeNullFieldsFromHendelser(fiksDigisosSokerJson);
+                            const jsonString = JSON.stringify(fiksDigisosSokerJsonUtenNull, null, 2);
+                            const x = window.open("data:text/json, _blank");
+                            x!.document.open();
+                            x!.document.write('<html><body><pre>' + jsonString + '</pre></body></html>');
+                            x!.document.close();
+                        }}>
+                            <SettingsEthernet/>
+                        </Fab>
+                    </div>
+                </div>
+
+            </MuiThemeProvider>
+        </SplashScreen>
     );
 };
 

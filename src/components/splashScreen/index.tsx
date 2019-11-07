@@ -12,6 +12,7 @@ const initialState = {
 const SplashScreen: React.FC<{}> = ( {children}) => {
 
     const [state, setState] = useState(initialState as State);
+    const slutterMedSlash = window.location.href.endsWith('/');
 
     useEffect(() => {
         setTimeout(() => {
@@ -25,7 +26,7 @@ const SplashScreen: React.FC<{}> = ( {children}) => {
             <div className={"splashscreen splashscreen-wrapper"}>
                 <div className={"splashscreen-content"}>
                     <div className={'splashscreen-img'}>
-                        <img src={'img/image3.png'} alt={''}/>
+                        <img src={slutterMedSlash ? 'img/image3.png' : '/img/image3.png'} alt={''}/>
                     </div>
                 </div>
             </div>
