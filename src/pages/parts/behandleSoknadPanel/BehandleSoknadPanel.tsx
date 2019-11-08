@@ -17,7 +17,7 @@ import NyUtbetalingModal from "../utbetaling/NyUtbetalingModal";
 import NySakModal from "../nySak/NySak";
 import NyttDokumentasjonkravModal from "../dokumentasjonskrav/NyttDokumentasjonkravModal";
 import NyttVilkarModal from "../vilkar/NyttVilkarModal";
-import NyDokumentasjonEtterspurt from "../dokumentasjonEtterspurt/NyDokumentasjonEtterspurt";
+import NyDokumentasjonEtterspurt from "../dokumentasjonEtterspurt/NyDokumentasjonEtterspurtModal";
 
 const useStyles = makeStyles(theme => ({
     root: {

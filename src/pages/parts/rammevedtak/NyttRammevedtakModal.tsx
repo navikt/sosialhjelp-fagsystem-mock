@@ -3,9 +3,9 @@ import {AppState, DispatchProps} from "../../../redux/reduxTypes";
 import {connect} from "react-redux";
 import {createStyles, Modal, Theme} from "@material-ui/core";
 import {
-    sendNyHendelseOgOppdaterModel,
     nyttRammevedtak,
     oppdaterRammevedtak,
+    sendNyHendelseOgOppdaterModel,
     setAktivtRammevedtak,
     skjulNyRammevedtakModal
 } from "../../../redux/actions";
@@ -26,13 +26,11 @@ import TextField from "@material-ui/core/TextField";
 import {HendelseType, Rammevedtak} from "../../../types/hendelseTypes";
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
-import Typography from "@material-ui/core/Typography";
-import Fab from "@material-ui/core/Fab";
-import AddIcon from '@material-ui/icons/Add';
 import InputLabel from "@material-ui/core/InputLabel";
 import FormControl from "@material-ui/core/FormControl";
 import {KeyboardDatePicker, MuiPickersUtilsProvider} from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
+import Button from "@material-ui/core/Button";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -78,8 +76,8 @@ const useStyles = makeStyles((theme: Theme) =>
             marginRight: theme.spacing(2),
         },
         finalButtons: {
-            marginLeft: theme.spacing(6),
-            marginRight: theme.spacing(6),
+            marginLeft: theme.spacing(2),
+            marginRight: theme.spacing(2),
         },
         formControl: {
             marginLeft: theme.spacing(2),
@@ -333,25 +331,20 @@ const NyttRammevedtakModal: React.FC<Props> = (props: Props) => {
                     </div>
                     <div className={classes.paperboys}>
                         {(aktivtRammevedtak == null) &&
-                        <Typography className={classes.finalButtons}>
-                            <Fab size="small" aria-label="add" className={classes.fab} color="primary" onClick={() => {
-                                setDefaultRammevedtak();
-                            }}>
-                                <AddIcon/>
-                            </Fab>
+                        <Button className={classes.finalButtons} variant="outlined" color={'default'} onClick={() => {
+                            setDefaultRammevedtak();
+                        }}>
                             Fyll ut alle felter
-                        </Typography>
+                        </Button>
                         }
-                        <Typography className={classes.finalButtons}>
-                            <Fab size="small" aria-label="add" className={classes.fab} color="primary" onClick={() => {
-                                if (!visFeilmelding) {
-                                    sendRammevedtak();
-                                }
-                            }}>
-                                <AddIcon/>
-                            </Fab>
+                        <Button className={classes.finalButtons} variant={aktivtRammevedtak == null ? 'contained' : 'outlined'}
+                                color={aktivtRammevedtak == null ? 'primary' : 'secondary'} onClick={() => {
+                            if (!visFeilmelding) {
+                                sendRammevedtak();
+                            }
+                        }}>
                             {(aktivtRammevedtak == null ? "Legg til rammevedtak" : "Endre rammevedtak")}
-                        </Typography>
+                        </Button>
                     </div>
                 </div>
             </Fade>

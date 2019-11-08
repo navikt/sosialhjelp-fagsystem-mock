@@ -3,10 +3,10 @@ import {AppState, DispatchProps} from "../../../redux/reduxTypes";
 import {connect} from "react-redux";
 import {createStyles, Modal, Paper, Theme} from "@material-ui/core";
 import {
-    sendNyHendelseOgOppdaterModel,
     oppdaterDokumentasjonEtterspurt,
-    setAktivtRammevedtak,
+    sendNyHendelseOgOppdaterModel,
     sendPdfOgOppdaterDokumentasjonEtterspurt,
+    setAktivtRammevedtak,
     skjulNyDokumentasjonEtterspurtModal
 } from "../../../redux/actions";
 import makeStyles from "@material-ui/core/styles/makeStyles";
@@ -17,7 +17,6 @@ import TextField from '@material-ui/core/TextField';
 import 'date-fns';
 import DateFnsUtils from '@date-io/date-fns';
 import {KeyboardDatePicker, MuiPickersUtilsProvider} from '@material-ui/pickers';
-import Fab from "@material-ui/core/Fab";
 import Typography from "@material-ui/core/Typography";
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -32,6 +31,7 @@ import TableBody from "@material-ui/core/TableBody";
 import IconButton from "@material-ui/core/IconButton";
 import Box from "@material-ui/core/Box";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
+import Button from "@material-ui/core/Button";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -351,6 +351,18 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
         }
     };
 
+    function onAddClick() {
+        return () => {
+            if (modalDokument.dokumenttype === '') {
+                setVisFeilmelding(true);
+            } else if (getDateOrNullFromDateString(modalDokument.innsendelsesfrist) == null) {
+                setVisFeilmeldingDatePicker(true);
+            } else {
+                leggTilDokument();
+            }
+        };
+    }
+
     return (
         <Modal
             aria-labelledby="transition-modal-title"
@@ -382,20 +394,12 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
 
                                 <Grid item key={"grid: legg til dokument"} xs={2} zeroMinWidth>
                                     <Box className={classes.addbox}>
-                                        <Fab id={"legg_til_dokumentkrav"} size="small" aria-label="add" className={classes.fab} color="primary" onClick={() => {
-                                            if (modalDokument.dokumenttype === '') {
-                                                setVisFeilmelding(true);
-                                            } else if (getDateOrNullFromDateString(modalDokument.innsendelsesfrist) == null) {
-                                                setVisFeilmeldingDatePicker(true);
-                                            } else {
-                                                leggTilDokument();
-                                            }
-                                        }}>
+                                        {!smallScreen && <Button id={"legg_til_dokumentkrav"} variant="contained" color={'default'} onClick={onAddClick()}>
+                                            {smallScreen ? '+' : 'Legg til dokumentkrav'}
+                                        </Button>}
+                                        {smallScreen && <IconButton id={"legg_til_dokumentkrav"} aria-label="delete" onClick={onAddClick()}>
                                             <AddIcon/>
-                                        </Fab>
-                                        <Typography hidden={smallScreen}>
-                                            Legg til dokumentkrav
-                                        </Typography>
+                                        </IconButton>}
                                     </Box>
                                 </Grid>
                             </Grid>
@@ -405,11 +409,11 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
                         </div>
                         <div className={classes.paperback2}>
                             <Box className={classes.addbox}>
-                                <Fab id={"etterspor_dokumentasjon_send"} size="small" aria-label="add" className={classes.fab} color="primary" onClick={() => {
+                                <Button id={"etterspor_dokumentasjon_send"} variant="contained" color={'primary'} onClick={() => {
                                     sendDokumentasjonEtterspurt();
                                 }}>
-                                    <AddIcon/>
-                                </Fab>
+                                    {skalLasteOppFil() ? "Etterspør dokumentasjon og velg forvaltningsbrev" : "Etterspør dokumentasjon"}
+                                </Button>
                                 <input
                                     id={'inputField vedtakFattet'}
                                     ref={inputEl}
@@ -429,9 +433,6 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
                                     accept={window.navigator.platform.match(/iPad|iPhone|iPod/) !== null ? "*" : "application/pdf"}
                                 />
                             </Box>
-                            <Typography>
-                                {skalLasteOppFil() ? "Etterspør dokumentasjon og velg forvaltningsbrev" : "Etterspør dokumentasjon"}
-                            </Typography>
                         </div>
                     </div>
                 </div>

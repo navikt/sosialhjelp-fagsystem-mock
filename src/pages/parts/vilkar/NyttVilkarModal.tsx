@@ -2,7 +2,13 @@ import React, {useState} from 'react';
 import {AppState, DispatchProps} from "../../../redux/reduxTypes";
 import {connect} from "react-redux";
 import {createStyles, Modal, Theme} from "@material-ui/core";
-import {sendNyHendelseOgOppdaterModel, nyttVilkar, oppdaterVilkar, setAktivtVilkar, skjulNyVilkarModal} from "../../../redux/actions";
+import {
+    nyttVilkar,
+    oppdaterVilkar,
+    sendNyHendelseOgOppdaterModel,
+    setAktivtVilkar,
+    skjulNyVilkarModal
+} from "../../../redux/actions";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import Fade from "@material-ui/core/Fade";
 import Backdrop from "@material-ui/core/Backdrop";
@@ -19,14 +25,12 @@ import TextField from "@material-ui/core/TextField";
 import {HendelseType, Vilkar, VilkarStatus} from "../../../types/hendelseTypes";
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
-import Typography from "@material-ui/core/Typography";
-import Fab from "@material-ui/core/Fab";
-import AddIcon from '@material-ui/icons/Add';
 import InputLabel from "@material-ui/core/InputLabel";
 import FormControl from "@material-ui/core/FormControl";
 import Input from '@material-ui/core/Input';
 import Chip from '@material-ui/core/Chip';
 import useTheme from "@material-ui/core/styles/useTheme";
+import Button from "@material-ui/core/Button";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -68,8 +72,8 @@ const useStyles = makeStyles((theme: Theme) =>
             width:'95%',
         },
         finalButtons: {
-            marginLeft: theme.spacing(6),
-            marginRight: theme.spacing(6),
+            marginLeft: theme.spacing(2),
+            marginRight: theme.spacing(2),
         },
         formControl: {
             marginLeft: theme.spacing(2),
@@ -317,25 +321,20 @@ const NyttVilkarModal: React.FC<Props> = (props: Props) => {
                     </div>
                     <div className={classes.paperboys}>
                         {(aktivtVilkar == null) &&
-                        <Typography className={classes.finalButtons}>
-                            <Fab size="small" aria-label="add" className={classes.fab} color="primary" onClick={() => {
-                                setDefaultVilkar();
-                            }}>
-                                <AddIcon/>
-                            </Fab>
+                        <Button className={classes.finalButtons} variant="outlined" color={'default'} onClick={() => {
+                            setDefaultVilkar();
+                        }}>
                             Fyll ut alle felter
-                        </Typography>
+                        </Button>
                         }
-                        <Typography className={classes.finalButtons}>
-                            <Fab size="small" aria-label="add" className={classes.fab} color="primary" onClick={() => {
-                                if (!visFeilmelding) {
-                                    sendVilkar();
-                                }
-                            }}>
-                                <AddIcon/>
-                            </Fab>
+                        <Button className={classes.finalButtons} variant={aktivtVilkar == null ? 'contained' : 'outlined'}
+                                color={aktivtVilkar == null ? 'primary' : 'secondary'} onClick={() => {
+                                    if (!visFeilmelding) {
+                                        sendVilkar();
+                                    }
+                                }}>
                             {(aktivtVilkar == null ? "Legg til vilkår" : "Endre vilkår")}
-                        </Typography>
+                        </Button>
                     </div>
                 </div>
             </Fade>

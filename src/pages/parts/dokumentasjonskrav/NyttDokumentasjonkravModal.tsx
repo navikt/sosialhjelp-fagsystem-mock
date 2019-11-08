@@ -3,9 +3,9 @@ import {AppState, DispatchProps} from "../../../redux/reduxTypes";
 import {connect} from "react-redux";
 import {createStyles, Modal, Theme} from "@material-ui/core";
 import {
-    sendNyHendelseOgOppdaterModel,
     nyttDokumentasjonkrav,
     oppdaterDokumentasjonkrav,
+    sendNyHendelseOgOppdaterModel,
     setAktivtDokumentasjonkrav,
     skjulNyDokumentasjonkravModal
 } from "../../../redux/actions";
@@ -25,14 +25,12 @@ import TextField from "@material-ui/core/TextField";
 import {Dokumentasjonkrav, DokumentasjonkravStatus, HendelseType} from "../../../types/hendelseTypes";
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
-import Typography from "@material-ui/core/Typography";
-import Fab from "@material-ui/core/Fab";
-import AddIcon from '@material-ui/icons/Add';
 import InputLabel from "@material-ui/core/InputLabel";
 import FormControl from "@material-ui/core/FormControl";
 import Input from '@material-ui/core/Input';
 import Chip from '@material-ui/core/Chip';
 import useTheme from "@material-ui/core/styles/useTheme";
+import Button from "@material-ui/core/Button";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -74,8 +72,8 @@ const useStyles = makeStyles((theme: Theme) =>
             width:'95%',
         },
         finalButtons: {
-            marginLeft: theme.spacing(6),
-            marginRight: theme.spacing(6),
+            marginLeft: theme.spacing(2),
+            marginRight: theme.spacing(2),
         },
         formControl: {
             marginLeft: theme.spacing(2),
@@ -323,25 +321,20 @@ const NyttDokumentasjonkravModal: React.FC<Props> = (props: Props) => {
                     </div>
                     <div className={classes.paperboys}>
                         {(aktivtDokumentasjonkrav == null) &&
-                        <Typography className={classes.finalButtons}>
-                            <Fab size="small" aria-label="add" className={classes.fab} color="primary" onClick={() => {
-                                setDefaultDokumentasjonkrav();
-                            }}>
-                                <AddIcon/>
-                            </Fab>
+                        <Button className={classes.finalButtons} variant="outlined" color={'default'} onClick={() => {
+                            setDefaultDokumentasjonkrav();
+                        }}>
                             Fyll ut alle felter
-                        </Typography>
+                        </Button>
                         }
-                        <Typography className={classes.finalButtons}>
-                            <Fab size="small" aria-label="add" className={classes.fab} color="primary" onClick={() => {
-                                if (!visFeilmelding) {
-                                    sendDokumentasjonkrav();
-                                }
-                            }}>
-                                <AddIcon/>
-                            </Fab>
+                        <Button className={classes.finalButtons} variant={aktivtDokumentasjonkrav == null ? 'contained' : 'outlined'}
+                                color={aktivtDokumentasjonkrav == null ? 'primary' : 'secondary'} onClick={() => {
+                                    if (!visFeilmelding) {
+                                        sendDokumentasjonkrav();
+                                    }
+                                }}>
                             {(aktivtDokumentasjonkrav == null ? "Legg til dokumentasjonkrav" : "Endre dokumentasjonkrav")}
-                        </Typography>
+                        </Button>
                     </div>
                 </div>
             </Fade>

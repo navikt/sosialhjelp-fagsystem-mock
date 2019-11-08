@@ -3,9 +3,9 @@ import {AppState, DispatchProps} from "../../../redux/reduxTypes";
 import {connect} from "react-redux";
 import {createStyles, Modal, Theme} from "@material-ui/core";
 import {
-    sendNyHendelseOgOppdaterModel,
     nyUtbetaling,
     oppdaterUtbetaling,
+    sendNyHendelseOgOppdaterModel,
     setAktivUtbetaling,
     skjulNyUtbetalingModal
 } from "../../../redux/actions";
@@ -31,8 +31,6 @@ import {KeyboardDatePicker, MuiPickersUtilsProvider} from "@material-ui/pickers"
 import Typography from "@material-ui/core/Typography";
 import ButtonGroup from "@material-ui/core/ButtonGroup";
 import Button from "@material-ui/core/Button";
-import Fab from "@material-ui/core/Fab";
-import AddIcon from '@material-ui/icons/Add';
 import InputLabel from "@material-ui/core/InputLabel";
 import FormControl from "@material-ui/core/FormControl";
 
@@ -86,8 +84,8 @@ const useStyles = makeStyles((theme: Theme) =>
             marginRight: theme.spacing(2),
         },
         finalButtons: {
-            marginLeft: theme.spacing(6),
-            marginRight: theme.spacing(6),
+            marginLeft: theme.spacing(2),
+            marginRight: theme.spacing(2),
         },
         formControl: {
             marginLeft: theme.spacing(2),
@@ -455,25 +453,20 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
                     </div>
                     <div className={classes.paperboys}>
                         {(aktivUtbetaling == null) &&
-                            <Typography className={classes.finalButtons}>
-                                <Fab size="small" aria-label="add" className={classes.fab} color="primary" onClick={() => {
-                                    setDefaultUtbetaling();
-                                }}>
-                                    <AddIcon/>
-                                </Fab>
-                                Fyll ut alle felter
-                            </Typography>
+                        <Button className={classes.finalButtons} variant="outlined" color={'default'} onClick={() => {
+                            setDefaultUtbetaling();
+                        }}>
+                            Fyll ut alle felter
+                        </Button>
                         }
-                        <Typography className={classes.finalButtons}>
-                            <Fab size="small" aria-label="add" className={classes.fab} color="primary" onClick={() => {
-                                if (!visFeilmelding) {
-                                    sendUtbetaling();
-                                }
-                            }}>
-                                <AddIcon/>
-                            </Fab>
+                        <Button className={classes.finalButtons} variant={aktivUtbetaling == null ? 'contained' : 'outlined'}
+                                color={aktivUtbetaling == null ? 'primary' : 'secondary'} onClick={() => {
+                                    if (!visFeilmelding) {
+                                        sendUtbetaling();
+                                    }
+                                }}>
                             {(aktivUtbetaling == null ? "Legg til utbetaling" : "Endre utbetaling")}
-                        </Typography>
+                        </Button>
                     </div>
                 </div>
             </Fade>
