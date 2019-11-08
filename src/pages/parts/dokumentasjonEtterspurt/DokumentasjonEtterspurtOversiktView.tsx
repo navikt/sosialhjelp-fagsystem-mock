@@ -1,7 +1,7 @@
 import React from 'react';
 import {AppState, DispatchProps} from "../../../redux/reduxTypes";
 import {connect} from "react-redux";
-import {createStyles, makeStyles, Theme} from '@material-ui/core/styles';
+import {createStyles, makeStyles, MuiThemeProvider, Theme} from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 import {Paper} from "@material-ui/core";
@@ -19,6 +19,9 @@ import TableCell from "@material-ui/core/TableCell";
 import TableBody from "@material-ui/core/TableBody";
 import {getNow, getShortDateISOString} from "../../../utils/utilityFunctions";
 import Button from "@material-ui/core/Button";
+import createMuiTheme from "@material-ui/core/styles/createMuiTheme";
+import indigo from "@material-ui/core/colors/indigo";
+import {pink} from "@material-ui/core/colors";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -92,6 +95,24 @@ const DokumentasjonEtterspurtOversiktView: React.FC<Props> = (props: Props) => {
     const classes = useStyles();
     const {soknad, model, dispatch} = props;
 
+    const dokumenterErAlleredeEtterspurt = soknad.dokumentasjonEtterspurt && soknad.dokumentasjonEtterspurt.dokumenter.length > 0;
+
+    const indigoPinkMuiTheme = createMuiTheme({
+        palette: {
+            primary: {
+                light: indigo[300],
+                main: indigo[500],
+                dark: indigo[700]
+            },
+            secondary: {
+                light: pink[300],
+                main: pink[500],
+                dark: pink[700]
+            },
+            type: model.thememode
+        }
+    });
+
     const makeTableRow = (dokument: Dokument) => {
         return <TableRow key={dokument.dokumenttype + dokument.tilleggsinformasjon}>
             <TableCell component="th" scope="row">
@@ -127,15 +148,18 @@ const DokumentasjonEtterspurtOversiktView: React.FC<Props> = (props: Props) => {
             <Paper className={classes.paper}>
                 <Typography variant={"h5"}>Dokumentasjon som er etterspurt</Typography>
                 <Box className={classes.addbox}>
-                    <Button variant="contained" color={'primary'} onClick={() => {
-                        if (soknad.dokumentasjonEtterspurt && soknad.dokumentasjonEtterspurt.dokumenter.length > 0) {
-                            dispatchNyHendelseMedTomDokumentasjonEtterspurt();
-                        } else {
-                            dispatch(visNyDokumentasjonEtterspurtModal());
-                        }
-                    }}>
-                        {(soknad.dokumentasjonEtterspurt && soknad.dokumentasjonEtterspurt.dokumenter.length > 0) ? "Slett etterspurt dokumentasjon" : "Etterspør mer dokumentasjon"}
-                    </Button>
+                    <MuiThemeProvider theme={indigoPinkMuiTheme}>
+                        <Button variant={!dokumenterErAlleredeEtterspurt ? 'contained' : 'outlined'}
+                                color={!dokumenterErAlleredeEtterspurt ? 'primary' : 'secondary'} onClick={() => {
+                            if (dokumenterErAlleredeEtterspurt) {
+                                dispatchNyHendelseMedTomDokumentasjonEtterspurt();
+                            } else {
+                                dispatch(visNyDokumentasjonEtterspurtModal());
+                            }
+                        }}>
+                            {(soknad.dokumentasjonEtterspurt && soknad.dokumentasjonEtterspurt.dokumenter.length > 0) ? "Slett etterspurt dokumentasjon" : "Etterspør mer dokumentasjon"}
+                        </Button>
+                    </MuiThemeProvider>
                 </Box>
 
                 {(soknad.dokumentasjonEtterspurt && soknad.dokumentasjonEtterspurt.dokumenter.length > 0) &&

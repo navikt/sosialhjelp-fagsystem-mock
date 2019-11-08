@@ -164,6 +164,8 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
     const inputEl = useRef<HTMLInputElement>(null);
     const smallScreen = useMediaQuery('(max-width:1200px)');
 
+    const dokumenterErAlleredeEtterspurt = soknad.dokumentasjonEtterspurt && soknad.dokumentasjonEtterspurt.dokumenter.length > 0;
+
     function resetStateValues() {
         setModalDokumentasjonEtterspurt({...initialDokumentasjonEtterspurt});
 
@@ -409,10 +411,12 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
                         </div>
                         <div className={classes.paperback2}>
                             <Box className={classes.addbox}>
-                                <Button id={"etterspor_dokumentasjon_send"} variant="contained" color={'primary'} onClick={() => {
+                                <Button id={"etterspor_dokumentasjon_send"} variant={!dokumenterErAlleredeEtterspurt ? 'contained' : 'outlined'}
+                                        color={!dokumenterErAlleredeEtterspurt ? 'primary' : 'secondary'} onClick={() => {
                                     sendDokumentasjonEtterspurt();
                                 }}>
-                                    {skalLasteOppFil() ? "Etterspør dokumentasjon og velg forvaltningsbrev" : "Etterspør dokumentasjon"}
+                                    {skalLasteOppFil() ? "Etterspør dokumentasjon og velg forvaltningsbrev" :
+                                        dokumenterErAlleredeEtterspurt ? "Endre etterspurt dokumentasjon" : "Etterspør dokumentasjon"}
                                 </Button>
                                 <input
                                     id={'inputField vedtakFattet'}
