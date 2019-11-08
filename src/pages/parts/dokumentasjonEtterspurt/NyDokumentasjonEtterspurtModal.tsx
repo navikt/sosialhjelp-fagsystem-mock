@@ -168,6 +168,7 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
 
     function resetStateValues() {
         setModalDokumentasjonEtterspurt({...initialDokumentasjonEtterspurt});
+        setModalDokument({...initialDokument});
 
         setVisFeilmelding(false);
         setVisFeilmeldingDatePicker(false);
@@ -184,10 +185,11 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
 
         sendPdfOgOppdaterDokumentasjonEtterspurt(formData, modalDokumentasjonEtterspurt.dokumenter, model, dispatch);
 
-        setVisFeilmelding(false);
-        setVisFeilmeldingDatePicker(false);
-
         dispatch(dispatch(skjulNyDokumentasjonEtterspurtModal()));
+
+        setTimeout(() => {
+            resetStateValues();
+        }, 500);
     };
 
     const leggTilDokument = () => {
