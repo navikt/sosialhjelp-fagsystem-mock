@@ -45,7 +45,7 @@ import {getFsSoknadByFiksDigisosId, getNow, removeNullFieldsFromHendelser} from 
 import {fetchPost} from "../utils/restUtils";
 import {NavKontor} from "../types/additionalTypes";
 import {oHendelser} from "./optics";
-import {backendUrls, nyNavEnhetUrl, oppdaterDigisosSakUrl} from "./reducer";
+import {backendUrls, getInitialFsSoknad, nyNavEnhetUrl, oppdaterDigisosSakUrl} from "./reducer";
 import {Dispatch} from "./reduxTypes";
 
 export const sendNyHendelseOgOppdaterModel = (
@@ -204,7 +204,6 @@ export const sendPdfOgOppdaterDokumentasjonEtterspurt = (
 
 export const opprettDigisosSakHvisDenIkkeFinnes = (
     soknad: FsSoknad,
-    model: Model,
     backendUrlTypeToUse: keyof BackendUrls,
     dispatch: Dispatch
 ) => {
@@ -216,7 +215,25 @@ export const opprettDigisosSakHvisDenIkkeFinnes = (
     fetchPost(`${backendUrl}${oppdaterDigisosSakUrl}${queryParam}`, JSON.stringify(fiksDigisosSokerJsonUtenNull)).then((response: any) => {
         let fiksId = response.fiksDigisosId;
         dispatch(oppdaterFiksDigisosId(soknad.fiksDigisosId, fiksId));
-        dispatch(setAktivSoknad(fiksId.toString()));
+        dispatch(setAktivSoknad(fiksId));
+    }).catch((reason) => runOnErrorResponse(reason, dispatch))
+        .finally(() => dispatch(turnOffLoader()));
+};
+
+export const opprettNyFsSoknadDersomDigisosIdEksistererHosFiks = (
+    fiksDigisosId: string,
+    backendUrlTypeToUse: keyof BackendUrls,
+    dispatch: Dispatch
+) => {
+    dispatch(turnOnLoader());
+    const backendUrl = backendUrls[backendUrlTypeToUse];
+    const fiksDigisosSokerJsonUtenNull = removeNullFieldsFromHendelser(getInitialFsSoknad(fiksDigisosId).fiksDigisosSokerJson);
+
+    const queryParam = `?fiksDigisosId=${fiksDigisosId}`;
+    fetchPost(`${backendUrl}${oppdaterDigisosSakUrl}${queryParam}`, JSON.stringify(fiksDigisosSokerJsonUtenNull)).then((response: any) => {
+        let fiksId = response.fiksDigisosId;
+        dispatch(nyFsSoknad(fiksId));
+        dispatch(setAktivSoknad(fiksId));
     }).catch((reason) => runOnErrorResponse(reason, dispatch))
         .finally(() => dispatch(turnOffLoader()));
 };

@@ -8,7 +8,7 @@ import ListItem from "@material-ui/core/ListItem";
 import {Button, Typography} from "@material-ui/core";
 import Paper from "@material-ui/core/Paper";
 import {FsSoknad, Model} from "../../../redux/types";
-import {nyFsSoknad, opprettDigisosSakHvisDenIkkeFinnes} from "../../../redux/actions";
+import {opprettNyFsSoknadDersomDigisosIdEksistererHosFiks, setAktivSoknad} from "../../../redux/actions";
 import TextField from "@material-ui/core/TextField";
 import {generateRandomId} from "../../../utils/utilityFunctions";
 
@@ -44,7 +44,7 @@ const SoknadsOversiktPanel: React.FC<Props> = (props: Props) => {
             return (
                 <ListItem id={"soknad_" + index} key={"SoknadItem: " + soknad.fiksDigisosId} selected={soknad.fiksDigisosId === aktivSoknad} button
                           divider
-                          onClick={() => opprettDigisosSakHvisDenIkkeFinnes(soknad, model, model.backendUrlTypeToUse, props.dispatch)}>
+                          onClick={() => props.dispatch(setAktivSoknad(soknad.fiksDigisosId))}>
                     <ListItemText primary={soknad.fiksDigisosId}/>
                 </ListItem>
             )
@@ -62,7 +62,7 @@ const SoknadsOversiktPanel: React.FC<Props> = (props: Props) => {
             </List>
             <TextField
                 id='ny_soknad_input'
-                label={'Ny fiksDigisosId'}
+                label={(model.backendUrlTypeToUse === 'q0' || model.backendUrlTypeToUse === 'q1') ? 'DigisosId på søknad' : 'Ny fiksDigisosId'}
                 value={fiksDigisosId}
                 onChange={(evt) => setFiksDigisosId(evt.target.value)}
                 margin="dense"
@@ -71,10 +71,10 @@ const SoknadsOversiktPanel: React.FC<Props> = (props: Props) => {
             <Button
                 id='opprett_ny_soknad_knapp'
                 onClick={() => {
-                    if (fiksDigisosId.length !== 0) {
-                        props.dispatch(nyFsSoknad(fiksDigisosId));
+                    if (fiksDigisosId.length !== 0 && !model.soknader.find(soknad => soknad.fiksDigisosId === fiksDigisosId)) {
+                        props.dispatch(opprettNyFsSoknadDersomDigisosIdEksistererHosFiks(fiksDigisosId, model.backendUrlTypeToUse, props.dispatch));
                     } else {
-                        props.dispatch(nyFsSoknad(generateRandomId(11)));
+                        props.dispatch(opprettNyFsSoknadDersomDigisosIdEksistererHosFiks(generateRandomId(11), model.backendUrlTypeToUse, props.dispatch));
                     }
                     setFiksDigisosId('');
                 }}

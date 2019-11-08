@@ -74,7 +74,7 @@ const V3: React.FC<Props> = (props: Props) => {
 
     useEffect(() => {
         if (window.location.href.includes('https://www.digisos-test.com/')) {
-            opprettDigisosSakHvisDenIkkeFinnes(getFsSoknadByFiksDigisosId(props.model.soknader,props.model.aktivSoknad)!, props.model, props.model.backendUrlTypeToUse, props.dispatch);
+            opprettDigisosSakHvisDenIkkeFinnes(getFsSoknadByFiksDigisosId(props.model.soknader,props.model.aktivSoknad)!, props.model.backendUrlTypeToUse, props.dispatch);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);

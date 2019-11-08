@@ -65,7 +65,7 @@ export const backendUrls: BackendUrls = {
     q1: backendUrlsQTemplate
 };
 
-const getInitialFsSoknad = (
+export const getInitialFsSoknad = (
     fiksDigisosId: string
 ): FsSoknad => {
 
