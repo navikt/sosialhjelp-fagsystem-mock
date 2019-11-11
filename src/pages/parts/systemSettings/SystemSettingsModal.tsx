@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {AppState, DispatchProps} from "../../../redux/reduxTypes";
 import {connect} from "react-redux";
 import {createStyles, Modal, Theme} from "@material-ui/core";
@@ -53,7 +53,6 @@ type Props = DispatchProps & OwnProps & StoreProps;
 const SystemSettingsModal: React.FC<Props> = (props: Props) => {
     const classes = useStyles();
     const {visSystemSettingsModal, dispatch, soknad, model} = props;
-    const [typeToUse, setTypeToUse] = useState<keyof BackendUrls | null>(null);
 
     const radios = Object.keys(backendUrls).map((backendUrlType: string) => {
         // @ts-ignore
@@ -81,8 +80,6 @@ const SystemSettingsModal: React.FC<Props> = (props: Props) => {
             BackdropProps={{
                 timeout: 500,
             }}
-            disableBackdropClick
-            disableEscapeKeyDown
         >
             <Fade in={visSystemSettingsModal}>
                 <div className={classes.paper}>
@@ -91,13 +88,12 @@ const SystemSettingsModal: React.FC<Props> = (props: Props) => {
                         <RadioGroup
                             aria-label="backend url"
                             name="miljo"
-                            value={typeToUse}
+                            value={model.backendUrlTypeToUse}
                             onClick={() => {
                                 dispatch(skjulSystemSettingsModal());
                             }}
                             onChange={
                                 (event, value) => {
-                                    setTypeToUse(value as keyof BackendUrls);
                                     dispatch(setBackendUrlTypeToUse(value as keyof BackendUrls));
                                     if (soknad) {
                                         opprettDigisosSakHvisDenIkkeFinnes(soknad, value as keyof BackendUrls, dispatch);
