@@ -106,9 +106,22 @@ export const getInitialFsSoknad = (
 
 const initialId: string = generateRandomId(11);
 
+const getBackendUrlTypeToUse = (): keyof BackendUrls => {
+    const windowUrl = window.location.href;
+    if (windowUrl.includes('digisos-test.com')) {
+        return 'digisostest';
+    } else if (windowUrl.includes('www-q0')) {
+        return 'q0';
+    } else if (windowUrl.includes('www-q1')) {
+        return 'q1';
+    } else {
+        return 'lokalt';
+    }
+};
+
 export const initialModel: Model = {
     loaderOn: false,
-    backendUrlTypeToUse: 'digisostest',
+    backendUrlTypeToUse: getBackendUrlTypeToUse(),
 
     // 
     soknader: [getInitialFsSoknad(window.location.href.includes('www-q') ? '001' : initialId)],
@@ -122,7 +135,7 @@ export const initialModel: Model = {
     visNyDokumentasjonkravModal: false,
     visNyRammevedtakModal: false,
     modalSaksreferanse: null,
-    visSystemSettingsModal: !window.location.href.includes('https://www.digisos-test.com/'),
+    visSystemSettingsModal: false,
     visSnackbar: false,
     snackbarVariant: 'success',
 

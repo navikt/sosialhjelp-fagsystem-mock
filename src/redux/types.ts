@@ -1,19 +1,23 @@
-import {DokumentlagerExtended, FiksDigisosSokerJson, SvarutExtended} from "../types/hendelseTypes";
-import {PaletteType} from "@material-ui/core";
 import {
     DokumentasjonEtterspurt,
     Dokumentasjonkrav,
-    ForelopigSvar, Rammevedtak, SaksStatus,
+    FiksDigisosSokerJson,
+    ForelopigSvar,
+    Rammevedtak,
+    SaksStatus,
     SoknadsStatus,
-    TildeltNavKontor, Utbetaling, VedtakFattet,
+    TildeltNavKontor,
+    Utbetaling,
+    VedtakFattet,
     Vilkar
 } from "../types/hendelseTypes";
+import {PaletteType} from "@material-ui/core";
 
 export interface Model {
     loaderOn: boolean;
     backendUrlTypeToUse: keyof BackendUrls;
     thememode: PaletteType;
-    
+
     soknader: FsSoknad[];
 
     visNySakModal: boolean;
@@ -61,11 +65,6 @@ export interface BackendUrls {
     digisostest: string,
     q0: string,
     q1: string
-}
-
-export interface Filreferanselager {
-    svarutlager: SvarutExtended[],
-    dokumentlager: DokumentlagerExtended[]
 }
 
 export type Action
