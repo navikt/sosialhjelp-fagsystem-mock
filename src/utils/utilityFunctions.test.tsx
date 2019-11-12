@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-    addZeroInFrontAndToString,
-    generateFilreferanseId,
-    getAllSaksStatuser,
-    getLastHendelseOfType,
-    isNDigits
-} from "./utilityFunctions";
+import {generateFilreferanseId, getAllSaksStatuser, getLastHendelseOfType} from "./utilityFunctions";
 import Hendelse, {FiksDigisosSokerJson, HendelseType, SoknadsStatus, TildeltNavKontor} from "../types/hendelseTypes";
 
 it('returns the last occurence of a hendelse type', () => {
@@ -49,13 +43,6 @@ it('returns the last occurence of a hendelse type', () => {
     );
 
 });
-
-it('validated that the input is a string consisting of x digits', () => {
-    expect(isNDigits("1234", 4)).toEqual(true);
-    expect(isNDigits("1234", 5)).toEqual(false);
-    expect(isNDigits("12345", 5)).toEqual(true);
-});
-
 
 it('validated that the input is a string consisting of x digits', () => {
 
@@ -141,15 +128,4 @@ it('doesnt fail' , () => {
     let s = generateFilreferanseId();
     expect(s).resolves;
 });
-
-
-
-it('doesnt fail' , () => {
-    expect(addZeroInFrontAndToString(1)).toEqual("01");
-    expect(addZeroInFrontAndToString(10)).toEqual("10");
-    expect(addZeroInFrontAndToString(3)).toEqual("03");
-    expect(addZeroInFrontAndToString(13)).toEqual("13");
-
-});
-
 

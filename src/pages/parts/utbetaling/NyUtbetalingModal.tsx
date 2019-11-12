@@ -26,13 +26,13 @@ import TextField from "@material-ui/core/TextField";
 import {HendelseType, Utbetaling, UtbetalingStatus} from "../../../types/hendelseTypes";
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
-import DateFnsUtils from "@date-io/date-fns";
-import {KeyboardDatePicker, MuiPickersUtilsProvider} from "@material-ui/pickers";
 import Typography from "@material-ui/core/Typography";
 import ButtonGroup from "@material-ui/core/ButtonGroup";
 import Button from "@material-ui/core/Button";
 import InputLabel from "@material-ui/core/InputLabel";
 import FormControl from "@material-ui/core/FormControl";
+import CustomTextField from "../../../components/customTextField";
+import CustomKeyboardDatePicker from "../../../components/customKeyboardDatePicker";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -194,7 +194,7 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
     const classes = useStyles();
     const {visNyUtbetalingModal, dispatch, model, soknad, aktivUtbetaling, modalSaksreferanse} = props;
 
-    function resetStateValues() {
+    const resetStateValues = () => {
         setModalUtbetaling({...initialUtbetaling, utbetalingsreferanse: generateFilreferanseId()});
 
         setAnnenMottakerTrueVariant('text');
@@ -207,7 +207,7 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
         setVisFeilmelding(false);
         setReferansefeltDisabled(false);
         dispatch(setAktivUtbetaling(null));
-    }
+    };
 
     const sendUtbetaling = () => {
         let nyHendelse: Utbetaling = {...modalUtbetaling};
@@ -270,67 +270,6 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
         }
     };
 
-    function getTextFieldGrid(label: string, value: any, setValue: (v: any) => any, inputType: string = 'text', required: boolean = false) {
-        return <Grid item key={'Grid: ' + label} xs={6} zeroMinWidth>
-            <TextField
-                disabled={required && referansefeltDisabled}
-                id="outlined-name"
-                label={label}
-                className={classes.textField}
-                value={value ? value : ''}
-                required={required}
-                error={required && visFeilmelding}
-                onChange={(evt) => {
-                    setValue(evt.target.value);
-                    if (required) {
-                        if (evt.target.value.length === 0) {
-                            setVisFeilmelding(true);
-                        } else {
-                            setVisFeilmelding(false);
-                        }
-                    }
-                }}
-                type={inputType}
-                InputLabelProps={{
-                    shrink: true,
-                }}
-                margin="normal"
-                variant="filled"
-                autoComplete="off"
-            />
-        </Grid>;
-    }
-
-    function getKeyboardDatePickerGrid(label: string, value: any, setValue: (v: string) => any, isOpen: boolean, setIsOpen: any) {
-        return <Grid item key={"grid: " + label} xs={3} zeroMinWidth>
-            <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                <KeyboardDatePicker
-                    className={classes.otherField}
-                    disableToolbar
-                    variant="inline"
-                    format="yyyy-MM-dd"
-                    margin="normal"
-                    id={label}
-                    label={label}
-                    open={isOpen}
-                    onOpen={() => setIsOpen(true)}
-                    onClose={() => setIsOpen(false)}
-                    value={value}
-                    onChange={(date: any) => {
-                        setValue(date);
-                        setIsOpen(false);
-                    }}
-                    InputLabelProps={{
-                        shrink: true,
-                    }}
-                    KeyboardButtonProps={{
-                        'aria-label': 'change date',
-                    }}
-                />
-            </MuiPickersUtilsProvider>
-        </Grid>;
-    }
-
     return (
         <Modal
             aria-labelledby="transition-modal-title"
@@ -354,8 +293,12 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
                 <div className={classes.papertowel}>
                     <div className={classes.paperback}>
                         <Grid container spacing={3} justify="center" alignItems="center">
-                            {getTextFieldGrid("Utbetalingsreferanse", modalUtbetaling.utbetalingsreferanse,
-                                (verdi: string) => setModalUtbetaling({...modalUtbetaling, utbetalingsreferanse: verdi}), "text", true)}
+                            <Grid item key={'Grid: Utbetalingsreferanse'} xs={6} zeroMinWidth>
+                                <CustomTextField label={'Utbetalingsreferanse'} value={modalUtbetaling.utbetalingsreferanse}
+                                                 setValue={(verdi: string) => setModalUtbetaling({...modalUtbetaling, utbetalingsreferanse: verdi})}
+                                                 required={true} referansefeltDisabled={referansefeltDisabled}
+                                                 visFeilmelding={visFeilmelding} setVisFeilmelding={setVisFeilmelding} />
+                            </Grid>
                             <Grid item key={'Saksreferanse'} xs={6} zeroMinWidth>
                                 <FormControl className={classes.formControl2} disabled={modalSaksreferanse != null}>
                                     <InputLabel htmlFor="age-simple" shrink={true}>Saksreferanse</InputLabel>
@@ -373,19 +316,42 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
                                     </Select>
                                 </FormControl>
                             </Grid>
-                            {getTextFieldGrid("Rammevedtaksreferanse", modalUtbetaling.rammevedtaksreferanse,
-                                (verdi: string) => setModalUtbetaling({...modalUtbetaling, rammevedtaksreferanse: verdi}))}
-                            {getTextFieldGrid("Beløp", modalUtbetaling.belop, (verdi: number) => setModalUtbetaling({...modalUtbetaling, belop: +verdi}), "number")}
-                            {getTextFieldGrid("Beskrivelse", modalUtbetaling.beskrivelse, (verdi: string) => setModalUtbetaling({...modalUtbetaling, beskrivelse: verdi}))}
-                            {getKeyboardDatePickerGrid("Forfallsdato", modalUtbetaling.forfallsdato, (verdi: string) => setModalUtbetaling({...modalUtbetaling, forfallsdato: verdi}),
-                                forfallsdatoDatePickerIsOpen, setForfallsdatoDatePickerIsOpen)}
-                            {getKeyboardDatePickerGrid("Utbetalingsdato", modalUtbetaling.utbetalingsdato, (verdi: string) => setModalUtbetaling({...modalUtbetaling, utbetalingsdato: verdi}),
-                                utbetalingsdatoDatePickerIsOpen, setUtbetalingsdatoDatePickerIsOpen)}
-                            {getTextFieldGrid("Stønadstype", modalUtbetaling.stonadstype, (verdi: string) => setModalUtbetaling({...modalUtbetaling, stonadstype: verdi}))}
-                            {getKeyboardDatePickerGrid("fom", modalUtbetaling.fom, (verdi: string) => setModalUtbetaling({...modalUtbetaling, fom: verdi}),
-                                fomDatePickerIsOpen, setFomDatePickerIsOpen)}
-                            {getKeyboardDatePickerGrid("tom", modalUtbetaling.tom, (verdi: string) => setModalUtbetaling({...modalUtbetaling, tom: verdi}),
-                                tomDatePickerIsOpen, setTomDatePickerIsOpen)}
+                            <Grid item key={'Grid: Rammevedtaksreferanse'} xs={6} zeroMinWidth>
+                                <CustomTextField label={'Rammevedtaksreferanse'} value={modalUtbetaling.rammevedtaksreferanse}
+                                                 setValue={(verdi: string) => setModalUtbetaling({...modalUtbetaling, rammevedtaksreferanse: verdi})}/>
+                            </Grid>
+                            <Grid item key={'Grid: Beløp'} xs={6} zeroMinWidth>
+                                <CustomTextField label={'Beløp'} value={modalUtbetaling.belop} inputType={'number'}
+                                                 setValue={(verdi: number) => setModalUtbetaling({...modalUtbetaling, belop: +verdi})}/>
+                            </Grid>
+                            <Grid item key={'Grid: Beskrivelse'} xs={6} zeroMinWidth>
+                                <CustomTextField label={'Beskrivelse'} value={modalUtbetaling.beskrivelse}
+                                                 setValue={(verdi: string) => setModalUtbetaling({...modalUtbetaling, beskrivelse: verdi})}/>
+                            </Grid>
+                            <Grid item key={"grid: Forfallsdato"} xs={3} zeroMinWidth>
+                                <CustomKeyboardDatePicker label={'Forfallsdato'} value={modalUtbetaling.forfallsdato}
+                                                          setValue={(verdi: string) => setModalUtbetaling({...modalUtbetaling, forfallsdato: verdi})}
+                                                          isOpen={forfallsdatoDatePickerIsOpen} setIsOpen={setForfallsdatoDatePickerIsOpen} />
+                            </Grid>
+                            <Grid item key={"grid: Utbetalingsdato"} xs={3} zeroMinWidth>
+                                <CustomKeyboardDatePicker label={'Utbetalingsdato'} value={modalUtbetaling.utbetalingsdato}
+                                                          setValue={(verdi: string) => setModalUtbetaling({...modalUtbetaling, utbetalingsdato: verdi})}
+                                                          isOpen={utbetalingsdatoDatePickerIsOpen} setIsOpen={setUtbetalingsdatoDatePickerIsOpen} />
+                            </Grid>
+                            <Grid item key={'Grid: Stønadstype'} xs={6} zeroMinWidth>
+                                <CustomTextField label={'Stønadstype'} value={modalUtbetaling.stonadstype}
+                                                 setValue={(verdi: string) => setModalUtbetaling({...modalUtbetaling, stonadstype: verdi})}/>
+                            </Grid>
+                            <Grid item key={"grid: fom"} xs={3} zeroMinWidth>
+                                <CustomKeyboardDatePicker label={'fom'} value={modalUtbetaling.fom}
+                                                          setValue={(verdi: string) => setModalUtbetaling({...modalUtbetaling, fom: verdi})}
+                                                          isOpen={fomDatePickerIsOpen} setIsOpen={setFomDatePickerIsOpen} />
+                            </Grid>
+                            <Grid item key={"grid: tom"} xs={3} zeroMinWidth>
+                                <CustomKeyboardDatePicker label={'tom'} value={modalUtbetaling.tom}
+                                                          setValue={(verdi: string) => setModalUtbetaling({...modalUtbetaling, tom: verdi})}
+                                                          isOpen={tomDatePickerIsOpen} setIsOpen={setTomDatePickerIsOpen} />
+                            </Grid>
                             <Grid item key={'Status'} xs={3} zeroMinWidth>
                                 <FormControl className={classes.formControl}>
                                     <InputLabel htmlFor="age-simple" shrink={true}>Status</InputLabel>
@@ -424,7 +390,10 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
                                     </ButtonGroup>
                                 </Typography>
                             </Grid>
-                            {getTextFieldGrid("Mottaker", modalUtbetaling.mottaker, (verdi: string) => setModalUtbetaling({...modalUtbetaling, mottaker: verdi}))}
+                            <Grid item key={'Grid: Mottaker'} xs={6} zeroMinWidth>
+                                <CustomTextField label={'Mottaker'} value={modalUtbetaling.mottaker}
+                                                 setValue={(verdi: string) => setModalUtbetaling({...modalUtbetaling, mottaker: verdi})}/>
+                            </Grid>
                             <Grid item key={'Kontonummer'} xs={6} zeroMinWidth>
                                 <TextField
                                     id="filled-number"
@@ -448,7 +417,10 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
                                     variant="filled"
                                 />
                             </Grid>
-                            {getTextFieldGrid("Utbetalingsmetode", modalUtbetaling.utbetalingsmetode, (verdi: string) => setModalUtbetaling({...modalUtbetaling, utbetalingsmetode: verdi}))}
+                            <Grid item key={'Grid: Utbetalingsmetode'} xs={6} zeroMinWidth>
+                                <CustomTextField label={'Utbetalingsmetode'} value={modalUtbetaling.utbetalingsmetode}
+                                                 setValue={(verdi: string) => setModalUtbetaling({...modalUtbetaling, utbetalingsmetode: verdi})}/>
+                            </Grid>
                         </Grid>
                     </div>
                     <div className={classes.paperboys}>

@@ -22,15 +22,14 @@ import {
     getShortDateISOString
 } from "../../../utils/utilityFunctions";
 import Grid from "@material-ui/core/Grid";
-import TextField from "@material-ui/core/TextField";
 import {HendelseType, Rammevedtak} from "../../../types/hendelseTypes";
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
 import InputLabel from "@material-ui/core/InputLabel";
 import FormControl from "@material-ui/core/FormControl";
-import {KeyboardDatePicker, MuiPickersUtilsProvider} from "@material-ui/pickers";
-import DateFnsUtils from "@date-io/date-fns";
 import Button from "@material-ui/core/Button";
+import CustomTextField from "../../../components/customTextField";
+import CustomKeyboardDatePicker from "../../../components/customKeyboardDatePicker";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -157,7 +156,7 @@ const NyttRammevedtakModal: React.FC<Props> = (props: Props) => {
     const classes = useStyles();
     const {visNyRammevedtakModal, dispatch, model, soknad, aktivtRammevedtak, modalSaksreferanse} = props;
 
-    function resetStateValues() {
+    const resetStateValues = () => {
         setModalRammevedtak({...initialRammevedtak, rammevedtaksreferanse: generateFilreferanseId()});
 
         setFomDatePickerIsOpen(false);
@@ -166,7 +165,7 @@ const NyttRammevedtakModal: React.FC<Props> = (props: Props) => {
         setReferansefeltDisabled(false);
 
         dispatch(setAktivtRammevedtak(null));
-    }
+    };
 
     const sendRammevedtak = () => {
         let nyHendelse: Rammevedtak = {...modalRammevedtak, belop: modalRammevedtak.belop ? modalRammevedtak.belop as number: null};
@@ -218,64 +217,6 @@ const NyttRammevedtakModal: React.FC<Props> = (props: Props) => {
         }
     };
 
-    function getTextFieldGrid(label: string, value: any, setValue: (v: any) => any, inputType: string = 'string', required: boolean = false) {
-        return <Grid item key={'Grid: ' + label} xs={6} zeroMinWidth>
-            <TextField
-                disabled={required && referansefeltDisabled}
-                id="outlined-name"
-                label={label}
-                className={classes.textField}
-                value={value ? value : ''}
-                type={inputType}
-                required={required}
-                error={required && visFeilmelding}
-                onChange={(evt) => {
-                    setValue(evt.target.value);
-                    if (required) {
-                        if (evt.target.value.length === 0) {
-                            setVisFeilmelding(true);
-                        } else {
-                            setVisFeilmelding(false);
-                        }
-                    }
-                }}
-                InputLabelProps={{
-                    shrink: true,
-                }}
-                margin="normal"
-                variant="filled"
-                autoComplete="off"
-            />
-        </Grid>;
-    }
-
-    function getKeyboardDatePickerGrid(label: string, value: any, setValue: (v: string) => any, isOpen: boolean, setIsOpen: any) {
-        return <Grid item key={"grid: " + label} xs={6} zeroMinWidth>
-            <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                <KeyboardDatePicker
-                    className={classes.otherField}
-                    disableToolbar
-                    variant="inline"
-                    format="yyyy-MM-dd"
-                    margin="normal"
-                    id={label}
-                    label={label}
-                    open={isOpen}
-                    onOpen={() => setIsOpen(true)}
-                    onClose={() => setIsOpen(false)}
-                    value={value}
-                    onChange={(date: any) => {
-                        setValue(date);
-                        setIsOpen(false);
-                    }}
-                    KeyboardButtonProps={{
-                        'aria-label': 'change date',
-                    }}
-                />
-            </MuiPickersUtilsProvider>
-        </Grid>;
-    }
-
     return (
         <Modal
             aria-labelledby="transition-modal-title"
@@ -299,8 +240,11 @@ const NyttRammevedtakModal: React.FC<Props> = (props: Props) => {
                 <div className={classes.papertowel}>
                     <div className={classes.paperback}>
                         <Grid container spacing={3} justify="center" alignItems="center">
-                            {getTextFieldGrid("Rammevedtakreferanse", modalRammevedtak.rammevedtaksreferanse,
-                                (verdi: string) => setModalRammevedtak({...modalRammevedtak, rammevedtaksreferanse: verdi}), 'string', true)}
+                            <Grid item key={'Grid: Rammevedtakreferanse'} xs={6} zeroMinWidth>
+                                <CustomTextField label={'Rammevedtakreferanse'} value={modalRammevedtak.rammevedtaksreferanse}
+                                                 setValue={(verdi: string) => setModalRammevedtak({...modalRammevedtak, rammevedtaksreferanse: verdi})} required={true}
+                                                 referansefeltDisabled={referansefeltDisabled} visFeilmelding={visFeilmelding} setVisFeilmelding={setVisFeilmelding} />
+                            </Grid>
                             <Grid item key={'Saksreferanse'} xs={6} zeroMinWidth>
                                 <FormControl className={classes.formControl2} disabled={modalSaksreferanse != null}>
                                     <InputLabel htmlFor="age-simple" shrink={true}>Saksreferanse</InputLabel>
@@ -313,20 +257,30 @@ const NyttRammevedtakModal: React.FC<Props> = (props: Props) => {
                                         }}
                                     >
                                         {soknad.saker.map(sak => (
-                                            <MenuItem key={sak.referanse} value={sak.referanse}>{sak.referanse + ' ' + getSakTittelFraSaksreferanse(soknad, sak.referanse)}</MenuItem>
+                                            <MenuItem key={sak.referanse} value={sak.referanse}>
+                                                {sak.referanse + ' ' + getSakTittelFraSaksreferanse(soknad, sak.referanse)}
+                                            </MenuItem>
                                         ))}
                                     </Select>
                                 </FormControl>
                             </Grid>
+                            <Grid item key={'Grid: Beskrivelse'} xs={6} zeroMinWidth>
+                                <CustomTextField label={'Beskrivelse'} value={modalRammevedtak.beskrivelse}
+                                                 setValue={(verdi: string) => setModalRammevedtak({...modalRammevedtak, beskrivelse: verdi})}/>
+                            </Grid>
+                            <Grid item key={'Grid: Beløp'} xs={6} zeroMinWidth>
+                                <CustomTextField label={'Beløp'} value={modalRammevedtak.belop} inputType={'number'}
+                                                 setValue={(verdi: number) => setModalRammevedtak({...modalRammevedtak, belop: +verdi})}/>
+                            </Grid>
 
-                            {getTextFieldGrid("Beskrivelse", modalRammevedtak.beskrivelse, (verdi: string) => setModalRammevedtak({...modalRammevedtak, beskrivelse: verdi}))}
-
-                            {getTextFieldGrid("Beløp", modalRammevedtak.belop, (verdi: number) => setModalRammevedtak({...modalRammevedtak, belop: +verdi}), 'number')}
-
-                            {getKeyboardDatePickerGrid("fom", modalRammevedtak.fom, (verdi: string) => setModalRammevedtak({...modalRammevedtak, fom: verdi}),
-                                fomDatePickerIsOpen, setFomDatePickerIsOpen)}
-                            {getKeyboardDatePickerGrid("tom", modalRammevedtak.tom, (verdi: string) => setModalRammevedtak({...modalRammevedtak, tom: verdi}),
-                                tomDatePickerIsOpen, setTomDatePickerIsOpen)}
+                            <Grid item key={"grid: fom"} xs={6} zeroMinWidth>
+                                <CustomKeyboardDatePicker label={"fom"} value={modalRammevedtak.fom} isOpen={fomDatePickerIsOpen} setIsOpen={setFomDatePickerIsOpen}
+                                                          setValue={(verdi: string) => setModalRammevedtak({...modalRammevedtak, fom: verdi})}/>
+                            </Grid>
+                            <Grid item key={"grid: tom"} xs={6} zeroMinWidth>
+                                <CustomKeyboardDatePicker label={"tom"} value={modalRammevedtak.tom} isOpen={tomDatePickerIsOpen} setIsOpen={setTomDatePickerIsOpen}
+                                                          setValue={(verdi: string) => setModalRammevedtak({...modalRammevedtak, tom: verdi})}/>
+                            </Grid>
                         </Grid>
                     </div>
                     <div className={classes.paperboys}>

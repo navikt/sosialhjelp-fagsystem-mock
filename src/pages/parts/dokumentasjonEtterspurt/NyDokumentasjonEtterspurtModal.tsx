@@ -13,10 +13,7 @@ import makeStyles from "@material-ui/core/styles/makeStyles";
 import Fade from "@material-ui/core/Fade";
 import Backdrop from "@material-ui/core/Backdrop";
 import {FsSoknad, Model} from "../../../redux/types";
-import TextField from '@material-ui/core/TextField';
 import 'date-fns';
-import DateFnsUtils from '@date-io/date-fns';
-import {KeyboardDatePicker, MuiPickersUtilsProvider} from '@material-ui/pickers';
 import Typography from "@material-ui/core/Typography";
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -32,6 +29,8 @@ import IconButton from "@material-ui/core/IconButton";
 import Box from "@material-ui/core/Box";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import Button from "@material-ui/core/Button";
+import CustomTextField from "../../../components/customTextField";
+import CustomKeyboardDatePicker from "../../../components/customKeyboardDatePicker";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -287,75 +286,13 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
         }
     };
 
-    function getTextFieldGrid(label: string, value: any, setValue: (v: any) => any, width: 1|2|3|4|5 = 3, required: boolean = false, id?: string) {
-        return <Grid item key={'Grid: ' + label} xs={width} zeroMinWidth>
-            <TextField
-                id={id ? id : "outlined-name"}
-                label={label}
-                className={classes.textField}
-                value={value ? value : ''}
-                required={required}
-                error={required && visFeilmelding}
-                onChange={(evt) => {
-                    setValue(evt.target.value);
-                    if (required) {
-                        if (evt.target.value.length === 0) {
-                            setVisFeilmelding(true);
-                        } else {
-                            setVisFeilmelding(false);
-                        }
-                    }
-                }}
-                InputLabelProps={{
-                    shrink: true,
-                }}
-                margin="normal"
-                variant="filled"
-                autoComplete="off"
-            />
-        </Grid>;
-    }
-
-    function getKeyboardDatePickerGrid(label: string, value: any, setValue: (v: string) => any, isOpen: boolean, setIsOpen: any) {
-        return <Grid item key={"grid: " + label} xs={2} zeroMinWidth>
-            <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                <KeyboardDatePicker
-                    className={classes.otherField}
-                    disableToolbar
-                    required={true}
-                    error={visFeilmeldingDatePicker}
-                    variant="inline"
-                    format="yyyy-MM-dd"
-                    margin="normal"
-                    id={label}
-                    label={label}
-                    open={isOpen}
-                    onOpen={() => setIsOpen(true)}
-                    onClose={() => setIsOpen(false)}
-                    value={value}
-                    onChange={(date: any) => {
-                        setValue(date);
-                        setIsOpen(false);
-                        setVisFeilmeldingDatePicker(false);
-                    }}
-                    InputLabelProps={{
-                        shrink: true,
-                    }}
-                    KeyboardButtonProps={{
-                        'aria-label': 'change date',
-                    }}
-                />
-            </MuiPickersUtilsProvider>
-        </Grid>;
-    }
-
     const fyllInnDokumenterIModalDokumentasjonEtterspurt = () => {
         if (soknad.dokumentasjonEtterspurt) {
             setModalDokumentasjonEtterspurt({...soknad.dokumentasjonEtterspurt});
         }
     };
 
-    function onAddClick() {
+    const onAddClick = () => {
         return () => {
             if (modalDokument.dokumenttype === '') {
                 setVisFeilmelding(true);
@@ -365,7 +302,7 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
                 leggTilDokument();
             }
         };
-    }
+    };
 
     return (
         <Modal
@@ -391,11 +328,23 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
                     <div className={classes.paperbox}>
                         <div className={classes.paperback}>
                             <Grid container spacing={1} justify="center" alignItems="center">
-                                {getTextFieldGrid("Dokumenttype", modalDokument.dokumenttype, (verdi: string) => setModalDokument({...modalDokument, dokumenttype: verdi}), 3, true, "nytt_dokumentasjonskrav_input_type")}
-                                {getTextFieldGrid("Tilleggsinformasjon", modalDokument.tilleggsinformasjon, (verdi: string) => setModalDokument({...modalDokument, tilleggsinformasjon: verdi}), 5, false, "nytt_dokumentasjonskrav_input_tilleggsinformasjon")}
-                                {getKeyboardDatePickerGrid("Innsendelsesfrist", modalDokument.innsendelsesfrist, (verdi: string) => setModalDokument({...modalDokument, innsendelsesfrist: verdi}),
-                                    datePickerIsOpen, setDatePickerIsOpen)}
-
+                                <Grid item key={'Grid: Dokumenttype'} xs={3} zeroMinWidth>
+                                    <CustomTextField label={'Dokumenttype'} value={modalDokument.dokumenttype}
+                                                     setValue={(verdi: string) => setModalDokument({...modalDokument, dokumenttype: verdi})}
+                                                     required={true} visFeilmelding={visFeilmelding}
+                                                     setVisFeilmelding={setVisFeilmelding} id={"nytt_dokumentasjonskrav_input_type"} />
+                                </Grid>
+                                <Grid item key={'Grid: Tilleggsinformasjon'} xs={5} zeroMinWidth>
+                                    <CustomTextField label={'Tilleggsinformasjon'} value={modalDokument.tilleggsinformasjon}
+                                                     setValue={(verdi: string) => setModalDokument({...modalDokument, tilleggsinformasjon: verdi})}
+                                                     id={"nytt_dokumentasjonskrav_input_tilleggsinformasjon"} />
+                                </Grid>
+                                <Grid item key={'grid: Innsendelsesfrist'} xs={2} zeroMinWidth>
+                                    <CustomKeyboardDatePicker label={'Innsendelsesfrist'} value={modalDokument.innsendelsesfrist}
+                                                              setValue={(verdi: string) => setModalDokument({...modalDokument, innsendelsesfrist: verdi})}
+                                                              isOpen={datePickerIsOpen} setIsOpen={setDatePickerIsOpen}
+                                                              required={true} visFeilmelding={visFeilmeldingDatePicker} setVisFeilmelding={setVisFeilmeldingDatePicker} />
+                                </Grid>
                                 <Grid item key={"grid: legg til dokument"} xs={2} zeroMinWidth>
                                     <Box className={classes.addbox}>
                                         {!smallScreen && <Button id={"legg_til_dokumentkrav"} variant="contained" color={'default'} onClick={onAddClick()}>

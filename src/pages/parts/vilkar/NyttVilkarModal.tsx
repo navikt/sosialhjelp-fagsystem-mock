@@ -21,7 +21,6 @@ import {
     getVilkarByVilkarreferanse
 } from "../../../utils/utilityFunctions";
 import Grid from "@material-ui/core/Grid";
-import TextField from "@material-ui/core/TextField";
 import {HendelseType, Vilkar, VilkarStatus} from "../../../types/hendelseTypes";
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
@@ -31,6 +30,7 @@ import Input from '@material-ui/core/Input';
 import Chip from '@material-ui/core/Chip';
 import useTheme from "@material-ui/core/styles/useTheme";
 import Button from "@material-ui/core/Button";
+import CustomTextField from "../../../components/customTextField";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -214,36 +214,6 @@ const NyttVilkarModal: React.FC<Props> = (props: Props) => {
         }
     };
 
-    function getTextFieldGrid(label: string, value: any, setValue: (v: any) => any, required: boolean = false) {
-        return <Grid item key={'Grid: ' + label} xs={6} zeroMinWidth>
-            <TextField
-                disabled={required && referansefeltDisabled}
-                id="outlined-name"
-                label={label}
-                className={classes.textField}
-                value={value ? value : ''}
-                required={required}
-                error={required && visFeilmelding}
-                onChange={(evt) => {
-                    setValue(evt.target.value);
-                    if (required) {
-                        if (evt.target.value.length === 0) {
-                            setVisFeilmelding(true);
-                        } else {
-                            setVisFeilmelding(false);
-                        }
-                    }
-                }}
-                InputLabelProps={{
-                    shrink: true,
-                }}
-                margin="normal"
-                variant="filled"
-                autoComplete="off"
-            />
-        </Grid>;
-    }
-
     return (
         <Modal
             aria-labelledby="transition-modal-title"
@@ -267,8 +237,12 @@ const NyttVilkarModal: React.FC<Props> = (props: Props) => {
                 <div className={classes.papertowel}>
                     <div className={classes.paperback}>
                         <Grid container spacing={3} justify="center" alignItems="center">
-                            {getTextFieldGrid("Vilkårreferanse", modalVilkar.vilkarreferanse,
-                                (verdi: string) => setModalVilkar({...modalVilkar, vilkarreferanse: verdi}), true)}
+                            <Grid item key={'Grid: Vilkårreferanse'} xs={6} zeroMinWidth>
+                                <CustomTextField label={'Vilkårreferanse'} value={modalVilkar.vilkarreferanse}
+                                                 setValue={(verdi: string) => setModalVilkar({...modalVilkar, vilkarreferanse: verdi})}
+                                                 required={true} referansefeltDisabled={referansefeltDisabled}
+                                                 visFeilmelding={visFeilmelding} setVisFeilmelding={setVisFeilmelding} />
+                            </Grid>
                             <Grid item key={'Utbetalingsreferanse'} xs={6} zeroMinWidth>
                                 <FormControl className={classes.formControl2}>
                                     <InputLabel htmlFor="age-simple" shrink={true}>Utbetalingsreferanse</InputLabel>
@@ -298,9 +272,10 @@ const NyttVilkarModal: React.FC<Props> = (props: Props) => {
                                     </Select>
                                 </FormControl>
                             </Grid>
-
-                            {getTextFieldGrid("Beskrivelse", modalVilkar.beskrivelse, (verdi: string) => setModalVilkar({...modalVilkar, beskrivelse: verdi}))}
-
+                            <Grid item key={'Grid: Beskrivelse'} xs={6} zeroMinWidth>
+                                <CustomTextField label={'Beskrivelse'} value={modalVilkar.beskrivelse}
+                                                 setValue={(verdi: string) => setModalVilkar({...modalVilkar, beskrivelse: verdi})} />
+                            </Grid>
                             <Grid item key={'Status'} xs={6} zeroMinWidth>
                                 <FormControl className={classes.formControl}>
                                     <InputLabel htmlFor="age-simple" shrink={true}>Status</InputLabel>
