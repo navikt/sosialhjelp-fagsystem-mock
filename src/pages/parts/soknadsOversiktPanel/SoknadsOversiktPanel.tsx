@@ -72,9 +72,9 @@ const SoknadsOversiktPanel: React.FC<Props> = (props: Props) => {
                 id='opprett_ny_soknad_knapp'
                 onClick={() => {
                     if (fiksDigisosId.length !== 0 && !model.soknader.find(soknad => soknad.fiksDigisosId === fiksDigisosId)) {
-                        props.dispatch(opprettNyFsSoknadDersomDigisosIdEksistererHosFiks(fiksDigisosId, model.backendUrlTypeToUse, props.dispatch));
+                        opprettNyFsSoknadDersomDigisosIdEksistererHosFiks(fiksDigisosId, model.backendUrlTypeToUse, props.dispatch);
                     } else {
-                        props.dispatch(opprettNyFsSoknadDersomDigisosIdEksistererHosFiks(generateRandomId(11), model.backendUrlTypeToUse, props.dispatch));
+                        opprettNyFsSoknadDersomDigisosIdEksistererHosFiks(generateRandomId(11), model.backendUrlTypeToUse, props.dispatch);
                     }
                     setFiksDigisosId('');
                 }}
