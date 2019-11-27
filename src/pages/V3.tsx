@@ -10,7 +10,6 @@ import makeStyles from "@material-ui/core/styles/makeStyles";
 import Grid from "@material-ui/core/Grid";
 import SystemSettingsModal from "./parts/systemSettings/SystemSettingsModal";
 import StatusSnackBarView from "./parts/statusSnackBar/StatusSnackBarView";
-import ReactJsonView from "./parts/reactJsonView/ReactJsonView";
 import {getFsSoknadByFiksDigisosId, removeNullFieldsFromHendelser} from "../utils/utilityFunctions";
 import ToppPanel from "./parts/panel/ToppPanel";
 import CircularProgress from "@material-ui/core/CircularProgress";
@@ -46,7 +45,7 @@ const useStyles = makeStyles((theme: Theme) =>
         },
         colRawJson: {
             position: 'fixed',
-            bottom: '6rem',
+            bottom: '1rem',
             right: '1rem'
         },
         rawJson: {
@@ -127,10 +126,6 @@ const V3: React.FC<Props> = (props: Props) => {
 
                 <div hidden={!loaderOn} className={classes.progressBar}>
                     <CircularProgress size={100} thickness={3} disableShrink color={'secondary'} />
-                </div>
-
-                <div className={classes.colJson}>
-                    <ReactJsonView json={getFsSoknadByFiksDigisosId(props.model.soknader, props.model.aktivSoknad)}/>
                 </div>
 
                 <div className={classes.colRawJson}>
