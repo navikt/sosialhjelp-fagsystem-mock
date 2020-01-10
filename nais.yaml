@@ -22,8 +22,16 @@ spec:
     path: /sosialhjelp/fagsystem-mock/isAlive
     initialDelay: 20
     timeout: 1
+{{#if gcpAccessPolicy}}
+    accessPolicy:
+      outbound:
+        external:
+          - host: "appres.nav.no"
+          - host: "nav.psplugin.com"
+        rules: []
+{{/if}}
   prometheus:
-    enabled: true
+    enabled: {{prometheusEnabled}}
     path: /actuator/metrics
   replicas:
     min: 1
