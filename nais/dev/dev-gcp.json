@@ -1,0 +1,9 @@
+{
+  "namespace": "teamdigisos",
+  "ingresses": [
+    "https://sosialhjelp-fagsystem-mock.dev-nav.no/sosialhjelp/fagsystem-mock"
+  ],
+  "prometheusEnabled": false,
+  "gcpAccessPolicy": true,
+  "appresCmsUrl": "https://appres.nav.no"
+}
