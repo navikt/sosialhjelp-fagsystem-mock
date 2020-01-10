@@ -4,5 +4,6 @@
     "https://sosialhjelp-fagsystem-mock-q0.dev-sbs.nais.io/sosialhjelp/fagsystem-mock",
     "https://www-q0.nav.no/sosialhjelp/fagsystem-mock"
   ],
-  "appresCmsUrl": "https://appres-q0.nav.no"
+  "appresCmsUrl": "https://appres-q0.nav.no",
+  "prometheusEnabled": true
 }
