@@ -52,6 +52,9 @@ export const defaultSvarutRef: SvarutExtended = {
 
 export const backendUrlsLocalTemplate: string = "http://localhost:8080/sosialhjelp/innsyn-api";
 export const backendUrlsDigisostestTemplate: string = "https://www.digisos-test.com/sosialhjelp/login-api/innsyn-api";
+export const backendUrlsDevGcpTemplate: string = "https://sosialhjelp-innsyn-api.dev-nav.no/sosialhjelp/innsyn-api";
+export const backendUrlsLabsTemplate: string = "https://sosialhjelp-innsyn-api.labs.nais.io/sosialhjelp/innsyn-api";
+export const backendUrlsDigisosLabsTemplate: string = "https://digisos.labs.nais.io/sosialhjelp/innsyn-api";
 export const backendUrlsQTemplate: string = "https://www-q1.nav.no/sosialhjelp/innsyn-api";
 export const backendUrlsQ0Template: string = "https://www-q0.nav.no/sosialhjelp/innsyn-api";
 
@@ -61,6 +64,9 @@ export const nyNavEnhetUrl: string = '/api/v1/mock/nyNavEnhet';
 export const backendUrls: BackendUrls = {
     lokalt: backendUrlsLocalTemplate,
     digisostest: backendUrlsDigisostestTemplate,
+    devGcp: backendUrlsDevGcpTemplate,
+    labs: backendUrlsLabsTemplate,
+    digisosLabs: backendUrlsDigisosLabsTemplate,
     q0: backendUrlsQ0Template,
     q1: backendUrlsQTemplate
 };
@@ -110,6 +116,12 @@ const getBackendUrlTypeToUse = (): keyof BackendUrls => {
     const windowUrl = window.location.href;
     if (windowUrl.includes('digisos-test.com')) {
         return 'digisostest';
+    } else if (windowUrl.includes('digisos.labs.nais.io')) {
+        return 'digisosLabs';
+    } else if (windowUrl.includes('labs.nais.io')) {
+        return 'labs';
+    } else if (windowUrl.includes('dev-nav.no')) {
+        return 'devGcp';
     } else if (windowUrl.includes('www-q0')) {
         return 'q0';
     } else if (windowUrl.includes('www-q1')) {

@@ -63,6 +63,9 @@ export interface FsSaksStatus extends SaksStatus {
 export interface BackendUrls {
     lokalt: string,
     digisostest: string,
+    labs: string,
+    digisosLabs: string,
+    devGcp: string,
     q0: string,
     q1: string
 }
