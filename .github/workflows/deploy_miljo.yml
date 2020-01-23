@@ -1,4 +1,4 @@
-name: Deploy Dev - test 1 ${{ github.event.client_payload.MILJO }} 2 ${{ github.event.client_payload.TAG }} 3 ${{ github.event.client_payload }}
+name: Deploy Dev
 on:
     repository_dispatch:
         types: [deploy_miljo_tag]
@@ -13,7 +13,7 @@ jobs:
             - uses: actions/checkout@v1
               with:
                   refs: test
-            - name: Deploy to dev - test 1 ${{github.event.client_payload.MILJO}} 2 ${{ github.event.client_payload.TAG }} 3 ${{github.event.client_payload}}
+            - name: Deploy to dev - test 1 ${{.client_payload.MILJO}} 2 ${{ .event.client_payload.TAG }} 3 ${{event.client_payload}}
               run: |
                   MILJO=$(jq -r '.client_payload.MILJO' $GITHUB_EVENT_PATH)
                   TAG=$(jq -r '.client_payload.TAG' $GITHUB_EVENT_PATH)
