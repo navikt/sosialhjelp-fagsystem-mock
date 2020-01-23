@@ -10,11 +10,17 @@ jobs:
         if: github.event.action == 'deploy_miljo_tag'
         container: navikt/deployment-cli:0.4.0
         steps:
-            - name: Deploy to q0
+            - name: Will be deployed to q0?
               if: github.event.client_payload.MILJO == 'q0'
               run: |
-                echo test
-            - name: Deploy to q1
+                echo $(jq -r '.client_payload.TAG' $GITHUB_EVENT_PATH)
+                echo ${{ github.sha }}
+                echo ${{ github.ref }}
+                echo ${{ github.head_ref }}
+                echo ${{ github.base_ref }}
+                echo ${{ github.actor }}
+
+            - name: Will be deployed to q0?
               if: github.event.client_payload.MILJO == 'q1'
               run: |
                 echo test 2
