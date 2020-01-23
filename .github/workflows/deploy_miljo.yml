@@ -1,4 +1,4 @@
-name: Deploy Dev
+name: Deploy Dev - test 1 github.event.client_payload.MILJO 2 github.event.client_payload.TAG 3 github.event.client_payload
 on:
     repository_dispatch:
         types: [deploy_miljo_tag]
