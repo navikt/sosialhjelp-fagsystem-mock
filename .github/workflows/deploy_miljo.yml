@@ -16,13 +16,6 @@ jobs:
                 echo author: ${{ github.actor }}
                 echo tag:  ${{github.event.client_payload.TAG}}
                 echo miljo: ${{github.event.client_payload.MILJO}}
-                echo miljo: ${$GITHUB_EVENT_PATH}
-                echo miljo: ${{$GITHUB_EVENT_PATH}}
-                echo miljo: ${{github.event.client_payload}}
-                echo miljo: ${{github.event.client_payload.MILJO}}
-                echo miljo: ${{github.event.client_payload.TAG}}
-                echo miljo: $(jq -r '.client_payload.TAG' $GITHUB_EVENT_PATH)
-
             - name: Will be deployed to q1?
               if: github.event.client_payload.MILJO == 'q1'
               run: |
