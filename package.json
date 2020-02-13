@@ -16,7 +16,6 @@
     "connected-react-router": "^6.5.2",
     "fp-ts": "^2.0.5",
     "history": "^4.10.1",
-    "immer": "^4.0.0",
     "json-schema-to-typescript": "^7.0.0",
     "json-schema-traverse": "^0.4.1",
     "less-plugin-npm-import": "^2.1.0",
