@@ -114,6 +114,6 @@
     "@types/react-swipeable-views": "^0.13.0",
     "@types/redux": "^3.6.0",
     "craco-less": "^1.16.0",
-    "typescript": "^3.7.5"
+    "typescript": "^3.8.3"
   }
 }
