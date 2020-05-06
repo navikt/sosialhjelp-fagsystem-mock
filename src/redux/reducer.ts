@@ -57,6 +57,7 @@ export const backendUrlsLabsTemplate: string = "https://sosialhjelp-innsyn-api.l
 export const backendUrlsDigisosLabsTemplate: string = "https://digisos.labs.nais.io/sosialhjelp/innsyn-api";
 export const backendUrlsQTemplate: string = "https://www-q1.nav.no/sosialhjelp/innsyn-api";
 export const backendUrlsQ0Template: string = "https://www-q0.nav.no/sosialhjelp/innsyn-api";
+export const backendUrlMockAltLocal: string = "http://localhost:8989/sosialhjelp/innsyn-api";
 
 export const oppdaterDigisosSakUrl: string = '/api/v1/digisosapi/oppdaterDigisosSak';
 export const nyNavEnhetUrl: string = '/api/v1/mock/nyNavEnhet';
@@ -68,7 +69,8 @@ export const backendUrls: BackendUrls = {
     labs: backendUrlsLabsTemplate,
     digisosLabs: backendUrlsDigisosLabsTemplate,
     q0: backendUrlsQ0Template,
-    q1: backendUrlsQTemplate
+    q1: backendUrlsQTemplate,
+    mockalt: backendUrlMockAltLocal,
 };
 
 export const getInitialFsSoknad = (
@@ -127,7 +129,7 @@ const getBackendUrlTypeToUse = (): keyof BackendUrls => {
     } else if (windowUrl.includes('www-q1')) {
         return 'q1';
     } else {
-        return 'lokalt';
+        return 'mockalt';
     }
 };
 
