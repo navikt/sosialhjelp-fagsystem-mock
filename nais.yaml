@@ -23,12 +23,11 @@ spec:
     initialDelay: 20
     timeout: 1
 {{#if gcpAccessPolicy}}
-    accessPolicy:
-      outbound:
-        external:
-          - host: "appres.nav.no"
-          - host: "nav.psplugin.com"
-        rules: []
+  accessPolicy:
+    outbound:
+      external:
+        - host: "digisos.labs.nais.io"
+      rules: []
 {{/if}}
   prometheus:
     enabled: {{prometheusEnabled}}
