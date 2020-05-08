@@ -27,7 +27,8 @@ spec:
     outbound:
       external:
         - host: "digisos.labs.nais.io"
-      rules: []
+      rules:
+        - application: digisos
 {{/if}}
   prometheus:
     enabled: {{prometheusEnabled}}
