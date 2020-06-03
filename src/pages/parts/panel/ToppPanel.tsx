@@ -61,6 +61,9 @@ const ToppPanel: React.FC<Props> = (props: Props) => {
         if (frontendUrl.includes('localhost:8080')) {
             frontendUrl = frontendUrl.replace('localhost:8080', 'localhost:3000')
         }
+        if (frontendUrl.includes('localhost:8989')) {
+            frontendUrl = frontendUrl.replace('localhost:8989', 'localhost:3000')
+        }
         return (
             <div>
 
