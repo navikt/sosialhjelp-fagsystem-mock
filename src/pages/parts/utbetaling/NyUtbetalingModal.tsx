@@ -134,7 +134,6 @@ const initialUtbetaling: Utbetaling = {
     belop: null,
     beskrivelse: null,
     forfallsdato: null,
-    stonadstype: null,
     utbetalingsdato: null,
     fom: null,
     tom: null,
@@ -168,7 +167,6 @@ const defaultUtbetaling: Utbetaling = {
     belop: 1337,
     beskrivelse: "Midler til å kjøpe utvidelsespakker til Starcraft",
     forfallsdato: defaultForfallsdato,
-    stonadstype: "Mana potion",
     utbetalingsdato: defaultUtbetalingsdato,
     fom: defaultFomDato,
     tom: defaultTomDato,
@@ -325,7 +323,7 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
                                                  setValue={(verdi: number) => setModalUtbetaling({...modalUtbetaling, belop: +verdi})}/>
                             </Grid>
                             <Grid item key={'Grid: Beskrivelse'} xs={6} zeroMinWidth>
-                                <CustomTextField label={'Beskrivelse'} value={modalUtbetaling.beskrivelse}
+                                <CustomTextField label={'Beskrivelse (Stønadstype)'} value={modalUtbetaling.beskrivelse}
                                                  setValue={(verdi: string) => setModalUtbetaling({...modalUtbetaling, beskrivelse: verdi})}/>
                             </Grid>
                             <Grid item key={"grid: Forfallsdato"} xs={3} zeroMinWidth>
@@ -337,10 +335,6 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
                                 <CustomKeyboardDatePicker label={'Utbetalingsdato'} value={modalUtbetaling.utbetalingsdato}
                                                           setValue={(verdi: string) => setModalUtbetaling({...modalUtbetaling, utbetalingsdato: verdi})}
                                                           isOpen={utbetalingsdatoDatePickerIsOpen} setIsOpen={setUtbetalingsdatoDatePickerIsOpen} />
-                            </Grid>
-                            <Grid item key={'Grid: Stønadstype'} xs={6} zeroMinWidth>
-                                <CustomTextField label={'Stønadstype'} value={modalUtbetaling.stonadstype}
-                                                 setValue={(verdi: string) => setModalUtbetaling({...modalUtbetaling, stonadstype: verdi})}/>
                             </Grid>
                             <Grid item key={"grid: fom"} xs={3} zeroMinWidth>
                                 <CustomKeyboardDatePicker label={'fom'} value={modalUtbetaling.fom}

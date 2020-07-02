@@ -86,7 +86,6 @@ export interface Utbetaling {
     belop: number | null; // belop i kr
     beskrivelse: string | null; // "Stønaden utbetalingen gjelder for (livsopphold, strøm etc.)"
     forfallsdato: string | null; // "pattern": "^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$"
-    stonadstype: string | null; // Grupperingsnøkkel
     utbetalingsdato: string | null; // "pattern": "^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$"
     fom: string | null; // DATO
     tom: string | null; // DATO
