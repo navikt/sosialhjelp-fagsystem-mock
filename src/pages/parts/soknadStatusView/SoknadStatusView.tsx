@@ -115,7 +115,7 @@ const SoknadStatusView: React.FC<Props> = (props: Props) => {
         return (
             <Box className={classes.addbox}>
                 <Button variant="contained" color={'primary'} onClick={() => {
-                         if((model.backendUrlTypeToUse === 'q0' || model.backendUrlTypeToUse === 'q1') && inputEl && inputEl.current) {
+                         if(model.backendUrlTypeToUse === 'q1' && inputEl && inputEl.current) {
                              inputEl.current.click();
                          } else {
                              const nyHendelse: ForelopigSvar = {
@@ -133,7 +133,7 @@ const SoknadStatusView: React.FC<Props> = (props: Props) => {
                              sendNyHendelseOgOppdaterModel(nyHendelse, model, dispatch, oppdaterForelopigSvar(soknad.fiksDigisosId, nyHendelse));
                          }
                      }}>
-                    {(model.backendUrlTypeToUse === 'q0' || model.backendUrlTypeToUse === 'q1') ? "Send pdf med foreløpig svar" : "Send foreløpig svar"}
+                    {model.backendUrlTypeToUse === 'q1' ? "Send pdf med foreløpig svar" : "Send foreløpig svar"}
                 </Button>
             </Box>
         )
