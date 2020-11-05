@@ -95,7 +95,7 @@ const TildeldeltNavkontorView: React.FC<Props> = (props: Props) => {
                                 navKontor: navKontorEnhetsNr.toString()
                             };
 
-                            if (model.backendUrlTypeToUse !== 'q0' && model.backendUrlTypeToUse !== 'q1') {
+                            if (model.backendUrlTypeToUse !== 'q1') {
                                 sendValgbareNavkontorTilMockBackend(navKontorListe, model, dispatch);
                             }
 
