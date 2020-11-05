@@ -203,7 +203,7 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
     };
 
     function skalLasteOppFil() {
-        return model.backendUrlTypeToUse === 'q1'
+        return model.backendUrlTypeToUse === 'devSbs'
             && modalDokumentasjonEtterspurt.forvaltningsbrev.referanse.id === standardRef;
     }
 
