@@ -67,7 +67,7 @@ export const backendUrls: BackendUrls = {
     devGcp: backendUrlsDevGcpTemplate,
     labs: backendUrlsLabsTemplate,
     digisosLabs: backendUrlsDigisosLabsTemplate,
-    q1: backendUrlsQTemplate,
+    devSbs: backendUrlsQTemplate,
     mockalt: backendUrlMockAltLocal,
 };
 
@@ -123,7 +123,7 @@ const getBackendUrlTypeToUse = (): keyof BackendUrls => {
     } else if (windowUrl.includes('-mock.dev.nav.no')) {
         return 'devGcp';
     } else if (windowUrl.includes('www-q1')) {
-        return 'q1';
+        return 'devSbs';
     } else {
         return 'mockalt';
     }

@@ -1,5 +1,4 @@
 {
-  "namespace": "teamdigisos",
   "ingresses": [
     "https://sosialhjelp-fagsystem-mock.dev.nav.no/sosialhjelp/fagsystem-mock"
   ],

@@ -107,7 +107,7 @@ const VedtakFattetModal: React.FC<Props> = (props: Props) => {
                 </FormControl>
             </form>
             <Button className={classes.fab} variant="contained" color={'default'} onClick={() => {
-                     if(model.backendUrlTypeToUse === 'q1' && inputEl && inputEl.current) {
+                     if(model.backendUrlTypeToUse === 'devSbs' && inputEl && inputEl.current) {
                          inputEl.current.click();
                      } else {
                          const nyHendelse: VedtakFattet = {
@@ -127,7 +127,7 @@ const VedtakFattetModal: React.FC<Props> = (props: Props) => {
                          sendNyHendelseOgOppdaterModel(nyHendelse, model, dispatch, oppdaterVedtakFattet(soknad.fiksDigisosId, nyHendelse));
                      }
                  }}>
-                {model.backendUrlTypeToUse === 'q1' ? "Send vedtak fattet og velg vedtaksbrev" : "Send vedtak fattet"}
+                {model.backendUrlTypeToUse === 'devSbs' ? "Send vedtak fattet og velg vedtaksbrev" : "Send vedtak fattet"}
             </Button>
             <input
                 id={'inputField vedtakFattet'}
