@@ -120,7 +120,7 @@ const getBackendUrlTypeToUse = (): keyof BackendUrls => {
         return 'digisosLabs';
     } else if (windowUrl.includes('labs.nais.io')) {
         return 'labs';
-    } else if (windowUrl.includes('-mock.dev.nav.no')) {
+    } else if (windowUrl.includes('-gcp.dev.nav.no')) {
         return 'devGcp';
     } else if (windowUrl.includes('www-q1')) {
         return 'devSbs';
