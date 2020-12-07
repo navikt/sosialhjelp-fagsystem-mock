@@ -1,6 +1,6 @@
 {
   "ingresses": [
-    "https://sosialhjelp-fagsystem-mock.dev.nav.no/sosialhjelp/fagsystem-mock"
+    "https://sosialhjelp-fagsystem-mock-gcp.dev.nav.no/sosialhjelp/fagsystem-mock"
   ],
   "prometheusEnabled": false,
   "gcpAccessPolicy": true,
