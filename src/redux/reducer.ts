@@ -52,7 +52,7 @@ export const defaultSvarutRef: SvarutExtended = {
 
 export const backendUrlsLocalTemplate: string = "http://localhost:8080/sosialhjelp/innsyn-api";
 export const backendUrlsDigisostestTemplate: string = "https://www.digisos-test.com/sosialhjelp/login-api/innsyn-api";
-export const backendUrlsDevGcpTemplate: string = "https://sosialhjelp-mock-alt-api.dev.nav.no/sosialhjelp/mock-alt-api/innsyn-api";
+export const backendUrlsDevGcpTemplate: string = "https://sosialhjelp-mock-alt-api-gcp.dev.nav.no/sosialhjelp/mock-alt-api/innsyn-api";
 export const backendUrlsLabsTemplate: string = "https://sosialhjelp-mock-alt-api.labs.nais.io/sosialhjelp/mock-alt-api/innsyn-api";
 export const backendUrlsDigisosLabsTemplate: string = "https://digisos.labs.nais.io/sosialhjelp/mock-alt-api/innsyn-api";
 export const backendUrlsQTemplate: string = "https://www-q1.dev.nav.no/sosialhjelp/innsyn-api";
@@ -120,7 +120,7 @@ const getBackendUrlTypeToUse = (): keyof BackendUrls => {
         return 'digisosLabs';
     } else if (windowUrl.includes('labs.nais.io')) {
         return 'labs';
-    } else if (windowUrl.includes('-mock.dev.nav.no')) {
+    } else if (windowUrl.includes('-gcp.dev.nav.no')) {
         return 'devGcp';
     } else if (windowUrl.includes('www-q1')) {
         return 'devSbs';
@@ -133,7 +133,7 @@ export const initialModel: Model = {
     loaderOn: false,
     backendUrlTypeToUse: getBackendUrlTypeToUse(),
 
-    // 
+    //
     soknader: [getInitialFsSoknad(window.location.href.includes('www-q') ? '001' : initialId)],
 
     // Visnings
