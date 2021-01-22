@@ -30,7 +30,6 @@
     "react-day-picker": "^7.4.0",
     "react-dom": "^16.13.1",
     "react-intl": "^4.2.2",
-    "react-json-view": "^1.19.1",
     "react-jsonschema-form": "^1.8.1",
     "react-modal": "^3.11.2",
     "react-motion": "^0.5.2",
