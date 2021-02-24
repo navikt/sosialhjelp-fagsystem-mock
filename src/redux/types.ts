@@ -64,7 +64,6 @@ export interface BackendUrls {
     lokalt: string,
     digisostest: string,
     labs: string,
-    digisosLabs: string,
     devGcp: string,
     devSbs: string,
     mockalt: string,
