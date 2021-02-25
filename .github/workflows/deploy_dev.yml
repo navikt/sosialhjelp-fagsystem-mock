@@ -7,7 +7,7 @@ on:
         required: true
         default: 'dev-gcp'
       cluster:
-        description: 'Cluster å deploye til (dev-sbs eller labs-gcp)'
+        description: 'Cluster å deploye til (dev-sbs, dev-gcp eller labs-gcp)'
         required: true
         default: 'dev-gcp'
   repository_dispatch:
