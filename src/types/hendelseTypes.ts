@@ -221,6 +221,7 @@ export interface Dokument {
     dokumenttype: string;
     tilleggsinformasjon: string | null;
     innsendelsesfrist: string | null;
+    dokumentreferanse: string | null;
 }
 
 export interface Version {

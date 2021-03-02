@@ -150,6 +150,7 @@ const initialDokument: Dokument = {
     dokumenttype: '',
     tilleggsinformasjon: null,
     innsendelsesfrist: null,
+    dokumentreferanse: null,
 };
 
 const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
@@ -196,11 +197,17 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
         const nyttDokument: Dokument = {
             dokumenttype: modalDokument.dokumenttype,
             tilleggsinformasjon: modalDokument.tilleggsinformasjon,
-            innsendelsesfrist: innsendelsesfristDate ? innsendelsesfristDate.toISOString() : null
+            innsendelsesfrist: innsendelsesfristDate ? innsendelsesfristDate.toISOString() : null,
+            dokumentreferanse: createDokumentreferanse(),
         };
         setModalDokumentasjonEtterspurt({...modalDokumentasjonEtterspurt, dokumenter: [...modalDokumentasjonEtterspurt.dokumenter, nyttDokument]});
         setModalDokument({...initialDokument});
     };
+
+    const createDokumentreferanse = () => {
+        const randomId = Math.round(Math.random() * 1_000_000);
+        return "woldena-dokref-" + randomId;
+    }
 
     function skalLasteOppFil() {
         return model.backendUrlTypeToUse === 'devSbs'
@@ -242,6 +249,7 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
                 <TableCell align="right">{formatDateString(dokument.innsendelsesfrist)}</TableCell> :
                 <TableCell variant={'footer'} align="right">Ikke utfylt</TableCell>
             }
+            <TableCell>{dokument.dokumentreferanse}</TableCell>
             <TableCell align="right">
                 <IconButton aria-label="delete" onClick={() => {
                     let dokumenter = [...modalDokumentasjonEtterspurt.dokumenter];
@@ -265,6 +273,7 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
                                 <TableCell>Type</TableCell>
                                 <TableCell>Tilleggsinformasjon</TableCell>
                                 <TableCell align="right">Innsendelsesfrist</TableCell>
+                                <TableCell align="left">Dokumentreferanse</TableCell>
                                 <TableCell align="right">Slett krav</TableCell>
                             </TableRow>
                         </TableHead>
