@@ -4,17 +4,17 @@
   "private": true,
   "homepage": "/sosialhjelp/fagsystem-mock/",
   "dependencies": {
-    "@craco/craco": "^5.6.4",
+    "@craco/craco": "^5.9.0",
     "@date-io/date-fns": "^1.3.13",
-    "@material-ui/core": "^4.9.7",
-    "@material-ui/icons": "^4.9.1",
+    "@material-ui/core": "^4.11.3",
+    "@material-ui/icons": "^4.11.2",
     "@material-ui/pickers": "^3.2.10",
-    "@material-ui/styles": "^4.9.6",
+    "@material-ui/styles": "^4.11.3",
     "@navikt/fnrvalidator": "^1.1.3",
     "babel-polyfill": "^6.26.0",
     "classnames": "^2.2.6",
-    "connected-react-router": "^6.8.0",
-    "fp-ts": "^2.5.3",
+    "connected-react-router": "^6.9.1",
+    "fp-ts": "^2.9.5",
     "history": "^4.10.1",
     "immutable": "^4.0.0-rc.12",
     "json-schema-to-typescript": "^9.1.1",
@@ -22,7 +22,7 @@
     "less-plugin-npm-import": "^2.1.0",
     "lodash.template": ">=4.5.0",
     "lodash.throttle": "^4.1.1",
-    "monocle-ts": "^2.0.0",
+    "monocle-ts": "^2.3.9",
     "prop-types": "^15.7.2",
     "react": "^16.14.0",
     "react-collapse": "^5.1.0",
@@ -44,7 +44,7 @@
     "redux-thunk": "^2.3.0",
     "seamless-immutable": "^7.1.4",
     "typeface-roboto": "0.0.75",
-    "whatwg-fetch": "^3.0.0"
+    "whatwg-fetch": "^3.6.2"
   },
   "scripts": {
     "start": "PORT=3009 craco start",
@@ -68,9 +68,9 @@
     ]
   },
   "devDependencies": {
-    "@types/history": "^4.7.5",
-    "@types/jest": "^25.1.4",
-    "@types/node": "^12.12.31",
+    "@types/history": "^4.7.8",
+    "@types/jest": "^25.2.3",
+    "@types/node": "^12.20.5",
     "@types/react": "^16.14.5",
     "@types/react-datepicker": "^2.11.1",
     "@types/react-day-picker": "^5.3.0",
@@ -84,6 +84,6 @@
     "@types/react-swipeable-views": "^0.13.0",
     "@types/redux": "^3.6.0",
     "craco-less": "^1.16.0",
-    "typescript": "^3.8.3"
+    "typescript": "^3.9.9"
   }
 }
