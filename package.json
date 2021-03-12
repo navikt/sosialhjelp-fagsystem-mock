@@ -14,7 +14,7 @@
     "babel-polyfill": "^6.26.0",
     "classnames": "^2.2.6",
     "connected-react-router": "^6.9.1",
-    "fp-ts": "^2.5.3",
+    "fp-ts": "^2.9.5",
     "history": "^4.10.1",
     "immutable": "^4.0.0-rc.12",
     "json-schema-to-typescript": "^9.1.1",
@@ -22,7 +22,7 @@
     "less-plugin-npm-import": "^2.1.0",
     "lodash.template": ">=4.5.0",
     "lodash.throttle": "^4.1.1",
-    "monocle-ts": "^2.0.0",
+    "monocle-ts": "^2.3.9",
     "prop-types": "^15.7.2",
     "react": "^16.14.0",
     "react-collapse": "^5.1.0",
@@ -44,7 +44,7 @@
     "redux-thunk": "^2.3.0",
     "seamless-immutable": "^7.1.4",
     "typeface-roboto": "0.0.75",
-    "whatwg-fetch": "^3.0.0"
+    "whatwg-fetch": "^3.6.2"
   },
   "scripts": {
     "start": "PORT=3009 craco start",
