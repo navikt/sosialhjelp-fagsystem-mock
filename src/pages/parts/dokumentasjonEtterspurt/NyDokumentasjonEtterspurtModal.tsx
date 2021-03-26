@@ -6,7 +6,6 @@ import {
     oppdaterDokumentasjonEtterspurt,
     sendNyHendelseOgOppdaterModel,
     sendPdfOgOppdaterDokumentasjonEtterspurt,
-    setAktivtRammevedtak,
     skjulNyDokumentasjonEtterspurtModal
 } from "../../../redux/actions";
 import makeStyles from "@material-ui/core/styles/makeStyles";
@@ -172,8 +171,6 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
 
         setVisFeilmelding(false);
         setVisFeilmeldingDatePicker(false);
-
-        dispatch(setAktivtRammevedtak(null));
     }
 
     const handleFileUpload = (files: FileList) => {

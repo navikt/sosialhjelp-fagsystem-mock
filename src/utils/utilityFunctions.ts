@@ -2,7 +2,6 @@ import Hendelse, {
     Dokumentasjonkrav,
     FiksDigisosSokerJson,
     HendelseType,
-    Rammevedtak,
     SaksStatus,
     Utbetaling,
     Vilkar
@@ -153,7 +152,6 @@ export const generateNyFsSaksStatus = (tittel: string|null): FsSaksStatus => {
         status: null,
         utbetalinger: [],
         vedtakFattet: undefined,
-        rammevedtak: [],
         vilkar: [],
         dokumentasjonskrav: [],
     } as FsSaksStatus;
@@ -189,20 +187,3 @@ export const getDokumentasjonkravByDokumentasjonkravreferanse = (dokumentasjonkr
     })
 };
 
-export const getAlleRammeVedtakFraSaker = (saker: FsSaksStatus[]): Rammevedtak[] => {
-    let rammevedtakListe:Rammevedtak[] = [];
-    saker.forEach(sak => sak.rammevedtak.forEach(rammevedtak => rammevedtakListe = [...rammevedtakListe, rammevedtak]));
-    return rammevedtakListe;
-};
-
-export const getAlleRammevedtak = (soknad: FsSoknad): Rammevedtak[] => {
-    let alleRammevedtak:Rammevedtak[] = [...soknad.rammevedtakUtenSaksreferanse];
-    const alleRammevedtakFraSaker = getAlleRammeVedtakFraSaker(soknad.saker);
-    alleRammevedtakFraSaker.forEach(rammevedtak => alleRammevedtak = [...alleRammevedtak, rammevedtak]);
-    return alleRammevedtak.concat(alleRammevedtakFraSaker);
-};
-
-export const getRammevedtakByRammevedtaksreferanse = (soknad: FsSoknad, referanse: string): Rammevedtak | undefined => {
-    let alleRammevedtak = getAlleRammevedtak(soknad);
-    return alleRammevedtak.find(s => s.rammevedtaksreferanse === referanse)
-};

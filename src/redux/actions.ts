@@ -8,7 +8,6 @@ import {
     NyFsSaksStatus,
     NyFsSoknad,
     NyttDokumentasjonkrav,
-    NyttRammevedtak,
     NyttVilkar,
     NyUtbetaling,
     OppdaterDokumentasjonEtterspurt,
@@ -17,7 +16,6 @@ import {
     OppdaterForelopigSvar,
     OppdaterFsSaksStatus,
     OppdaterNavKontor,
-    OppdaterRammevedtak,
     OppdaterSoknadsStatus,
     OppdaterUtbetaling,
     OppdaterVedtakFattet,
@@ -31,7 +29,6 @@ import Hendelse, {
     FilreferanseType,
     ForelopigSvar,
     HendelseType,
-    Rammevedtak,
     SaksStatus,
     SoknadsStatus,
     TildeltNavKontor,
@@ -309,12 +306,6 @@ export const setAktivtDokumentasjonkrav = (referanse: string | null): Action => 
     }
 };
 
-export const setAktivtRammevedtak = (referanse: string | null): Action => {
-    return {
-        type: ActionTypeKeys.SET_AKTIVT_RAMMEVEDTAK,
-        referanse
-    }
-};
 
 export const visNySakModal = (): Action => {
     return {
@@ -368,19 +359,6 @@ export const visNyDokumentasjonkravModal = (): Action => {
 export const skjulNyDokumentasjonkravModal = (): Action => {
     return {
         type: ActionTypeKeys.SKJUL_NY_DOKUMENTASJONKRAV_MODAL
-    }
-};
-
-export const visNyRammevedtakModal = (saksreferanse: string|null): Action => {
-    return {
-        type: ActionTypeKeys.VIS_NY_RAMMEVEDTAK_MODAL,
-        saksreferanse
-    }
-};
-
-export const skjulNyRammevedtakModal = (): Action => {
-    return {
-        type: ActionTypeKeys.SKJUL_NY_RAMMEVEDTAK_MODAL
     }
 };
 
@@ -521,20 +499,8 @@ export const oppdaterVedtakFattet = (forFiksDigisosId: string, oppdatertVedtakFa
         oppdatertVedtakFattet
     }
 };
-export const nyttRammevedtak = (forFiksDigisosId: string, nyttRammevedtak: Rammevedtak): NyttRammevedtak => {
-    return {
-        type: ActionTypeKeys.NYTT_RAMMEVEDTAK,
-        forFiksDigisosId,
-        nyttRammevedtak
-    }
-};
-export const oppdaterRammevedtak = (forFiksDigisosId: string, oppdatertRammevedtak: Rammevedtak): OppdaterRammevedtak => {
-    return {
-        type: ActionTypeKeys.OPPDATER_RAMMEVEDTAK,
-        forFiksDigisosId,
-        oppdatertRammevedtak
-    }
-};
+
+
 export const nyttVilkar = (forFiksDigisosId: string, nyttVilkar: Vilkar): NyttVilkar => {
     return {
         type: ActionTypeKeys.NYTT_VILKAR,

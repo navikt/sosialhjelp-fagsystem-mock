@@ -9,9 +9,7 @@ import {FsSoknad} from "../../../redux/types";
 import Typography from "@material-ui/core/Typography";
 import VilkarOversiktView from "../vilkar/VilkarOversiktView";
 import DokumentasjonkravOversiktView from "../dokumentasjonskrav/DokumentasjonkravOversiktView";
-import RammevedtakOversiktView from "../rammevedtak/RammevedtakOversiktView";
 import DokumentasjonEtterspurtOversiktView from "../dokumentasjonEtterspurt/DokumentasjonEtterspurtOversiktView";
-import NyttRammevedtakModal from "../rammevedtak/NyttRammevedtakModal";
 import UtbetalingOversiktView from "../utbetaling/UtbetalingOversiktView";
 import NyUtbetalingModal from "../utbetaling/NyUtbetalingModal";
 import NySakModal from "../nySak/NySak";
@@ -100,7 +98,7 @@ const BehandleSoknadPanel: React.FC<Props> = (props: Props) => {
                     Ting som ikke er knyttet til en sak:
                 </Typography>
                 <Typography variant={"subtitle1"}>
-                    Obs: Hvis du setter en saksreferanse på et rammevedtak eller en utbetaling blir de flyttet inn under den valgte saken i saksoversikten over.
+                    Obs: Hvis du setter en saksreferanse på en utbetaling blir den flyttet inn under den valgte saken i saksoversikten over.
                 </Typography>
 
                 <div className={classes.root2}>
@@ -120,20 +118,12 @@ const BehandleSoknadPanel: React.FC<Props> = (props: Props) => {
                             <UtbetalingOversiktView utbetalingListe={soknad.utbetalingerUtenSaksreferanse} saksreferanse={null}/>
                         </Paper>
                     </div>
-
-                    <div className={classes.root4}>
-                        <Paper className={classes.paper3}>
-                            <Typography variant={"h5"}>Rammevedtak uten saksreferanse</Typography>
-                            <RammevedtakOversiktView rammevedtakListe={soknad.rammevedtakUtenSaksreferanse} saksreferanse={null}/>
-                        </Paper>
-                    </div>
                 </div>
                 <NySakModal />
                 <NyDokumentasjonEtterspurt soknad={soknad}/>
                 <NyttVilkarModal soknad={soknad}/>
                 <NyttDokumentasjonkravModal soknad={soknad}/>
                 <NyUtbetalingModal soknad={soknad}/>
-                <NyttRammevedtakModal soknad={soknad}/>
             </div>
         );
     }

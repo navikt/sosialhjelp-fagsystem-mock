@@ -6,7 +6,6 @@ import Hendelse, {
     FiksDigisosSokerJson,
     FilreferanseType,
     HendelseType,
-    Rammevedtak,
     SaksStatusType,
     SoknadsStatus,
     SoknadsStatusType,
@@ -21,13 +20,9 @@ import {
     oFsDokumentasjonkrav,
     oFsDokumentasjonkravPrism,
     oFsDokumentasjonkravTraversal,
-    oFsRammevedtak,
-    oFsRammevedtakPrism,
-    oFsRammevedtakTraversal,
     oFsSaker,
     oFsSakerTraversal,
     oFsSaksStatusPrism,
-    oFsSaksStatusRammevedtak,
     oFsSaksStatusUtbetalinger,
     oFsUtbetalinger,
     oFsUtbetalingerTraversal,
@@ -87,7 +82,6 @@ export const getInitialFsSoknad = (
         forelopigSvar: undefined,
         vilkar: [],
         dokumentasjonkrav: [],
-        rammevedtakUtenSaksreferanse: [],
         utbetalingerUtenSaksreferanse: [],
         saker: [],
         fiksDigisosSokerJson: {
@@ -139,7 +133,6 @@ export const initialModel: Model = {
     visNyUtbetalingModal: false,
     visNyVilkarModal: false,
     visNyDokumentasjonkravModal: false,
-    visNyRammevedtakModal: false,
     modalSaksreferanse: null,
     visSystemSettingsModal: false,
     visSnackbar: false,
@@ -150,7 +143,6 @@ export const initialModel: Model = {
     aktivUtbetaling: null,
     aktivtVilkar: null,
     aktivtDokumentasjonkrav: null,
-    aktivtRammevedtak: null
 };
 
 
@@ -163,7 +155,6 @@ const reducer: Reducer<Model, Action> = (
         case ActionTypeKeys.SET_AKTIV_UTBETALING: {return {...state, aktivUtbetaling: action.referanse}}
         case ActionTypeKeys.SET_AKTIVT_VILKAR: {return {...state, aktivtVilkar: action.referanse}}
         case ActionTypeKeys.SET_AKTIVT_DOKUMENTASJONKRAV: {return {...state, aktivtDokumentasjonkrav: action.referanse}}
-        case ActionTypeKeys.SET_AKTIVT_RAMMEVEDTAK: {return {...state, aktivtRammevedtak: action.referanse}}
         case ActionTypeKeys.SET_BACKEND_URL_TYPE_TO_USE: return {...state, backendUrlTypeToUse: action.backendUrlTypeToUse};
         case ActionTypeKeys.TURN_ON_LOADER: return {...state, loaderOn: true};
         case ActionTypeKeys.TURN_OFF_LOADER: return {...state, loaderOn: false};
@@ -174,7 +165,6 @@ const reducer: Reducer<Model, Action> = (
         case ActionTypeKeys.VIS_NY_UTBETALING_MODAL: {return {...state, visNyUtbetalingModal: true, modalSaksreferanse: action.saksreferanse}}
         case ActionTypeKeys.VIS_NY_VILKAR_MODAL: {return {...state, visNyVilkarModal: true}}
         case ActionTypeKeys.VIS_NY_DOKUMENTASJONKRAV_MODAL: {return {...state, visNyDokumentasjonkravModal: true}}
-        case ActionTypeKeys.VIS_NY_RAMMEVEDTAK_MODAL: {return {...state, visNyRammevedtakModal: true, modalSaksreferanse: action.saksreferanse}}
         case ActionTypeKeys.VIS_SYSTEM_SETTINGS_MODAL: {return {...state, visSystemSettingsModal: true}}
         case ActionTypeKeys.VIS_SUCCESS_SNACKBAR: {return {...state, visSnackbar: true, snackbarVariant: 'success'}}
         case ActionTypeKeys.VIS_ERROR_SNACKBAR: {return {...state, visSnackbar: true, snackbarVariant: 'error'}}
@@ -183,7 +173,6 @@ const reducer: Reducer<Model, Action> = (
         case ActionTypeKeys.SKJUL_NY_UTBETALING_MODAL: {return {...state, visNyUtbetalingModal: false}}
         case ActionTypeKeys.SKJUL_NY_VILKAR_MODAL: {return {...state, visNyVilkarModal: false}}
         case ActionTypeKeys.SKJUL_NY_DOKUMENTASJONKRAV_MODAL: {return {...state, visNyDokumentasjonkravModal: false}}
-        case ActionTypeKeys.SKJUL_NY_RAMMEVEDTAK_MODAL: {return {...state, visNyRammevedtakModal: false}}
         case ActionTypeKeys.SKJUL_SYSTEM_SETTINGS_MODAL: {return {...state, visSystemSettingsModal: false}}
         case ActionTypeKeys.SKJUL_SNACKBAR: {return {...state, visSnackbar: false}}
 
@@ -408,66 +397,7 @@ const reducer: Reducer<Model, Action> = (
                 .modify((a: Hendelse[]) => [...a, oppdatertVedtakFattet])(s1)
 
         }
-        case ActionTypeKeys.NYTT_RAMMEVEDTAK: {
-            const {forFiksDigisosId, nyttRammevedtak} = action;
 
-            const s1 = oGetSoknad(forFiksDigisosId)
-                .composeLens(oHendelser)
-                .modify((a: Hendelse[]) => [...a, nyttRammevedtak])(state);
-
-            if (nyttRammevedtak.saksreferanse) {
-                return oGetSoknad(forFiksDigisosId)
-                    .composeLens(oFsSaker)
-                    .composeTraversal(oFsSakerTraversal)
-                    .composePrism(oFsSaksStatusPrism(nyttRammevedtak.saksreferanse))
-                    .composeLens(oFsSaksStatusRammevedtak)
-                    .modify((rammevedtak: Rammevedtak[]) => [...rammevedtak, nyttRammevedtak])(s1);
-            } else {
-                return oGetSoknad(forFiksDigisosId)
-                    .composeLens(oFsRammevedtak)
-                    .modify((rammevedtakListe: Rammevedtak[]) => [...rammevedtakListe, nyttRammevedtak])(s1);
-            }
-        }
-        case ActionTypeKeys.OPPDATER_RAMMEVEDTAK: {
-            const {forFiksDigisosId, oppdatertRammevedtak} = action;
-
-            const s1 = oGetSoknad(forFiksDigisosId)
-                .composeLens(oHendelser)
-                .modify((a: Hendelse[]) => [...a, oppdatertRammevedtak])(state);
-
-            if (oppdatertRammevedtak.saksreferanse) {
-                if (state.soknader.find(s => s.fiksDigisosId === forFiksDigisosId)!.rammevedtakUtenSaksreferanse
-                    .find(r => r.rammevedtaksreferanse === oppdatertRammevedtak.rammevedtaksreferanse)) {
-                    // Fjern fra liste over rammevedtak uten saksreferanse
-                    const s2 = oGetSoknad(forFiksDigisosId)
-                        .composeLens(oFsRammevedtak)
-                        .modify((rammevedtakliste) => rammevedtakliste.filter(
-                            (rammevedtak) => rammevedtak.rammevedtaksreferanse !== oppdatertRammevedtak.rammevedtaksreferanse))(s1);
-                    // Legg til i liste over rammevedtak under den valgte saken
-                    return oGetSoknad(forFiksDigisosId)
-                        .composeLens(oFsSaker)
-                        .composeTraversal(oFsSakerTraversal)
-                        .composePrism(oFsSaksStatusPrism(oppdatertRammevedtak.saksreferanse))
-                        .composeLens(oFsSaksStatusRammevedtak)
-                        .modify((rammevedtak: Rammevedtak[]) => [...rammevedtak, oppdatertRammevedtak])(s2);
-                } else {
-                    return oGetSoknad(forFiksDigisosId)
-                        .composeLens(oFsSaker)
-                        .composeTraversal(oFsSakerTraversal)
-                        .composePrism(oFsSaksStatusPrism(oppdatertRammevedtak.saksreferanse))
-                        .composeLens(oFsSaksStatusRammevedtak)
-                        .composeTraversal(oFsRammevedtakTraversal)
-                        .composePrism(oFsRammevedtakPrism(oppdatertRammevedtak.rammevedtaksreferanse))
-                        .set(oppdatertRammevedtak)(s1);
-                }
-            } else {
-                return oGetSoknad(forFiksDigisosId)
-                    .composeLens(oFsRammevedtak)
-                    .composeTraversal(oFsRammevedtakTraversal)
-                    .composePrism(oFsRammevedtakPrism(oppdatertRammevedtak.rammevedtaksreferanse))
-                    .set(oppdatertRammevedtak)(s1);
-            }
-        }
         case ActionTypeKeys.NYTT_VILKAR: {
             const {forFiksDigisosId, nyttVilkar} = action;
 
