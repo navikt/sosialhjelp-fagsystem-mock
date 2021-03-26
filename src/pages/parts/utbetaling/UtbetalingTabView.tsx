@@ -109,7 +109,6 @@ const UtbetalingTabView: React.FC<Props> = (props: Props) => {
                     <TableBody>
                         {makeTableRow("Utbetalingsreferanse", utbetaling.utbetalingsreferanse)}
                         {makeTableRow("Saksreferanse", utbetaling.saksreferanse)}
-                        {makeTableRow("Rammevedtaksreferanse", utbetaling.rammevedtaksreferanse)}
                         {makeTableRowOfStatus("Status", utbetaling.status)}
                         {makeTableRow("Beløp", utbetaling.belop)}
                         {makeTableRow("Beskrivelse", utbetaling.beskrivelse)}

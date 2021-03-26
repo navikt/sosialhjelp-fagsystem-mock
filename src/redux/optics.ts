@@ -1,7 +1,7 @@
 import {fromTraversable, Lens, Prism} from "monocle-ts/es6";
 import {Model} from "./types";
 import {FsSaksStatus, FsSoknad} from "./types";
-import Hendelse, {Dokumentasjonkrav, Rammevedtak, Utbetaling, Vilkar} from "../types/hendelseTypes";
+import Hendelse, {Dokumentasjonkrav, Utbetaling, Vilkar} from "../types/hendelseTypes";
 import {array} from "fp-ts/lib/Array";
 
 
@@ -45,12 +45,6 @@ export const oFsVilkarPrism = (referanse: string): Prism<Vilkar, Vilkar> => Pris
 export const oFsDokumentasjonkrav = Lens.fromProp<FsSoknad>()('dokumentasjonkrav');
 export const oFsDokumentasjonkravTraversal = fromTraversable(array)<Dokumentasjonkrav>();
 export const oFsDokumentasjonkravPrism = (referanse: string): Prism<Dokumentasjonkrav, Dokumentasjonkrav> => Prism.fromPredicate(dokumentasjonkrav => dokumentasjonkrav.dokumentasjonkravreferanse === referanse);
-
-// Rammevedtak
-export const oFsRammevedtak = Lens.fromProp<FsSoknad>()('rammevedtakUtenSaksreferanse');
-export const oFsSaksStatusRammevedtak = Lens.fromProp<FsSaksStatus>()('rammevedtak');
-export const oFsRammevedtakTraversal = fromTraversable(array)<Rammevedtak>();
-export const oFsRammevedtakPrism = (referanse: string): Prism<Rammevedtak, Rammevedtak> => Prism.fromPredicate(rammevedtak => rammevedtak.rammevedtaksreferanse === referanse);
 
 export const oFsUtbetalinger = Lens.fromProp<FsSoknad>()('utbetalingerUtenSaksreferanse');
 export const oFsSaksStatusUtbetalinger = Lens.fromProp<FsSaksStatus>()('utbetalinger');

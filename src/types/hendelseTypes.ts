@@ -20,7 +20,6 @@ export type Hendelse
     | SaksStatus
     | Utbetaling
     | Vilkar
-    | Rammevedtak
     | Dokumentasjonkrav
 
 export enum HendelseType {
@@ -32,7 +31,6 @@ export enum HendelseType {
     SaksStatus = "saksStatus",
     Utbetaling = "utbetaling",
     Vilkar = "vilkar",
-    Rammevedtak = "rammevedtak",
     Dokumentasjonkrav = "dokumentasjonkrav"
 }
 
@@ -81,7 +79,6 @@ export interface Utbetaling {
     hendelsestidspunkt: string; // f eks "2018-10-08T21:47:00.134Z"
     utbetalingsreferanse: string; // unik string ref
     saksreferanse: string|null; // "Referanse utbetalingen skal tilknyttes til (samme som i vedtak fattet og saksstatus)"
-    rammevedtaksreferanse: string | null; // "Settes dersom utbetalingen er en del av et rammevedtak"
     status: UtbetalingStatus | null;
     belop: number | null; // belop i kr
     beskrivelse: string | null; // "Stønaden utbetalingen gjelder for (livsopphold, strøm etc.)"
@@ -103,18 +100,6 @@ export interface VedtakFattet {
     utfall: Utfall | null;
     vedtaksfil: { referanse: Svarut | Dokumentlager };
     vedlegg: Vedlegg[]
-}
-
-// saksreferanse
-export interface Rammevedtak {
-    type: HendelseType.Rammevedtak;
-    hendelsestidspunkt: string;
-    rammevedtaksreferanse: string;
-    saksreferanse: string | null;
-    beskrivelse: string | null;
-    belop: number | null;
-    fom: string | null;
-    tom: string | null;
 }
 
 // utbetalingsref

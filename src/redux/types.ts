@@ -3,7 +3,6 @@ import {
     Dokumentasjonkrav,
     FiksDigisosSokerJson,
     ForelopigSvar,
-    Rammevedtak,
     SaksStatus,
     SoknadsStatus,
     TildeltNavKontor,
@@ -25,7 +24,6 @@ export interface Model {
     visNyUtbetalingModal: boolean;
     visNyVilkarModal: boolean;
     visNyDokumentasjonkravModal: boolean;
-    visNyRammevedtakModal: boolean;
     modalSaksreferanse: string|null;
     visSystemSettingsModal: boolean;
     visSnackbar: boolean;
@@ -35,7 +33,6 @@ export interface Model {
     aktivUtbetaling: string | null; // utbetalingsreferanse
     aktivtVilkar: string | null; // vilkarreferanse
     aktivtDokumentasjonkrav: string | null; // dokumentasjonkravreferanse
-    aktivtRammevedtak: string | null; // rammevedtakreferanse
 }
 
 export interface FsSoknad {
@@ -46,7 +43,6 @@ export interface FsSoknad {
     forelopigSvar: ForelopigSvar | undefined;
     vilkar: Vilkar[];
     dokumentasjonkrav: Dokumentasjonkrav[];
-    rammevedtakUtenSaksreferanse: Rammevedtak[];
     utbetalingerUtenSaksreferanse: Utbetaling[];
     saker: FsSaksStatus[];
     fiksDigisosSokerJson: FiksDigisosSokerJson;
@@ -55,7 +51,6 @@ export interface FsSoknad {
 export interface FsSaksStatus extends SaksStatus {
     utbetalinger: Utbetaling[];
     vedtakFattet: VedtakFattet | undefined;
-    rammevedtak: Rammevedtak[];
     vilkar: Vilkar[];
     dokumentasjonskrav: Dokumentasjonkrav[];
 }
@@ -74,7 +69,6 @@ export type Action
     | SetAktivUtbetaling
     | SetAktivtVilkar
     | SetAktivtDokumentasjonkrav
-    | SetAktivtRammevedtak
     | SetBackendUrlTypeToUse
     | TurnOnLoader
     | TurnOffLoader
@@ -85,7 +79,6 @@ export type Action
     | VisNyUtbetalingModal
     | VisNyVilkarModal
     | VisNyDokumentasjonkravModal
-    | VisNyRammevedtakModal
     | VisSystemSettingsModal
     | VisSuccessSnackbar
     | VisErrorSnackbar
@@ -94,7 +87,6 @@ export type Action
     | SkjulNyUtbetalingModal
     | SkjulNyVilkarModal
     | SkjulNyDokumentasjonkravModal
-    | SkjulNyRammevedtakModal
     | SkjulSystemSettingsModal
     | SkjulSnackbar
     // oppdater hendelse.json
@@ -102,7 +94,6 @@ export type Action
     | NyFsSaksStatus
     | NyUtbetaling
     | NyttDokumentasjonkrav
-    | NyttRammevedtak
     | NyttVilkar
     | SlettFsSoknad
     | OppdaterFiksDigisosId
@@ -114,7 +105,6 @@ export type Action
     | OppdaterUtbetaling
     | OppdaterDokumentasjonkrav
     | OppdaterVedtakFattet
-    | OppdaterRammevedtak
     | OppdaterVilkar
 
 
@@ -123,7 +113,6 @@ export enum ActionTypeKeys {
     SET_AKTIV_UTBETALING = "SET_AKTIV_UTBETALING",
     SET_AKTIVT_VILKAR = "SET_AKTIVT_VILKAR",
     SET_AKTIVT_DOKUMENTASJONKRAV = "SET_AKTIVT_DOKUMENTASJONKRAV",
-    SET_AKTIVT_RAMMEVEDTAK = "SET_AKTIVT_RAMMEVEDTAK",
     SET_BACKEND_URL_TYPE_TO_USE = "SET_BACKEND_URL_TYPE_TO_USE",
     TURN_ON_LOADER = "TURN_ON_LOADER",
     TURN_OFF_LOADER = "TURN_OFF_LOADER",
@@ -134,7 +123,6 @@ export enum ActionTypeKeys {
     VIS_NY_UTBETALING_MODAL = "VIS_NY_UTBETALINGMODAL_MODAL",
     VIS_NY_VILKAR_MODAL = "VIS_NY_VILKAR_MODAL",
     VIS_NY_DOKUMENTASJONKRAV_MODAL = "VIS_NY_DOKUMENTASJONKRAV_MODAL",
-    VIS_NY_RAMMEVEDTAK_MODAL = "VIS_NY_RAMMEVEDTAK_MODAL",
     VIS_SYSTEM_SETTINGS_MODAL = "VIS_SYSTEM_SETTINGS_MODAL",
     VIS_SUCCESS_SNACKBAR = "VIS_SUCCESS_SNACKBAR",
     VIS_ERROR_SNACKBAR = "VIS_ERROR_SNACKBAR",
@@ -143,7 +131,6 @@ export enum ActionTypeKeys {
     SKJUL_NY_UTBETALING_MODAL = "SKJUL_NY_UTBETALINGMODAL_MODAL",
     SKJUL_NY_VILKAR_MODAL = "SKJUL_NY_VILKAR_MODAL",
     SKJUL_NY_DOKUMENTASJONKRAV_MODAL = "SKJUL_NY_DOKUMENTASJONKRAV_MODAL",
-    SKJUL_NY_RAMMEVEDTAK_MODAL = "SKJUL_NY_RAMMEVEDTAK_MODAL",
     SKJUL_SYSTEM_SETTINGS_MODAL = "SKJUL_SYSTEM_SETTINGS_MODAL",
     SKJUL_SNACKBAR = "SKJUL_SNACKBAR",
 
@@ -152,7 +139,6 @@ export enum ActionTypeKeys {
     NY_FS_SAKS_STATUS = "NY_FS_SAKS_STATUS",
     NY_UTBETALING = "NY_UTBETALING",
     NYTT_DOKUMENTASJONKRAV = "NYTT_DOKUMENTASJONSKRAV",
-    NYTT_RAMMEVEDTAK = "NYTT_RAMMEVEDTAK",
     NYTT_VILKAR = "NYTT_VILKAR",
     SLETT_SOKNAD = "SLETT_SOKNAD",
     OPPDATER_FIKS_DIGISOS_ID = "OPPDATER_FIKS_DIGISOS_ID",
@@ -164,7 +150,6 @@ export enum ActionTypeKeys {
     OPPDATER_UTBETALING = "OPPDATER_UTBETALING",
     OPPDATER_DOKUMENTASJONKRAV = "OPPDATER_DOKUMENTASJONSKRAV",
     OPPDATER_VEDTAK_FATTET = "OPPDATER_VEDTAK_FATTET",
-    OPPDATER_RAMMEVEDTAK = "OPPDATER_RAMMEVEDTAK",
     OPPDATER_VILKAR = "OPPDATER_VILKAR",
 }
 
@@ -227,15 +212,6 @@ export interface SkjulNyDokumentasjonkravModal {
     type: ActionTypeKeys.SKJUL_NY_DOKUMENTASJONKRAV_MODAL;
 }
 
-export interface VisNyRammevedtakModal {
-    type: ActionTypeKeys.VIS_NY_RAMMEVEDTAK_MODAL;
-    saksreferanse: string|null;
-}
-
-export interface SkjulNyRammevedtakModal {
-    type: ActionTypeKeys.SKJUL_NY_RAMMEVEDTAK_MODAL;
-}
-
 export interface SkjulNyDokumentasjonEtterspurtModal {
     type: ActionTypeKeys.SKJUL_NY_DOKUMENTASJON_ETTERSPURT_MODAL;
 }
@@ -281,10 +257,6 @@ export interface SetAktivtDokumentasjonkrav {
     referanse: string | null
 }
 
-export interface SetAktivtRammevedtak {
-    type: ActionTypeKeys.SET_AKTIVT_RAMMEVEDTAK;
-    referanse: string | null
-}
 
 export interface NyFsSoknad {
     type: ActionTypeKeys.NY_SOKNAD;
@@ -368,17 +340,6 @@ export interface OppdaterVedtakFattet {
     oppdatertVedtakFattet: VedtakFattet;
 }
 
-export interface NyttRammevedtak {
-    type: ActionTypeKeys.NYTT_RAMMEVEDTAK;
-    forFiksDigisosId: string;
-    nyttRammevedtak: Rammevedtak;
-}
-
-export interface OppdaterRammevedtak {
-    type: ActionTypeKeys.OPPDATER_RAMMEVEDTAK;
-    forFiksDigisosId: string;
-    oppdatertRammevedtak: Rammevedtak;
-}
 
 export interface NyttVilkar {
     type: ActionTypeKeys.NYTT_VILKAR;

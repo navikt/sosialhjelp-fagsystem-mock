@@ -129,7 +129,6 @@ const initialUtbetaling: Utbetaling = {
     hendelsestidspunkt: '',
     utbetalingsreferanse: generateFilreferanseId(),
     saksreferanse: '',
-    rammevedtaksreferanse: null,
     status: null,
     belop: null,
     beskrivelse: null,
@@ -162,7 +161,6 @@ const defaultUtbetaling: Utbetaling = {
     hendelsestidspunkt: '',
     utbetalingsreferanse: generateFilreferanseId(),
     saksreferanse: null,
-    rammevedtaksreferanse: generateFilreferanseId(),
     status: UtbetalingStatus.PLANLAGT_UTBETALING,
     belop: 1337,
     beskrivelse: "Midler til å kjøpe utvidelsespakker til Starcraft",
@@ -313,10 +311,6 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
                                         ))}
                                     </Select>
                                 </FormControl>
-                            </Grid>
-                            <Grid item key={'Grid: Rammevedtaksreferanse'} xs={6} zeroMinWidth>
-                                <CustomTextField label={'Rammevedtaksreferanse'} value={modalUtbetaling.rammevedtaksreferanse}
-                                                 setValue={(verdi: string) => setModalUtbetaling({...modalUtbetaling, rammevedtaksreferanse: verdi})}/>
                             </Grid>
                             <Grid item key={'Grid: Beløp'} xs={6} zeroMinWidth>
                                 <CustomTextField label={'Beløp'} value={modalUtbetaling.belop} inputType={'number'}

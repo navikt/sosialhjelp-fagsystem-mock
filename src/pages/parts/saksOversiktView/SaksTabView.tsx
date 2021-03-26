@@ -13,7 +13,6 @@ import {getNow} from "../../../utils/utilityFunctions";
 import TextField from "@material-ui/core/TextField";
 import EndreSaksstatusModal from "./EndreSaksstatusModal";
 import VedtakFattetModal from "./VedtakFattetModal";
-import RammevedtakOversiktView from "../rammevedtak/RammevedtakOversiktView";
 import UtbetalingOversiktView from "../utbetaling/UtbetalingOversiktView";
 
 
@@ -128,9 +127,6 @@ const SaksTabView: React.FC<Props> = (props: Props) => {
             <br/>
             <Typography>Vedtak fattet</Typography>
             <VedtakFattetModal soknad={soknad} sak={sak}/>
-            <br/>
-            <Typography>Rammevedtak</Typography>
-            <RammevedtakOversiktView rammevedtakListe={sak.rammevedtak} saksreferanse={sak.referanse}/>
             <br/>
         </div>
     );
