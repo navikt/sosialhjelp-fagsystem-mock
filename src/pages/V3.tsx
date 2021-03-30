@@ -17,7 +17,7 @@ import deepOrange from "@material-ui/core/colors/deepOrange";
 import indigo from "@material-ui/core/colors/indigo";
 import Fab from "@material-ui/core/Fab";
 import {SettingsEthernet} from "@material-ui/icons";
-import {opprettDigisosSakHvisDenIkkeFinnes} from "../redux/actions";
+import { hentFsSoknadFraFiksEllerOpprettNy } from '../redux/actions';
 import {Model} from "../redux/types";
 import useMediaQuery from "@material-ui/core/useMediaQuery/useMediaQuery";
 import SplashScreen from "../components/splashScreen";
@@ -72,7 +72,9 @@ type Props = DispatchProps & StoreProps;
 const V3: React.FC<Props> = (props: Props) => {
 
     useEffect(() => {
-        opprettDigisosSakHvisDenIkkeFinnes(getFsSoknadByFiksDigisosId(props.model.soknader,props.model.aktivSoknad)!, props.model.backendUrlTypeToUse, props.dispatch);
+        //opprettDigisosSakHvisDenIkkeFinnes(getFsSoknadByFiksDigisosId(props.model.soknader,props.model.aktivSoknad)!,props.model.backendUrlTypeToUse, props.dispatch, props.model.aktivSoknad);
+
+        hentFsSoknadFraFiksEllerOpprettNy(props.model.aktivSoknad, props.model.backendUrlTypeToUse, props.dispatch);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 

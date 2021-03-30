@@ -83,7 +83,7 @@ const TildeldeltNavkontorView: React.FC<Props> = (props: Props) => {
             </Typography>
             <form autoComplete="off">
                 <FormControl className={classes.formControl}>
-                    <InputLabel htmlFor="age-simple">Navkontor</InputLabel>
+                    <InputLabel htmlFor="selectNavkontorId">Navkontor</InputLabel>
                     <Select
                         value={getNavkontorFromId(soknad.navKontor ? soknad.navKontor.navKontor : null)}
                         onChange={(evt) => {
@@ -103,7 +103,7 @@ const TildeldeltNavkontorView: React.FC<Props> = (props: Props) => {
                         }}
                         inputProps={{
                             name: 'tildeltNavKontor',
-                            id: 'age-simple',
+                            id: 'selectNavkontorId',
                         }}
                     >
                         {menuItems}

@@ -91,6 +91,7 @@ export type Action
     | SkjulSnackbar
     // oppdater hendelse.json
     | NyFsSoknad
+    | HentetFsSoknad
     | NyFsSaksStatus
     | NyUtbetaling
     | NyttDokumentasjonkrav
@@ -136,6 +137,7 @@ export enum ActionTypeKeys {
 
     // oppdater hendelse.json
     NY_SOKNAD = "NY_SOKNAD",
+    HENTET_SOKNAD = "HENTET_SOKNAD",
     NY_FS_SAKS_STATUS = "NY_FS_SAKS_STATUS",
     NY_UTBETALING = "NY_UTBETALING",
     NYTT_DOKUMENTASJONKRAV = "NYTT_DOKUMENTASJONSKRAV",
@@ -261,6 +263,12 @@ export interface SetAktivtDokumentasjonkrav {
 export interface NyFsSoknad {
     type: ActionTypeKeys.NY_SOKNAD;
     nyFiksDigisosId: string;
+}
+
+export interface HentetFsSoknad {
+    type: ActionTypeKeys.HENTET_SOKNAD;
+    fiksDigisosId: string;
+    data: any;
 }
 
 export interface SlettFsSoknad {

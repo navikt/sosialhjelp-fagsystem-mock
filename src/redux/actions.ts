@@ -4,6 +4,7 @@ import {
     BackendUrls,
     FsSaksStatus,
     FsSoknad,
+    HentetFsSoknad,
     Model,
     NyFsSaksStatus,
     NyFsSoknad,
@@ -21,7 +22,7 @@ import {
     OppdaterVedtakFattet,
     OppdaterVilkar,
     SlettFsSoknad
-} from "./types";
+} from './types';
 import Hendelse, {
     Dokument,
     DokumentasjonEtterspurt,
@@ -39,10 +40,17 @@ import Hendelse, {
 } from "../types/hendelseTypes";
 import {AnyAction} from "redux";
 import {getFsSoknadByFiksDigisosId, getNow, removeNullFieldsFromHendelser} from "../utils/utilityFunctions";
-import {fetchPost} from "../utils/restUtils";
+import {fetchPost, fetchToJson} from "../utils/restUtils";
 import {NavKontor} from "../types/additionalTypes";
 import {oHendelser} from "./optics";
-import {backendUrls, getInitialFsSoknad, nyNavEnhetUrl, oppdaterDigisosSakUrl} from "./reducer";
+import {
+    backendUrls,
+    FIKSDIGISOSID_URL_PARAM,
+    getInitialFsSoknad,
+    hentDigisosSakUrl,
+    nyNavEnhetUrl,
+    oppdaterDigisosSakUrl
+} from './reducer';
 import {Dispatch} from "./reduxTypes";
 
 export const sendNyHendelseOgOppdaterModel = (
@@ -57,7 +65,7 @@ export const sendNyHendelseOgOppdaterModel = (
     const fiksDigisosSokerJsonUtenNull = removeNullFieldsFromHendelser(soknadUpdated.fiksDigisosSokerJson);
 
     const backendUrl = backendUrls[model.backendUrlTypeToUse];
-    const queryParam = `?fiksDigisosId=${model.aktivSoknad}`;
+    const queryParam = `?${FIKSDIGISOSID_URL_PARAM}=${model.aktivSoknad}`;
     fetchPost(`${backendUrl}${oppdaterDigisosSakUrl}${queryParam}`, JSON.stringify(fiksDigisosSokerJsonUtenNull)).then(() => {
         dispatch(visSuccessSnackbar());
         dispatch(actionToDispatchIfSuccess);
@@ -202,17 +210,62 @@ export const sendPdfOgOppdaterDokumentasjonEtterspurt = (
 export const opprettDigisosSakHvisDenIkkeFinnes = (
     soknad: FsSoknad,
     backendUrlTypeToUse: keyof BackendUrls,
+    dispatch: Dispatch,
+    fiksDigisosId: string,
+) => {
+    dispatch(turnOnLoader());
+    const backendUrl = backendUrls[backendUrlTypeToUse];
+    if(!soknad) {
+        soknad = getInitialFsSoknad(fiksDigisosId)
+    }
+    const fiksDigisosSokerJsonUtenNull = removeNullFieldsFromHendelser(soknad.fiksDigisosSokerJson);
+
+    const queryParam = `?${FIKSDIGISOSID_URL_PARAM}=${fiksDigisosId}`;
+    fetchPost(`${backendUrl}${oppdaterDigisosSakUrl}${queryParam}`, JSON.stringify(fiksDigisosSokerJsonUtenNull)).then((response: any) => {
+        let fiksId = response.fiksDigisosId;
+        dispatch(oppdaterFiksDigisosId(fiksDigisosId, fiksId));
+        dispatch(setAktivSoknad(fiksId));
+    }).catch((reason) => runOnErrorResponse(reason, dispatch))
+        .finally(() => dispatch(turnOffLoader()));
+};
+
+/*
+* http://localhost:8989/sosialhjelp/mock-alt-api/fiks/digisos/api/v1/soknader/QnURDw4wwY9
+og så finne digisosSoker sin metadata og hente den ned med:
+http://localhost:8989/sosialhjelp/mock-alt-api/fiks/digisos/api/v1/soknader/QnURDw4wwY9/dokumenter/f787550b-a8ce-41ff-b197-6c94c2727b0b
+* */
+
+export const hentFsSoknadFraFiksEllerOpprettNy = (
+    fiksDigisosId: string,
+    backendUrlTypeToUse: keyof BackendUrls,
     dispatch: Dispatch
 ) => {
     dispatch(turnOnLoader());
     const backendUrl = backendUrls[backendUrlTypeToUse];
-    const fiksDigisosSokerJsonUtenNull = removeNullFieldsFromHendelser(soknad.fiksDigisosSokerJson);
-
-    const queryParam = `?fiksDigisosId=${soknad.fiksDigisosId}`;
-    fetchPost(`${backendUrl}${oppdaterDigisosSakUrl}${queryParam}`, JSON.stringify(fiksDigisosSokerJsonUtenNull)).then((response: any) => {
-        let fiksId = response.fiksDigisosId;
-        dispatch(oppdaterFiksDigisosId(soknad.fiksDigisosId, fiksId));
-        dispatch(setAktivSoknad(fiksId));
+    fetch(`${backendUrl}${hentDigisosSakUrl}${fiksDigisosId}`, {
+       headers: new Headers({
+           "Content-Type": "application/json",
+           "Accept": "application/json, text/plain, */*"
+        }),
+        method: "GET",
+        body: null
+    }).then((response: Response) => {
+        if(response.ok) {
+            return response.json();
+        } else {
+            console.log('ny')
+            dispatch(opprettNyFsSoknadDersomDigisosIdEksistererHosFiks(fiksDigisosId, backendUrlTypeToUse, dispatch));
+        }
+    }).then((response: any) => {
+        console.log('hentmer')
+        const metadata = response.digisosSoker.metadata;
+        return fetch(`${backendUrl}${hentDigisosSakUrl}${fiksDigisosId}/dokumenter/${metadata}`)
+    }).then((response: any) =>  {
+        return response.json();
+    }).then(function(data) {
+        dispatch(hentetFsSoknad(fiksDigisosId, data));
+        dispatch(setAktivSoknad(fiksDigisosId));
+        // do stuff with `data`
     }).catch((reason) => runOnErrorResponse(reason, dispatch))
         .finally(() => dispatch(turnOffLoader()));
 };
@@ -226,7 +279,7 @@ export const opprettNyFsSoknadDersomDigisosIdEksistererHosFiks = (
     const backendUrl = backendUrls[backendUrlTypeToUse];
     const fiksDigisosSokerJsonUtenNull = removeNullFieldsFromHendelser(getInitialFsSoknad(fiksDigisosId).fiksDigisosSokerJson);
 
-    const queryParam = `?fiksDigisosId=${fiksDigisosId}`;
+    const queryParam = `?${FIKSDIGISOSID_URL_PARAM}=${fiksDigisosId}`;
     fetchPost(`${backendUrl}${oppdaterDigisosSakUrl}${queryParam}`, JSON.stringify(fiksDigisosSokerJsonUtenNull)).then((response: any) => {
         let fiksId = response.fiksDigisosId;
         dispatch(nyFsSoknad(fiksId));
@@ -402,6 +455,13 @@ export const nyFsSoknad = (nyFiksDigisosId: string): NyFsSoknad => {
     return {
         type: ActionTypeKeys.NY_SOKNAD,
         nyFiksDigisosId
+    }
+};
+export const hentetFsSoknad = (fiksDigisosId: string, data: any): HentetFsSoknad => {
+    return {
+        type: ActionTypeKeys.HENTET_SOKNAD,
+        fiksDigisosId,
+        data
     }
 };
 export const slettFsSoknad = (forFiksDigisosId: string): SlettFsSoknad => {

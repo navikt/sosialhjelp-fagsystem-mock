@@ -8,7 +8,11 @@ import ListItem from "@material-ui/core/ListItem";
 import {Button, Typography} from "@material-ui/core";
 import Paper from "@material-ui/core/Paper";
 import {FsSoknad, Model} from "../../../redux/types";
-import {opprettNyFsSoknadDersomDigisosIdEksistererHosFiks, setAktivSoknad} from "../../../redux/actions";
+import {
+    hentFsSoknadFraFiksEllerOpprettNy,
+    opprettNyFsSoknadDersomDigisosIdEksistererHosFiks,
+    setAktivSoknad
+} from '../../../redux/actions';
 import TextField from "@material-ui/core/TextField";
 import {generateRandomId} from "../../../utils/utilityFunctions";
 
@@ -62,7 +66,7 @@ const SoknadsOversiktPanel: React.FC<Props> = (props: Props) => {
             </List>
             <TextField
                 id='ny_soknad_input'
-                label={model.backendUrlTypeToUse === 'devSbs' ? 'DigisosId på søknad' : 'Ny fiksDigisosId'}
+                label={model.backendUrlTypeToUse === 'devSbs' ? 'DigisosId på søknad' : 'FiksDigisosId'}
                 value={fiksDigisosId}
                 onChange={(evt) => setFiksDigisosId(evt.target.value)}
                 margin="dense"
@@ -72,14 +76,16 @@ const SoknadsOversiktPanel: React.FC<Props> = (props: Props) => {
                 id='opprett_ny_soknad_knapp'
                 onClick={() => {
                     if (fiksDigisosId.length !== 0 && !model.soknader.find(soknad => soknad.fiksDigisosId === fiksDigisosId)) {
-                        opprettNyFsSoknadDersomDigisosIdEksistererHosFiks(fiksDigisosId, model.backendUrlTypeToUse, props.dispatch);
+                        hentFsSoknadFraFiksEllerOpprettNy(fiksDigisosId, model.backendUrlTypeToUse, props.dispatch);
+                    } else if(fiksDigisosId.length !== 0 && model.soknader.find(soknad => soknad.fiksDigisosId === fiksDigisosId)){
+                        props.dispatch(setAktivSoknad(fiksDigisosId));
                     } else {
-                        opprettNyFsSoknadDersomDigisosIdEksistererHosFiks(generateRandomId(11), model.backendUrlTypeToUse, props.dispatch);
+                        hentFsSoknadFraFiksEllerOpprettNy(generateRandomId(11), model.backendUrlTypeToUse, props.dispatch);
                     }
                     setFiksDigisosId('');
                 }}
             >
-                Opprett
+                Hent / Opprett
             </Button>
         </Paper>
     );

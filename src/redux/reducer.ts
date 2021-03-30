@@ -5,14 +5,14 @@ import Hendelse, {
     DokumentlagerExtended,
     FiksDigisosSokerJson,
     FilreferanseType,
-    HendelseType,
+    HendelseType, SaksStatus,
     SaksStatusType,
     SoknadsStatus,
     SoknadsStatusType,
     SvarutExtended,
     Utbetaling,
     Vilkar
-} from "../types/hendelseTypes";
+} from '../types/hendelseTypes';
 import {fsSaksStatusToSaksStatus, generateFilreferanseId, generateRandomId, getNow} from "../utils/utilityFunctions";
 import {
     oDokumentasjonEtterspurt,
@@ -50,10 +50,13 @@ export const backendUrlsDigisostestTemplate: string = "https://www.digisos-test.
 export const backendUrlsDevGcpTemplate: string = "https://digisos-gcp.dev.nav.no/sosialhjelp/mock-alt-api/innsyn-api";
 export const backendUrlsLabsTemplate: string = "https://digisos.labs.nais.io/sosialhjelp/mock-alt-api/innsyn-api";
 export const backendUrlsQTemplate: string = "https://www-q1.dev.nav.no/sosialhjelp/innsyn-api";
-export const backendUrlMockAltLocal: string = "http://localhost:8989/sosialhjelp/mock-alt-api/innsyn-api";
+export const backendUrlMockAltLocal: string = "http://localhost:8989/sosialhjelp/mock-alt-api";
 
-export const oppdaterDigisosSakUrl: string = '/api/v1/digisosapi/oppdaterDigisosSak';
+export const oppdaterDigisosSakUrl: string = '/innsyn-api/api/v1/digisosapi/oppdaterDigisosSak';
+export const hentDigisosSakUrl: string = '/fiks/digisos/api/v1/soknader/';
 export const nyNavEnhetUrl: string = '/api/v1/mock/nyNavEnhet';
+
+export const FIKSDIGISOSID_URL_PARAM = "fiksDigisosId";
 
 export const backendUrls: BackendUrls = {
     lokalt: backendUrlsLocalTemplate,
@@ -102,7 +105,17 @@ export const getInitialFsSoknad = (
     }
 };
 
-const initialId: string = generateRandomId(11);
+const idFromQueryOrRandomId = (): string => {
+    const query = new URLSearchParams(window.location.search);
+    const fiksdigisosid = query.get(FIKSDIGISOSID_URL_PARAM);
+
+    if(fiksdigisosid && fiksdigisosid.length > 0) {
+        return fiksdigisosid;
+    }
+    return generateRandomId(11);
+};
+
+const initialId: string = idFromQueryOrRandomId();
 
 const getBackendUrlTypeToUse = (): keyof BackendUrls => {
     const windowUrl = window.location.href;
@@ -124,7 +137,7 @@ export const initialModel: Model = {
     backendUrlTypeToUse: getBackendUrlTypeToUse(),
 
     //
-    soknader: [getInitialFsSoknad(window.location.href.includes('www-q') ? '001' : initialId)],
+    soknader: [],
 
     // Visnings
     thememode: 'light',
@@ -184,6 +197,103 @@ const reducer: Reducer<Model, Action> = (
             return {
                 ...state,
                 soknader: [...state.soknader, newFsSoknad]
+            }
+        }
+        case ActionTypeKeys.HENTET_SOKNAD: {
+            const {fiksDigisosId, data} = action;
+
+            const initialSoknadsStatusHendelse: SoknadsStatus = {
+                type: HendelseType.SoknadsStatus,
+                hendelsestidspunkt: getNow(),
+                status: SoknadsStatusType.MOTTATT
+            };
+
+            const hendelseTyper = data.hendelser.map( (hendelse: any )=> {
+                return hendelse.type;
+            })
+
+            const utbetalingerUtenSak = data.hendelser.filter((hendelse: any )=> {
+                return hendelse.type === HendelseType.Utbetaling && !hendelse.saksreferanse;
+            });
+
+            const vilkar = data.hendelser.filter((hendelse: any )=> {
+                return hendelse.type === HendelseType.Vilkar;
+            });
+
+            const dokKrav = data.hendelser.filter((hendelse: any )=> {
+                return hendelse.type === HendelseType.Dokumentasjonkrav;
+            })
+
+            const sakHendelser = data.hendelser.filter((hendelse: any )=> {
+                return hendelse.type === HendelseType.SaksStatus;
+            })
+
+            const mergetSaksHendelser = new Map();
+
+            sakHendelser.forEach((item: SaksStatus) => {
+                const propertyValue = item['referanse'];
+                mergetSaksHendelser.has(propertyValue) ? mergetSaksHendelser.set(propertyValue, { ...item, ...mergetSaksHendelser.get(propertyValue) }) : mergetSaksHendelser.set(propertyValue, item);
+            });
+
+            const unikeSaksHendelser = Array.from(mergetSaksHendelser.values())
+
+
+            const saker = unikeSaksHendelser.map((sak: SaksStatus) => {
+                const hendelserTilSak = data.hendelser.filter((hendelse: any )=> {
+                        return (hendelse.saksreferanse === sak.referanse);
+                    });
+
+                return {
+                    ...sak,
+                    utbetalinger: hendelserTilSak.filter((hendelse: any )=> {
+                        return (hendelse.type === HendelseType.Utbetaling);
+                    }),
+                    vedtakFattet: hendelserTilSak.filter((hendelse: any )=> {
+                    return (hendelse.type === HendelseType.VedtakFattet);
+                    }),
+                    vilkar: hendelserTilSak.filter((hendelse: any )=> {
+                        return (hendelse.type === HendelseType.Vilkar);
+                    }),
+                    dokumentasjonskrav: hendelserTilSak.filter((hendelse: any )=> {
+                        return (hendelse.type === HendelseType.Dokumentasjonkrav);
+                    })
+                }
+            })
+
+            console.log('saker', saker )
+
+            const soknadStatusIndex = hendelseTyper.lastIndexOf(HendelseType.SoknadsStatus);
+            //const vedtak = hendelseTyper.lastIndexOf(HendelseType.VedtakFattet);
+            const dokumentasjonerEtterspurtIndex = hendelseTyper.lastIndexOf(HendelseType.DokumentasjonEtterspurt);
+            const navkontorIndex= hendelseTyper.lastIndexOf(HendelseType.TildeltNavKontor);
+            const forelopigsvarIndex = hendelseTyper.lastIndexOf(HendelseType.ForelopigSvar);
+            // const sakstatusIndex = hendelseTyper.lastIndexOf(HendelseType.SaksStatus);
+
+            const fsSoknad: FsSoknad = {
+                fiksDigisosId,
+                soknadsStatus:  soknadStatusIndex >=0 ? data.hendelser[soknadStatusIndex] : initialSoknadsStatusHendelse,
+                navKontor: navkontorIndex >= 0 ? data.hendelser[navkontorIndex] : undefined,
+                dokumentasjonEtterspurt: dokumentasjonerEtterspurtIndex >=0 ? data.hendelser[dokumentasjonerEtterspurtIndex] : undefined,
+                forelopigSvar: forelopigsvarIndex >= 0 ? data.hendelser[forelopigsvarIndex] : undefined,
+                vilkar: vilkar,
+                dokumentasjonkrav: dokKrav,
+                utbetalingerUtenSaksreferanse: utbetalingerUtenSak,
+                saker: saker || [],
+                fiksDigisosSokerJson: {
+                    sak: {
+                        soker: {
+                            ...data
+                        }
+                    },
+                    type: "no.nav.digisos.digisos.soker.v1"
+                } as FiksDigisosSokerJson,
+            }
+
+            console.log('hentetsoknader',state.soknader, fsSoknad )
+
+            return {
+                ...state,
+                soknader: [...state.soknader, fsSoknad]
             }
         }
         case ActionTypeKeys.SLETT_SOKNAD: {
