@@ -242,7 +242,8 @@ export const hentFsSoknadFraFiksEllerOpprettNy = (
 ) => {
     dispatch(turnOnLoader());
     const backendUrl = backendUrls[backendUrlTypeToUse];
-    fetch(`${backendUrl}${hentDigisosSakUrl}${fiksDigisosId}`, {
+    const url = `${backendUrl}/api/v1/digisosapi/${fiksDigisosId}/innsynsfil`
+    fetch(url, {
        headers: new Headers({
            "Content-Type": "application/json",
            "Accept": "application/json, text/plain, */*"
@@ -250,22 +251,15 @@ export const hentFsSoknadFraFiksEllerOpprettNy = (
         method: "GET",
         body: null
     }).then((response: Response) => {
-        if(response.ok) {
-            return response.json();
+       if(response.status === 200) {
+            response.json().then((data: any) => {
+                dispatch(hentetFsSoknad(fiksDigisosId, data));
+                dispatch(setAktivSoknad(fiksDigisosId));
+            }).catch((reason) =>  runOnErrorResponse(reason, dispatch))
+                .finally(() => dispatch(turnOffLoader()));;
         } else {
-            console.log('ny')
-            dispatch(opprettNyFsSoknadDersomDigisosIdEksistererHosFiks(fiksDigisosId, backendUrlTypeToUse, dispatch));
+            return opprettNyFsSoknadDersomDigisosIdEksistererHosFiks(fiksDigisosId, backendUrlTypeToUse, dispatch);
         }
-    }).then((response: any) => {
-        console.log('hentmer')
-        const metadata = response.digisosSoker.metadata;
-        return fetch(`${backendUrl}${hentDigisosSakUrl}${fiksDigisosId}/dokumenter/${metadata}`)
-    }).then((response: any) =>  {
-        return response.json();
-    }).then(function(data) {
-        dispatch(hentetFsSoknad(fiksDigisosId, data));
-        dispatch(setAktivSoknad(fiksDigisosId));
-        // do stuff with `data`
     }).catch((reason) => runOnErrorResponse(reason, dispatch))
         .finally(() => dispatch(turnOffLoader()));
 };

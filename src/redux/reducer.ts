@@ -50,7 +50,7 @@ export const backendUrlsDigisostestTemplate: string = "https://www.digisos-test.
 export const backendUrlsDevGcpTemplate: string = "https://digisos-gcp.dev.nav.no/sosialhjelp/mock-alt-api/innsyn-api";
 export const backendUrlsLabsTemplate: string = "https://digisos.labs.nais.io/sosialhjelp/mock-alt-api/innsyn-api";
 export const backendUrlsQTemplate: string = "https://www-q1.dev.nav.no/sosialhjelp/innsyn-api";
-export const backendUrlMockAltLocal: string = "http://localhost:8989/sosialhjelp/mock-alt-api";
+export const backendUrlMockAltLocal: string = "http://localhost:8989/sosialhjelp/mock-alt-api/innsyn-api";
 
 export const oppdaterDigisosSakUrl: string = '/innsyn-api/api/v1/digisosapi/oppdaterDigisosSak';
 export const hentDigisosSakUrl: string = '/fiks/digisos/api/v1/soknader/';
@@ -208,6 +208,15 @@ const reducer: Reducer<Model, Action> = (
                 status: SoknadsStatusType.MOTTATT
             };
 
+            const soknadExist = state.soknader.find( (soknad : FsSoknad )=> {
+                return soknad.fiksDigisosId === fiksDigisosId;
+            })
+
+            if(soknadExist) {
+                console.log('søknad finnes')
+                return state;
+            }
+
             const hendelseTyper = data.hendelser.map( (hendelse: any )=> {
                 return hendelse.type;
             })
@@ -260,14 +269,11 @@ const reducer: Reducer<Model, Action> = (
                 }
             })
 
-            console.log('saker', saker )
 
             const soknadStatusIndex = hendelseTyper.lastIndexOf(HendelseType.SoknadsStatus);
-            //const vedtak = hendelseTyper.lastIndexOf(HendelseType.VedtakFattet);
             const dokumentasjonerEtterspurtIndex = hendelseTyper.lastIndexOf(HendelseType.DokumentasjonEtterspurt);
             const navkontorIndex= hendelseTyper.lastIndexOf(HendelseType.TildeltNavKontor);
             const forelopigsvarIndex = hendelseTyper.lastIndexOf(HendelseType.ForelopigSvar);
-            // const sakstatusIndex = hendelseTyper.lastIndexOf(HendelseType.SaksStatus);
 
             const fsSoknad: FsSoknad = {
                 fiksDigisosId,
@@ -288,8 +294,6 @@ const reducer: Reducer<Model, Action> = (
                     type: "no.nav.digisos.digisos.soker.v1"
                 } as FiksDigisosSokerJson,
             }
-
-            console.log('hentetsoknader',state.soknader, fsSoknad )
 
             return {
                 ...state,

@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {AppState, DispatchProps} from "../../../redux/reduxTypes";
+import { AppState, Dispatch, DispatchProps } from '../../../redux/reduxTypes';
 import {connect} from "react-redux";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import ListItemText from "@material-ui/core/ListItemText";
@@ -10,11 +10,11 @@ import Paper from "@material-ui/core/Paper";
 import {FsSoknad, Model} from "../../../redux/types";
 import {
     hentFsSoknadFraFiksEllerOpprettNy,
-    opprettNyFsSoknadDersomDigisosIdEksistererHosFiks,
     setAktivSoknad
 } from '../../../redux/actions';
 import TextField from "@material-ui/core/TextField";
 import {generateRandomId} from "../../../utils/utilityFunctions";
+import { FIKSDIGISOSID_URL_PARAM } from '../../../redux/reducer';
 
 const useStyles = makeStyles(theme => ({
     paper: {
@@ -36,6 +36,24 @@ interface StoreProps {
 type Props = DispatchProps & StoreProps;
 
 
+const onSoknadClick = (dispatch: Dispatch, fiksDigisosId: string) => {
+    /*
+    const urlParams = new URLSearchParams(window.location.search);
+    urlParams.set(FIKSDIGISOSID_URL_PARAM, fiksDigisosId.trim());
+    window.location.search = urlParams.toString();
+
+
+    if ('URLSearchParams' in window) {
+        const urlParams = new URLSearchParams(window.location.search)
+        urlParams.set(FIKSDIGISOSID_URL_PARAM, fiksDigisosId.trim());
+        const newRelativePathQuery = window.location.pathname + '?' + urlParams.toString();
+        window.history.pushState(null, '', newRelativePathQuery);
+    }
+
+     */
+    dispatch(setAktivSoknad(fiksDigisosId.trim()))
+}
+
 const SoknadsOversiktPanel: React.FC<Props> = (props: Props) => {
     const {soknader, aktivSoknad, model} = props;
 
@@ -48,7 +66,7 @@ const SoknadsOversiktPanel: React.FC<Props> = (props: Props) => {
             return (
                 <ListItem id={"soknad_" + index} key={"SoknadItem: " + soknad.fiksDigisosId} selected={soknad.fiksDigisosId === aktivSoknad} button
                           divider
-                          onClick={() => props.dispatch(setAktivSoknad(soknad.fiksDigisosId))}>
+                          onClick={() => onSoknadClick(props.dispatch, soknad.fiksDigisosId)}>
                     <ListItemText primary={soknad.fiksDigisosId}/>
                 </ListItem>
             )
