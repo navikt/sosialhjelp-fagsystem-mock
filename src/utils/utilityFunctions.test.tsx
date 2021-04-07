@@ -2,6 +2,7 @@ import React from 'react';
 import {generateFilreferanseId, getAllSaksStatuser, getLastHendelseOfType} from "./utilityFunctions";
 import Hendelse, {FiksDigisosSokerJson, HendelseType, SoknadsStatus, TildeltNavKontor} from "../types/hendelseTypes";
 
+
 it('returns the last occurence of a hendelse type', () => {
 
     const fiksDigisosSokerJson: FiksDigisosSokerJson = {

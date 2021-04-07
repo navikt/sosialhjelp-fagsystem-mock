@@ -1,20 +1,24 @@
 import {Reducer} from "redux";
 import {Action, ActionTypeKeys, BackendUrls, FsSaksStatus, FsSoknad, Model} from "./types";
 import Hendelse, {
-    DokumentasjonEtterspurt,
     Dokumentasjonkrav,
     DokumentlagerExtended,
     FiksDigisosSokerJson,
-    FilreferanseType, ForelopigSvar,
-    HendelseType, SaksStatus,
+    FilreferanseType,
+    HendelseType,
     SaksStatusType,
     SoknadsStatus,
     SoknadsStatusType,
-    SvarutExtended, TildeltNavKontor,
-    Utbetaling, VedtakFattet,
+    SvarutExtended,
+    Utbetaling,
     Vilkar
 } from '../types/hendelseTypes';
-import {fsSaksStatusToSaksStatus, generateFilreferanseId, generateRandomId, getNow} from "../utils/utilityFunctions";
+import {
+    fsSaksStatusToSaksStatus,
+    generateFilreferanseId,
+    generateRandomId,
+    getNow
+} from '../utils/utilityFunctions';
 import {
     oDokumentasjonEtterspurt,
     oForelopigSvar,
@@ -35,6 +39,7 @@ import {
     oHendelser,
     oNavKontor
 } from "./optics";
+import { createFsSoknadFromHendelser } from '../utils/hentSoknadUtils';
 
 
 export const defaultDokumentlagerRef: DokumentlagerExtended = {
@@ -159,16 +164,6 @@ export const initialModel: Model = {
     aktivtDokumentasjonkrav: null,
 };
 
-const mergeSaksStatuserMedSammeReferanse = (saksStatuser: SaksStatus[]) => {
-    const mergetSaksStatuser= new Map();
-    saksStatuser.forEach((item: SaksStatus) => {
-        const propertyValue = item['referanse'];
-        mergetSaksStatuser.has(propertyValue) ?
-            mergetSaksStatuser.set(propertyValue, { ...mergetSaksStatuser.get(propertyValue), ...item })
-            : mergetSaksStatuser.set(propertyValue, item);
-    });
-    return Array.from(mergetSaksStatuser.values())
-}
 
 const reducer: Reducer<Model, Action> = (
     state: Model = initialModel,
@@ -219,98 +214,17 @@ const reducer: Reducer<Model, Action> = (
             if(soknadFinnes) {
                 return state;
             }
-
-            const sisteSoknadsStatus = data.hendelser.reverse().find((hendelse: Hendelse )=> {
-                return hendelse.type === HendelseType.SoknadsStatus;
-            }) as SoknadsStatus;
-
-            const sisteTildeltNavkontor = data.hendelser.reverse().find((hendelse: Hendelse )=> {
-                return hendelse.type === HendelseType.TildeltNavKontor;
-            }) as TildeltNavKontor;
-
-            const sisteDokumentasjonEtterspurt = data.hendelser.reverse().find((hendelse: Hendelse )=> {
-                return hendelse.type === HendelseType.DokumentasjonEtterspurt;
-            }) as DokumentasjonEtterspurt;
-
-            const sisteForelopigSvar= data.hendelser.reverse().find((hendelse: Hendelse )=> {
-                return hendelse.type === HendelseType.ForelopigSvar;
-            }) as ForelopigSvar;
-
-            const utbetalingerUtenSak = data.hendelser.filter((hendelse: Hendelse )=> {
-                return hendelse.type === HendelseType.Utbetaling && !hendelse.saksreferanse;
-            }) as Utbetaling[];
-
-            const vilkar = data.hendelser.filter((hendelse: Hendelse )=> {
-                return hendelse.type === HendelseType.Vilkar;
-            }) as Vilkar[];
-
-            const dokKrav = data.hendelser.filter((hendelse: Hendelse )=> {
-                return hendelse.type === HendelseType.Dokumentasjonkrav;
-            }) as Dokumentasjonkrav[];
-
-            const saksStatuser= data.hendelser.filter((hendelse: Hendelse )=> {
-                return hendelse.type === HendelseType.SaksStatus ;
-            }) as SaksStatus[]
-
-            const unikeSaksHendelser = mergeSaksStatuserMedSammeReferanse(saksStatuser);
-
-            const saker: FsSaksStatus[] = unikeSaksHendelser.map((sak: SaksStatus) => {
-                const utbetalingerTilSak = data.hendelser.filter((hendelse: Hendelse )=> {
-                    return hendelse.type === HendelseType.Utbetaling && (hendelse.saksreferanse === sak.referanse);
-                }) as Utbetaling[];
-
-                const sisteVedtakTilSak = data.hendelser.reverse().find((hendelse: Hendelse )=> {
-                    return hendelse.type === HendelseType.VedtakFattet && (hendelse.saksreferanse === sak.referanse);
-                }) as VedtakFattet;
-
-                const vilkarTilSak = data.hendelser.filter((hendelse: Hendelse )=> {
-                    if(hendelse.type !== HendelseType.Vilkar) {
-                        return false;
+            const fiksDigisosSokerJson = {
+                sak: {
+                    soker: {
+                        ...data
                     }
-                    return utbetalingerTilSak.find( utbetaling => {
-                        return hendelse.utbetalingsreferanse?.includes(utbetaling.utbetalingsreferanse)
-                    })
-                }) as Vilkar[];
+                },
+                type: "no.nav.digisos.digisos.soker.v1"
+            } as FiksDigisosSokerJson
 
-                const dokumentasjonskravTilSak = data.hendelser.filter((hendelse: Hendelse )=> {
-                    if(hendelse.type !== HendelseType.Dokumentasjonkrav) {
-                        return false;
-                    }
-                    return utbetalingerTilSak.find( utbetaling => {
-                        return hendelse.utbetalingsreferanse?.includes(utbetaling.utbetalingsreferanse)
-                    })
-                }) as Dokumentasjonkrav[];
+            const fsSoknad = createFsSoknadFromHendelser(data.hendelser,fiksDigisosSokerJson, fiksDigisosId);
 
-                const fsSaksStatus: FsSaksStatus = {
-                    ...sak,
-                    utbetalinger: utbetalingerTilSak,
-                    vedtakFattet: sisteVedtakTilSak,
-                    vilkar: vilkarTilSak,
-                    dokumentasjonskrav: dokumentasjonskravTilSak
-                }
-
-                return fsSaksStatus;
-            })
-
-            const fsSoknad: FsSoknad = {
-                fiksDigisosId,
-                soknadsStatus:  sisteSoknadsStatus,
-                navKontor: sisteTildeltNavkontor,
-                dokumentasjonEtterspurt: sisteDokumentasjonEtterspurt,
-                forelopigSvar: sisteForelopigSvar,
-                vilkar: vilkar,
-                dokumentasjonkrav: dokKrav,
-                utbetalingerUtenSaksreferanse: utbetalingerUtenSak,
-                saker: saker || [],
-                fiksDigisosSokerJson: {
-                    sak: {
-                        soker: {
-                            ...data
-                        }
-                    },
-                    type: "no.nav.digisos.digisos.soker.v1"
-                } as FiksDigisosSokerJson,
-            }
 
             return {
                 ...state,
