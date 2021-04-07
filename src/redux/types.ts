@@ -1,4 +1,4 @@
-import {
+import Hendelse, {
     DokumentasjonEtterspurt,
     Dokumentasjonkrav,
     FiksDigisosSokerJson,
@@ -268,7 +268,15 @@ export interface NyFsSoknad {
 export interface HentetFsSoknad {
     type: ActionTypeKeys.HENTET_SOKNAD;
     fiksDigisosId: string;
-    data: any;
+
+    data: {
+        version: string,
+        avsender: {
+            systemnavn: string,
+            systemversjon: string
+        },
+        hendelser: Hendelse[]
+    };
 }
 
 export interface SlettFsSoknad {

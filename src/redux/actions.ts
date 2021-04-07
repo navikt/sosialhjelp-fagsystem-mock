@@ -40,14 +40,13 @@ import Hendelse, {
 } from "../types/hendelseTypes";
 import {AnyAction} from "redux";
 import {getFsSoknadByFiksDigisosId, getNow, removeNullFieldsFromHendelser} from "../utils/utilityFunctions";
-import {fetchPost, fetchToJson} from "../utils/restUtils";
+import {fetchPost} from "../utils/restUtils";
 import {NavKontor} from "../types/additionalTypes";
 import {oHendelser} from "./optics";
 import {
     backendUrls,
     FIKSDIGISOSID_URL_PARAM,
     getInitialFsSoknad,
-    hentDigisosSakUrl,
     nyNavEnhetUrl,
     oppdaterDigisosSakUrl
 } from './reducer';

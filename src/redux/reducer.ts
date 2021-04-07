@@ -1,16 +1,17 @@
 import {Reducer} from "redux";
 import {Action, ActionTypeKeys, BackendUrls, FsSaksStatus, FsSoknad, Model} from "./types";
 import Hendelse, {
+    DokumentasjonEtterspurt,
     Dokumentasjonkrav,
     DokumentlagerExtended,
     FiksDigisosSokerJson,
-    FilreferanseType,
+    FilreferanseType, ForelopigSvar,
     HendelseType, SaksStatus,
     SaksStatusType,
     SoknadsStatus,
     SoknadsStatusType,
-    SvarutExtended,
-    Utbetaling,
+    SvarutExtended, TildeltNavKontor,
+    Utbetaling, VedtakFattet,
     Vilkar
 } from '../types/hendelseTypes';
 import {fsSaksStatusToSaksStatus, generateFilreferanseId, generateRandomId, getNow} from "../utils/utilityFunctions";
@@ -52,7 +53,7 @@ export const backendUrlsLabsTemplate: string = "https://digisos.labs.nais.io/sos
 export const backendUrlsQTemplate: string = "https://www-q1.dev.nav.no/sosialhjelp/innsyn-api";
 export const backendUrlMockAltLocal: string = "http://localhost:8989/sosialhjelp/mock-alt-api/innsyn-api";
 
-export const oppdaterDigisosSakUrl: string = '/innsyn-api/api/v1/digisosapi/oppdaterDigisosSak';
+export const oppdaterDigisosSakUrl: string = '/api/v1/digisosapi/oppdaterDigisosSak';
 export const hentDigisosSakUrl: string = '/fiks/digisos/api/v1/soknader/';
 export const nyNavEnhetUrl: string = '/api/v1/mock/nyNavEnhet';
 
@@ -158,6 +159,16 @@ export const initialModel: Model = {
     aktivtDokumentasjonkrav: null,
 };
 
+const mergeSaksStatuserMedSammeReferanse = (saksStatuser: SaksStatus[]) => {
+    const mergetSaksStatuser= new Map();
+    saksStatuser.forEach((item: SaksStatus) => {
+        const propertyValue = item['referanse'];
+        mergetSaksStatuser.has(propertyValue) ?
+            mergetSaksStatuser.set(propertyValue, { ...mergetSaksStatuser.get(propertyValue), ...item })
+            : mergetSaksStatuser.set(propertyValue, item);
+    });
+    return Array.from(mergetSaksStatuser.values())
+}
 
 const reducer: Reducer<Model, Action> = (
     state: Model = initialModel,
@@ -202,85 +213,98 @@ const reducer: Reducer<Model, Action> = (
         case ActionTypeKeys.HENTET_SOKNAD: {
             const {fiksDigisosId, data} = action;
 
-            const initialSoknadsStatusHendelse: SoknadsStatus = {
-                type: HendelseType.SoknadsStatus,
-                hendelsestidspunkt: getNow(),
-                status: SoknadsStatusType.MOTTATT
-            };
-
-            const soknadExist = state.soknader.find( (soknad : FsSoknad )=> {
+            const soknadFinnes = state.soknader.find( (soknad : FsSoknad )=> {
                 return soknad.fiksDigisosId === fiksDigisosId;
             })
-
-            if(soknadExist) {
-                console.log('søknad finnes')
+            if(soknadFinnes) {
                 return state;
             }
 
-            const hendelseTyper = data.hendelser.map( (hendelse: any )=> {
-                return hendelse.type;
-            })
+            const sisteSoknadsStatus = data.hendelser.reverse().find((hendelse: Hendelse )=> {
+                return hendelse.type === HendelseType.SoknadsStatus;
+            }) as SoknadsStatus;
 
-            const utbetalingerUtenSak = data.hendelser.filter((hendelse: any )=> {
+            const sisteTildeltNavkontor = data.hendelser.reverse().find((hendelse: Hendelse )=> {
+                return hendelse.type === HendelseType.TildeltNavKontor;
+            }) as TildeltNavKontor;
+
+            const sisteDokumentasjonEtterspurt = data.hendelser.reverse().find((hendelse: Hendelse )=> {
+                return hendelse.type === HendelseType.DokumentasjonEtterspurt;
+            }) as DokumentasjonEtterspurt;
+
+            const sisteForelopigSvar= data.hendelser.reverse().find((hendelse: Hendelse )=> {
+                return hendelse.type === HendelseType.ForelopigSvar;
+            }) as ForelopigSvar;
+
+            const utbetalingerUtenSak = data.hendelser.filter((hendelse: Hendelse )=> {
                 return hendelse.type === HendelseType.Utbetaling && !hendelse.saksreferanse;
-            });
+            }) as Utbetaling[];
 
-            const vilkar = data.hendelser.filter((hendelse: any )=> {
+            const vilkar = data.hendelser.filter((hendelse: Hendelse )=> {
                 return hendelse.type === HendelseType.Vilkar;
-            });
+            }) as Vilkar[];
 
-            const dokKrav = data.hendelser.filter((hendelse: any )=> {
+            const dokKrav = data.hendelser.filter((hendelse: Hendelse )=> {
                 return hendelse.type === HendelseType.Dokumentasjonkrav;
-            })
+            }) as Dokumentasjonkrav[];
 
-            const sakHendelser = data.hendelser.filter((hendelse: any )=> {
-                return hendelse.type === HendelseType.SaksStatus;
-            })
+            const saksStatuser= data.hendelser.filter((hendelse: Hendelse )=> {
+                return hendelse.type === HendelseType.SaksStatus ;
+            }) as SaksStatus[]
 
-            const mergetSaksHendelser = new Map();
+            const unikeSaksHendelser = mergeSaksStatuserMedSammeReferanse(saksStatuser);
 
-            sakHendelser.forEach((item: SaksStatus) => {
-                const propertyValue = item['referanse'];
-                mergetSaksHendelser.has(propertyValue) ? mergetSaksHendelser.set(propertyValue, { ...item, ...mergetSaksHendelser.get(propertyValue) }) : mergetSaksHendelser.set(propertyValue, item);
-            });
+            console.log('saker',saksStatuser, unikeSaksHendelser)
+            const saker: FsSaksStatus[] = unikeSaksHendelser.map((sak: SaksStatus) => {
+                const utbetalingerTilSak = data.hendelser.filter((hendelse: Hendelse )=> {
+                    return hendelse.type === HendelseType.Utbetaling && (hendelse.saksreferanse === sak.referanse);
+                }) as Utbetaling[];
 
-            const unikeSaksHendelser = Array.from(mergetSaksHendelser.values())
+                console.log('utbataling', utbetalingerTilSak)
+
+                const sisteVedtakTilSak = data.hendelser.reverse().find((hendelse: Hendelse )=> {
+                    return hendelse.type === HendelseType.VedtakFattet && (hendelse.saksreferanse === sak.referanse);
+                }) as VedtakFattet;
 
 
-            const saker = unikeSaksHendelser.map((sak: SaksStatus) => {
-                const hendelserTilSak = data.hendelser.filter((hendelse: any )=> {
-                        return (hendelse.saksreferanse === sak.referanse);
-                    });
-
-                return {
-                    ...sak,
-                    utbetalinger: hendelserTilSak.filter((hendelse: any )=> {
-                        return (hendelse.type === HendelseType.Utbetaling);
-                    }),
-                    vedtakFattet: hendelserTilSak.filter((hendelse: any )=> {
-                    return (hendelse.type === HendelseType.VedtakFattet);
-                    }),
-                    vilkar: hendelserTilSak.filter((hendelse: any )=> {
-                        return (hendelse.type === HendelseType.Vilkar);
-                    }),
-                    dokumentasjonskrav: hendelserTilSak.filter((hendelse: any )=> {
-                        return (hendelse.type === HendelseType.Dokumentasjonkrav);
+                const vilkarTilSak = data.hendelser.filter((hendelse: Hendelse )=> {
+                    if(hendelse.type !== HendelseType.Vilkar) {
+                        return false;
+                    }
+                    return utbetalingerTilSak.find( utbetaling => {
+                        return hendelse.utbetalingsreferanse?.includes(utbetaling.utbetalingsreferanse)
                     })
+                }) as Vilkar[];
+
+
+                const dokumentasjonskravTilSak = data.hendelser.filter((hendelse: Hendelse )=> {
+                    if(hendelse.type !== HendelseType.Dokumentasjonkrav) {
+                        return false;
+                    }
+                    return utbetalingerTilSak.find( utbetaling => {
+                        return hendelse.utbetalingsreferanse?.includes(utbetaling.utbetalingsreferanse)
+                    })
+                }) as Dokumentasjonkrav[];
+
+                const fsSaksStatus: FsSaksStatus = {
+                    ...sak,
+                    utbetalinger: utbetalingerTilSak,
+                    vedtakFattet: sisteVedtakTilSak,
+                    vilkar: vilkarTilSak,
+                    dokumentasjonskrav: dokumentasjonskravTilSak
                 }
+
+                return fsSaksStatus;
             })
 
 
-            const soknadStatusIndex = hendelseTyper.lastIndexOf(HendelseType.SoknadsStatus);
-            const dokumentasjonerEtterspurtIndex = hendelseTyper.lastIndexOf(HendelseType.DokumentasjonEtterspurt);
-            const navkontorIndex= hendelseTyper.lastIndexOf(HendelseType.TildeltNavKontor);
-            const forelopigsvarIndex = hendelseTyper.lastIndexOf(HendelseType.ForelopigSvar);
 
             const fsSoknad: FsSoknad = {
                 fiksDigisosId,
-                soknadsStatus:  soknadStatusIndex >=0 ? data.hendelser[soknadStatusIndex] : initialSoknadsStatusHendelse,
-                navKontor: navkontorIndex >= 0 ? data.hendelser[navkontorIndex] : undefined,
-                dokumentasjonEtterspurt: dokumentasjonerEtterspurtIndex >=0 ? data.hendelser[dokumentasjonerEtterspurtIndex] : undefined,
-                forelopigSvar: forelopigsvarIndex >= 0 ? data.hendelser[forelopigsvarIndex] : undefined,
+                soknadsStatus:  sisteSoknadsStatus,
+                navKontor: sisteTildeltNavkontor,
+                dokumentasjonEtterspurt: sisteDokumentasjonEtterspurt,
+                forelopigSvar: sisteForelopigSvar,
                 vilkar: vilkar,
                 dokumentasjonkrav: dokKrav,
                 utbetalingerUtenSaksreferanse: utbetalingerUtenSak,

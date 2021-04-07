@@ -37,20 +37,13 @@ type Props = DispatchProps & StoreProps;
 
 
 const onSoknadClick = (dispatch: Dispatch, fiksDigisosId: string) => {
-    /*
-    const urlParams = new URLSearchParams(window.location.search);
-    urlParams.set(FIKSDIGISOSID_URL_PARAM, fiksDigisosId.trim());
-    window.location.search = urlParams.toString();
-
-
     if ('URLSearchParams' in window) {
         const urlParams = new URLSearchParams(window.location.search)
         urlParams.set(FIKSDIGISOSID_URL_PARAM, fiksDigisosId.trim());
-        const newRelativePathQuery = window.location.pathname + '?' + urlParams.toString();
-        window.history.pushState(null, '', newRelativePathQuery);
+        const relativePath = window.location.pathname + '?' + urlParams.toString();
+        window.history.pushState(null, '', relativePath);
     }
 
-     */
     dispatch(setAktivSoknad(fiksDigisosId.trim()))
 }
 
@@ -86,7 +79,7 @@ const SoknadsOversiktPanel: React.FC<Props> = (props: Props) => {
                 id='ny_soknad_input'
                 label={model.backendUrlTypeToUse === 'devSbs' ? 'DigisosId på søknad' : 'FiksDigisosId'}
                 value={fiksDigisosId}
-                onChange={(evt) => setFiksDigisosId(evt.target.value)}
+                onChange={(evt) => setFiksDigisosId(evt.target.value.trim())}
                 margin="dense"
                 autoComplete="off"
             />
