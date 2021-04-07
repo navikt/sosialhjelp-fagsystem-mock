@@ -27,7 +27,6 @@ export const getLastHendelseOfType = (fiksDigisosSokerJson: FiksDigisosSokerJson
     return hendelserCopied.reverse().find((hendelse: Hendelse) => hendelse.type === hendelseType);
 };
 
-
 export const getShortDateISOString = (date: Date) => date.toISOString().substring(0, date.toISOString().search('T'));
 
 export const formatDateString = (dateString: string|null) => {
@@ -187,5 +186,4 @@ export const getDokumentasjonkravByDokumentasjonkravreferanse = (dokumentasjonkr
         return s.dokumentasjonkravreferanse === referanse
     })
 };
-
 
