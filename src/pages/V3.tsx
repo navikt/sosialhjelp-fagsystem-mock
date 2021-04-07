@@ -72,8 +72,6 @@ type Props = DispatchProps & StoreProps;
 const V3: React.FC<Props> = (props: Props) => {
 
     useEffect(() => {
-        //opprettDigisosSakHvisDenIkkeFinnes(getFsSoknadByFiksDigisosId(props.model.soknader,props.model.aktivSoknad)!,props.model.backendUrlTypeToUse, props.dispatch, props.model.aktivSoknad);
-
         hentFsSoknadFraFiksEllerOpprettNy(props.model.aktivSoknad, props.model.backendUrlTypeToUse, props.dispatch);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);

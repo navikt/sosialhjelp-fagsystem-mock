@@ -254,18 +254,14 @@ const reducer: Reducer<Model, Action> = (
 
             const unikeSaksHendelser = mergeSaksStatuserMedSammeReferanse(saksStatuser);
 
-            console.log('saker',saksStatuser, unikeSaksHendelser)
             const saker: FsSaksStatus[] = unikeSaksHendelser.map((sak: SaksStatus) => {
                 const utbetalingerTilSak = data.hendelser.filter((hendelse: Hendelse )=> {
                     return hendelse.type === HendelseType.Utbetaling && (hendelse.saksreferanse === sak.referanse);
                 }) as Utbetaling[];
 
-                console.log('utbataling', utbetalingerTilSak)
-
                 const sisteVedtakTilSak = data.hendelser.reverse().find((hendelse: Hendelse )=> {
                     return hendelse.type === HendelseType.VedtakFattet && (hendelse.saksreferanse === sak.referanse);
                 }) as VedtakFattet;
-
 
                 const vilkarTilSak = data.hendelser.filter((hendelse: Hendelse )=> {
                     if(hendelse.type !== HendelseType.Vilkar) {
@@ -275,7 +271,6 @@ const reducer: Reducer<Model, Action> = (
                         return hendelse.utbetalingsreferanse?.includes(utbetaling.utbetalingsreferanse)
                     })
                 }) as Vilkar[];
-
 
                 const dokumentasjonskravTilSak = data.hendelser.filter((hendelse: Hendelse )=> {
                     if(hendelse.type !== HendelseType.Dokumentasjonkrav) {
@@ -296,8 +291,6 @@ const reducer: Reducer<Model, Action> = (
 
                 return fsSaksStatus;
             })
-
-
 
             const fsSoknad: FsSoknad = {
                 fiksDigisosId,

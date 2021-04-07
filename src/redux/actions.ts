@@ -228,12 +228,6 @@ export const opprettDigisosSakHvisDenIkkeFinnes = (
         .finally(() => dispatch(turnOffLoader()));
 };
 
-/*
-* http://localhost:8989/sosialhjelp/mock-alt-api/fiks/digisos/api/v1/soknader/QnURDw4wwY9
-og så finne digisosSoker sin metadata og hente den ned med:
-http://localhost:8989/sosialhjelp/mock-alt-api/fiks/digisos/api/v1/soknader/QnURDw4wwY9/dokumenter/f787550b-a8ce-41ff-b197-6c94c2727b0b
-* */
-
 export const hentFsSoknadFraFiksEllerOpprettNy = (
     fiksDigisosId: string,
     backendUrlTypeToUse: keyof BackendUrls,
