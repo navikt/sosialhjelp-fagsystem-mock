@@ -56,6 +56,7 @@ const getHeaders = (): Headers => {
 
 export const serverRequest = (method: string, urlPath: string, body: string|null) => {
     const OPTIONS: RequestInit = {
+        credentials: "include",
         headers: getHeaders(),
         method,
         body: body ? body : null
