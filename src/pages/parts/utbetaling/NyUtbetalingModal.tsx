@@ -297,7 +297,7 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
                             </Grid>
                             <Grid item key={'Saksreferanse'} xs={6} zeroMinWidth>
                                 <FormControl className={classes.formControl2} disabled={modalSaksreferanse != null}>
-                                    <InputLabel htmlFor="age-simple" shrink={true}>Saksreferanse</InputLabel>
+                                    <InputLabel htmlFor="saksreferanse" shrink={true}>Saksreferanse</InputLabel>
                                     <Select
                                         value={modalUtbetaling.saksreferanse ? modalUtbetaling.saksreferanse : ''}
                                         onChange={(evt) => setModalUtbetaling({...modalUtbetaling, saksreferanse: evt.target.value as string})}

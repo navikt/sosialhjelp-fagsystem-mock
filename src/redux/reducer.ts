@@ -12,8 +12,13 @@ import Hendelse, {
     SvarutExtended,
     Utbetaling,
     Vilkar
-} from "../types/hendelseTypes";
-import {fsSaksStatusToSaksStatus, generateFilreferanseId, generateRandomId, getNow} from "../utils/utilityFunctions";
+} from '../types/hendelseTypes';
+import {
+    fsSaksStatusToSaksStatus,
+    generateFilreferanseId,
+    generateRandomId,
+    getNow
+} from '../utils/utilityFunctions';
 import {
     oDokumentasjonEtterspurt,
     oForelopigSvar,
@@ -34,6 +39,7 @@ import {
     oHendelser,
     oNavKontor
 } from "./optics";
+import { createFsSoknadFromHendelser } from '../utils/hentSoknadUtils';
 
 
 export const defaultDokumentlagerRef: DokumentlagerExtended = {
@@ -53,7 +59,10 @@ export const backendUrlsQTemplate: string = "https://www-q1.dev.nav.no/sosialhje
 export const backendUrlMockAltLocal: string = "http://localhost:8989/sosialhjelp/mock-alt-api/innsyn-api";
 
 export const oppdaterDigisosSakUrl: string = '/api/v1/digisosapi/oppdaterDigisosSak';
+export const hentDigisosSakUrl: string = '/fiks/digisos/api/v1/soknader/';
 export const nyNavEnhetUrl: string = '/api/v1/mock/nyNavEnhet';
+
+export const FIKSDIGISOSID_URL_PARAM = "fiksDigisosId";
 
 export const backendUrls: BackendUrls = {
     lokalt: backendUrlsLocalTemplate,
@@ -102,7 +111,17 @@ export const getInitialFsSoknad = (
     }
 };
 
-const initialId: string = generateRandomId(11);
+const idFromQueryOrRandomId = (): string => {
+    const query = new URLSearchParams(window.location.search);
+    const fiksdigisosid = query.get(FIKSDIGISOSID_URL_PARAM);
+
+    if(fiksdigisosid && fiksdigisosid.length > 0) {
+        return fiksdigisosid;
+    }
+    return generateRandomId(11);
+};
+
+const initialId: string = idFromQueryOrRandomId();
 
 const getBackendUrlTypeToUse = (): keyof BackendUrls => {
     const windowUrl = window.location.href;
@@ -124,7 +143,7 @@ export const initialModel: Model = {
     backendUrlTypeToUse: getBackendUrlTypeToUse(),
 
     //
-    soknader: [getInitialFsSoknad(window.location.href.includes('www-q') ? '001' : initialId)],
+    soknader: [],
 
     // Visnings
     thememode: 'light',
@@ -184,6 +203,32 @@ const reducer: Reducer<Model, Action> = (
             return {
                 ...state,
                 soknader: [...state.soknader, newFsSoknad]
+            }
+        }
+        case ActionTypeKeys.HENTET_SOKNAD: {
+            const {fiksDigisosId, data} = action;
+
+            const soknadFinnes = state.soknader.find( (soknad : FsSoknad )=> {
+                return soknad.fiksDigisosId === fiksDigisosId;
+            })
+            if(soknadFinnes) {
+                return state;
+            }
+            const fiksDigisosSokerJson = {
+                sak: {
+                    soker: {
+                        ...data
+                    }
+                },
+                type: "no.nav.digisos.digisos.soker.v1"
+            } as FiksDigisosSokerJson
+
+            const fsSoknad = createFsSoknadFromHendelser(data.hendelser,fiksDigisosSokerJson, fiksDigisosId);
+
+
+            return {
+                ...state,
+                soknader: [...state.soknader, fsSoknad]
             }
         }
         case ActionTypeKeys.SLETT_SOKNAD: {

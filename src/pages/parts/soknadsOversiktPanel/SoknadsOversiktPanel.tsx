@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {AppState, DispatchProps} from "../../../redux/reduxTypes";
+import { AppState, Dispatch, DispatchProps } from '../../../redux/reduxTypes';
 import {connect} from "react-redux";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import ListItemText from "@material-ui/core/ListItemText";
@@ -8,9 +8,13 @@ import ListItem from "@material-ui/core/ListItem";
 import {Button, Typography} from "@material-ui/core";
 import Paper from "@material-ui/core/Paper";
 import {FsSoknad, Model} from "../../../redux/types";
-import {opprettNyFsSoknadDersomDigisosIdEksistererHosFiks, setAktivSoknad} from "../../../redux/actions";
+import {
+    hentFsSoknadFraFiksEllerOpprettNy,
+    setAktivSoknad
+} from '../../../redux/actions';
 import TextField from "@material-ui/core/TextField";
 import {generateRandomId} from "../../../utils/utilityFunctions";
+import { FIKSDIGISOSID_URL_PARAM } from '../../../redux/reducer';
 
 const useStyles = makeStyles(theme => ({
     paper: {
@@ -32,6 +36,17 @@ interface StoreProps {
 type Props = DispatchProps & StoreProps;
 
 
+const onSoknadClick = (dispatch: Dispatch, fiksDigisosId: string) => {
+    if ('URLSearchParams' in window) {
+        const urlParams = new URLSearchParams(window.location.search)
+        urlParams.set(FIKSDIGISOSID_URL_PARAM, fiksDigisosId.trim());
+        const relativePath = window.location.pathname + '?' + urlParams.toString();
+        window.history.pushState(null, '', relativePath);
+    }
+
+    dispatch(setAktivSoknad(fiksDigisosId.trim()))
+}
+
 const SoknadsOversiktPanel: React.FC<Props> = (props: Props) => {
     const {soknader, aktivSoknad, model} = props;
 
@@ -44,7 +59,7 @@ const SoknadsOversiktPanel: React.FC<Props> = (props: Props) => {
             return (
                 <ListItem id={"soknad_" + index} key={"SoknadItem: " + soknad.fiksDigisosId} selected={soknad.fiksDigisosId === aktivSoknad} button
                           divider
-                          onClick={() => props.dispatch(setAktivSoknad(soknad.fiksDigisosId))}>
+                          onClick={() => onSoknadClick(props.dispatch, soknad.fiksDigisosId)}>
                     <ListItemText primary={soknad.fiksDigisosId}/>
                 </ListItem>
             )
@@ -62,9 +77,9 @@ const SoknadsOversiktPanel: React.FC<Props> = (props: Props) => {
             </List>
             <TextField
                 id='ny_soknad_input'
-                label={model.backendUrlTypeToUse === 'devSbs' ? 'DigisosId på søknad' : 'Ny fiksDigisosId'}
+                label={model.backendUrlTypeToUse === 'devSbs' ? 'DigisosId på søknad' : 'FiksDigisosId'}
                 value={fiksDigisosId}
-                onChange={(evt) => setFiksDigisosId(evt.target.value)}
+                onChange={(evt) => setFiksDigisosId(evt.target.value.trim())}
                 margin="dense"
                 autoComplete="off"
             />
@@ -72,14 +87,16 @@ const SoknadsOversiktPanel: React.FC<Props> = (props: Props) => {
                 id='opprett_ny_soknad_knapp'
                 onClick={() => {
                     if (fiksDigisosId.length !== 0 && !model.soknader.find(soknad => soknad.fiksDigisosId === fiksDigisosId)) {
-                        opprettNyFsSoknadDersomDigisosIdEksistererHosFiks(fiksDigisosId, model.backendUrlTypeToUse, props.dispatch);
+                        hentFsSoknadFraFiksEllerOpprettNy(fiksDigisosId, model.backendUrlTypeToUse, props.dispatch);
+                    } else if(fiksDigisosId.length !== 0 && model.soknader.find(soknad => soknad.fiksDigisosId === fiksDigisosId)){
+                        props.dispatch(setAktivSoknad(fiksDigisosId));
                     } else {
-                        opprettNyFsSoknadDersomDigisosIdEksistererHosFiks(generateRandomId(11), model.backendUrlTypeToUse, props.dispatch);
+                        hentFsSoknadFraFiksEllerOpprettNy(generateRandomId(11), model.backendUrlTypeToUse, props.dispatch);
                     }
                     setFiksDigisosId('');
                 }}
             >
-                Opprett
+                Hent / Opprett
             </Button>
         </Paper>
     );
