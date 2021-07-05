@@ -141,7 +141,7 @@ const defaultDokumentasjonkrav: Dokumentasjonkrav = {
     dokumentasjonkravreferanse: generateFilreferanseId(),
     utbetalingsreferanse: [],
     beskrivelse: 'Du må kjøpe flere kort til MTG',
-    status: DokumentasjonkravStatus.IKKE_OPPFYLT,
+    status: DokumentasjonkravStatus.RELEVANT,
 };
 
 const ITEM_HEIGHT = 48;
@@ -287,8 +287,12 @@ const NyttDokumentasjonkravModal: React.FC<Props> = (props: Props) => {
                                             id: 'status',
                                         }}
                                     >
+                                        <MenuItem value={DokumentasjonkravStatus.RELEVANT}>Relevant</MenuItem>
+                                        <MenuItem value={DokumentasjonkravStatus.LEVERT_TIDLIGERE}>Levert tidligere</MenuItem>
+                                        <MenuItem value={DokumentasjonkravStatus.ANNULERT}>Annulert</MenuItem>
                                         <MenuItem value={DokumentasjonkravStatus.OPPFYLT}>Oppfylt</MenuItem>
                                         <MenuItem value={DokumentasjonkravStatus.IKKE_OPPFYLT}>Ikke oppfylt</MenuItem>
+
                                     </Select>
                                 </FormControl>
                             </Grid>

@@ -141,7 +141,7 @@ const defaultVilkar: Vilkar = {
     vilkarreferanse: generateFilreferanseId(),
     utbetalingsreferanse: [],
     beskrivelse: 'Du må kjøpe flere kort til MTG',
-    status: VilkarStatus.IKKE_OPPFYLT,
+    status: VilkarStatus.RELEVANT,
 };
 
 const ITEM_HEIGHT = 48;
@@ -287,6 +287,9 @@ const NyttVilkarModal: React.FC<Props> = (props: Props) => {
                                             id: 'status',
                                         }}
                                     >
+                                        <MenuItem value={VilkarStatus.RELEVANT}>Relevant</MenuItem>
+                                        <MenuItem value={VilkarStatus.LEVERT_TIDLIGERE}>Levert tidligere</MenuItem>
+                                        <MenuItem value={VilkarStatus.ANNULERT}>Annulert</MenuItem>
                                         <MenuItem value={VilkarStatus.OPPFYLT}>Oppfylt</MenuItem>
                                         <MenuItem value={VilkarStatus.IKKE_OPPFYLT}>Ikke oppfylt</MenuItem>
                                     </Select>

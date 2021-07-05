@@ -127,12 +127,18 @@ export interface Dokumentasjonkrav {
 
 export enum VilkarStatus {
     OPPFYLT = "OPPFYLT",
-    IKKE_OPPFYLT = "IKKE_OPPFYLT"
+    IKKE_OPPFYLT = "IKKE_OPPFYLT",
+    RELEVANT = "RELEVANT",
+    LEVERT_TIDLIGERE = "LEVERT_TIDLIGERE",
+    ANNULERT = "ANNULERT"
 }
 
 export enum DokumentasjonkravStatus {
     OPPFYLT = "OPPFYLT",
-    IKKE_OPPFYLT = "IKKE_OPPFYLT"
+    IKKE_OPPFYLT = "IKKE_OPPFYLT",
+    RELEVANT = "RELEVANT",
+    LEVERT_TIDLIGERE = "LEVERT_TIDLIGERE",
+    ANNULERT = "ANNULERT"
 }
 
 export enum SoknadsStatusType {
