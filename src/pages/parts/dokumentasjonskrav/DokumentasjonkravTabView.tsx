@@ -129,9 +129,10 @@ const DokumentasjonkravTabView: React.FC<Props> = (props: Props) => {
                     {(dokumentasjonkrav.utbetalingsreferanse == null || dokumentasjonkrav.utbetalingsreferanse.length <= 1) &&
                     <TableBody>
                         {makeTableRow("Dokumentasjonkravreferanse", dokumentasjonkrav.dokumentasjonkravreferanse)}
-                        {makeTableRow("Utbetalingsreferanse", dokumentasjonkrav.utbetalingsreferanse == null || dokumentasjonkrav.utbetalingsreferanse.length === 0 ? null : dokumentasjonkrav.utbetalingsreferanse)}
+                        {makeTableRow("Tittel", dokumentasjonkrav.tittel)}
                         {makeTableRow("Beskrivelse", dokumentasjonkrav.beskrivelse)}
                         {makeTableRowOfStatus("Status", dokumentasjonkrav.status)}
+                        {makeTableRow("Utbetalingsreferanse", dokumentasjonkrav.utbetalingsreferanse == null || dokumentasjonkrav.utbetalingsreferanse.length === 0 ? null : dokumentasjonkrav.utbetalingsreferanse)}
                     </TableBody>
                     }
                 </Table>

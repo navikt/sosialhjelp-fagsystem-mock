@@ -131,6 +131,7 @@ const initialDokumentasjonkrav: Dokumentasjonkrav = {
     hendelsestidspunkt: '',
     dokumentasjonkravreferanse: generateFilreferanseId(),
     utbetalingsreferanse: null,
+    tittel: '',
     beskrivelse: null,
     status: null,
 };
@@ -140,7 +141,8 @@ const defaultDokumentasjonkrav: Dokumentasjonkrav = {
     hendelsestidspunkt: '',
     dokumentasjonkravreferanse: generateFilreferanseId(),
     utbetalingsreferanse: [],
-    beskrivelse: 'Du må kjøpe flere kort til MTG',
+    tittel: 'Husleie for forrige måned',
+    beskrivelse: 'Du må levere kopi av faktura for husleien din.',
     status: DokumentasjonkravStatus.RELEVANT,
 };
 
@@ -243,6 +245,34 @@ const NyttDokumentasjonkravModal: React.FC<Props> = (props: Props) => {
                                                  required={true} referansefeltDisabled={referansefeltDisabled}
                                                  visFeilmelding={visFeilmelding} setVisFeilmelding={setVisFeilmelding} />
                             </Grid>
+                            <Grid item key={'Grid: Tittel'} xs={6} zeroMinWidth>
+                                <CustomTextField label={'Tittel'} value={modalDokumentasjonkrav.tittel}
+                                                 setValue={(verdi: string) => setModalDokumentasjonkrav({...modalDokumentasjonkrav, tittel: verdi})} />
+                            </Grid>
+                            <Grid item key={'Grid: Beskrivelse'} xs={6} zeroMinWidth>
+                                <CustomTextField label={'Beskrivelse'} value={modalDokumentasjonkrav.beskrivelse}
+                                                 setValue={(verdi: string) => setModalDokumentasjonkrav({...modalDokumentasjonkrav, beskrivelse: verdi})}/>
+                            </Grid>
+                            <Grid item key={'Status'} xs={6} zeroMinWidth>
+                                <FormControl className={classes.formControl}>
+                                    <InputLabel htmlFor="age-simple" shrink={true}>Status</InputLabel>
+                                    <Select
+                                        value={modalDokumentasjonkrav.status ? modalDokumentasjonkrav.status : ''}
+                                        onChange={(evt) => setModalDokumentasjonkrav({...modalDokumentasjonkrav, status: evt.target.value as DokumentasjonkravStatus})}
+                                        inputProps={{
+                                            name: 'setStatus',
+                                            id: 'status',
+                                        }}
+                                    >
+                                        <MenuItem value={DokumentasjonkravStatus.RELEVANT}>Relevant</MenuItem>
+                                        <MenuItem value={DokumentasjonkravStatus.LEVERT_TIDLIGERE}>Levert tidligere</MenuItem>
+                                        <MenuItem value={DokumentasjonkravStatus.ANNULERT}>Annulert</MenuItem>
+                                        <MenuItem value={DokumentasjonkravStatus.OPPFYLT}>Oppfylt</MenuItem>
+                                        <MenuItem value={DokumentasjonkravStatus.IKKE_OPPFYLT}>Ikke oppfylt</MenuItem>
+
+                                    </Select>
+                                </FormControl>
+                            </Grid>
                             <Grid item key={'Utbetalingsreferanse'} xs={6} zeroMinWidth>
                                 <FormControl className={classes.formControl2}>
                                     <InputLabel htmlFor="age-simple" shrink={true}>Utbetalingsreferanse</InputLabel>
@@ -269,30 +299,6 @@ const NyttDokumentasjonkravModal: React.FC<Props> = (props: Props) => {
                                                 {referanse + ' ' + getSakTittelOgNrFraUtbetalingsreferanse(soknad, referanse)}
                                             </MenuItem>
                                         ))}
-                                    </Select>
-                                </FormControl>
-                            </Grid>
-                            <Grid item key={'Grid: Beskrivelse'} xs={6} zeroMinWidth>
-                                <CustomTextField label={'Beskrivelse'} value={modalDokumentasjonkrav.beskrivelse}
-                                                 setValue={(verdi: string) => setModalDokumentasjonkrav({...modalDokumentasjonkrav, beskrivelse: verdi})}/>
-                            </Grid>
-                            <Grid item key={'Status'} xs={6} zeroMinWidth>
-                                <FormControl className={classes.formControl}>
-                                    <InputLabel htmlFor="age-simple" shrink={true}>Status</InputLabel>
-                                    <Select
-                                        value={modalDokumentasjonkrav.status ? modalDokumentasjonkrav.status : ''}
-                                        onChange={(evt) => setModalDokumentasjonkrav({...modalDokumentasjonkrav, status: evt.target.value as DokumentasjonkravStatus})}
-                                        inputProps={{
-                                            name: 'setStatus',
-                                            id: 'status',
-                                        }}
-                                    >
-                                        <MenuItem value={DokumentasjonkravStatus.RELEVANT}>Relevant</MenuItem>
-                                        <MenuItem value={DokumentasjonkravStatus.LEVERT_TIDLIGERE}>Levert tidligere</MenuItem>
-                                        <MenuItem value={DokumentasjonkravStatus.ANNULERT}>Annulert</MenuItem>
-                                        <MenuItem value={DokumentasjonkravStatus.OPPFYLT}>Oppfylt</MenuItem>
-                                        <MenuItem value={DokumentasjonkravStatus.IKKE_OPPFYLT}>Ikke oppfylt</MenuItem>
-
                                     </Select>
                                 </FormControl>
                             </Grid>

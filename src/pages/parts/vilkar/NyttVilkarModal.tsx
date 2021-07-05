@@ -131,6 +131,7 @@ const initialVilkar: Vilkar = {
     hendelsestidspunkt: '',
     vilkarreferanse: generateFilreferanseId(),
     utbetalingsreferanse: null,
+    tittel: '',
     beskrivelse: null,
     status: null,
 };
@@ -140,7 +141,8 @@ const defaultVilkar: Vilkar = {
     hendelsestidspunkt: '',
     vilkarreferanse: generateFilreferanseId(),
     utbetalingsreferanse: [],
-    beskrivelse: 'Du må kjøpe flere kort til MTG',
+    tittel: 'Betale husleie',
+    beskrivelse: 'Du må betale din husleie hver måned.',
     status: VilkarStatus.RELEVANT,
 };
 
@@ -243,6 +245,33 @@ const NyttVilkarModal: React.FC<Props> = (props: Props) => {
                                                  required={true} referansefeltDisabled={referansefeltDisabled}
                                                  visFeilmelding={visFeilmelding} setVisFeilmelding={setVisFeilmelding} />
                             </Grid>
+                            <Grid item key={'Grid: Tittel'} xs={6} zeroMinWidth>
+                                <CustomTextField label={'Tittel'} value={modalVilkar.tittel}
+                                                 setValue={(verdi: string) => setModalVilkar({...modalVilkar, tittel: verdi})} />
+                            </Grid>
+                            <Grid item key={'Grid: Beskrivelse'} xs={6} zeroMinWidth>
+                                <CustomTextField label={'Beskrivelse'} value={modalVilkar.beskrivelse}
+                                                 setValue={(verdi: string) => setModalVilkar({...modalVilkar, beskrivelse: verdi})} />
+                            </Grid>
+                            <Grid item key={'Status'} xs={6} zeroMinWidth>
+                                <FormControl className={classes.formControl}>
+                                    <InputLabel htmlFor="age-simple" shrink={true}>Status</InputLabel>
+                                    <Select
+                                        value={modalVilkar.status ? modalVilkar.status : ''}
+                                        onChange={(evt) => setModalVilkar({...modalVilkar, status: evt.target.value as VilkarStatus})}
+                                        inputProps={{
+                                            name: 'setStatus',
+                                            id: 'status',
+                                        }}
+                                    >
+                                        <MenuItem value={VilkarStatus.RELEVANT}>Relevant</MenuItem>
+                                        <MenuItem value={VilkarStatus.LEVERT_TIDLIGERE}>Levert tidligere</MenuItem>
+                                        <MenuItem value={VilkarStatus.ANNULERT}>Annulert</MenuItem>
+                                        <MenuItem value={VilkarStatus.OPPFYLT}>Oppfylt</MenuItem>
+                                        <MenuItem value={VilkarStatus.IKKE_OPPFYLT}>Ikke oppfylt</MenuItem>
+                                    </Select>
+                                </FormControl>
+                            </Grid>
                             <Grid item key={'Utbetalingsreferanse'} xs={6} zeroMinWidth>
                                 <FormControl className={classes.formControl2}>
                                     <InputLabel htmlFor="age-simple" shrink={true}>Utbetalingsreferanse</InputLabel>
@@ -269,29 +298,6 @@ const NyttVilkarModal: React.FC<Props> = (props: Props) => {
                                                 {referanse + ' ' + getSakTittelOgNrFraUtbetalingsreferanse(soknad, referanse)}
                                             </MenuItem>
                                         ))}
-                                    </Select>
-                                </FormControl>
-                            </Grid>
-                            <Grid item key={'Grid: Beskrivelse'} xs={6} zeroMinWidth>
-                                <CustomTextField label={'Beskrivelse'} value={modalVilkar.beskrivelse}
-                                                 setValue={(verdi: string) => setModalVilkar({...modalVilkar, beskrivelse: verdi})} />
-                            </Grid>
-                            <Grid item key={'Status'} xs={6} zeroMinWidth>
-                                <FormControl className={classes.formControl}>
-                                    <InputLabel htmlFor="age-simple" shrink={true}>Status</InputLabel>
-                                    <Select
-                                        value={modalVilkar.status ? modalVilkar.status : ''}
-                                        onChange={(evt) => setModalVilkar({...modalVilkar, status: evt.target.value as VilkarStatus})}
-                                        inputProps={{
-                                            name: 'setStatus',
-                                            id: 'status',
-                                        }}
-                                    >
-                                        <MenuItem value={VilkarStatus.RELEVANT}>Relevant</MenuItem>
-                                        <MenuItem value={VilkarStatus.LEVERT_TIDLIGERE}>Levert tidligere</MenuItem>
-                                        <MenuItem value={VilkarStatus.ANNULERT}>Annulert</MenuItem>
-                                        <MenuItem value={VilkarStatus.OPPFYLT}>Oppfylt</MenuItem>
-                                        <MenuItem value={VilkarStatus.IKKE_OPPFYLT}>Ikke oppfylt</MenuItem>
                                     </Select>
                                 </FormControl>
                             </Grid>

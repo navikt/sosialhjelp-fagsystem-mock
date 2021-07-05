@@ -108,6 +108,7 @@ export interface Vilkar {
     hendelsestidspunkt: string;
     vilkarreferanse: string;
     utbetalingsreferanse: string[] | null;
+    tittel: string;
     beskrivelse: string | null;
     status: VilkarStatus | null;
 }
@@ -118,6 +119,7 @@ export interface Dokumentasjonkrav {
     hendelsestidspunkt: string;
     dokumentasjonkravreferanse: string;
     utbetalingsreferanse: string[] | null, // Array med hvilke utbetalinger som venter på at dette kravet blir oppfylt
+    tittel: string;
     beskrivelse: string | null, // beskrivelse av hva som må gjøres
     status: DokumentasjonkravStatus | null
 }
