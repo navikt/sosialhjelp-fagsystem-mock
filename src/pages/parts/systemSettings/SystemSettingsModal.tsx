@@ -62,7 +62,7 @@ const SystemSettingsModal: React.FC<Props> = (props: Props) => {
                 key={"urlLabel: " + backendUrlType}
                 value={backendUrlType}
                 control={<Radio/>}
-                label={backendUrlType === 'digisostest' ? 'digisos-test.com' : backendUrlType}
+                label={backendUrlType}
             />
         );
     });
