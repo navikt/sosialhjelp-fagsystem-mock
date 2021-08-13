@@ -8,7 +8,7 @@ import {
     sendPdfOgOppdaterDokumentasjonEtterspurt,
     skjulNyDokumentasjonEtterspurtModal
 } from "../../../redux/actions";
-import makeStyles from "@material-ui/core/styles/makeStyles";
+import {makeStyles }from "@material-ui/core/styles";
 import Fade from "@material-ui/core/Fade";
 import Backdrop from "@material-ui/core/Backdrop";
 import {FsSoknad, Model} from "../../../redux/types";
@@ -333,7 +333,7 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
                 <div className={classes.papertowel}>
                     <div className={classes.paperbox}>
                         <div className={classes.paperback}>
-                            <Grid container spacing={1} justify="center" alignItems="center">
+                            <Grid container spacing={1} justifyContent="center" alignItems="center">
                                 <Grid item key={'Grid: Dokumenttype'} xs={3} zeroMinWidth>
                                     <CustomTextField label={'Dokumenttype'} value={modalDokument.dokumenttype}
                                                      setValue={(verdi: string) => setModalDokument({...modalDokument, dokumenttype: verdi})}
