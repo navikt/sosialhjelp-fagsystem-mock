@@ -238,7 +238,7 @@ const NyttVilkarModal: React.FC<Props> = (props: Props) => {
             <Fade in={visNyVilkarModal}>
                 <div className={classes.papertowel}>
                     <div className={classes.paperback}>
-                        <Grid container spacing={3} justify="center" alignItems="center">
+                        <Grid container spacing={3} justifyContent="center" alignItems="center">
                             <Grid item key={'Grid: Vilkårreferanse'} xs={6} zeroMinWidth>
                                 <CustomTextField label={'Vilkårreferanse'} value={modalVilkar.vilkarreferanse}
                                                  setValue={(verdi: string) => setModalVilkar({...modalVilkar, vilkarreferanse: verdi})}

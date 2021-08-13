@@ -238,7 +238,7 @@ const NyttDokumentasjonkravModal: React.FC<Props> = (props: Props) => {
             <Fade in={visNyDokumentasjonkravModal}>
                 <div className={classes.papertowel}>
                     <div className={classes.paperback}>
-                        <Grid container spacing={3} justify="center" alignItems="center">
+                        <Grid container spacing={3} justifyContent="center" alignItems="center">
                             <Grid item key={'Grid: Dokumentasjonkravreferanse'} xs={6} zeroMinWidth>
                                 <CustomTextField label={'Dokumentasjonkravreferanse'} value={modalDokumentasjonkrav.dokumentasjonkravreferanse}
                                                  setValue={(verdi: string) => setModalDokumentasjonkrav({...modalDokumentasjonkrav, dokumentasjonkravreferanse: verdi})}
