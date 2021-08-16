@@ -91,7 +91,7 @@ const SoknadsOversiktPanel: React.FC<Props> = (props: Props) => {
                     } else if(fiksDigisosId.length !== 0 && model.soknader.find(soknad => soknad.fiksDigisosId === fiksDigisosId)){
                         props.dispatch(setAktivSoknad(fiksDigisosId));
                     } else {
-                        hentFsSoknadFraFiksEllerOpprettNy(generateRandomId(11), model.backendUrlTypeToUse, props.dispatch);
+                        hentFsSoknadFraFiksEllerOpprettNy("001", model.backendUrlTypeToUse, props.dispatch);
                     }
                     setFiksDigisosId('');
                 }}
