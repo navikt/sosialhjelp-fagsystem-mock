@@ -19,7 +19,7 @@ import TableCell from "@material-ui/core/TableCell";
 import TableBody from "@material-ui/core/TableBody";
 import {getNow, getShortDateISOString} from "../../../utils/utilityFunctions";
 import Button from "@material-ui/core/Button";
-import createMuiTheme from "@material-ui/core/styles/createMuiTheme";
+import {createTheme} from "@material-ui/core/styles";
 import indigo from "@material-ui/core/colors/indigo";
 import {pink} from "@material-ui/core/colors";
 
@@ -97,7 +97,7 @@ const DokumentasjonEtterspurtOversiktView: React.FC<Props> = (props: Props) => {
 
     const dokumenterErAlleredeEtterspurt = soknad.dokumentasjonEtterspurt && soknad.dokumentasjonEtterspurt.dokumenter.length > 0;
 
-    const indigoPinkMuiTheme = createMuiTheme({
+    const indigoPinkMuiTheme = createTheme({
         palette: {
             primary: {
                 light: indigo[300],

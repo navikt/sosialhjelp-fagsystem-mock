@@ -288,7 +288,7 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
             <Fade in={visNyUtbetalingModal}>
                 <div className={classes.papertowel}>
                     <div className={classes.paperback}>
-                        <Grid container spacing={3} justify="center" alignItems="center">
+                        <Grid container spacing={3} justifyContent="center" alignItems="center">
                             <Grid item key={'Grid: Utbetalingsreferanse'} xs={6} zeroMinWidth>
                                 <CustomTextField label={'Utbetalingsreferanse'} value={modalUtbetaling.utbetalingsreferanse}
                                                  setValue={(verdi: string) => setModalUtbetaling({...modalUtbetaling, utbetalingsreferanse: verdi})}
