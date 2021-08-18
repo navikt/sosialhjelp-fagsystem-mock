@@ -251,13 +251,13 @@ export const hentFsSoknadFraFiksEllerOpprettNy = (
             }).catch((reason) =>  runOnErrorResponse(reason, dispatch))
                 .finally(() => dispatch(turnOffLoader()));;
         } else {
-            return opprettNyFsSoknadDersomDigisosIdEksistererHosFiks(fiksDigisosId, backendUrlTypeToUse, dispatch);
+            return opprettNyFsSoknadDersomDigisosIdIkkeEksistererHosFiks(fiksDigisosId, backendUrlTypeToUse, dispatch);
         }
     }).catch((reason) => runOnErrorResponse(reason, dispatch))
         .finally(() => dispatch(turnOffLoader()));
 };
 
-export const opprettNyFsSoknadDersomDigisosIdEksistererHosFiks = (
+export const opprettNyFsSoknadDersomDigisosIdIkkeEksistererHosFiks = (
     fiksDigisosId: string,
     backendUrlTypeToUse: keyof BackendUrls,
     dispatch: Dispatch
