@@ -13,7 +13,6 @@ import {
     setAktivSoknad
 } from '../../../redux/actions';
 import TextField from "@material-ui/core/TextField";
-import {generateRandomId} from "../../../utils/utilityFunctions";
 import { FIKSDIGISOSID_URL_PARAM } from '../../../redux/reducer';
 
 const useStyles = makeStyles(theme => ({
