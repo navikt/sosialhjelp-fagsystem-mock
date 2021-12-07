@@ -3,6 +3,7 @@ import {AppState, DispatchProps} from "../../../redux/reduxTypes";
 import {connect} from "react-redux";
 import {createStyles, makeStyles, MuiThemeProvider, Theme} from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
+import {v4 as uuidv4} from 'uuid';
 import Box from '@material-ui/core/Box';
 import {Paper} from "@material-ui/core";
 import {
@@ -114,7 +115,7 @@ const DokumentasjonEtterspurtOversiktView: React.FC<Props> = (props: Props) => {
     });
 
     const makeTableRow = (dokument: Dokument) => {
-        return <TableRow key={dokument.dokumenttype + dokument.tilleggsinformasjon}>
+        return <TableRow key={dokument.dokumenttype + dokument.tilleggsinformasjon + uuidv4()}>
             <TableCell component="th" scope="row">
                 {dokument.dokumenttype}
             </TableCell>

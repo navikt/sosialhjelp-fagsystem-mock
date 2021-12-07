@@ -2,6 +2,7 @@ import React, {useRef, useState} from 'react';
 import {AppState, DispatchProps} from "../../../redux/reduxTypes";
 import {connect} from "react-redux";
 import {createStyles, Modal, Paper, Theme} from "@material-ui/core";
+import {v4 as uuidv4} from 'uuid';
 import {
     oppdaterDokumentasjonEtterspurt,
     sendNyHendelseOgOppdaterModel,
@@ -254,7 +255,8 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
     };
 
     const makeTableRow = (dokument: Dokument, idx:number) => {
-        return <TableRow key={dokument.dokumenttype + dokument.tilleggsinformasjon}>
+        const uuid = uuidv4();
+        return <TableRow key={dokument.dokumenttype + dokument.tilleggsinformasjon + uuid}>
             <TableCell component="th" scope="row">
                 {dokument.dokumenttype}
             </TableCell>
