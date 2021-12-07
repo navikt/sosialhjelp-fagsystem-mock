@@ -16,9 +16,18 @@ import 'date-fns';
 import Typography from "@material-ui/core/Typography";
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
-import {Dokument, DokumentasjonEtterspurt, FilreferanseType, HendelseType} from "../../../types/hendelseTypes";
+import {
+    Dokument,
+    DokumentasjonEtterspurt,
+    FilreferanseType,
+    HendelseType
+} from "../../../types/hendelseTypes";
 import Grid from "@material-ui/core/Grid";
-import {formatDateString, getDateOrNullFromDateString, getNow} from "../../../utils/utilityFunctions";
+import {
+    formatDateString,
+    getDateOrNullFromDateString,
+    getNow
+} from "../../../utils/utilityFunctions";
 import TableRow from "@material-ui/core/TableRow";
 import TableCell from "@material-ui/core/TableCell";
 import Table from "@material-ui/core/Table";
@@ -233,6 +242,17 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
         }
     };
 
+    const setDefaultDokumentasjonEtterspurt = () => {
+        const nyttDokument: Dokument = {
+            dokumenttype: 'Tannlege',
+            tilleggsinformasjon: 'Kostnadsoverslag fra tannlegen din ',
+            innsendelsesfrist: getNow(),
+            dokumentreferanse: createDokumentreferanse(),
+        };
+        setModalDokumentasjonEtterspurt({...modalDokumentasjonEtterspurt, dokumenter: [...modalDokumentasjonEtterspurt.dokumenter, nyttDokument]});
+        setModalDokument({...initialDokument});
+    };
+
     const makeTableRow = (dokument: Dokument, idx:number) => {
         return <TableRow key={dokument.dokumenttype + dokument.tilleggsinformasjon}>
             <TableCell component="th" scope="row">
@@ -368,6 +388,13 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
                         </div>
                         <div className={classes.paperback2}>
                             <Box className={classes.addbox}>
+
+                                <Button variant="outlined" color={'default'} onClick={() => {
+                                    setDefaultDokumentasjonEtterspurt();
+                                }}>
+                                    Fyll ut alle felter
+                                </Button>
+
                                 <Button id={"etterspor_dokumentasjon_send"} variant={!dokumenterErAlleredeEtterspurt ? 'contained' : 'outlined'}
                                         color={!dokumenterErAlleredeEtterspurt ? 'primary' : 'secondary'} onClick={() => {
                                     sendDokumentasjonEtterspurt();
