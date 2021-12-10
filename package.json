@@ -44,6 +44,7 @@
     "redux-thunk": "^2.3.0",
     "seamless-immutable": "^7.1.4",
     "typeface-roboto": "0.0.75",
+    "uuid": "^8.3.2",
     "whatwg-fetch": "^3.6.2"
   },
   "scripts": {
@@ -80,6 +81,7 @@
     "@types/react-router": "^5.1.12",
     "@types/react-sidebar": "^3.0.0",
     "@types/react-swipeable-views": "^0.13.0",
+    "@types/uuid": "^8.3.3",
     "craco-less": "^1.16.0",
     "typescript": "^3.9.9"
   }
