@@ -1,4 +1,4 @@
-FROM node as node-builder
+FROM node:16-alpine
 ADD / /source
 WORKDIR /source
 ENV CI=false
