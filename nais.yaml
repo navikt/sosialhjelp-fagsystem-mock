@@ -35,15 +35,15 @@ spec:
     path: /actuator/metrics
   replicas:
     min: 1
-    max: 4
+    max: 2
   webproxy: true
   resources:
     limits:
-      cpu: 500m
-      memory: 512Mi
-    requests:
-      cpu: 200m
+      cpu: 100m
       memory: 256Mi
+    requests:
+      cpu: 1m
+      memory: 64Mi
   env:
     - name: APPRES_CMS_URL
       value: {{appresCmsUrl}}
