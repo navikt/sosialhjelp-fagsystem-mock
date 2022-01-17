@@ -22,21 +22,18 @@ spec:
     path: /sosialhjelp/fagsystem-mock/isAlive
     initialDelay: 20
     timeout: 1
-{{#if gcpAccessPolicy}}
   accessPolicy:
     outbound:
       external:
         - host: "digisos.labs.nais.io"
       rules:
         - application: digisos
-{{/if}}
   prometheus:
     enabled: {{prometheusEnabled}}
     path: /actuator/metrics
   replicas:
     min: 1
     max: 2
-  webproxy: true
   resources:
     limits:
       cpu: 100m

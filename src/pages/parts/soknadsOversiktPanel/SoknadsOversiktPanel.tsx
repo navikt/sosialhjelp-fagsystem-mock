@@ -76,7 +76,7 @@ const SoknadsOversiktPanel: React.FC<Props> = (props: Props) => {
             </List>
             <TextField
                 id='ny_soknad_input'
-                label={model.backendUrlTypeToUse === 'devSbs' ? 'DigisosId på søknad' : 'FiksDigisosId'}
+                label={'FiksDigisosId'}
                 value={fiksDigisosId}
                 onChange={(evt) => setFiksDigisosId(evt.target.value.trim())}
                 margin="dense"

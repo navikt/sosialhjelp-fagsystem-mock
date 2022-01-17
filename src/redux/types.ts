@@ -59,7 +59,6 @@ export interface BackendUrls {
     lokalt: string,
     labs: string,
     devGcp: string,
-    devSbs: string,
     mockalt: string,
 }
 

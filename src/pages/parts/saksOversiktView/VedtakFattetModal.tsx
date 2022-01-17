@@ -107,27 +107,23 @@ const VedtakFattetModal: React.FC<Props> = (props: Props) => {
                 </FormControl>
             </form>
             <Button className={classes.fab} variant="contained" color={'default'} onClick={() => {
-                     if(model.backendUrlTypeToUse === 'devSbs' && inputEl && inputEl.current) {
-                         inputEl.current.click();
-                     } else {
-                         const nyHendelse: VedtakFattet = {
-                             type: HendelseType.VedtakFattet,
-                             hendelsestidspunkt: getNow(),
-                             saksreferanse: sak.referanse,
-                             utfall:  vedtakFattetUtfall ,
-                             vedtaksfil: {
-                                 referanse: {
-                                     type: defaultDokumentlagerRef.type,
-                                     id: defaultDokumentlagerRef.id
-                                 }
-                             },
-                             vedlegg: []
-                         };
+                     const nyHendelse: VedtakFattet = {
+                         type: HendelseType.VedtakFattet,
+                         hendelsestidspunkt: getNow(),
+                         saksreferanse: sak.referanse,
+                         utfall:  vedtakFattetUtfall ,
+                         vedtaksfil: {
+                             referanse: {
+                                 type: defaultDokumentlagerRef.type,
+                                 id: defaultDokumentlagerRef.id
+                             }
+                         },
+                         vedlegg: []
+                     };
 
-                         sendNyHendelseOgOppdaterModel(nyHendelse, model, dispatch, oppdaterVedtakFattet(soknad.fiksDigisosId, nyHendelse));
-                     }
+                     sendNyHendelseOgOppdaterModel(nyHendelse, model, dispatch, oppdaterVedtakFattet(soknad.fiksDigisosId, nyHendelse));
                  }}>
-                {model.backendUrlTypeToUse === 'devSbs' ? "Send vedtak fattet og velg vedtaksbrev" : "Send vedtak fattet"}
+                {"Send vedtak fattet"}
             </Button>
             <input
                 id={'inputField vedtakFattet'}
