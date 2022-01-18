@@ -115,25 +115,21 @@ const SoknadStatusView: React.FC<Props> = (props: Props) => {
         return (
             <Box className={classes.addbox}>
                 <Button variant="contained" color={'primary'} onClick={() => {
-                         if(model.backendUrlTypeToUse === 'devSbs' && inputEl && inputEl.current) {
-                             inputEl.current.click();
-                         } else {
-                             const nyHendelse: ForelopigSvar = {
-                                 type: HendelseType.ForelopigSvar,
-                                 hendelsestidspunkt: getNow(),
-                                 forvaltningsbrev: {
-                                     referanse: {
-                                         type: defaultDokumentlagerRef.type,
-                                         id: defaultDokumentlagerRef.id
-                                     }
-                                 },
-                                 vedlegg: []
-                             };
+                         const nyHendelse: ForelopigSvar = {
+                             type: HendelseType.ForelopigSvar,
+                             hendelsestidspunkt: getNow(),
+                             forvaltningsbrev: {
+                                 referanse: {
+                                     type: defaultDokumentlagerRef.type,
+                                     id: defaultDokumentlagerRef.id
+                                 }
+                             },
+                             vedlegg: []
+                         };
 
-                             sendNyHendelseOgOppdaterModel(nyHendelse, model, dispatch, oppdaterForelopigSvar(soknad.fiksDigisosId, nyHendelse));
-                         }
+                         sendNyHendelseOgOppdaterModel(nyHendelse, model, dispatch, oppdaterForelopigSvar(soknad.fiksDigisosId, nyHendelse));
                      }}>
-                    {model.backendUrlTypeToUse === 'devSbs' ? "Send pdf med foreløpig svar" : "Send foreløpig svar"}
+                    {"Send foreløpig svar"}
                 </Button>
             </Box>
         )

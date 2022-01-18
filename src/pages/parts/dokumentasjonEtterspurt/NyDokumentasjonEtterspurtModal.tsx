@@ -216,31 +216,22 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
         return "woldena-dokref-" + randomId;
     }
 
-    function skalLasteOppFil() {
-        return model.backendUrlTypeToUse === 'devSbs'
-            && modalDokumentasjonEtterspurt.forvaltningsbrev.referanse.id === standardRef;
-    }
-
     const sendDokumentasjonEtterspurt = () => {
-        if(skalLasteOppFil() && inputEl && inputEl.current) {
-            inputEl.current.click();
-        } else {
-            const nyHendelse: DokumentasjonEtterspurt = {
-                type: HendelseType.DokumentasjonEtterspurt,
-                hendelsestidspunkt: getNow(),
-                forvaltningsbrev: modalDokumentasjonEtterspurt.forvaltningsbrev,
-                vedlegg: [],
-                dokumenter: modalDokumentasjonEtterspurt.dokumenter
-            };
+        const nyHendelse: DokumentasjonEtterspurt = {
+            type: HendelseType.DokumentasjonEtterspurt,
+            hendelsestidspunkt: getNow(),
+            forvaltningsbrev: modalDokumentasjonEtterspurt.forvaltningsbrev,
+            vedlegg: [],
+            dokumenter: modalDokumentasjonEtterspurt.dokumenter
+        };
 
-            sendNyHendelseOgOppdaterModel(nyHendelse, model, dispatch, oppdaterDokumentasjonEtterspurt(soknad.fiksDigisosId, nyHendelse));
+        sendNyHendelseOgOppdaterModel(nyHendelse, model, dispatch, oppdaterDokumentasjonEtterspurt(soknad.fiksDigisosId, nyHendelse));
 
-            dispatch(dispatch(skjulNyDokumentasjonEtterspurtModal()));
+        dispatch(dispatch(skjulNyDokumentasjonEtterspurtModal()));
 
-            setTimeout(() => {
-                resetStateValues();
-            }, 500);
-        }
+        setTimeout(() => {
+            resetStateValues();
+        }, 500);
     };
 
     const setDefaultDokumentasjonEtterspurt = () => {
@@ -401,8 +392,7 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
                                         color={!dokumenterErAlleredeEtterspurt ? 'primary' : 'secondary'} onClick={() => {
                                     sendDokumentasjonEtterspurt();
                                 }}>
-                                    {skalLasteOppFil() ? "Etterspør dokumentasjon og velg forvaltningsbrev" :
-                                        dokumenterErAlleredeEtterspurt ? "Endre etterspurt dokumentasjon" : "Etterspør dokumentasjon"}
+                                    {dokumenterErAlleredeEtterspurt ? "Endre etterspurt dokumentasjon" : "Etterspør dokumentasjon"}
                                 </Button>
                                 <input
                                     id={'inputField vedtakFattet'}

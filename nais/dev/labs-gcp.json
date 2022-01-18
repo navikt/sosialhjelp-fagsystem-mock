@@ -3,6 +3,5 @@
     "https://sosialhjelp-fagsystem-mock.labs.nais.io/sosialhjelp/fagsystem-mock"
   ],
   "prometheusEnabled": false,
-  "gcpAccessPolicy": true,
   "appresCmsUrl": "https://appres.nav.no"
 }

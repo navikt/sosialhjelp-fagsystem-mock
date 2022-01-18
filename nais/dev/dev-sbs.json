@@ -1,9 +1,0 @@
-{
-  "ingresses": [
-    "https://sosialhjelp-fagsystem-mock-q1.dev-sbs.nais.io/sosialhjelp/fagsystem-mock",
-    "https://www-q1.dev.nav.no/sosialhjelp/woldena",
-    "https://www-q1.dev.nav.no/sosialhjelp/fagsystem-mock"
-  ],
-  "appresCmsUrl": "https://appres-q1.nav.no",
-  "prometheusEnabled": true
-}
