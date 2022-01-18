@@ -6,6 +6,7 @@ on:
         description: 'Config-fil (uten .json) som skal deployes'
         required: true
         default: 'dev-gcp'
+        type: choice
         options:
           - 'dev-gcp'
           - 'labs-gcp'
@@ -13,6 +14,7 @@ on:
         description: 'Cluster å deploye til (dev-gcp eller labs-gcp)'
         required: true
         default: 'dev-gcp'
+        type: choice
         options:
           - 'dev-gcp'
           - 'labs-gcp'
