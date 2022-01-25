@@ -1,4 +1,5 @@
 {
+  "applicationName": "sosialhjelp-fagsystem-mock",
   "ingresses": [
     "https://sosialhjelp-fagsystem-mock-gcp.dev.nav.no/sosialhjelp/fagsystem-mock"
   ],

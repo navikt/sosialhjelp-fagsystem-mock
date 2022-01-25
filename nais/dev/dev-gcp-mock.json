@@ -1,0 +1,8 @@
+{
+  "applicationName": "sosialhjelp-fagsystem-mock-mock",
+  "ingresses": [
+    "https://sosialhjelp-fagsystem-mock-mock.dev.nav.no/sosialhjelp/fagsystem-mock"
+  ],
+  "prometheusEnabled": false,
+  "appresCmsUrl": "https://appres.nav.no"
+}

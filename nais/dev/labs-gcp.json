@@ -1,4 +1,5 @@
 {
+  "applicationName": "sosialhjelp-fagsystem-mock",
   "ingresses": [
     "https://sosialhjelp-fagsystem-mock.labs.nais.io/sosialhjelp/fagsystem-mock"
   ],
