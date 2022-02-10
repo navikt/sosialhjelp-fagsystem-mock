@@ -54,7 +54,7 @@ export const defaultSvarutRef: SvarutExtended = {
 export const backendUrlsLocalTemplate: string = "http://localhost:8080/sosialhjelp/innsyn-api";
 export const backendUrlsDevGcpTemplate: string = "https://digisos-gcp.dev.nav.no/sosialhjelp/mock-alt-api/innsyn-api";
 export const backendUrlsLabsTemplate: string = "https://digisos.labs.nais.io/sosialhjelp/mock-alt-api/innsyn-api";
-export const backendUrlsMockTemplate: string = "https://digisos.ekstern./sosialhjelp/mock-alt-api/innsyn-api";
+export const backendUrlsMockTemplate: string = "https://digisos.ekstern.dev.nav.no/sosialhjelp/mock-alt-api/innsyn-api";
 export const backendUrlMockAltLocal: string = "http://localhost:8989/sosialhjelp/mock-alt-api/innsyn-api";
 
 export const oppdaterDigisosSakUrl: string = '/api/v1/digisosapi/oppdaterDigisosSak';
