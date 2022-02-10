@@ -132,7 +132,7 @@ export enum VilkarStatus {
     IKKE_OPPFYLT = "IKKE_OPPFYLT",
     RELEVANT = "RELEVANT",
     LEVERT_TIDLIGERE = "LEVERT_TIDLIGERE",
-    ANNULERT = "ANNULERT"
+    ANNULLERT = "ANNULLERT"
 }
 
 export enum DokumentasjonkravStatus {
@@ -140,7 +140,7 @@ export enum DokumentasjonkravStatus {
     IKKE_OPPFYLT = "IKKE_OPPFYLT",
     RELEVANT = "RELEVANT",
     LEVERT_TIDLIGERE = "LEVERT_TIDLIGERE",
-    ANNULERT = "ANNULERT"
+    ANNULLERT = "ANNULLERT"
 }
 
 export enum SoknadsStatusType {
