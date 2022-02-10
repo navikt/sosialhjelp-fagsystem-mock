@@ -266,7 +266,7 @@ const NyttDokumentasjonkravModal: React.FC<Props> = (props: Props) => {
                                     >
                                         <MenuItem value={DokumentasjonkravStatus.RELEVANT}>Relevant</MenuItem>
                                         <MenuItem value={DokumentasjonkravStatus.LEVERT_TIDLIGERE}>Levert tidligere</MenuItem>
-                                        <MenuItem value={DokumentasjonkravStatus.ANNULERT}>Annulert</MenuItem>
+                                        <MenuItem value={DokumentasjonkravStatus.ANNULLERT}>Annullert</MenuItem>
                                         <MenuItem value={DokumentasjonkravStatus.OPPFYLT}>Oppfylt</MenuItem>
                                         <MenuItem value={DokumentasjonkravStatus.IKKE_OPPFYLT}>Ikke oppfylt</MenuItem>
 
