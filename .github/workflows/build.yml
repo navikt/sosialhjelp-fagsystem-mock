@@ -34,7 +34,7 @@ jobs:
         run: docker build -t ${{ env.DOCKER_TAG }} .
       - name: Push docker image
         run: |
-          docker push ${{ env.DOCKER_TAG }}
+          docker push --all-tags ${{ env.DOCKER_IMAGE }}
       - name: Create tag and release
         uses: actions/create-release@v1.1.3
         env:
