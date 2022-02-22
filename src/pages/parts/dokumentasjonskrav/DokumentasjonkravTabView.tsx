@@ -131,6 +131,7 @@ const DokumentasjonkravTabView: React.FC<Props> = (props: Props) => {
                         {makeTableRow("Dokumentasjonkravreferanse", dokumentasjonkrav.dokumentasjonkravreferanse)}
                         {makeTableRow("Tittel", dokumentasjonkrav.tittel)}
                         {makeTableRow("Beskrivelse", dokumentasjonkrav.beskrivelse)}
+                        {makeTableRow("Frist", dokumentasjonkrav.frist)}
                         {makeTableRowOfStatus("Status", dokumentasjonkrav.status)}
                         {makeTableRow("Utbetalingsreferanse", dokumentasjonkrav.utbetalingsreferanse == null || dokumentasjonkrav.utbetalingsreferanse.length === 0 ? null : dokumentasjonkrav.utbetalingsreferanse)}
                     </TableBody>
