@@ -18,7 +18,7 @@ import {
     getAllUtbetalingsreferanser,
     getDokumentasjonkravByDokumentasjonkravreferanse,
     getNow,
-    getSakTittelOgNrFraUtbetalingsreferanse
+    getSakTittelOgNrFraUtbetalingsreferanse, getShortDateISOString
 } from "../../../utils/utilityFunctions";
 import Grid from "@material-ui/core/Grid";
 import {Dokumentasjonkrav, DokumentasjonkravStatus, HendelseType} from "../../../types/hendelseTypes";
@@ -31,6 +31,7 @@ import Chip from '@material-ui/core/Chip';
 import useTheme from "@material-ui/core/styles/useTheme";
 import Button from "@material-ui/core/Button";
 import CustomTextField from "../../../components/customTextField";
+import CustomKeyboardDatePicker from "../../../components/customKeyboardDatePicker";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -133,8 +134,14 @@ const initialDokumentasjonkrav: Dokumentasjonkrav = {
     utbetalingsreferanse: null,
     tittel: '',
     beskrivelse: null,
+    frist: '',
     status: null,
 };
+
+let date = new Date();
+date.setDate(new Date().getDate() + 7); // En uke fram i tid
+date.setHours(12);
+const defaultFrist = getShortDateISOString(date);
 
 const defaultDokumentasjonkrav: Dokumentasjonkrav = {
     type: HendelseType.Dokumentasjonkrav,
@@ -143,6 +150,7 @@ const defaultDokumentasjonkrav: Dokumentasjonkrav = {
     utbetalingsreferanse: [],
     tittel: 'Husleie for forrige måned',
     beskrivelse: 'Du må levere kopi av faktura for husleien din.',
+    frist: defaultFrist,
     status: DokumentasjonkravStatus.RELEVANT,
 };
 
@@ -161,6 +169,7 @@ const NyttDokumentasjonkravModal: React.FC<Props> = (props: Props) => {
     const [modalDokumentasjonkrav, setModalDokumentasjonkrav] = useState<Dokumentasjonkrav>(initialDokumentasjonkrav);
     const [visFeilmelding, setVisFeilmelding] = useState(false);
     const [referansefeltDisabled, setReferansefeltDisabled] = useState(false);
+    const [fristDatePickerIsOpen, setFristDatePickerIsOpen] = useState(false);
     const theme = useTheme();
 
     const classes = useStyles();
@@ -170,6 +179,7 @@ const NyttDokumentasjonkravModal: React.FC<Props> = (props: Props) => {
         setModalDokumentasjonkrav({...initialDokumentasjonkrav, dokumentasjonkravreferanse: generateFilreferanseId()});
         setVisFeilmelding(false);
         setReferansefeltDisabled(false);
+        setFristDatePickerIsOpen(false);
 
         dispatch(setAktivtDokumentasjonkrav(null));
     };
@@ -201,6 +211,7 @@ const NyttDokumentasjonkravModal: React.FC<Props> = (props: Props) => {
 
         setVisFeilmelding(false);
         setReferansefeltDisabled(false);
+        setFristDatePickerIsOpen(false);
     };
 
     const fyllInnAktivtDokumentasjonkrav = () => {
@@ -208,7 +219,7 @@ const NyttDokumentasjonkravModal: React.FC<Props> = (props: Props) => {
             let dokumentasjonkrav = getDokumentasjonkravByDokumentasjonkravreferanse(soknad.dokumentasjonkrav, aktivtDokumentasjonkrav);
             if (dokumentasjonkrav){
                 setModalDokumentasjonkrav(dokumentasjonkrav);
-
+                setFristDatePickerIsOpen(false);
                 setTimeout(() => {
                     setReferansefeltDisabled(true);
                 }, 10);
@@ -252,6 +263,11 @@ const NyttDokumentasjonkravModal: React.FC<Props> = (props: Props) => {
                             <Grid item key={'Grid: Beskrivelse'} xs={6} zeroMinWidth>
                                 <CustomTextField label={'Beskrivelse'} value={modalDokumentasjonkrav.beskrivelse}
                                                  setValue={(verdi: string) => setModalDokumentasjonkrav({...modalDokumentasjonkrav, beskrivelse: verdi})}/>
+                            </Grid>
+                            <Grid item key={'Grid: Frist'} xs={6} zeroMinWidth>
+                                <CustomKeyboardDatePicker label={'Frist'} value={modalDokumentasjonkrav.frist}
+                                                          setValue={(verdi: string) => setModalDokumentasjonkrav({...modalDokumentasjonkrav, frist: verdi})}
+                                                          isOpen={fristDatePickerIsOpen} setIsOpen={setFristDatePickerIsOpen} />
                             </Grid>
                             <Grid item key={'Status'} xs={6} zeroMinWidth>
                                 <FormControl className={classes.formControl}>
