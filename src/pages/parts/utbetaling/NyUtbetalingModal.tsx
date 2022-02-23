@@ -354,7 +354,7 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
                                         <MenuItem value={UtbetalingStatus.PLANLAGT_UTBETALING}>Planlagt Utbetaling</MenuItem>
                                         <MenuItem value={UtbetalingStatus.UTBETALT}>Utbetalt</MenuItem>
                                         <MenuItem value={UtbetalingStatus.STOPPET}>Stoppet</MenuItem>
-                                        <MenuItem value={UtbetalingStatus.ANNULLERT}>Annulert</MenuItem>
+                                        <MenuItem value={UtbetalingStatus.ANNULLERT}>Annullert</MenuItem>
                                     </Select>
                                 </FormControl>
                             </Grid>

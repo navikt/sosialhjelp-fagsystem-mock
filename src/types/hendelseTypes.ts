@@ -122,6 +122,7 @@ export interface Dokumentasjonkrav {
     tittel: string;
     beskrivelse: string | null, // beskrivelse av hva som må gjøres
     status: DokumentasjonkravStatus | null
+    frist: string;
 }
 
 
@@ -131,8 +132,7 @@ export enum VilkarStatus {
     OPPFYLT = "OPPFYLT",
     IKKE_OPPFYLT = "IKKE_OPPFYLT",
     RELEVANT = "RELEVANT",
-    LEVERT_TIDLIGERE = "LEVERT_TIDLIGERE",
-    ANNULERT = "ANNULERT"
+    ANNULLERT = "ANNULLERT"
 }
 
 export enum DokumentasjonkravStatus {
@@ -140,7 +140,7 @@ export enum DokumentasjonkravStatus {
     IKKE_OPPFYLT = "IKKE_OPPFYLT",
     RELEVANT = "RELEVANT",
     LEVERT_TIDLIGERE = "LEVERT_TIDLIGERE",
-    ANNULERT = "ANNULERT"
+    ANNULLERT = "ANNULLERT"
 }
 
 export enum SoknadsStatusType {
