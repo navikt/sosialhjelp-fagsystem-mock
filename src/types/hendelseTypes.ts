@@ -122,7 +122,7 @@ export interface Dokumentasjonkrav {
     tittel: string;
     beskrivelse: string | null, // beskrivelse av hva som må gjøres
     status: DokumentasjonkravStatus | null
-    frist: string;
+    frist: string | null;
 }
 
 
