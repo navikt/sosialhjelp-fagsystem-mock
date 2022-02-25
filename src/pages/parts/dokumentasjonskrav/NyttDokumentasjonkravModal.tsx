@@ -134,14 +134,14 @@ const initialDokumentasjonkrav: Dokumentasjonkrav = {
     utbetalingsreferanse: null,
     tittel: '',
     beskrivelse: null,
-    frist: '',
+    frist: null,
     status: null,
 };
 
 let date = new Date();
-date.setDate(new Date().getDate() + 7); // En uke fram i tid
+date.setDate(new Date().getDate() + 7);
 date.setHours(12);
-const defaultFrist = getShortDateISOString(date);
+const defaultFrist = date.toISOString();
 
 const defaultDokumentasjonkrav: Dokumentasjonkrav = {
     type: HendelseType.Dokumentasjonkrav,
