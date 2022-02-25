@@ -139,7 +139,7 @@ const initialDokumentasjonkrav: Dokumentasjonkrav = {
 };
 
 let date = new Date();
-date.setDate(new Date().getDate() + 7); // En uke fram i tid
+date.setDate(new Date().getDate() + 7);
 date.setHours(12);
 const defaultFrist = date.toISOString();
 

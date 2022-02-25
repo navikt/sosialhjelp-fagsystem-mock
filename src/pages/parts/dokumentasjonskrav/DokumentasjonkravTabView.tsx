@@ -13,6 +13,7 @@ import Paper from '@material-ui/core/Paper';
 import {setAktivtDokumentasjonkrav, visNyDokumentasjonkravModal} from "../../../redux/actions";
 import Button from "@material-ui/core/Button";
 import Box from "@material-ui/core/Box";
+import {formatDateString} from "../../../utils/utilityFunctions";
 
 const useStyles = makeStyles((theme) => {
     return createStyles({
@@ -131,7 +132,7 @@ const DokumentasjonkravTabView: React.FC<Props> = (props: Props) => {
                         {makeTableRow("Dokumentasjonkravreferanse", dokumentasjonkrav.dokumentasjonkravreferanse)}
                         {makeTableRow("Tittel", dokumentasjonkrav.tittel)}
                         {makeTableRow("Beskrivelse", dokumentasjonkrav.beskrivelse)}
-                        {makeTableRow("Frist", dokumentasjonkrav.frist)}
+                        {makeTableRow("Frist", formatDateString(dokumentasjonkrav.frist))}
                         {makeTableRowOfStatus("Status", dokumentasjonkrav.status)}
                         {makeTableRow("Utbetalingsreferanse", dokumentasjonkrav.utbetalingsreferanse == null || dokumentasjonkrav.utbetalingsreferanse.length === 0 ? null : dokumentasjonkrav.utbetalingsreferanse)}
                     </TableBody>
