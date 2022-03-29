@@ -1,0 +1,7 @@
+{
+  "applicationName": "sosialhjelp-fagsystem-mock-mock",
+  "ingresses": [
+    "https://digisos.ekstern.dev.nav.no/sosialhjelp/fagsystem-mock"
+  ],
+  "prometheusEnabled": false
+}

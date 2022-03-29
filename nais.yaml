@@ -41,6 +41,3 @@ spec:
     requests:
       cpu: 1m
       memory: 64Mi
-  env:
-    - name: APPRES_CMS_URL
-      value: {{appresCmsUrl}}
