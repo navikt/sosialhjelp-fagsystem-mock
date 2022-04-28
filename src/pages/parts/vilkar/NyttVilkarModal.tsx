@@ -16,7 +16,7 @@ import {FsSoknad, Model} from "../../../redux/types";
 import {
     generateFilreferanseId,
     getAllUtbetalingsreferanser,
-    getNow,
+    getNow, getSakTittelFraSaksreferanse,
     getSakTittelOgNrFraUtbetalingsreferanse,
     getVilkarByVilkarreferanse
 } from "../../../utils/utilityFunctions";
@@ -122,6 +122,7 @@ interface StoreProps {
     visNyVilkarModal: boolean;
     model: Model
     aktivtVilkar: string | undefined | null;
+    modalSaksreferanse: string|null;
 }
 
 type Props = DispatchProps & OwnProps & StoreProps;
@@ -134,6 +135,7 @@ const initialVilkar: Vilkar = {
     tittel: '',
     beskrivelse: null,
     status: null,
+    saksreferanse: '',
 };
 
 const defaultVilkar: Vilkar = {
@@ -144,6 +146,7 @@ const defaultVilkar: Vilkar = {
     tittel: 'Betale husleie',
     beskrivelse: 'Du må betale din husleie hver måned.',
     status: VilkarStatus.RELEVANT,
+    saksreferanse: null,
 };
 
 const ITEM_HEIGHT = 48;
@@ -164,7 +167,7 @@ const NyttVilkarModal: React.FC<Props> = (props: Props) => {
     const theme = useTheme();
 
     const classes = useStyles();
-    const {visNyVilkarModal, dispatch, model, soknad, aktivtVilkar} = props;
+    const {visNyVilkarModal, dispatch, model, soknad, aktivtVilkar, modalSaksreferanse} = props;
 
     function resetStateValues() {
         setModalVilkar({...initialVilkar, vilkarreferanse: generateFilreferanseId()});
@@ -271,6 +274,23 @@ const NyttVilkarModal: React.FC<Props> = (props: Props) => {
                                     </Select>
                                 </FormControl>
                             </Grid>
+                            <Grid item key={'Saksreferanse'} xs={6} zeroMinWidth>
+                                <FormControl className={classes.formControl2} disabled={modalSaksreferanse != null}>
+                                    <InputLabel htmlFor="saksreferanse" shrink={true}>Saksreferanse</InputLabel>
+                                    <Select
+                                        value={modalVilkar.saksreferanse ? modalVilkar.saksreferanse : ''}
+                                        onChange={(evt) => setModalVilkar({...modalVilkar, saksreferanse: evt.target.value as string})}
+                                        inputProps={{
+                                            name: 'setSaksreferanse',
+                                            id: 'saksreferanse',
+                                        }}
+                                    >
+                                        {soknad.saker.map(sak => (
+                                            <MenuItem key={sak.referanse} value={sak.referanse}>{sak.referanse + ' ' + getSakTittelFraSaksreferanse(soknad, sak.referanse)}</MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+                            </Grid>
                             <Grid item key={'Utbetalingsreferanse'} xs={6} zeroMinWidth>
                                 <FormControl className={classes.formControl2}>
                                     <InputLabel htmlFor="age-simple" shrink={true}>Utbetalingsreferanse</InputLabel>
@@ -328,7 +348,8 @@ const NyttVilkarModal: React.FC<Props> = (props: Props) => {
 const mapStateToProps = (state: AppState) => ({
     visNyVilkarModal: state.model.visNyVilkarModal,
     model: state.model,
-    aktivtVilkar: state.model.aktivtVilkar
+    aktivtVilkar: state.model.aktivtVilkar,
+    modalSaksreferanse: state.model.modalSaksreferanse
 });
 
 const mapDispatchToProps = (dispatch: any) => {
