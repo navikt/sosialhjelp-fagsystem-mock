@@ -111,6 +111,7 @@ export interface Vilkar {
     tittel: string;
     beskrivelse: string | null;
     status: VilkarStatus | null;
+    saksreferanse: string|null;
 }
 
 // utbetalingsref
@@ -123,6 +124,7 @@ export interface Dokumentasjonkrav {
     beskrivelse: string | null, // beskrivelse av hva som må gjøres
     status: DokumentasjonkravStatus | null
     frist: string | null;
+    saksreferanse: string|null;
 }
 
 

@@ -17,7 +17,7 @@ import {
     generateFilreferanseId,
     getAllUtbetalingsreferanser,
     getDokumentasjonkravByDokumentasjonkravreferanse,
-    getNow,
+    getNow, getSakTittelFraSaksreferanse,
     getSakTittelOgNrFraUtbetalingsreferanse, getShortDateISOString
 } from "../../../utils/utilityFunctions";
 import Grid from "@material-ui/core/Grid";
@@ -123,6 +123,7 @@ interface StoreProps {
     visNyDokumentasjonkravModal: boolean;
     model: Model
     aktivtDokumentasjonkrav: string | undefined | null;
+    modalSaksreferanse: string|null;
 }
 
 type Props = DispatchProps & OwnProps & StoreProps;
@@ -136,6 +137,7 @@ const initialDokumentasjonkrav: Dokumentasjonkrav = {
     beskrivelse: null,
     frist: null,
     status: null,
+    saksreferanse: '',
 };
 
 let date = new Date();
@@ -152,6 +154,7 @@ const defaultDokumentasjonkrav: Dokumentasjonkrav = {
     beskrivelse: 'Du må levere kopi av faktura for husleien din.',
     frist: defaultFrist,
     status: DokumentasjonkravStatus.RELEVANT,
+    saksreferanse: null,
 };
 
 const ITEM_HEIGHT = 48;
@@ -173,7 +176,7 @@ const NyttDokumentasjonkravModal: React.FC<Props> = (props: Props) => {
     const theme = useTheme();
 
     const classes = useStyles();
-    const {visNyDokumentasjonkravModal, dispatch, model, soknad, aktivtDokumentasjonkrav} = props;
+    const {visNyDokumentasjonkravModal, dispatch, model, soknad, aktivtDokumentasjonkrav, modalSaksreferanse} = props;
 
     const resetStateValues = () => {
         setModalDokumentasjonkrav({...initialDokumentasjonkrav, dokumentasjonkravreferanse: generateFilreferanseId()});
@@ -289,6 +292,24 @@ const NyttDokumentasjonkravModal: React.FC<Props> = (props: Props) => {
                                     </Select>
                                 </FormControl>
                             </Grid>
+                            <Grid item key={'Saksreferanse'} xs={6} zeroMinWidth>
+                                <FormControl className={classes.formControl2} disabled={modalSaksreferanse != null}>
+                                    <InputLabel htmlFor="saksreferanse" shrink={true}>Saksreferanse</InputLabel>
+                                    <Select
+                                        value={modalDokumentasjonkrav.saksreferanse ? modalDokumentasjonkrav.saksreferanse : ''}
+                                        onChange={(evt) => setModalDokumentasjonkrav({...modalDokumentasjonkrav, saksreferanse: evt.target.value as string})}
+                                        inputProps={{
+                                            name: 'setSaksreferanse',
+                                            id: 'saksreferanse',
+                                        }}
+                                    >
+                                        {soknad.saker.map(sak => (
+                                            <MenuItem key={sak.referanse} value={sak.referanse}>{sak.referanse + ' ' + getSakTittelFraSaksreferanse(soknad, sak.referanse)}</MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+                            </Grid>
+
                             <Grid item key={'Utbetalingsreferanse'} xs={6} zeroMinWidth>
                                 <FormControl className={classes.formControl2}>
                                     <InputLabel htmlFor="age-simple" shrink={true}>Utbetalingsreferanse</InputLabel>
@@ -346,7 +367,8 @@ const NyttDokumentasjonkravModal: React.FC<Props> = (props: Props) => {
 const mapStateToProps = (state: AppState) => ({
     visNyDokumentasjonkravModal: state.model.visNyDokumentasjonkravModal,
     model: state.model,
-    aktivtDokumentasjonkrav: state.model.aktivtDokumentasjonkrav
+    aktivtDokumentasjonkrav: state.model.aktivtDokumentasjonkrav,
+    modalSaksreferanse: state.model.modalSaksreferanse
 });
 
 const mapDispatchToProps = (dispatch: any) => {

@@ -135,6 +135,7 @@ const VilkarTabView: React.FC<Props> = (props: Props) => {
                         {makeTableRow("Tittel", vilkar.tittel)}
                         {makeTableRow("Beskrivelse", vilkar.beskrivelse)}
                         {makeTableRowOfStatus("Status", vilkar.status)}
+                        {makeTableRow("Saksreferanse", vilkar.saksreferanse == null || vilkar.saksreferanse.length === 0 ? null : vilkar.saksreferanse)}
                         {makeTableRow("Utbetalingsreferanse", vilkar.utbetalingsreferanse == null || vilkar.utbetalingsreferanse.length === 0 ? null : vilkar.utbetalingsreferanse)}
                     </TableBody>
                     }
