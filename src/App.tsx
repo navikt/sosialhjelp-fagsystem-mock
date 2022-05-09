@@ -5,7 +5,7 @@ import {Provider} from "react-redux";
 import {Route, Switch} from "react-router";
 import {IntlProvider} from "react-intl";
 import {tekster} from "./tekster/tekster";
-import './App.less';
+
 import UserGuide from "./pages/UserGuide";
 import NotFound from "./components/notFound";
 import V3 from "./pages/V3";
