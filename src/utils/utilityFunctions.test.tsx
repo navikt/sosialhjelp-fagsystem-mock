@@ -1,6 +1,13 @@
 import React from 'react';
-import {generateFilreferanseId, getAllSaksStatuser, getLastHendelseOfType} from "./utilityFunctions";
-import Hendelse, {FiksDigisosSokerJson, HendelseType, SoknadsStatus, TildeltNavKontor} from "../types/hendelseTypes";
+import { generateFilreferanseId, getAllSaksStatuser, getLastHendelseOfType } from './utilityFunctions';
+import Hendelse, {
+    FiksDigisosSokerJson,
+    HendelseType,
+    SaksStatusType,
+    SoknadsStatus,
+    SoknadsStatusType,
+    TildeltNavKontor
+} from '../types/hendelseTypes';
 
 it('returns the last occurence of a hendelse type', () => {
 
@@ -48,50 +55,48 @@ it('validated that the input is a string consisting of x digits', () => {
 
     const input: Hendelse[] = [
         {
-            // @ts-ignore
-            "type": "soknadsStatus",
+            "type": HendelseType.SoknadsStatus,
             "hendelsestidspunkt": "2018-10-04T13:37:00.134Z",
-            "status": "MOTTATT"
+            "status": SoknadsStatusType.MOTTATT
         },
         {
-            // @ts-ignore
-            "type": "soknadsStatus",
+            "type":HendelseType.SoknadsStatus,
             "hendelsestidspunkt": "2019-9-2T12:19:51:771Z",
-            "status": "UNDER_BEHANDLING"
+            "status": SoknadsStatusType.UNDER_BEHANDLING
         },
         {
             // @ts-ignore
             "type": "saksStatus",
             "hendelsestidspunkt": "2019-9-2T12:19:27:520Z",
-            "status": "UNDER_BEHANDLING",
+            "status": SaksStatusType.UNDER_BEHANDLING,
             "referanse": "SAK1",
             "tittel": "Nødhjelp"
         },
         {
             // @ts-ignore
-            "type": "soknadsStatus",
+            "type":HendelseType.SoknadsStatus,
             "hendelsestidspunkt": "2019-9-2T12:19:57:635Z",
-            "status": "FERDIGBEHANDLET"
+            "status": SoknadsStatusType.FERDIGBEHANDLET
         },
         {
             // @ts-ignore
             "type": "saksStatus",
             "hendelsestidspunkt": "2019-9-2T12:19:27:520Z",
-            "status": "IKKE_INNSYN",
+            "status": SaksStatusType.IKKE_INNSYN,
             "referanse": "SAK1",
             "tittel": "Nødhjelp"
         },
         {
             // @ts-ignore
-            "type": "soknadsStatus",
+            "type":HendelseType.SoknadsStatus,
             "hendelsestidspunkt": "2019-9-2T12:20:2:248Z",
-            "status": "BEHANDLES_IKKE"
+            "status": SoknadsStatusType.BEHANDLES_IKKE
         },
         {
             // @ts-ignore
             "type": "saksStatus",
             "hendelsestidspunkt": "2019-9-2T12:19:27:520Z",
-            "status": "BEHANDLES_IKKE",
+            "status": SaksStatusType.BEHANDLES_IKKE,
             "referanse": "SAK1",
             "tittel": "Nødhjelp"
         }
