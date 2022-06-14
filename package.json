@@ -15,7 +15,7 @@
     "connected-react-router": "^6.9.1",
     "fp-ts": "^2.9.5",
     "history": "^4.10.1",
-    "immutable": "^4.0.0-rc.12",
+    "immutable": "^4.1.0",
     "json-schema-to-typescript": "^9.1.1",
     "json-schema-traverse": "^0.5.0",
     "lodash.template": ">=4.5.0",
