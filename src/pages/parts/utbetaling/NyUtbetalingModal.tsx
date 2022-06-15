@@ -165,16 +165,16 @@ const defaultUtbetaling: Utbetaling = {
     utbetalingsreferanse: generateFilreferanseId(),
     saksreferanse: null,
     status: UtbetalingStatus.UTBETALT,
-    belop: 1337,
-    beskrivelse: "Midler til å kjøpe utvidelsespakker til Starcraft",
+    belop: 6550,
+    beskrivelse: "Livsopphold",
     forfallsdato: defaultForfallsdato,
     utbetalingsdato: defaultUtbetalingsdato,
     fom: defaultFomDato,
     tom: defaultTomDato,
     annenMottaker: false,
-    mottaker: "Jim Raynor",
+    mottaker: "Standard Standarsen",
     kontonummer: "12345678903",
-    utbetalingsmetode: "Kronekort",
+    utbetalingsmetode: "Bankkonto",
 };
 
 const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
