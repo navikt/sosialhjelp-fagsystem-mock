@@ -27,7 +27,7 @@ import Grid from "@material-ui/core/Grid";
 import {
     formatDateString,
     getDateOrNullFromDateString,
-    getNow, getShortDateISOString
+    getNow
 } from "../../../utils/utilityFunctions";
 import TableRow from "@material-ui/core/TableRow";
 import TableCell from "@material-ui/core/TableCell";
