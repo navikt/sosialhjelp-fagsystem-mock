@@ -27,7 +27,7 @@ import Grid from "@material-ui/core/Grid";
 import {
     formatDateString,
     getDateOrNullFromDateString,
-    getNow, getShortDateISOString
+    getNow
 } from "../../../utils/utilityFunctions";
 import TableRow from "@material-ui/core/TableRow";
 import TableCell from "@material-ui/core/TableCell";
@@ -237,7 +237,7 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
     let date = new Date();
     date.setDate(new Date().getDate() + 7); // En uke frem i tid
     date.setHours(12);
-    const innsendelsesfrist = getShortDateISOString(date);
+    const innsendelsesfrist = date.toISOString();
 
     const setDefaultDokumentasjonEtterspurt = () => {
         const nyttDokument: Dokument = {
