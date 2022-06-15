@@ -237,7 +237,7 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
     let date = new Date();
     date.setDate(new Date().getDate() + 7); // En uke frem i tid
     date.setHours(12);
-    const innsendelsesfrist = getShortDateISOString(date);
+    const innsendelsesfrist = date.toISOString();
 
     const setDefaultDokumentasjonEtterspurt = () => {
         const nyttDokument: Dokument = {
