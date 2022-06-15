@@ -143,15 +143,18 @@ const initialUtbetaling: Utbetaling = {
 };
 
 let date = new Date();
-date.setDate(new Date().getDate() + 7); // En uke fram i tid
+date.setDate(new Date().getDate() - 7); // En uke bak i tid
 date.setHours(12);
 const defaultForfallsdato = getShortDateISOString(date);
-date.setDate(new Date().getDate() + 6); // Seks dager fram i tid
+
+date.setDate(new Date().getDate() - 8); // Åtte dager bak i tid
 date.setHours(12);
 const defaultUtbetalingsdato = getShortDateISOString(date);
-date.setDate(new Date().getDate() - 7); // En uke tilbake i tid
+
+date.setDate(new Date().getDate() - 14); // To uker tilbake i tid
 date.setHours(12);
 const defaultFomDato = getShortDateISOString(date);
+
 date.setDate(new Date().getDate() + 14); // To uker fram i tid
 date.setHours(12);
 const defaultTomDato = getShortDateISOString(date);
@@ -161,7 +164,7 @@ const defaultUtbetaling: Utbetaling = {
     hendelsestidspunkt: '',
     utbetalingsreferanse: generateFilreferanseId(),
     saksreferanse: null,
-    status: UtbetalingStatus.PLANLAGT_UTBETALING,
+    status: UtbetalingStatus.UTBETALT,
     belop: 1337,
     beskrivelse: "Midler til å kjøpe utvidelsespakker til Starcraft",
     forfallsdato: defaultForfallsdato,
