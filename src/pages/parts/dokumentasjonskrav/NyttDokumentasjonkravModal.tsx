@@ -18,7 +18,7 @@ import {
     getAllUtbetalingsreferanser,
     getDokumentasjonkravByDokumentasjonkravreferanse,
     getNow, getSakTittelFraSaksreferanse,
-    getSakTittelOgNrFraUtbetalingsreferanse, getShortDateISOString
+    getSakTittelOgNrFraUtbetalingsreferanse,
 } from "../../../utils/utilityFunctions";
 import Grid from "@material-ui/core/Grid";
 import {Dokumentasjonkrav, DokumentasjonkravStatus, HendelseType} from "../../../types/hendelseTypes";
@@ -151,7 +151,7 @@ const defaultDokumentasjonkrav: Dokumentasjonkrav = {
     dokumentasjonkravreferanse: generateFilreferanseId(),
     utbetalingsreferanse: [],
     tittel: 'Husleie for forrige måned',
-    beskrivelse: 'Du må levere kopi av faktura for husleien din.',
+    beskrivelse: 'Du må levere kopi av kvittering for betalt husleie forrige måned.',
     frist: defaultFrist,
     status: DokumentasjonkravStatus.RELEVANT,
     saksreferanse: null,
