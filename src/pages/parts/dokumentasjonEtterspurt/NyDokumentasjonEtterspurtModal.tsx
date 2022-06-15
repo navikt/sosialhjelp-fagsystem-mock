@@ -27,7 +27,7 @@ import Grid from "@material-ui/core/Grid";
 import {
     formatDateString,
     getDateOrNullFromDateString,
-    getNow
+    getNow, getShortDateISOString
 } from "../../../utils/utilityFunctions";
 import TableRow from "@material-ui/core/TableRow";
 import TableCell from "@material-ui/core/TableCell";
@@ -234,11 +234,16 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
         }, 500);
     };
 
+    let date = new Date();
+    date.setDate(new Date().getDate() + 7); // En uke frem i tid
+    date.setHours(12);
+    const innsendelsesfrist = getShortDateISOString(date);
+
     const setDefaultDokumentasjonEtterspurt = () => {
         const nyttDokument: Dokument = {
             dokumenttype: 'Tannlege',
             tilleggsinformasjon: 'Kostnadsoverslag fra tannlegen din ',
-            innsendelsesfrist: getNow(),
+            innsendelsesfrist: innsendelsesfrist,
             dokumentreferanse: createDokumentreferanse(),
         };
         setModalDokumentasjonEtterspurt({...modalDokumentasjonEtterspurt, dokumenter: [...modalDokumentasjonEtterspurt.dokumenter, nyttDokument]});
