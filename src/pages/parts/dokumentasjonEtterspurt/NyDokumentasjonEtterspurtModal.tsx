@@ -241,8 +241,8 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
 
     const setDefaultDokumentasjonEtterspurt = () => {
         const nyttDokument: Dokument = {
-            dokumenttype: 'Tannlege',
-            tilleggsinformasjon: 'Kostnadsoverslag fra tannlegen din ',
+            dokumenttype: 'Husleiekvittering',
+            tilleggsinformasjon: 'Kvittering for betalt husleie forrige måned',
             innsendelsesfrist: innsendelsesfrist,
             dokumentreferanse: createDokumentreferanse(),
         };
