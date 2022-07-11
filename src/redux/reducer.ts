@@ -39,7 +39,7 @@ import {
     oHendelser,
     oNavKontor
 } from "./optics";
-import { createFsSoknadFromHendelser } from '../utils/hentSoknadUtils';
+import { createFsSoknadFromHendelser, sorterEtterDatoStigende } from '../utils/hentSoknadUtils';
 
 
 export const defaultDokumentlagerRef: DokumentlagerExtended = {
@@ -215,7 +215,9 @@ const reducer: Reducer<Model, Action> = (
                 type: "no.nav.digisos.digisos.soker.v1"
             } as FiksDigisosSokerJson
 
-            const fsSoknad = createFsSoknadFromHendelser(data.hendelser,fiksDigisosSokerJson, fiksDigisosId);
+
+            const sorterteHendelser = sorterEtterDatoStigende(data.hendelser, (hendelser) => hendelser.hendelsestidspunkt);
+            const fsSoknad = createFsSoknadFromHendelser(sorterteHendelser,fiksDigisosSokerJson, fiksDigisosId);
 
 
             return {
