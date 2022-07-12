@@ -19,7 +19,29 @@ const mergeSaksStatuserMedSammeReferanse = (saksStatuser: SaksStatus[]) => {
     return Array.from(mergetSaksStatuser.values())
 }
 
+const manglerUtbetalingsReferanse = (utbetalingsreferanse: string[] | null) => {
+    return !utbetalingsreferanse ||  utbetalingsreferanse.length === 0
+}
+
+
+const getSisteUnikeElement = <T>(array: T[], getTextProperty: (object: T) => string ) => {
+    const arrayOfKeys = array.map((el) => getTextProperty(el))
+    return array.filter((element, i) =>
+        arrayOfKeys.lastIndexOf(getTextProperty(element)) === i
+    );
+};
+export const sorterEtterDatoStigende = <T>(array: T[], getTextProperty: (object: T) => string ) => {
+    return array.sort(function(a, b) {
+        const keyA = new Date(getTextProperty(a)),
+            keyB = new Date(getTextProperty(b));
+        if (keyA < keyB) return -1;
+        if (keyA > keyB) return 1;
+        return 0;
+    });
+}
+
 export const createFsSoknadFromHendelser = (hendelser: Hendelse[], fiksDigisosSokerJson: FiksDigisosSokerJson, fiksDigisosId: string) => {
+
     const sisteSoknadsStatus = hendelser.slice().reverse().find((hendelse: Hendelse )=> {
         return hendelse.type === HendelseType.SoknadsStatus;
     }) as SoknadsStatus;
@@ -40,13 +62,19 @@ export const createFsSoknadFromHendelser = (hendelser: Hendelse[], fiksDigisosSo
         return hendelse.type === HendelseType.Utbetaling && !hendelse.saksreferanse;
     }) as Utbetaling[];
 
-    const vilkarUtenUtbetaling = hendelser.filter((hendelse: Hendelse )=> {
-        return hendelse.type === HendelseType.Vilkar && !hendelse.utbetalingsreferanse;
+    const vilkarUtenUtbetaling = hendelser.filter((hendelse: Hendelse, index, self )=> {
+        return hendelse.type === HendelseType.Vilkar && manglerUtbetalingsReferanse(hendelse.utbetalingsreferanse);
     }) as Vilkar[];
 
     const dokKravUtenUtbetaling = hendelser.filter((hendelse: Hendelse )=> {
-        return hendelse.type === HendelseType.Dokumentasjonkrav && !hendelse.utbetalingsreferanse;
+        return hendelse.type === HendelseType.Dokumentasjonkrav && manglerUtbetalingsReferanse(hendelse.utbetalingsreferanse);
     }) as Dokumentasjonkrav[];
+
+
+    const unikeVilkar = getSisteUnikeElement(vilkarUtenUtbetaling,(vilkar: Vilkar) => vilkar.vilkarreferanse );
+    const unikeDokkrav= getSisteUnikeElement(dokKravUtenUtbetaling,(dokkrav: Dokumentasjonkrav) => dokkrav.dokumentasjonkravreferanse);
+    const unikeUtbetalinger = getSisteUnikeElement(utbetalingerUtenSak, (utbetaling: Utbetaling) => utbetaling.utbetalingsreferanse);
+
 
     const saksStatuser= hendelser.filter((hendelse: Hendelse )=> {
         return hendelse.type === HendelseType.SaksStatus ;
@@ -98,9 +126,9 @@ export const createFsSoknadFromHendelser = (hendelser: Hendelse[], fiksDigisosSo
         navKontor: sisteTildeltNavkontor,
         dokumentasjonEtterspurt: sisteDokumentasjonEtterspurt,
         forelopigSvar: sisteForelopigSvar,
-        vilkar: vilkarUtenUtbetaling,
-        dokumentasjonkrav: dokKravUtenUtbetaling,
-        utbetalingerUtenSaksreferanse: utbetalingerUtenSak,
+        vilkar: unikeVilkar,
+        dokumentasjonkrav: unikeDokkrav,
+        utbetalingerUtenSaksreferanse: unikeUtbetalinger,
         saker: saker || [],
         fiksDigisosSokerJson: fiksDigisosSokerJson
     }
