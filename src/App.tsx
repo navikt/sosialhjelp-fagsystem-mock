@@ -7,6 +7,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import UserGuide from "./pages/UserGuide";
 import NotFound from "./components/notFound";
 import V3 from "./pages/V3";
+import "./App.css";
 
 const store = configureStore();
 
