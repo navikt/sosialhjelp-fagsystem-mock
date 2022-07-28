@@ -1,43 +1,38 @@
-import * as React from 'react';
-import {useEffect, useState} from "react";
+import * as React from "react";
+import { useEffect, useState } from "react";
+import { AbsolutePath } from "../../App";
 
 interface State {
-    showSplashScreen: boolean
+  showSplashScreen: boolean;
 }
 
 const initialState = {
-    showSplashScreen: true //seconds
+  showSplashScreen: true, //seconds
 };
 
-const SplashScreen: React.FC<{}> = ( {children}) => {
+const SplashScreen: React.FC<{}> = ({ children }) => {
+  const [state, setState] = useState(initialState as State);
 
-    const [state, setState] = useState(initialState as State);
-    const slutterMedSlash = window.location.href.endsWith('/');
+  console.log(window.location.href);
+  useEffect(() => {
+    setTimeout(() => {
+      setState({ ...state, showSplashScreen: false });
+    }, 4000);
+  });
 
-    useEffect(() => {
-        setTimeout(() => {
-            setState({...state, showSplashScreen: false})
-        }, 4000);
-    });
-
-
-    if (state.showSplashScreen){
-        return (
-            <div className={"splashscreen splashscreen-wrapper"}>
-                <div className={"splashscreen-content"}>
-                    <div className={'splashscreen-img'}>
-                        <img src={slutterMedSlash ? 'img/image3.png' : '/img/image3.png'} alt={''}/>
-                    </div>
-                </div>
-            </div>
-        )
-    }
-
+  if (state.showSplashScreen) {
     return (
-        <div>
-            {children}
+      <div className={"splashscreen splashscreen-wrapper"}>
+        <div className={"splashscreen-content"}>
+          <div className={"splashscreen-img"}>
+            <img src={`${AbsolutePath}/img/image3.png`} alt={""} />
+          </div>
         </div>
-    )
+      </div>
+    );
+  }
+
+  return <div>{children}</div>;
 };
 
 export default SplashScreen;

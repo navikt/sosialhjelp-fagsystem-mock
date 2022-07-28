@@ -1,0 +1,71 @@
+
+@keyframes fadeinfadeout {
+    0% { opacity: 0; }
+    50% { opacity: 1; }
+    100% { opacity: 0;}
+}
+/* Firefox < 16 */
+@-moz-keyframes fadeinfadeout {
+    0% { opacity: 0; }
+    50% { opacity: 1; }
+    100% { opacity: 0;}
+}
+/* Safari, Chrome and Opera > 12.1 */
+@-webkit-keyframes fadeinfadeout {
+    0% { opacity: 0; }
+    50% { opacity: 1; }
+    100% { opacity: 0;}
+}
+/* Internet Explorer */
+@-ms-keyframes fadeinfadeout {
+    0% { opacity: 0; }
+    50% { opacity: 1; }
+    100% { opacity: 0;}
+}
+/* Opera < 12.1 */
+@-o-keyframes fadeinfadeout {
+    0% { opacity: 0; }
+    50% { opacity: 1; }
+    100% { opacity: 0;}
+}
+
+
+/* Overstyr css fra dekoratør: */
+.informasjon-side a:not(.knapp) {
+   border-bottom: none !important;
+}
+
+.splashscreen {
+    background-color: white;
+    text-align: center;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.splashscreen-content {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.splashscreen-img {
+    height: 300px;
+}
+
+
+@media only screen and (max-width: 480px) {
+    .splashscreen-img {
+        height: 100px;
+    }
+}
+
+.splashscreen-img img {
+    height: 100%;
+
+    -webkit-animation: fadeinfadeout 5s; /* Safari, Chrome and Opera > 12.1 */
+    -moz-animation: fadeinfadeout 5s; /* Firefox < 16 */
+    -o-animation: fadeinfadeout 5s; /* Opera < 12.1 */
+    animation: fadeinfadeout 5s;
+}
