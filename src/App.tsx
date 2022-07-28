@@ -10,6 +10,8 @@ import V3 from "./pages/V3";
 
 const store = configureStore();
 
+export const AbsolutePath = "sosialhjelp/fagsystem-mock";
+
 const App: React.FC = () => {
   const language = "nb";
   return (
