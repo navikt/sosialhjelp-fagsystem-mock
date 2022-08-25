@@ -52,7 +52,6 @@ export const defaultSvarutRef: SvarutExtended = {
 };
 
 export const backendUrlsLocalTemplate: string = "http://localhost:8080/sosialhjelp/innsyn-api";
-export const backendUrlsLabsTemplate: string = "https://digisos.labs.nais.io/sosialhjelp/mock-alt-api/innsyn-api";
 export const backendUrlsMockTemplate: string = "https://digisos.ekstern.dev.nav.no/sosialhjelp/mock-alt-api/innsyn-api";
 export const backendUrlMockAltLocal: string = "http://localhost:8989/sosialhjelp/mock-alt-api/innsyn-api";
 
@@ -64,7 +63,6 @@ export const FIKSDIGISOSID_URL_PARAM = "fiksDigisosId";
 
 export const backendUrls: BackendUrls = {
     lokalt: backendUrlsLocalTemplate,
-    labs: backendUrlsLabsTemplate,
     mock: backendUrlsMockTemplate,
     mockalt: backendUrlMockAltLocal,
 };
@@ -121,9 +119,7 @@ const initialId: string = idFromQueryOrRandomId();
 
 const getBackendUrlTypeToUse = (): keyof BackendUrls => {
     const windowUrl = window.location.href;
-    if (windowUrl.includes('labs.nais.io')) {
-        return 'labs';
-    } else if (windowUrl.includes('ekstern.dev.nav.no')) {
+    if (windowUrl.includes('ekstern.dev.nav.no')) {
         return 'mock';
     } else {
         return 'mockalt';
