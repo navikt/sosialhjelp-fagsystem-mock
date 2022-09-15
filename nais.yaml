@@ -22,12 +22,6 @@ spec:
     path: /sosialhjelp/fagsystem-mock/isAlive
     initialDelay: 20
     timeout: 1
-  accessPolicy:
-    outbound:
-      external:
-        - host: "digisos.labs.nais.io"
-      rules:
-        - application: digisos
   prometheus:
     enabled: {{prometheusEnabled}}
     path: /actuator/metrics
