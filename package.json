@@ -21,7 +21,7 @@
     "react-swipeable-views": "^0.14.0",
     "redux": "^4.0.5",
     "redux-thunk": "^2.3.0",
-    "typeface-roboto": "0.0.75",
+    "typeface-roboto": "1.1.13",
     "uuid": "^8.3.2",
     "whatwg-fetch": "^3.6.2"
   },
