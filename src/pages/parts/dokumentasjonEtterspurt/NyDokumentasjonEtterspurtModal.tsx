@@ -213,7 +213,7 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
 
     const createDokumentreferanse = () => {
         const randomId = Math.round(Math.random() * 1_000_000);
-        return "woldena-dokref-" + randomId;
+        return "mock-dokref-" + randomId;
     }
 
     const sendDokumentasjonEtterspurt = () => {
