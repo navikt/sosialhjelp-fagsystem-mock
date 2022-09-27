@@ -1,4 +1,4 @@
-# Woldena - Sosialhjelp fagsystem
+# Sosialhjelp fagsystem-mock
 ## Supermoney granter
 Supereffektivt fagsystem for rask og korrekt behandling av sosialsøknader.
 
