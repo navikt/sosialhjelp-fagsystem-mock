@@ -43,7 +43,7 @@ const AppBarView: React.FC<Props> = (props: Props) => {
             <AppBar position="static">
                 <Toolbar>
                     <Typography variant="h6" className={classes.title}>
-                        Woldena™
+                        Fagsystem-mock
                     </Typography>
                     <IconButton className={classes.menuButton} color="inherit" aria-label="menu"
                                 onClick={() => dispatch(visSystemSettingsModal())}
