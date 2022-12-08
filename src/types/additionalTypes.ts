@@ -1,5 +1,4 @@
-
 export interface NavKontor {
-    id: string,
-    name: string
+  id: string;
+  name: string;
 }
