@@ -5,7 +5,7 @@ import makeStyles from "@material-ui/core/styles/makeStyles";
 import ListItemText from "@material-ui/core/ListItemText";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
-import {Button, Typography} from "@material-ui/core";
+import {Button, Checkbox, FormControlLabel, FormGroup, Typography} from "@material-ui/core";
 import Paper from "@material-ui/core/Paper";
 import {FsSoknad, Model} from "../../../redux/types";
 import {
@@ -52,6 +52,7 @@ const SoknadsOversiktPanel: React.FC<Props> = (props: Props) => {
     const classes = useStyles();
 
     const [fiksDigisosId, setFiksDigisosId] = useState("");
+    const [papirSoknad, setPapirSoknad] = useState(false);
 
     const getSoknadListItems = (soknader: FsSoknad[]): JSX.Element[] => {
         return soknader.map((soknad: FsSoknad, index: number) => {
@@ -82,6 +83,9 @@ const SoknadsOversiktPanel: React.FC<Props> = (props: Props) => {
                 margin="dense"
                 autoComplete="off"
             />
+          <FormGroup>
+            <FormControlLabel control={<Checkbox value={papirSoknad} onChange={() => setPapirSoknad((prev) => !prev)}/>} label="Opprett som papirsøknad" />
+          </FormGroup>
             <Button
                 id='opprett_ny_soknad_knapp'
                 onClick={() => {
@@ -90,7 +94,7 @@ const SoknadsOversiktPanel: React.FC<Props> = (props: Props) => {
                     } else if(fiksDigisosId.length !== 0 && model.soknader.find(soknad => soknad.fiksDigisosId === fiksDigisosId)){
                         props.dispatch(setAktivSoknad(fiksDigisosId));
                     } else {
-                        hentFsSoknadFraFiksEllerOpprettNy("001", model.backendUrlTypeToUse, props.dispatch);
+                        hentFsSoknadFraFiksEllerOpprettNy("001", model.backendUrlTypeToUse, props.dispatch, papirSoknad);
                     }
                     setFiksDigisosId('');
                 }}
