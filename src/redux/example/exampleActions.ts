@@ -1,8 +1,8 @@
-import {ExampleAction, ExampleActionTypeKeys} from "./exampleTypes";
+import { ExampleAction, ExampleActionTypeKeys } from "./exampleTypes";
 
 export const setAppName = (appname: string): ExampleAction => {
-    return {
-        type: ExampleActionTypeKeys.SET_APP_NAME,
-        appname
-    }
+  return {
+    type: ExampleActionTypeKeys.SET_APP_NAME,
+    appname,
+  };
 };
