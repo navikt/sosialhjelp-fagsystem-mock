@@ -231,7 +231,8 @@ export const opprettDigisosSakHvisDenIkkeFinnes = (
 export const hentFsSoknadFraFiksEllerOpprettNy = (
     fiksDigisosId: string,
     backendUrlTypeToUse: keyof BackendUrls,
-    dispatch: Dispatch
+    dispatch: Dispatch,
+    papirSoknad?: boolean,
 ) => {
     dispatch(turnOnLoader());
     const backendUrl = backendUrls[backendUrlTypeToUse];
@@ -251,7 +252,7 @@ export const hentFsSoknadFraFiksEllerOpprettNy = (
             }).catch((reason) =>  runOnErrorResponse(reason, dispatch))
                 .finally(() => dispatch(turnOffLoader()));;
         } else {
-            return opprettNyFsSoknadDersomDigisosIdIkkeEksistererHosFiks(fiksDigisosId, backendUrlTypeToUse, dispatch);
+            return opprettNyFsSoknadDersomDigisosIdIkkeEksistererHosFiks(fiksDigisosId, papirSoknad ?? false, backendUrlTypeToUse, dispatch);
         }
     }).catch((reason) => runOnErrorResponse(reason, dispatch))
         .finally(() => dispatch(turnOffLoader()));
@@ -259,6 +260,7 @@ export const hentFsSoknadFraFiksEllerOpprettNy = (
 
 export const opprettNyFsSoknadDersomDigisosIdIkkeEksistererHosFiks = (
     fiksDigisosId: string,
+    papirSoknad: boolean,
     backendUrlTypeToUse: keyof BackendUrls,
     dispatch: Dispatch
 ) => {
@@ -266,8 +268,8 @@ export const opprettNyFsSoknadDersomDigisosIdIkkeEksistererHosFiks = (
     const backendUrl = backendUrls[backendUrlTypeToUse];
     const fiksDigisosSokerJsonUtenNull = removeNullFieldsFromHendelser(getInitialFsSoknad(fiksDigisosId).fiksDigisosSokerJson);
 
-    const queryParam = `?${FIKSDIGISOSID_URL_PARAM}=${fiksDigisosId}`;
-    fetchPost(`${backendUrl}${oppdaterDigisosSakUrl}${queryParam}`, JSON.stringify(fiksDigisosSokerJsonUtenNull)).then((response: any) => {
+    const queryParams = `?${FIKSDIGISOSID_URL_PARAM}=${fiksDigisosId}&isPapirSoknad=${papirSoknad}`;
+    fetchPost(`${backendUrl}${oppdaterDigisosSakUrl}${queryParams}`, JSON.stringify(fiksDigisosSokerJsonUtenNull)).then((response: any) => {
         let fiksId = response.fiksDigisosId;
         dispatch(nyFsSoknad(fiksId));
         dispatch(setAktivSoknad(fiksId));
