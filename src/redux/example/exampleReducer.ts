@@ -1,24 +1,27 @@
-import {ExampleAction, ExampleActionTypeKeys, ExampleModel} from "./exampleTypes";
-import {Reducer} from "redux";
-
+import {
+  ExampleAction,
+  ExampleActionTypeKeys,
+  ExampleModel,
+} from "./exampleTypes";
+import { Reducer } from "redux";
 
 export const initialExampleModel: ExampleModel = {
-    appname: "Digisos Sosialhjelp Fagsystem Mock Example Redux",
+  appname: "Digisos Sosialhjelp Fagsystem Mock Example Redux",
 };
 
 const exampleReducer: Reducer<ExampleModel, ExampleAction> = (
-    state: ExampleModel = initialExampleModel,
-    action: ExampleAction
+  state: ExampleModel = initialExampleModel,
+  action: ExampleAction
 ) => {
-    switch (action.type) {
-        case ExampleActionTypeKeys.SET_APP_NAME: {
-            return {
-                appname: action.appname
-            };
-        }
-        default:
-            return state;
+  switch (action.type) {
+    case ExampleActionTypeKeys.SET_APP_NAME: {
+      return {
+        appname: action.appname,
+      };
     }
+    default:
+      return state;
+  }
 };
 
-export default exampleReducer
+export default exampleReducer;
