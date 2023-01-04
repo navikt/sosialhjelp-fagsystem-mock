@@ -1,6 +1,6 @@
 import * as React from "react";
 import { useEffect, useState } from "react";
-import { AbsolutePath } from "../../App";
+import logo from "./image3.png";
 
 interface State {
   showSplashScreen: boolean;
@@ -13,19 +13,18 @@ const initialState = {
 const SplashScreen: React.FC<{}> = ({ children }) => {
   const [state, setState] = useState(initialState as State);
 
-  console.log(window.location.href);
   useEffect(() => {
     setTimeout(() => {
       setState({ ...state, showSplashScreen: false });
     }, 4000);
-  });
+  }, []);
 
   if (state.showSplashScreen) {
     return (
       <div className={"splashscreen splashscreen-wrapper"}>
         <div className={"splashscreen-content"}>
           <div className={"splashscreen-img"}>
-            <img src={`${AbsolutePath}/img/image3.png`} alt={""} />
+            <img src={logo} alt={""} />
           </div>
         </div>
       </div>
