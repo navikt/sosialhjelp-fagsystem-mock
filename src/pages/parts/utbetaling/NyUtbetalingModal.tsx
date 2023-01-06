@@ -150,14 +150,17 @@ date.setDate(new Date().getDate() - 7); // En uke bak i tid
 date.setHours(12);
 const defaultForfallsdato = getShortDateISOString(date);
 
+date = new Date();
 date.setDate(new Date().getDate() - 8); // Åtte dager bak i tid
 date.setHours(12);
 const defaultUtbetalingsdato = getShortDateISOString(date);
 
+date = new Date();
 date.setDate(new Date().getDate() - 14); // To uker tilbake i tid
 date.setHours(12);
 const defaultFomDato = getShortDateISOString(date);
 
+date = new Date();
 date.setDate(new Date().getDate() + 14); // To uker fram i tid
 date.setHours(12);
 const defaultTomDato = getShortDateISOString(date);
