@@ -10,7 +10,7 @@
     "@material-ui/icons": "^4.11.2",
     "@material-ui/pickers": "^3.3.10",
     "@material-ui/styles": "^4.11.4",
-    "fp-ts": "^2.13.1",
+    "fp-ts": "^2.14.0",
     "monocle-ts": "^2.3.9",
     "prop-types": "^15.7.2",
     "react": "^17.0.2",
