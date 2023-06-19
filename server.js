@@ -18,8 +18,7 @@ const limiter = rateLimit({
 });
 
 app.use(limiter);
-app.set('trust proxy', 1)
-app.get(`${basePath}/ip`, (request, response) => response.send(request.ip))
+app.set('trust proxy', 1) // 1 reverse proxy
 
 app.use(basePath, express.static(buildPath, {index: false}));
 
