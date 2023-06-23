@@ -6,4 +6,4 @@ ENV CI=false
 # && npm run test
 RUN npm ci  && npm run build && npm install express
 
-CMD ["node", "q.js"]
+CMD ["node", "server.js"]
