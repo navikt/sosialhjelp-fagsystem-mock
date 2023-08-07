@@ -181,7 +181,6 @@ export const createFsSoknadFromHendelser = (
     return fsSaksStatus;
   });
 
-  console.log(saker, unikeDokkrav);
   const fsSoknad: FsSoknad = {
     fiksDigisosId,
     soknadsStatus: sisteSoknadsStatus,
