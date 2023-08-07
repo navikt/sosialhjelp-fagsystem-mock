@@ -1,0 +1,9 @@
+.toppPanel {
+    display:flex;
+    flex: 1 1 65%;
+    flex-direction: column;
+    gap: 16px;
+    align-items: flex-start;
+    word-break: break-word;
+    overflow-wrap: break-word;
+}

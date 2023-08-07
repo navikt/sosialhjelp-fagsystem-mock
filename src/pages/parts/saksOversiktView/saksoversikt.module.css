@@ -1,0 +1,10 @@
+.saker {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.selectedTabLabel {
+    font-weight: bold;
+}

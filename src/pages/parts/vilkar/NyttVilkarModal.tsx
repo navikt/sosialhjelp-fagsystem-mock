@@ -1,364 +1,333 @@
-import React, {useState} from 'react';
-import {AppState, DispatchProps} from "../../../redux/reduxTypes";
-import {connect} from "react-redux";
-import {createStyles, Modal, Theme} from "@material-ui/core";
+import React, { useEffect, useState } from "react";
+import { AppState, DispatchProps } from "../../../redux/reduxTypes";
+import { connect } from "react-redux";
 import {
-    nyttVilkar,
-    oppdaterVilkar,
-    sendNyHendelseOgOppdaterModel,
-    setAktivtVilkar,
-    skjulNyVilkarModal
+  nyttVilkar,
+  oppdaterVilkar,
+  sendNyHendelseOgOppdaterModel,
+  setAktivtVilkar,
+  skjulNyVilkarModal,
 } from "../../../redux/actions";
-import makeStyles from "@material-ui/core/styles/makeStyles";
-import Fade from "@material-ui/core/Fade";
-import Backdrop from "@material-ui/core/Backdrop";
-import {FsSoknad, Model} from "../../../redux/types";
+import { FsSoknad, Model } from "../../../redux/types";
 import {
-    generateFilreferanseId,
-    getAllUtbetalingsreferanser,
-    getNow, getSakTittelFraSaksreferanse,
-    getSakTittelOgNrFraUtbetalingsreferanse,
-    getVilkarByVilkarreferanse
+  generateFilreferanseId,
+  getAllUtbetalingsreferanser,
+  getNow,
+  getSakTittelFraSaksreferanse,
+  getSakTittelOgNrFraUtbetalingsreferanse,
+  getVilkarByVilkarreferanse,
 } from "../../../utils/utilityFunctions";
-import Grid from "@material-ui/core/Grid";
-import {HendelseType, Vilkar, VilkarStatus} from "../../../types/hendelseTypes";
-import Select from "@material-ui/core/Select";
-import MenuItem from "@material-ui/core/MenuItem";
-import InputLabel from "@material-ui/core/InputLabel";
-import FormControl from "@material-ui/core/FormControl";
-import Input from '@material-ui/core/Input';
-import Chip from '@material-ui/core/Chip';
-import useTheme from "@material-ui/core/styles/useTheme";
-import Button from "@material-ui/core/Button";
+import {
+  HendelseType,
+  Vilkar,
+  VilkarStatus,
+} from "../../../types/hendelseTypes";
 import CustomTextField from "../../../components/customTextField";
-
-const useStyles = makeStyles((theme: Theme) =>
-    createStyles({
-        modal: {
-            display: 'flex',
-            justifyContent: 'center',
-            '@media (min-height: 500px)': {
-                alignItems: 'center',
-            },
-            overflowY: 'auto',
-        },
-        paperback: {
-            backgroundColor: theme.palette.background.paper,
-            border: '2px solid #000',
-            boxShadow: theme.shadows[5],
-            padding: theme.spacing(2),
-            width:'100%',
-            display: 'flex',
-            flexwrap: 'wrap',
-        },
-        paperboys: {
-            backgroundColor: theme.palette.background.paper,
-            border: '2px solid #000',
-            boxShadow: theme.shadows[5],
-            padding: theme.spacing(2),
-            width:'100%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            flexwrap: 'wrap',
-        },
-        papertowel: {
-            backgroundColor: theme.palette.background.paper,
-            width:'80%',
-        },
-        textField: {
-            marginLeft: theme.spacing(2),
-            marginRight: theme.spacing(2),
-            width:'95%',
-        },
-        finalButtons: {
-            marginLeft: theme.spacing(2),
-            marginRight: theme.spacing(2),
-        },
-        formControl: {
-            marginLeft: theme.spacing(2),
-            marginRight: theme.spacing(2),
-            '@media (min-width: 860px)': {
-                minWidth: 200,
-            },
-            '@media (max-width: 859px)': {
-                minWidth: '50%',
-            },
-        },
-        formControl2: {
-            marginLeft: theme.spacing(2),
-            marginRight: theme.spacing(2),
-            minWidth: '80%',
-        },
-        fab: {
-            marginLeft: theme.spacing(1),
-            marginRight: theme.spacing(1),
-            margin: theme.spacing(1),
-        },
-        chips: {
-            display: 'flex',
-            flexWrap: 'wrap',
-        },
-        chip: {
-            margin: 2,
-        },
-    }),
-);
-
-function getStyles(name: string, personName: string[], theme: Theme) {
-    return {
-        fontWeight:
-            personName.indexOf(name) === -1
-                ? theme.typography.fontWeightRegular
-                : theme.typography.fontWeightMedium,
-    };
-}
+import {
+  Button,
+  Modal,
+  Select,
+  Chips,
+  Label,
+  Fieldset,
+  UNSAFE_Combobox,
+  BodyShort,
+} from "@navikt/ds-react";
+import globals from "../../../globals.module.css";
 
 interface OwnProps {
-    soknad: FsSoknad
+  soknad: FsSoknad;
 }
 
 interface StoreProps {
-    visNyVilkarModal: boolean;
-    model: Model
-    aktivtVilkar: string | undefined | null;
-    modalSaksreferanse: string|null;
+  visNyVilkarModal: boolean;
+  model: Model;
+  aktivtVilkar: string | undefined | null;
+  modalSaksreferanse: string | null;
 }
 
 type Props = DispatchProps & OwnProps & StoreProps;
 
 const initialVilkar: Vilkar = {
-    type: HendelseType.Vilkar,
-    hendelsestidspunkt: '',
-    vilkarreferanse: generateFilreferanseId(),
-    utbetalingsreferanse: null,
-    tittel: '',
-    beskrivelse: null,
-    status: null,
-    saksreferanse: '',
+  type: HendelseType.Vilkar,
+  hendelsestidspunkt: "",
+  vilkarreferanse: generateFilreferanseId(),
+  utbetalingsreferanse: null,
+  tittel: "",
+  beskrivelse: null,
+  status: null,
+  saksreferanse: "",
 };
 
 const defaultVilkar: Vilkar = {
-    type: HendelseType.Vilkar,
-    hendelsestidspunkt: '',
-    vilkarreferanse: generateFilreferanseId(),
-    utbetalingsreferanse: [],
-    tittel: 'Betale husleie',
-    beskrivelse: 'Du må betale din husleie hver måned.',
-    status: VilkarStatus.RELEVANT,
-    saksreferanse: null,
-};
-
-const ITEM_HEIGHT = 48;
-const ITEM_PADDING_TOP = 8;
-const MenuProps = {
-    PaperProps: {
-        style: {
-            maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-            width: 250,
-        },
-    },
+  type: HendelseType.Vilkar,
+  hendelsestidspunkt: "",
+  vilkarreferanse: generateFilreferanseId(),
+  utbetalingsreferanse: [],
+  tittel: "Betale husleie",
+  beskrivelse: "Du må betale din husleie hver måned.",
+  status: VilkarStatus.RELEVANT,
+  saksreferanse: null,
 };
 
 const NyttVilkarModal: React.FC<Props> = (props: Props) => {
-    const [modalVilkar, setModalVilkar] = useState<Vilkar>(initialVilkar);
-    const [visFeilmelding, setVisFeilmelding] = useState(false);
-    const [referansefeltDisabled, setReferansefeltDisabled] = useState(false);
-    const theme = useTheme();
+  const [modalVilkar, setModalVilkar] = useState<Vilkar>(initialVilkar);
 
-    const classes = useStyles();
-    const {visNyVilkarModal, dispatch, model, soknad, aktivtVilkar, modalSaksreferanse} = props;
+  const [visFeilmelding, setVisFeilmelding] = useState(false);
+  const [referansefeltDisabled, setReferansefeltDisabled] = useState(
+    !!props.aktivtVilkar,
+  );
 
-    function resetStateValues() {
-        setModalVilkar({...initialVilkar, vilkarreferanse: generateFilreferanseId()});
-        setVisFeilmelding(false);
-        setReferansefeltDisabled(false);
+  const {
+    visNyVilkarModal,
+    dispatch,
+    model,
+    soknad,
+    aktivtVilkar,
+    modalSaksreferanse,
+  } = props;
 
-        dispatch(setAktivtVilkar(null));
+  function resetStateValues() {
+    setModalVilkar({
+      ...initialVilkar,
+      vilkarreferanse: generateFilreferanseId(),
+    });
+    setVisFeilmelding(false);
+    setReferansefeltDisabled(false);
+
+    dispatch(setAktivtVilkar(null));
+  }
+
+  const sendVilkar = () => {
+    const nyHendelse: Vilkar = { ...modalVilkar };
+    nyHendelse.hendelsestidspunkt = getNow();
+
+    if (aktivtVilkar == null) {
+      sendNyHendelseOgOppdaterModel(
+        nyHendelse,
+        model,
+        dispatch,
+        nyttVilkar(soknad.fiksDigisosId, nyHendelse),
+      );
+    } else {
+      sendNyHendelseOgOppdaterModel(
+        nyHendelse,
+        model,
+        dispatch,
+        oppdaterVilkar(soknad.fiksDigisosId, nyHendelse),
+      );
+    }
+    dispatch(dispatch(skjulNyVilkarModal()));
+
+    setTimeout(() => {
+      resetStateValues();
+    }, 500);
+  };
+
+  const setDefaultVilkar = () => {
+    setModalVilkar({
+      ...defaultVilkar,
+      vilkarreferanse: generateFilreferanseId(),
+    });
+
+    const alleUtbetalingsreferanser = getAllUtbetalingsreferanser(soknad);
+    if (alleUtbetalingsreferanser.length > 0) {
+      setModalVilkar({
+        ...defaultVilkar,
+        vilkarreferanse: generateFilreferanseId(),
+        utbetalingsreferanse: [alleUtbetalingsreferanser[0]],
+      });
     }
 
-    const sendVilkar = () => {
-        const nyHendelse: Vilkar = {...modalVilkar};
-        nyHendelse.hendelsestidspunkt = getNow();
+    setVisFeilmelding(false);
+    setReferansefeltDisabled(false);
+  };
 
-        if (aktivtVilkar == null) {
-            sendNyHendelseOgOppdaterModel(nyHendelse, model, dispatch, nyttVilkar(soknad.fiksDigisosId, nyHendelse));
-        } else {
-            sendNyHendelseOgOppdaterModel(nyHendelse, model, dispatch, oppdaterVilkar(soknad.fiksDigisosId, nyHendelse));
-        }
-
-        dispatch(dispatch(skjulNyVilkarModal()));
+  const fyllInnAktivtVilkar = () => {
+    if (aktivtVilkar) {
+      let vilkar = getVilkarByVilkarreferanse(soknad.vilkar, aktivtVilkar);
+      if (vilkar) {
+        setModalVilkar(vilkar);
 
         setTimeout(() => {
-            resetStateValues();
+          setReferansefeltDisabled(true);
+        }, 10);
+      }
+    }
+  };
+
+  useEffect(() => {
+    Modal.setAppElement("#root");
+  }, []);
+
+  useEffect(() => {
+    if (aktivtVilkar && visNyVilkarModal) {
+      fyllInnAktivtVilkar();
+    }
+  }, [aktivtVilkar, visNyVilkarModal]);
+
+  const onChipToggled = (value: string) => {
+    const selected = modalVilkar?.utbetalingsreferanse ?? [];
+    setModalVilkar({
+      ...modalVilkar,
+      utbetalingsreferanse: selected?.includes(value)
+        ? selected.filter((x) => x !== value)
+        : [...selected, value],
+    });
+  };
+
+  const utbetalingsReferanser = getAllUtbetalingsreferanser(soknad);
+
+  return (
+    <Modal
+      aria-label="Nytt vilkår"
+      className={globals.modal}
+      open={visNyVilkarModal}
+      onClose={() => {
+        props.dispatch(skjulNyVilkarModal());
+        setTimeout(() => {
+          resetStateValues();
         }, 500);
-    };
-
-    const setDefaultVilkar = () => {
-        setModalVilkar({...defaultVilkar, vilkarreferanse: generateFilreferanseId()});
-
-        const alleUtbetalingsreferanser = getAllUtbetalingsreferanser(soknad);
-        if (alleUtbetalingsreferanser.length > 0) {
-            setModalVilkar({...defaultVilkar, vilkarreferanse: generateFilreferanseId(), utbetalingsreferanse: [alleUtbetalingsreferanser[0]]});
-        }
-
-        setVisFeilmelding(false);
-        setReferansefeltDisabled(false);
-    };
-
-    const fyllInnAktivtVilkar = () => {
-        if (aktivtVilkar) {
-            let vilkar = getVilkarByVilkarreferanse(soknad.vilkar, aktivtVilkar);
-            if (vilkar){
-                setModalVilkar(vilkar);
-
-                setTimeout(() => {
-                    setReferansefeltDisabled(true);
-                }, 10);
+      }}
+    >
+      <Modal.Content className={globals.modal_gridContent}>
+        <>
+          <CustomTextField
+            label={"Vilkårreferanse *"}
+            value={modalVilkar.vilkarreferanse}
+            setValue={(verdi: string) =>
+              setModalVilkar({ ...modalVilkar, vilkarreferanse: verdi })
             }
-        }
-    };
+            required={true}
+            referansefeltDisabled={referansefeltDisabled}
+            visFeilmelding={visFeilmelding}
+            setVisFeilmelding={setVisFeilmelding}
+          />
+          <CustomTextField
+            label={"Tittel"}
+            value={modalVilkar.tittel}
+            setValue={(verdi: string) =>
+              setModalVilkar({ ...modalVilkar, tittel: verdi })
+            }
+          />
+          <CustomTextField
+            label={"Beskrivelse"}
+            value={modalVilkar.beskrivelse}
+            setValue={(verdi: string) =>
+              setModalVilkar({ ...modalVilkar, beskrivelse: verdi })
+            }
+          />
+          <Select
+            size="small"
+            label="Status"
+            value={modalVilkar.status ? modalVilkar.status : ""}
+            onChange={(evt: any) =>
+              setModalVilkar({
+                ...modalVilkar,
+                status: evt.target.value as VilkarStatus,
+              })
+            }
+          >
+            <option value={VilkarStatus.RELEVANT}>Relevant</option>
+            <option value={VilkarStatus.ANNULLERT}>Annullert</option>
+            <option value={VilkarStatus.OPPFYLT}>Oppfylt</option>
+            <option value={VilkarStatus.IKKE_OPPFYLT}>Ikke oppfylt</option>
+          </Select>
+          <Select
+            size="small"
+            disabled={modalSaksreferanse != null}
+            label="Saksreferanse"
+            value={modalVilkar.saksreferanse ? modalVilkar.saksreferanse : ""}
+            onChange={(evt) =>
+              setModalVilkar({
+                ...modalVilkar,
+                saksreferanse: evt.target.value as string,
+              })
+            }
+          >
+            <option hidden disabled value=""></option>
 
-    return (
-        <Modal
-            aria-labelledby="transition-modal-title"
-            aria-describedby="transition-modal-description"
-            className={classes.modal}
-            closeAfterTransition
-            BackdropComponent={Backdrop}
-            BackdropProps={{
-                timeout: 500,
+            {soknad.saker.map((sak) => (
+              <option key={sak.referanse} value={sak.referanse}>
+                {sak.referanse +
+                  " " +
+                  getSakTittelFraSaksreferanse(soknad, sak.referanse)}
+              </option>
+            ))}
+          </Select>
+        </>
+        <div className={globals.fullWidthItem}>
+          <Fieldset
+            legend="Utbetalingsreferanser"
+            description={
+              utbetalingsReferanser.length > 0 && "Velg ønskede utbetalinger"
+            }
+          >
+            {utbetalingsReferanser.length > 0 ? (
+              <Chips id="utbetreferanser">
+                {getAllUtbetalingsreferanser(soknad).map((value) => {
+                  return (
+                    <Chips.Toggle
+                      key={value}
+                      className={globals.chip}
+                      onClick={() => onChipToggled(value)}
+                      selected={modalVilkar?.utbetalingsreferanse?.includes(
+                        value,
+                      )}
+                    >
+                      {value +
+                        " " +
+                        getSakTittelOgNrFraUtbetalingsreferanse(soknad, value)}
+                    </Chips.Toggle>
+                  );
+                })}
+              </Chips>
+            ) : (
+              <BodyShort>Søknaden har ingen utbetalinger</BodyShort>
+            )}
+          </Fieldset>
+        </div>
+
+        <div className={globals.buttonGroup}>
+          {aktivtVilkar == null && (
+            <Button
+              size="small"
+              variant="secondary-neutral"
+              onClick={() => {
+                setDefaultVilkar();
+              }}
+            >
+              Fyll ut alle felter
+            </Button>
+          )}
+          <Button
+            size="small"
+            variant={aktivtVilkar == null ? "primary" : "secondary-neutral"}
+            onClick={() => {
+              if (!visFeilmelding) {
+                sendVilkar();
+              }
             }}
-            open={visNyVilkarModal}
-            onRendered={() => fyllInnAktivtVilkar()}
-            onClose={() => {
-                props.dispatch(skjulNyVilkarModal());
-                setTimeout(() => {
-                    resetStateValues();
-                }, 500);
-            }}
-        >
-            <Fade in={visNyVilkarModal}>
-                <div className={classes.papertowel}>
-                    <div className={classes.paperback}>
-                        <Grid container spacing={3} justifyContent="center" alignItems="center">
-                            <Grid item key={'Grid: Vilkårreferanse'} xs={6} zeroMinWidth>
-                                <CustomTextField label={'Vilkårreferanse'} value={modalVilkar.vilkarreferanse}
-                                                 setValue={(verdi: string) => setModalVilkar({...modalVilkar, vilkarreferanse: verdi})}
-                                                 required={true} referansefeltDisabled={referansefeltDisabled}
-                                                 visFeilmelding={visFeilmelding} setVisFeilmelding={setVisFeilmelding} />
-                            </Grid>
-                            <Grid item key={'Grid: Tittel'} xs={6} zeroMinWidth>
-                                <CustomTextField label={'Tittel'} value={modalVilkar.tittel}
-                                                 setValue={(verdi: string) => setModalVilkar({...modalVilkar, tittel: verdi})} />
-                            </Grid>
-                            <Grid item key={'Grid: Beskrivelse'} xs={6} zeroMinWidth>
-                                <CustomTextField label={'Beskrivelse'} value={modalVilkar.beskrivelse}
-                                                 setValue={(verdi: string) => setModalVilkar({...modalVilkar, beskrivelse: verdi})} />
-                            </Grid>
-                            <Grid item key={'Status'} xs={6} zeroMinWidth>
-                                <FormControl className={classes.formControl}>
-                                    <InputLabel htmlFor="age-simple" shrink={true}>Status</InputLabel>
-                                    <Select
-                                        value={modalVilkar.status ? modalVilkar.status : ''}
-                                        onChange={(evt) => setModalVilkar({...modalVilkar, status: evt.target.value as VilkarStatus})}
-                                        inputProps={{
-                                            name: 'setStatus',
-                                            id: 'status',
-                                        }}
-                                    >
-                                        <MenuItem value={VilkarStatus.RELEVANT}>Relevant</MenuItem>
-                                        <MenuItem value={VilkarStatus.ANNULLERT}>Annullert</MenuItem>
-                                        <MenuItem value={VilkarStatus.OPPFYLT}>Oppfylt</MenuItem>
-                                        <MenuItem value={VilkarStatus.IKKE_OPPFYLT}>Ikke oppfylt</MenuItem>
-                                    </Select>
-                                </FormControl>
-                            </Grid>
-                            <Grid item key={'Saksreferanse'} xs={6} zeroMinWidth>
-                                <FormControl className={classes.formControl2} disabled={modalSaksreferanse != null}>
-                                    <InputLabel htmlFor="saksreferanse" shrink={true}>Saksreferanse</InputLabel>
-                                    <Select
-                                        value={modalVilkar.saksreferanse ? modalVilkar.saksreferanse : ''}
-                                        onChange={(evt) => setModalVilkar({...modalVilkar, saksreferanse: evt.target.value as string})}
-                                        inputProps={{
-                                            name: 'setSaksreferanse',
-                                            id: 'saksreferanse',
-                                        }}
-                                    >
-                                        {soknad.saker.map(sak => (
-                                            <MenuItem key={sak.referanse} value={sak.referanse}>{sak.referanse + ' ' + getSakTittelFraSaksreferanse(soknad, sak.referanse)}</MenuItem>
-                                        ))}
-                                    </Select>
-                                </FormControl>
-                            </Grid>
-                            <Grid item key={'Utbetalingsreferanse'} xs={6} zeroMinWidth>
-                                <FormControl className={classes.formControl2}>
-                                    <InputLabel htmlFor="age-simple" shrink={true}>Utbetalingsreferanse</InputLabel>
-                                    <Select
-                                        multiple
-                                        value={modalVilkar.utbetalingsreferanse ? modalVilkar.utbetalingsreferanse : []}
-                                        onChange={(event: any) => {
-                                            setModalVilkar({...modalVilkar, utbetalingsreferanse: event.target.value as string[]})
-                                        }}
-                                        input={<Input id="select-multiple-chip" />}
-                                        renderValue={selected => (
-                                            <div className={classes.chips}>
-                                                {(selected as string[]).map(value => (
-                                                    <Chip key={value} label={value} className={classes.chip} />
-                                                ))}
-                                            </div>
-                                        )}
-                                        MenuProps={MenuProps}
-                                    >
-                                        {getAllUtbetalingsreferanser(soknad).map(referanse => (
-                                            <MenuItem
-                                                key={referanse} value={referanse}
-                                                style={getStyles(referanse, modalVilkar.utbetalingsreferanse ? modalVilkar.utbetalingsreferanse : [], theme)}>
-                                                {referanse + ' ' + getSakTittelOgNrFraUtbetalingsreferanse(soknad, referanse)}
-                                            </MenuItem>
-                                        ))}
-                                    </Select>
-                                </FormControl>
-                            </Grid>
-                        </Grid>
-                    </div>
-                    <div className={classes.paperboys}>
-                        {(aktivtVilkar == null) &&
-                        <Button className={classes.finalButtons} variant="outlined" color={'default'} onClick={() => {
-                            setDefaultVilkar();
-                        }}>
-                            Fyll ut alle felter
-                        </Button>
-                        }
-                        <Button className={classes.finalButtons} variant={aktivtVilkar == null ? 'contained' : 'outlined'}
-                                color={aktivtVilkar == null ? 'primary' : 'secondary'} onClick={() => {
-                                    if (!visFeilmelding) {
-                                        sendVilkar();
-                                    }
-                                }}>
-                            {(aktivtVilkar == null ? "Legg til vilkår" : "Endre vilkår")}
-                        </Button>
-                    </div>
-                </div>
-            </Fade>
-        </Modal>
-    );
+          >
+            {aktivtVilkar == null ? "Legg til vilkår" : "Endre vilkår"}
+          </Button>
+        </div>
+      </Modal.Content>
+    </Modal>
+  );
 };
 
 const mapStateToProps = (state: AppState) => ({
-    visNyVilkarModal: state.model.visNyVilkarModal,
-    model: state.model,
-    aktivtVilkar: state.model.aktivtVilkar,
-    modalSaksreferanse: state.model.modalSaksreferanse
+  visNyVilkarModal: state.model.visNyVilkarModal,
+  model: state.model,
+  aktivtVilkar: state.model.aktivtVilkar,
+  modalSaksreferanse: state.model.modalSaksreferanse,
 });
 
 const mapDispatchToProps = (dispatch: any) => {
-    return {
-        dispatch
-    }
+  return {
+    dispatch,
+  };
 };
 
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps
-)(NyttVilkarModal);
+export default connect(mapStateToProps, mapDispatchToProps)(NyttVilkarModal);
