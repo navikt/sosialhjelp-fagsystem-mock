@@ -28,9 +28,7 @@ import {
   Modal,
   Select,
   Chips,
-  Label,
   Fieldset,
-  UNSAFE_Combobox,
   BodyShort,
 } from "@navikt/ds-react";
 import globals from "../../../globals.module.css";

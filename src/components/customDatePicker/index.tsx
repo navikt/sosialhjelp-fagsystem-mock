@@ -18,14 +18,7 @@ export const dateToString = (dato?: Date) => {
   return dato ? dayjs(dato).format("YYYY-MM-DD") : "";
 };
 const CustomDatePicker: React.FC<Props> = (props: Props) => {
-  const {
-    label,
-    value,
-    setValue,
-    required,
-    visFeilmelding,
-    setVisFeilmelding,
-  } = props;
+  const { label, value, setValue, visFeilmelding, setVisFeilmelding } = props;
   const { datepickerProps, inputProps } = useDatepicker({
     onDateChange: (date?: Date) => {
       setValue(dateToString(date));

@@ -22,7 +22,6 @@ import {
   formatDateString,
   getDateOrNullFromDateString,
   getNow,
-  getShortDateISOString,
 } from "../../../utils/utilityFunctions";
 
 import CustomTextField from "../../../components/customTextField";
