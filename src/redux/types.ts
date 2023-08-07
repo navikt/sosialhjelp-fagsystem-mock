@@ -10,12 +10,11 @@ import Hendelse, {
   VedtakFattet,
   Vilkar,
 } from "../types/hendelseTypes";
-import { PaletteType } from "@material-ui/core";
 
 export interface Model {
   loaderOn: boolean;
   backendUrlTypeToUse: keyof BackendUrls;
-  thememode: PaletteType;
+  thememode: "light" | "dark";
 
   soknader: FsSoknad[];
 
@@ -27,7 +26,7 @@ export interface Model {
   modalSaksreferanse: string | null;
   visSystemSettingsModal: boolean;
   visSnackbar: boolean;
-  snackbarVariant: "success" | "warning" | "error" | "info";
+  snackbarVariant: "success" | "error";
 
   aktivSoknad: string; // fiksDigisosId
   aktivUtbetaling: string | null; // utbetalingsreferanse

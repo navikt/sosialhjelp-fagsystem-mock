@@ -1,0 +1,20 @@
+.utbetalingModal {
+    align-items: center;
+}
+
+.togglegroup div[role="radiogroup"]{
+    min-width: 8rem;
+}
+
+.endreUtbetaling {
+    text-align: center;
+    margin-top: 1rem;
+}
+
+.datoGruppe {
+
+    display: flex;
+    flex-basis: initial;
+    gap: 16px;
+
+}

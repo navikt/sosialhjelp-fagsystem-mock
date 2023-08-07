@@ -1,148 +1,98 @@
-import React, {useState} from 'react';
-import {AppState, DispatchProps} from "../../../redux/reduxTypes";
-import {connect} from "react-redux";
-import Typography from "@material-ui/core/Typography";
-import {HendelseType, SaksStatus} from "../../../types/hendelseTypes";
-import Box from "@material-ui/core/Box";
-import makeStyles from "@material-ui/core/styles/makeStyles";
-import {createStyles} from "@material-ui/core";
-import {FsSaksStatus, FsSoknad, Model} from "../../../redux/types";
-import Button from "@material-ui/core/Button";
-import {sendNyHendelseOgOppdaterModel, oppdaterFsSaksStatus} from "../../../redux/actions";
-import {getNow} from "../../../utils/utilityFunctions";
-import TextField from "@material-ui/core/TextField";
-import EndreSaksstatusModal from "./EndreSaksstatusModal";
-import VedtakFattetModal from "./VedtakFattetModal";
+import React, { useState } from "react";
+import { AppState, DispatchProps } from "../../../redux/reduxTypes";
+import { connect } from "react-redux";
+
+import { HendelseType, SaksStatus } from "../../../types/hendelseTypes";
+
+import { FsSaksStatus, FsSoknad, Model } from "../../../redux/types";
+
+import {
+  sendNyHendelseOgOppdaterModel,
+  oppdaterFsSaksStatus,
+} from "../../../redux/actions";
+import { getNow } from "../../../utils/utilityFunctions";
+
+import EndreSaksstatusComponent from "./EndreSaksstatusComponent";
+import VedtakFattetView from "./VedtakFattetView";
 import UtbetalingOversiktView from "../utbetaling/UtbetalingOversiktView";
-
-
-const useStyles = makeStyles((theme) => {
-    return createStyles({
-        root: {
-            display: 'flex',
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            paddingTop: theme.spacing(2)
-        },
-        paper: {
-            padding: theme.spacing(2,2),
-            display: 'flex',
-            flexDirection: 'row',
-            justifyContent: 'center'
-        },
-        paper2: {
-            padding: theme.spacing(2,2),
-            display: 'flex',
-            flexDirection: 'row',
-            justifyContent: 'center',
-            marginLeft: theme.spacing(2)
-        },
-        box: {
-            marginTop: theme.spacing(3),
-            position: 'relative',
-        },
-        formControl: {
-            margin: theme.spacing(3)
-        },
-        addbox: {
-            margin: theme.spacing(2, 0, 2, 0),
-            display: 'flex',
-            flexDirection: 'row',
-            justifyContent: 'flex-start',
-            alignItems: 'center',
-            color: 'inherit'
-        },
-        fab: {
-            marginRight: theme.spacing(1)
-        },
-        horizontalWrapper: {
-            display: 'flex',
-            flexDirection: 'column'
-        },
-        horizontalBox: {
-            display: 'inline',
-            position: 'relative',
-        },
-        tittelButton: {
-            margin: theme.spacing(2, 1),
-        }
-    });
-});
-
+import { Button, Label, TextField } from "@navikt/ds-react";
+import globals from "../../../globals.module.css";
+import styles from "./saksoversikt.module.css";
 interface OwnProps {
-    idx: number,
-    sak: FsSaksStatus,
-    soknad: FsSoknad
+  sak: FsSaksStatus;
+  soknad: FsSoknad;
 }
 
 interface StoreProps {
-    model: Model
+  model: Model;
 }
 
 type Props = DispatchProps & OwnProps & StoreProps;
 
-
 const SaksTabView: React.FC<Props> = (props: Props) => {
-    const [tittel, setTittel] = useState('');
-    const {sak, dispatch, model, soknad}  = props;
-    const classes = useStyles();
+  const [tittel, setTittel] = useState("");
+  const { sak, dispatch, model, soknad } = props;
 
-    return (
-        <div>
-            <br/>
-            <TextField
-                id="outlined-name"
-                label={'Ny tittel på sak'}
-                value={tittel}
-                onChange={(evt) => setTittel(evt.target.value)}
-                margin="dense"
-                variant="filled"
-                autoComplete="off"
-            />
-            <Button className={classes.tittelButton} variant="contained" onClick={() => {
-                if (tittel.length > 0){
-                    const nyHendelse: SaksStatus = {
-                        type: HendelseType.SaksStatus,
-                        hendelsestidspunkt: getNow(),
-                        referanse: sak.referanse,
-                        tittel: tittel,
-                        status: sak.status
-                    };
+  return (
+    <div className={styles.saker}>
+      <div className={globals.flexRow}>
+        <TextField
+          size="small"
+          label={"Ny tittel på sak"}
+          value={tittel}
+          onChange={(evt) => setTittel(evt.target.value)}
+          autoComplete="off"
+        />
+        <Button
+          size="small"
+          onClick={() => {
+            if (tittel.length > 0) {
+              const nyHendelse: SaksStatus = {
+                type: HendelseType.SaksStatus,
+                hendelsestidspunkt: getNow(),
+                referanse: sak.referanse,
+                tittel: tittel,
+                status: sak.status,
+              };
 
-                    sendNyHendelseOgOppdaterModel(nyHendelse, model, dispatch, oppdaterFsSaksStatus(soknad.fiksDigisosId, nyHendelse));
-                }
-            } }>Oppdater tittel</Button>
+              sendNyHendelseOgOppdaterModel(
+                nyHendelse,
+                model,
+                dispatch,
+                oppdaterFsSaksStatus(soknad.fiksDigisosId, nyHendelse)
+              );
+            }
+          }}
+          variant="secondary-neutral"
+        >
+          Oppdater tittel
+        </Button>
+      </div>
 
-            <br/>
-            <Box className={classes.box}>
-                <Typography variant={"subtitle1"}>
-                    Endre saksstatus:
-                    <EndreSaksstatusModal soknad={soknad} sak={sak}/>
-                </Typography>
-            </Box>
+      <EndreSaksstatusComponent soknad={soknad} sak={sak} />
+      <div>
+        <Label as={"p"} spacing>
+          Utbetalinger
+        </Label>
 
-            <br/>
-            <Typography>Utbetaling</Typography>
-            <UtbetalingOversiktView utbetalingListe={sak.utbetalinger} saksreferanse={sak.referanse}/>
-            <br/>
-            <Typography>Vedtak fattet</Typography>
-            <VedtakFattetModal soknad={soknad} sak={sak}/>
-            <br/>
-        </div>
-    );
+        <UtbetalingOversiktView
+          utbetalingListe={sak.utbetalinger}
+          saksreferanse={sak.referanse}
+        />
+      </div>
+      <VedtakFattetView soknad={soknad} sak={sak} />
+    </div>
+  );
 };
 
 const mapStateToProps = (state: AppState) => ({
-    model: state.model
+  model: state.model,
 });
 
 const mapDispatchToProps = (dispatch: any) => {
-    return {
-        dispatch
-    }
+  return {
+    dispatch,
+  };
 };
 
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps
-)(SaksTabView);
+export default connect(mapStateToProps, mapDispatchToProps)(SaksTabView);

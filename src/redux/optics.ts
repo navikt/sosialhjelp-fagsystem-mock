@@ -1,21 +1,21 @@
 import { fromTraversable, Lens, Prism } from "monocle-ts/es6";
 import { Model } from "./types";
 import { FsSaksStatus, FsSoknad } from "./types";
-import Hendelse, {
+import  {
   Dokumentasjonkrav,
   Utbetaling,
   Vilkar,
 } from "../types/hendelseTypes";
-import { array } from "fp-ts/lib/Array";
+import * as Array from "fp-ts/Array";
 
 export const oFsSoknader = Lens.fromProp<Model>()("soknader");
-export const oFsSoknaderTraversal = fromTraversable(array)<FsSoknad>();
+export const oFsSoknaderTraversal = fromTraversable(Array.Traversable)<FsSoknad>();
 export const oGetFsSoknadPrism = (
   fiksDigisosId: string
 ): Prism<FsSoknad, FsSoknad> =>
   Prism.fromPredicate((fsSoknad) => fsSoknad.fiksDigisosId === fiksDigisosId);
 
-export const oFiksDigisosId = Lens.fromPath<FsSoknad>()(["fiksDigisosId"]);
+
 
 export const oHendelser = Lens.fromPath<FsSoknad>()([
   "fiksDigisosSokerJson",
@@ -23,7 +23,7 @@ export const oHendelser = Lens.fromPath<FsSoknad>()([
   "soker",
   "hendelser",
 ]);
-export const oHendelserTraversal = fromTraversable(array)<Hendelse>();
+
 
 // Soknad
 export const oGetSoknad = (forFiksDigisosId: string) => {
@@ -45,7 +45,7 @@ export const oForelopigSvar = Lens.fromProp<FsSoknad>()("forelopigSvar");
 
 // sak
 export const oFsSaker = Lens.fromProp<FsSoknad>()("saker");
-export const oFsSakerTraversal = fromTraversable(array)<FsSaksStatus>();
+export const oFsSakerTraversal = fromTraversable(Array.Traversable)<FsSaksStatus>();
 export const oFsSaksStatusPrism = (
   referanse: string
 ): Prism<FsSaksStatus, FsSaksStatus> =>
@@ -54,7 +54,7 @@ export const oFsSaksStatusStatus = Lens.fromProp<FsSaksStatus>()("status");
 
 // Vilkår
 export const oFsVilkar = Lens.fromProp<FsSoknad>()("vilkar");
-export const oFsVilkarTraversal = fromTraversable(array)<Vilkar>();
+export const oFsVilkarTraversal = fromTraversable(Array.Traversable)<Vilkar>();
 export const oFsVilkarPrism = (referanse: string): Prism<Vilkar, Vilkar> =>
   Prism.fromPredicate((vilkar) => vilkar.vilkarreferanse === referanse);
 
@@ -62,7 +62,7 @@ export const oFsVilkarPrism = (referanse: string): Prism<Vilkar, Vilkar> =>
 export const oFsDokumentasjonkrav =
   Lens.fromProp<FsSoknad>()("dokumentasjonkrav");
 export const oFsDokumentasjonkravTraversal =
-  fromTraversable(array)<Dokumentasjonkrav>();
+  fromTraversable(Array.Traversable)<Dokumentasjonkrav>();
 export const oFsDokumentasjonkravPrism = (
   referanse: string
 ): Prism<Dokumentasjonkrav, Dokumentasjonkrav> =>
@@ -76,7 +76,7 @@ export const oFsUtbetalinger = Lens.fromProp<FsSoknad>()(
 );
 export const oFsSaksStatusUtbetalinger =
   Lens.fromProp<FsSaksStatus>()("utbetalinger");
-export const oFsUtbetalingerTraversal = fromTraversable(array)<Utbetaling>();
+export const oFsUtbetalingerTraversal = fromTraversable(Array.Traversable)<Utbetaling>();
 export const oFsUtbetalingPrism = (
   referanse: string
 ): Prism<Utbetaling, Utbetaling> =>
@@ -84,8 +84,4 @@ export const oFsUtbetalingPrism = (
     (utbetaling) => utbetaling.utbetalingsreferanse === referanse
   );
 
-export const oGetFsSaksStatus = (forFsSaksStatusReferanse: string) => {
-  return oFsSaker
-    .composeTraversal(oFsSakerTraversal)
-    .composePrism(oFsSaksStatusPrism(forFsSaksStatusReferanse));
-};
+

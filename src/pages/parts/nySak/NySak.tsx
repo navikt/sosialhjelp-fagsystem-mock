@@ -1,132 +1,96 @@
-import React, {useState} from 'react';
-import {AppState, DispatchProps} from "../../../redux/reduxTypes";
-import {connect} from "react-redux";
-import {createStyles, Modal, Theme} from "@material-ui/core";
-import {nyFsSaksStatus, sendNyHendelseOgOppdaterModel, skjulNySakModal} from "../../../redux/actions";
-import makeStyles from "@material-ui/core/styles/makeStyles";
-import Fade from "@material-ui/core/Fade";
-import Backdrop from "@material-ui/core/Backdrop";
-import {FsSoknad, Model} from "../../../redux/types";
+import React, { useEffect, useState } from "react";
+import { AppState, DispatchProps } from "../../../redux/reduxTypes";
+import { connect } from "react-redux";
+import { Button, Modal, TextField } from "@navikt/ds-react";
+import globals from "../../../globals.module.css";
 import {
-    fsSaksStatusToSaksStatus,
-    generateNyFsSaksStatus,
-    getFsSoknadByFiksDigisosId
+  nyFsSaksStatus,
+  sendNyHendelseOgOppdaterModel,
+  skjulNySakModal,
+} from "../../../redux/actions";
+
+import { FsSoknad, Model } from "../../../redux/types";
+import {
+  fsSaksStatusToSaksStatus,
+  generateNyFsSaksStatus,
+  getFsSoknadByFiksDigisosId,
 } from "../../../utils/utilityFunctions";
-import TextField from "@material-ui/core/TextField";
-import Box from "@material-ui/core/Box";
-import Button from "@material-ui/core/Button";
 
-const useStyles = makeStyles((theme: Theme) =>
-    createStyles({
-        modal: {
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-        },
-        paper: {
-            backgroundColor: theme.palette.background.paper,
-            border: '2px solid #000',
-            boxShadow: theme.shadows[5],
-            padding: theme.spacing(2, 4, 3),
-        },
-        textField: {
-            marginRight: theme.spacing(2),
-        },
-        addbox: {
-            display: 'flex',
-            flexDirection: 'row',
-            justifyContent: 'flex-start',
-            alignItems: 'center'
-        },
-        fab: {
-            marginRight: theme.spacing(1),
-        },
-    }),
-);
-
-
-interface OwnProps {
-}
+interface OwnProps {}
 
 interface StoreProps {
-    visNySakModal: boolean;
-    model: Model
+  visNySakModal: boolean;
+  model: Model;
 }
 
 type Props = DispatchProps & OwnProps & StoreProps;
 
-
 const NySakModal: React.FC<Props> = (props: Props) => {
-    const [tittel, setTittel] = useState('');
-    const classes = useStyles();
-    const {visNySakModal, dispatch, model} = props;
+  const [tittel, setTittel] = useState("");
 
+  const { visNySakModal, dispatch, model } = props;
 
-    return (
-        <Modal
-            aria-labelledby="transition-modal-title"
-            aria-describedby="transition-modal-description"
-            className={classes.modal}
-            closeAfterTransition
-            BackdropComponent={Backdrop}
-            BackdropProps={{
-                timeout: 500,
-            }}
-            open={visNySakModal}
-            onClose={() => props.dispatch(skjulNySakModal())}
-        >
-            <Fade in={visNySakModal}>
-                <div className={classes.paper}>
-                    <Box className={classes.addbox}>
-                        <TextField
-                            id="nySakTittel"
-                            label={'Tittel på ny sak'}
-                            className={classes.textField}
-                            value={tittel}
-                            onChange={(evt) => setTittel(evt.target.value)}
-                            // InputLabelProps={{
-                            //     shrink: true,
-                            // }}
-                            margin="dense"
-                            variant="filled"
-                            autoComplete="off"
-                        />
-                        <Button variant="contained" color={'default'} onClick={() => {
-                            const fsSoknader = model.soknader;
-                            if (fsSoknader){
-                                const fsSoknad: FsSoknad | undefined = getFsSoknadByFiksDigisosId(fsSoknader, model.aktivSoknad);
-                                if (fsSoknad) {
-                                    const fsSaksStatus = generateNyFsSaksStatus(tittel.length !== 0 ? tittel : null);
-                                    const nyHendelse = fsSaksStatusToSaksStatus(fsSaksStatus);
+  useEffect(() => {
+    Modal.setAppElement("#root");
+  }, []);
 
-                                    sendNyHendelseOgOppdaterModel(nyHendelse, model, dispatch, nyFsSaksStatus(model.aktivSoknad, fsSaksStatus));
+  const onOpprettSak = () => {
+    const fsSoknader = model.soknader;
+    if (fsSoknader) {
+      const fsSoknad: FsSoknad | undefined = getFsSoknadByFiksDigisosId(
+        fsSoknader,
+        model.aktivSoknad,
+      );
+      if (fsSoknad) {
+        const fsSaksStatus = generateNyFsSaksStatus(
+          tittel.length !== 0 ? tittel : null,
+        );
+        const nyHendelse = fsSaksStatusToSaksStatus(fsSaksStatus);
 
-                                    setTittel('');
-                                }
-                            }
-                            dispatch(skjulNySakModal());
-                        }}>
-                            Opprett sak
-                        </Button>
-                    </Box>
-                </div>
-            </Fade>
-        </Modal>
-    );
+        sendNyHendelseOgOppdaterModel(
+          nyHendelse,
+          model,
+          dispatch,
+          nyFsSaksStatus(model.aktivSoknad, fsSaksStatus),
+        );
+
+        setTittel("");
+      }
+    }
+    dispatch(skjulNySakModal());
+  };
+  return (
+    <Modal
+      aria-labelledby="Opprett ny sak"
+      className={globals.modal}
+      open={visNySakModal}
+      onClose={() => props.dispatch(skjulNySakModal())}
+    >
+      <Modal.Content className={globals.flexRow}>
+        <TextField
+          label="Tittel på ny sak"
+          value={tittel}
+          onChange={(evt) => setTittel(evt.target.value)}
+          autoComplete="off"
+          size="small"
+        />
+        <Button onClick={onOpprettSak} size="small">
+          Opprett sak
+        </Button>
+      </Modal.Content>
+    </Modal>
+  );
 };
 
 const mapStateToProps = (state: AppState) => ({
-    visNySakModal: state.model.visNySakModal,
-    model: state.model
+  visNySakModal: state.model.visNySakModal,
+  model: state.model,
 });
 
 const mapDispatchToProps = (dispatch: any) => {
-    return {
-        dispatch
-    }
+  return {
+    dispatch,
+  };
 };
 
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps
-)(NySakModal);
+export default connect(mapStateToProps, mapDispatchToProps)(NySakModal);

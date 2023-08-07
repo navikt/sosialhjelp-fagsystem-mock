@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { AppState, DispatchProps } from "../../../redux/reduxTypes";
 import { connect } from "react-redux";
-import { createStyles, Modal, Theme } from "@material-ui/core";
+
 import {
   nyUtbetaling,
   oppdaterUtbetaling,
@@ -9,9 +9,7 @@ import {
   setAktivUtbetaling,
   skjulNyUtbetalingModal,
 } from "../../../redux/actions";
-import makeStyles from "@material-ui/core/styles/makeStyles";
-import Fade from "@material-ui/core/Fade";
-import Backdrop from "@material-ui/core/Backdrop";
+
 import { FsSoknad, Model } from "../../../redux/types";
 import {
   formatDateString,
@@ -21,98 +19,24 @@ import {
   getShortDateISOString,
   getUtbetalingByUtbetalingsreferanse,
 } from "../../../utils/utilityFunctions";
-import Grid from "@material-ui/core/Grid";
-import TextField from "@material-ui/core/TextField";
+
 import {
   HendelseType,
   Utbetaling,
   UtbetalingStatus,
 } from "../../../types/hendelseTypes";
-import Select from "@material-ui/core/Select";
-import MenuItem from "@material-ui/core/MenuItem";
-import Typography from "@material-ui/core/Typography";
-import ButtonGroup from "@material-ui/core/ButtonGroup";
-import Button from "@material-ui/core/Button";
-import InputLabel from "@material-ui/core/InputLabel";
-import FormControl from "@material-ui/core/FormControl";
-import CustomTextField from "../../../components/customTextField";
-import CustomKeyboardDatePicker from "../../../components/customKeyboardDatePicker";
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    modal: {
-      display: "flex",
-      justifyContent: "center",
-      "@media (min-height: 500px)": {
-        alignItems: "center",
-      },
-      overflowY: "auto",
-    },
-    paper: {
-      backgroundColor: theme.palette.background.paper,
-      border: "2px solid #000",
-      boxShadow: theme.shadows[5],
-      padding: theme.spacing(2, 4, 3),
-    },
-    paperback: {
-      backgroundColor: theme.palette.background.paper,
-      border: "2px solid #000",
-      boxShadow: theme.shadows[5],
-      padding: theme.spacing(2),
-      width: "100%",
-      display: "flex",
-      flexwrap: "wrap",
-    },
-    paperboys: {
-      backgroundColor: theme.palette.background.paper,
-      border: "2px solid #000",
-      boxShadow: theme.shadows[5],
-      padding: theme.spacing(2),
-      width: "100%",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      flexwrap: "wrap",
-    },
-    papertowel: {
-      backgroundColor: theme.palette.background.paper,
-      width: "80%",
-    },
-    textField: {
-      marginLeft: theme.spacing(2),
-      marginRight: theme.spacing(2),
-      width: "95%",
-    },
-    otherField: {
-      marginLeft: theme.spacing(2),
-      marginRight: theme.spacing(2),
-    },
-    finalButtons: {
-      marginLeft: theme.spacing(2),
-      marginRight: theme.spacing(2),
-    },
-    formControl: {
-      marginLeft: theme.spacing(2),
-      marginRight: theme.spacing(2),
-      "@media (min-width: 1100px)": {
-        minWidth: 200,
-      },
-      "@media (max-width: 1099px)": {
-        width: "100%",
-      },
-    },
-    formControl2: {
-      marginLeft: theme.spacing(2),
-      marginRight: theme.spacing(2),
-      minWidth: "80%",
-    },
-    fab: {
-      marginLeft: theme.spacing(1),
-      marginRight: theme.spacing(1),
-      margin: theme.spacing(1),
-    },
-  })
-);
+import CustomTextField from "../../../components/customTextField";
+import CustomDatePicker from "../../../components/customDatePicker";
+import {
+  Button,
+  Modal,
+  Select,
+  TextField,
+  ToggleGroup,
+} from "@navikt/ds-react";
+import globals from "../../../globals.module.css";
+import styles from "./utbetaling.module.css";
 
 interface OwnProps {
   soknad: FsSoknad;
@@ -186,24 +110,12 @@ const defaultUtbetaling: Utbetaling = {
 const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
   const [modalUtbetaling, setModalUtbetaling] =
     useState<Utbetaling>(initialUtbetaling);
-  const [annenMottakerTrueVariant, setAnnenMottakerTrueVariant] = useState<
-    "text" | "outlined" | "contained" | undefined
-  >("text");
-  const [annenMottakerFalseVariant, setAnnenMottakerFalseVariant] = useState<
-    "text" | "outlined" | "contained" | undefined
-  >("text");
   const [kontonummerLabelPlaceholder, setKontonummerLabelPlaceholder] =
     useState("Kontonummer (Ikke satt)");
-  const [forfallsdatoDatePickerIsOpen, setForfallsdatoDatePickerIsOpen] =
-    useState(false);
-  const [utbetalingsdatoDatePickerIsOpen, setUtbetalingsdatoDatePickerIsOpen] =
-    useState(false);
-  const [fomDatePickerIsOpen, setFomDatePickerIsOpen] = useState(false);
-  const [tomDatePickerIsOpen, setTomDatePickerIsOpen] = useState(false);
+
   const [visFeilmelding, setVisFeilmelding] = useState(false);
   const [referansefeltDisabled, setReferansefeltDisabled] = useState(false);
 
-  const classes = useStyles();
   const {
     visNyUtbetalingModal,
     dispatch,
@@ -219,13 +131,7 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
       utbetalingsreferanse: generateFilreferanseId(),
     });
 
-    setAnnenMottakerTrueVariant("text");
-    setAnnenMottakerFalseVariant("text");
     setKontonummerLabelPlaceholder("Kontonummer (Ikke satt)");
-    setForfallsdatoDatePickerIsOpen(false);
-    setUtbetalingsdatoDatePickerIsOpen(false);
-    setFomDatePickerIsOpen(false);
-    setTomDatePickerIsOpen(false);
     setVisFeilmelding(false);
     setReferansefeltDisabled(false);
     dispatch(setAktivUtbetaling(null));
@@ -251,14 +157,14 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
         nyHendelse,
         model,
         dispatch,
-        nyUtbetaling(soknad.fiksDigisosId, nyHendelse)
+        nyUtbetaling(soknad.fiksDigisosId, nyHendelse),
       );
     } else {
       sendNyHendelseOgOppdaterModel(
         nyHendelse,
         model,
         dispatch,
-        oppdaterUtbetaling(soknad.fiksDigisosId, nyHendelse)
+        oppdaterUtbetaling(soknad.fiksDigisosId, nyHendelse),
       );
     }
 
@@ -283,13 +189,7 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
       });
     }
 
-    setAnnenMottakerTrueVariant("text");
-    setAnnenMottakerFalseVariant("contained");
     setKontonummerLabelPlaceholder("Kontonummer");
-    setForfallsdatoDatePickerIsOpen(false);
-    setUtbetalingsdatoDatePickerIsOpen(false);
-    setFomDatePickerIsOpen(false);
-    setTomDatePickerIsOpen(false);
     setVisFeilmelding(false);
     setReferansefeltDisabled(false);
   };
@@ -298,25 +198,15 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
     if (aktivUtbetaling) {
       let utbetaling = getUtbetalingByUtbetalingsreferanse(
         soknad,
-        aktivUtbetaling
+        aktivUtbetaling,
       );
       if (utbetaling) {
         setModalUtbetaling(utbetaling);
 
-        setAnnenMottakerTrueVariant(
-          utbetaling.annenMottaker == null || !utbetaling.annenMottaker
-            ? "text"
-            : "contained"
-        );
-        setAnnenMottakerFalseVariant(
-          utbetaling.annenMottaker == null || utbetaling.annenMottaker
-            ? "text"
-            : "contained"
-        );
         setKontonummerLabelPlaceholder(
           utbetaling.kontonummer == null
             ? "Kontonummer (Ikke satt)"
-            : "Kontonummer"
+            : "Kontonummer",
         );
         setTimeout(() => {
           setReferansefeltDisabled(true);
@@ -330,18 +220,16 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
     }
   };
 
+  useEffect(() => {
+    if (visNyUtbetalingModal) {
+      fyllInnAktivUtbetaling();
+    }
+  }, [visNyUtbetalingModal]);
   return (
     <Modal
-      aria-labelledby="transition-modal-title"
-      aria-describedby="transition-modal-description"
-      className={classes.modal}
-      closeAfterTransition
-      BackdropComponent={Backdrop}
-      BackdropProps={{
-        timeout: 500,
-      }}
+      aria-label="Ny utbetaling"
+      className={globals.modal}
       open={visNyUtbetalingModal}
-      onRendered={() => fyllInnAktivUtbetaling()}
       onClose={() => {
         props.dispatch(skjulNyUtbetalingModal());
         setTimeout(() => {
@@ -349,293 +237,196 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
         }, 500);
       }}
     >
-      <Fade in={visNyUtbetalingModal}>
-        <div className={classes.papertowel}>
-          <div className={classes.paperback}>
-            <Grid
-              container
-              spacing={3}
-              justifyContent="center"
-              alignItems="center"
-            >
-              <Grid item key={"Grid: Utbetalingsreferanse"} xs={6} zeroMinWidth>
-                <CustomTextField
-                  label={"Utbetalingsreferanse"}
-                  value={modalUtbetaling.utbetalingsreferanse}
-                  setValue={(verdi: string) =>
-                    setModalUtbetaling({
-                      ...modalUtbetaling,
-                      utbetalingsreferanse: verdi,
-                    })
-                  }
-                  required={true}
-                  referansefeltDisabled={referansefeltDisabled}
-                  visFeilmelding={visFeilmelding}
-                  setVisFeilmelding={setVisFeilmelding}
-                />
-              </Grid>
-              <Grid item key={"Saksreferanse"} xs={6} zeroMinWidth>
-                <FormControl
-                  className={classes.formControl2}
-                  disabled={modalSaksreferanse != null}
-                >
-                  <InputLabel htmlFor="saksreferanse" shrink={true}>
-                    Saksreferanse
-                  </InputLabel>
-                  <Select
-                    value={
-                      modalUtbetaling.saksreferanse
-                        ? modalUtbetaling.saksreferanse
-                        : ""
-                    }
-                    onChange={(evt) =>
-                      setModalUtbetaling({
-                        ...modalUtbetaling,
-                        saksreferanse: evt.target.value as string,
-                      })
-                    }
-                    inputProps={{
-                      name: "setSaksreferanse",
-                      id: "saksreferanse",
-                    }}
-                  >
-                    {soknad.saker.map((sak) => (
-                      <MenuItem key={sak.referanse} value={sak.referanse}>
-                        {sak.referanse +
-                          " " +
-                          getSakTittelFraSaksreferanse(soknad, sak.referanse)}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Grid>
-              <Grid item key={"Grid: Beløp"} xs={6} zeroMinWidth>
-                <CustomTextField
-                  label={"Beløp"}
-                  value={modalUtbetaling.belop}
-                  inputType={"number"}
-                  setValue={(verdi: number) =>
-                    setModalUtbetaling({ ...modalUtbetaling, belop: +verdi })
-                  }
-                />
-              </Grid>
-              <Grid item key={"Grid: Beskrivelse"} xs={6} zeroMinWidth>
-                <CustomTextField
-                  label={"Beskrivelse (Stønadstype)"}
-                  value={modalUtbetaling.beskrivelse}
-                  setValue={(verdi: string) =>
-                    setModalUtbetaling({
-                      ...modalUtbetaling,
-                      beskrivelse: verdi,
-                    })
-                  }
-                />
-              </Grid>
-              <Grid item key={"grid: Forfallsdato"} xs={3} zeroMinWidth>
-                <CustomKeyboardDatePicker
-                  label={"Forfallsdato"}
-                  value={modalUtbetaling.forfallsdato}
-                  setValue={(verdi: string) =>
-                    setModalUtbetaling({
-                      ...modalUtbetaling,
-                      forfallsdato: verdi,
-                    })
-                  }
-                  isOpen={forfallsdatoDatePickerIsOpen}
-                  setIsOpen={setForfallsdatoDatePickerIsOpen}
-                />
-              </Grid>
-              <Grid item key={"grid: Utbetalingsdato"} xs={3} zeroMinWidth>
-                <CustomKeyboardDatePicker
-                  label={"Utbetalingsdato"}
-                  value={modalUtbetaling.utbetalingsdato}
-                  setValue={(verdi: string) =>
-                    setModalUtbetaling({
-                      ...modalUtbetaling,
-                      utbetalingsdato: verdi,
-                    })
-                  }
-                  isOpen={utbetalingsdatoDatePickerIsOpen}
-                  setIsOpen={setUtbetalingsdatoDatePickerIsOpen}
-                />
-              </Grid>
-              <Grid item key={"grid: fom"} xs={3} zeroMinWidth>
-                <CustomKeyboardDatePicker
-                  label={"fom"}
-                  value={modalUtbetaling.fom}
-                  setValue={(verdi: string) =>
-                    setModalUtbetaling({ ...modalUtbetaling, fom: verdi })
-                  }
-                  isOpen={fomDatePickerIsOpen}
-                  setIsOpen={setFomDatePickerIsOpen}
-                />
-              </Grid>
-              <Grid item key={"grid: tom"} xs={3} zeroMinWidth>
-                <CustomKeyboardDatePicker
-                  label={"tom"}
-                  value={modalUtbetaling.tom}
-                  setValue={(verdi: string) =>
-                    setModalUtbetaling({ ...modalUtbetaling, tom: verdi })
-                  }
-                  isOpen={tomDatePickerIsOpen}
-                  setIsOpen={setTomDatePickerIsOpen}
-                />
-              </Grid>
-              <Grid item key={"Status"} xs={3} zeroMinWidth>
-                <FormControl className={classes.formControl}>
-                  <InputLabel htmlFor="age-simple" shrink={true}>
-                    Status
-                  </InputLabel>
-                  <Select
-                    value={modalUtbetaling.status ? modalUtbetaling.status : ""}
-                    onChange={(evt) =>
-                      setModalUtbetaling({
-                        ...modalUtbetaling,
-                        status: evt.target.value as UtbetalingStatus,
-                      })
-                    }
-                    inputProps={{
-                      name: "setStatus",
-                      id: "status",
-                    }}
-                  >
-                    <MenuItem value={UtbetalingStatus.PLANLAGT_UTBETALING}>
-                      Planlagt Utbetaling
-                    </MenuItem>
-                    <MenuItem value={UtbetalingStatus.UTBETALT}>
-                      Utbetalt
-                    </MenuItem>
-                    <MenuItem value={UtbetalingStatus.STOPPET}>
-                      Stoppet
-                    </MenuItem>
-                    <MenuItem value={UtbetalingStatus.ANNULLERT}>
-                      Annullert
-                    </MenuItem>
-                  </Select>
-                </FormControl>
-              </Grid>
-              <Grid item key={"Annen mottaker"} xs={3} zeroMinWidth>
-                <Typography
-                  variant={"subtitle1"}
-                  className={classes.otherField}
-                >
-                  {"Annen mottaker:  "}
-                  <ButtonGroup
-                    color="primary"
-                    aria-label="full-width contained primary button group"
-                  >
-                    <Button
-                      variant={annenMottakerTrueVariant}
-                      onClick={() => {
-                        setModalUtbetaling({
-                          ...modalUtbetaling,
-                          annenMottaker: true,
-                        });
-                        setAnnenMottakerTrueVariant("contained");
-                        setAnnenMottakerFalseVariant("text");
-                      }}
-                    >
-                      Ja
-                    </Button>
-                    <Button
-                      variant={annenMottakerFalseVariant}
-                      onClick={() => {
-                        setModalUtbetaling({
-                          ...modalUtbetaling,
-                          annenMottaker: false,
-                        });
-                        setAnnenMottakerTrueVariant("text");
-                        setAnnenMottakerFalseVariant("contained");
-                      }}
-                    >
-                      Nei
-                    </Button>
-                  </ButtonGroup>
-                </Typography>
-              </Grid>
-              <Grid item key={"Grid: Mottaker"} xs={6} zeroMinWidth>
-                <CustomTextField
-                  label={"Mottaker"}
-                  value={modalUtbetaling.mottaker}
-                  setValue={(verdi: string) =>
-                    setModalUtbetaling({ ...modalUtbetaling, mottaker: verdi })
-                  }
-                />
-              </Grid>
-              <Grid item key={"Kontonummer"} xs={6} zeroMinWidth>
-                <TextField
-                  id="filled-number"
-                  label={kontonummerLabelPlaceholder}
-                  onChange={(evt) => {
-                    setModalUtbetaling({
-                      ...modalUtbetaling,
-                      kontonummer: evt.target.value,
-                    });
-                    if (evt.target.value.length === 11) {
-                      setKontonummerLabelPlaceholder("Kontonummer");
-                    } else {
-                      setKontonummerLabelPlaceholder("Kontonummer (Ikke satt)");
-                    }
-                  }}
-                  type="number"
-                  className={classes.textField}
-                  value={
-                    modalUtbetaling.kontonummer
-                      ? modalUtbetaling.kontonummer
-                      : ""
-                  }
-                  InputLabelProps={{
-                    shrink: true,
-                  }}
-                  autoComplete="off"
-                  margin="normal"
-                  variant="filled"
-                />
-              </Grid>
-              <Grid item key={"Grid: Utbetalingsmetode"} xs={6} zeroMinWidth>
-                <CustomTextField
-                  label={"Utbetalingsmetode"}
-                  value={modalUtbetaling.utbetalingsmetode}
-                  setValue={(verdi: string) =>
-                    setModalUtbetaling({
-                      ...modalUtbetaling,
-                      utbetalingsmetode: verdi,
-                    })
-                  }
-                />
-              </Grid>
-            </Grid>
-          </div>
-          <div className={classes.paperboys}>
-            {aktivUtbetaling == null && (
-              <Button
-                className={classes.finalButtons}
-                variant="outlined"
-                color={"default"}
-                onClick={() => {
-                  setDefaultUtbetaling();
-                }}
-              >
-                Fyll ut alle felter
-              </Button>
-            )}
+      <Modal.Content className={`${globals.modal_gridContent} `}>
+        <CustomTextField
+          label={"Utbetalingsreferanse *"}
+          value={modalUtbetaling.utbetalingsreferanse}
+          setValue={(verdi: string) =>
+            setModalUtbetaling({
+              ...modalUtbetaling,
+              utbetalingsreferanse: verdi,
+            })
+          }
+          required={true}
+          referansefeltDisabled={referansefeltDisabled}
+          visFeilmelding={visFeilmelding}
+          setVisFeilmelding={setVisFeilmelding}
+        />
+        <Select
+          size="small"
+          disabled={modalSaksreferanse != null}
+          label="Saksreferanse"
+          value={modalUtbetaling.saksreferanse ?? ""}
+          onChange={(evt) =>
+            setModalUtbetaling({
+              ...modalUtbetaling,
+              saksreferanse: evt.target.value as string,
+            })
+          }
+        >
+          <option hidden disabled value=""></option>
+
+          {soknad.saker.map((sak) => (
+            <option key={sak.referanse} value={sak.referanse}>
+              {sak.referanse +
+                " " +
+                getSakTittelFraSaksreferanse(soknad, sak.referanse)}
+            </option>
+          ))}
+        </Select>
+        <CustomTextField
+          label={"Beløp"}
+          value={modalUtbetaling.belop}
+          inputType={"number"}
+          setValue={(verdi: number) =>
+            setModalUtbetaling({ ...modalUtbetaling, belop: +verdi })
+          }
+        />
+        <CustomTextField
+          label={"Beskrivelse (Stønadstype)"}
+          value={modalUtbetaling.beskrivelse}
+          setValue={(verdi: string) =>
+            setModalUtbetaling({
+              ...modalUtbetaling,
+              beskrivelse: verdi,
+            })
+          }
+        />
+        <div className={styles.datoGruppe}>
+          <CustomDatePicker
+            label={"Forfallsdato"}
+            value={modalUtbetaling.forfallsdato}
+            setValue={(verdi: string) =>
+              setModalUtbetaling({
+                ...modalUtbetaling,
+                forfallsdato: verdi,
+              })
+            }
+          />
+          <CustomDatePicker
+            label={"Utbetalingsdato"}
+            value={modalUtbetaling.utbetalingsdato}
+            setValue={(verdi: string) =>
+              setModalUtbetaling({
+                ...modalUtbetaling,
+                utbetalingsdato: verdi,
+              })
+            }
+          />
+        </div>
+        <div className={styles.datoGruppe}>
+          <CustomDatePicker
+            label={"fom"}
+            value={modalUtbetaling.fom}
+            setValue={(verdi: string) =>
+              setModalUtbetaling({ ...modalUtbetaling, fom: verdi })
+            }
+          />
+          <CustomDatePicker
+            label={"tom"}
+            value={modalUtbetaling.tom}
+            setValue={(verdi: string) =>
+              setModalUtbetaling({ ...modalUtbetaling, tom: verdi })
+            }
+          />
+        </div>
+
+        <Select
+          label="Status"
+          size="small"
+          value={modalUtbetaling.status ?? ""}
+          onChange={(evt) =>
+            setModalUtbetaling({
+              ...modalUtbetaling,
+              status: evt.target.value as UtbetalingStatus,
+            })
+          }
+        >
+          <option hidden disabled value=""></option>
+          <option value={UtbetalingStatus.PLANLAGT_UTBETALING}>
+            Planlagt Utbetaling
+          </option>
+          <option value={UtbetalingStatus.UTBETALT}>Utbetalt</option>
+          <option value={UtbetalingStatus.STOPPET}>Stoppet</option>
+          <option value={UtbetalingStatus.ANNULLERT}>Annullert</option>
+        </Select>
+        <ToggleGroup
+          size="small"
+          label="Annen mottaker"
+          className={styles.togglegroup}
+          value={modalUtbetaling.annenMottaker ? "ja" : "nei"}
+          onChange={(value) =>
+            setModalUtbetaling({
+              ...modalUtbetaling,
+              annenMottaker: value === "ja",
+            })
+          }
+        >
+          <ToggleGroup.Item value="ja">Ja</ToggleGroup.Item>
+          <ToggleGroup.Item value="nei">Nei</ToggleGroup.Item>
+        </ToggleGroup>
+        <CustomTextField
+          label={"Mottaker"}
+          value={modalUtbetaling.mottaker}
+          setValue={(verdi: string) =>
+            setModalUtbetaling({ ...modalUtbetaling, mottaker: verdi })
+          }
+        />
+        <TextField
+          size="small"
+          label={kontonummerLabelPlaceholder}
+          onChange={(evt) => {
+            setModalUtbetaling({
+              ...modalUtbetaling,
+              kontonummer: evt.target.value,
+            });
+            if (evt.target.value.length === 11) {
+              setKontonummerLabelPlaceholder("Kontonummer");
+            } else {
+              setKontonummerLabelPlaceholder("Kontonummer (Ikke satt)");
+            }
+          }}
+          className={globals.textField}
+          value={modalUtbetaling.kontonummer ?? ""}
+          autoComplete="off"
+        />
+        <CustomTextField
+          label={"Utbetalingsmetode"}
+          value={modalUtbetaling.utbetalingsmetode}
+          setValue={(verdi: string) =>
+            setModalUtbetaling({
+              ...modalUtbetaling,
+              utbetalingsmetode: verdi,
+            })
+          }
+        />
+        <div className={globals.buttonGroup}>
+          {aktivUtbetaling == null && (
             <Button
-              className={classes.finalButtons}
-              variant={aktivUtbetaling == null ? "contained" : "outlined"}
-              color={aktivUtbetaling == null ? "primary" : "secondary"}
+              size="small"
+              variant="secondary-neutral"
               onClick={() => {
-                if (!visFeilmelding) {
-                  sendUtbetaling();
-                }
+                setDefaultUtbetaling();
               }}
             >
-              {aktivUtbetaling == null
-                ? "Legg til utbetaling"
-                : "Endre utbetaling"}
+              Fyll ut alle felter
             </Button>
-          </div>
+          )}
+          <Button
+            size="small"
+            variant={aktivUtbetaling == null ? "primary" : "secondary-neutral"}
+            onClick={() => {
+              if (!visFeilmelding) {
+                sendUtbetaling();
+              }
+            }}
+          >
+            {aktivUtbetaling == null
+              ? "Legg til utbetaling"
+              : "Endre utbetaling"}
+          </Button>
         </div>
-      </Fade>
+      </Modal.Content>
     </Modal>
   );
 };

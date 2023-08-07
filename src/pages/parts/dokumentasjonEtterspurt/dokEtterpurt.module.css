@@ -1,0 +1,22 @@
+@layer global, components;
+
+@layer components {
+    .dokEtterspurt{
+        margin-bottom: 50px;
+    }
+
+    .dokEtterspurtOversikt {
+        flex-basis: 100%;
+        max-width:100%;
+        margin-top: 1rem;
+    }
+
+    .fyllut_knapper {
+        max-width: 100%;
+        display:flex;
+        gap: 16px;
+        flex: 1 0 100%;
+        margin-top: 16px;
+        flex-wrap:wrap;
+    }
+}
