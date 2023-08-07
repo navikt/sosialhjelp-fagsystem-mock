@@ -1,7 +1,7 @@
 name: 'Remove old images'
 on:
   schedule:
-    - cron: '*/5 * * * *'
+    - cron: '0 5 * * 1'
 
 jobs:
   remove-images:
