@@ -1,0 +1,41 @@
+name: 'Remove old images'
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+
+jobs:
+  remove-images:
+    name: 'Remove old images job except 50 most recent'
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+    steps:
+      - uses: actions/delete-package-versions@v4
+        with:
+          package-name: 'sosialhjelp-fagsystem-mock/sosialhjelp-fagsystem-mock'
+          package-type: 'container'
+          min-versions-to-keep: 50
+  
+  remove-images2:
+    name: 'Remove all images from package'
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+    steps:
+      - uses: actions/delete-package-versions@v4
+        with:
+          package-name: 'sosialhjelp-woldena-tm/sosialhjelp-woldena-tm'
+          package-type: 'container'
+          num-old-versions-to-delete: 100
+          
+  remove-images3:
+    name: 'Remove all images'
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+    steps:
+      - uses: actions/delete-package-versions@v4
+        with:
+          package-name: 'sosialhjelp-woldena-tm/sosialhjelp-fagsystem-mock'
+          package-type: 'container'
+          num-old-versions-to-delete: 100
