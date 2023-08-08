@@ -18,12 +18,13 @@ import globals from "../../../globals.module.css";
 
 interface StoreProps {
   soknad: FsSoknad | undefined;
+  visNyUtbetalingModal: boolean;
 }
 
 type Props = DispatchProps & StoreProps;
 
 const BehandleSoknadPanel: React.FC<Props> = (props: Props) => {
-  const { soknad } = props;
+  const { soknad, visNyUtbetalingModal } = props;
 
   if (soknad) {
     return (
@@ -55,7 +56,7 @@ const BehandleSoknadPanel: React.FC<Props> = (props: Props) => {
         <NyDokumentasjonEtterspurt soknad={soknad} />
         <NyttVilkarModal soknad={soknad} />
         <NyttDokumentasjonkravModal soknad={soknad} />
-        <NyUtbetalingModal soknad={soknad} />
+        {visNyUtbetalingModal && <NyUtbetalingModal soknad={soknad} />}
       </div>
     );
   }
@@ -72,6 +73,7 @@ const mapStateToProps = (state: AppState) => {
   const { soknader } = state.model;
   return {
     soknad: getFsSoknadByFiksDigisosId(soknader, aktivSoknad),
+    visNyUtbetalingModal: state.model.visNyUtbetalingModal,
   };
 };
 
@@ -83,5 +85,5 @@ const mapDispatchToProps = (dispatch: any) => {
 
 export default connect(
   mapStateToProps,
-  mapDispatchToProps
+  mapDispatchToProps,
 )(BehandleSoknadPanel);

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { AppState, DispatchProps } from "../../../redux/reduxTypes";
 import { connect } from "react-redux";
 
@@ -11,7 +11,7 @@ import {
 } from "../../../redux/actions";
 
 import { FsSoknad, Model } from "../../../redux/types";
-import {
+import useEffectOnce, {
   formatDateString,
   generateFilreferanseId,
   getNow,
@@ -125,6 +125,34 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
     modalSaksreferanse,
   } = props;
 
+  useEffectOnce(() => {
+    if (aktivUtbetaling) {
+      let utbetaling = getUtbetalingByUtbetalingsreferanse(
+        soknad,
+        aktivUtbetaling,
+      );
+      if (utbetaling) {
+        setModalUtbetaling(utbetaling);
+
+        setKontonummerLabelPlaceholder(
+          utbetaling.kontonummer == null
+            ? "Kontonummer (Ikke satt)"
+            : "Kontonummer",
+        );
+        setTimeout(() => {
+          setReferansefeltDisabled(true);
+        }, 10);
+      }
+    } else {
+      setModalUtbetaling((current) => {
+        return {
+          ...current,
+          saksreferanse: modalSaksreferanse,
+        };
+      });
+    }
+  });
+
   const resetStateValues = () => {
     setModalUtbetaling({
       ...initialUtbetaling,
@@ -167,12 +195,9 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
         oppdaterUtbetaling(soknad.fiksDigisosId, nyHendelse),
       );
     }
+    resetStateValues();
 
     dispatch(dispatch(skjulNyUtbetalingModal()));
-
-    setTimeout(() => {
-      resetStateValues();
-    }, 500);
   };
 
   const setDefaultUtbetaling = () => {
@@ -194,47 +219,15 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
     setReferansefeltDisabled(false);
   };
 
-  const fyllInnAktivUtbetaling = () => {
-    if (aktivUtbetaling) {
-      let utbetaling = getUtbetalingByUtbetalingsreferanse(
-        soknad,
-        aktivUtbetaling,
-      );
-      if (utbetaling) {
-        setModalUtbetaling(utbetaling);
-
-        setKontonummerLabelPlaceholder(
-          utbetaling.kontonummer == null
-            ? "Kontonummer (Ikke satt)"
-            : "Kontonummer",
-        );
-        setTimeout(() => {
-          setReferansefeltDisabled(true);
-        }, 10);
-      }
-    } else {
-      setModalUtbetaling({
-        ...modalUtbetaling,
-        saksreferanse: modalSaksreferanse,
-      });
-    }
-  };
-
-  useEffect(() => {
-    if (visNyUtbetalingModal) {
-      fyllInnAktivUtbetaling();
-    }
-  }, [visNyUtbetalingModal]);
   return (
     <Modal
       aria-label="Ny utbetaling"
       className={globals.modal}
       open={visNyUtbetalingModal}
       onClose={() => {
+        resetStateValues();
+
         props.dispatch(skjulNyUtbetalingModal());
-        setTimeout(() => {
-          resetStateValues();
-        }, 500);
       }}
     >
       <Modal.Content className={`${globals.modal_gridContent} `}>
@@ -405,9 +398,7 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
             <Button
               size="small"
               variant="secondary-neutral"
-              onClick={() => {
-                setDefaultUtbetaling();
-              }}
+              onClick={setDefaultUtbetaling}
             >
               Fyll ut alle felter
             </Button>

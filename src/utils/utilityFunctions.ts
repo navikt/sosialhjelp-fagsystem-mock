@@ -7,6 +7,7 @@ import Hendelse, {
   Vilkar,
 } from "../types/hendelseTypes";
 import { FsSaksStatus, FsSoknad } from "../redux/types";
+import { EffectCallback, useEffect } from "react";
 
 export const removeNullFieldsFromHendelser = (
   fiksDigisosSokerJson: FiksDigisosSokerJson,
@@ -278,3 +279,10 @@ export const getDokumentasjonkravByDokumentasjonkravreferanse = (
     return s.dokumentasjonkravreferanse === referanse;
   });
 };
+
+export function useEffectOnce(effect: EffectCallback) {
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(effect, []);
+}
+
+export default useEffectOnce;

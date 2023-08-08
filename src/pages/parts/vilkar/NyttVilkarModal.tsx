@@ -141,8 +141,12 @@ const NyttVilkarModal: React.FC<Props> = (props: Props) => {
     setReferansefeltDisabled(false);
   };
 
-  const fyllInnAktivtVilkar = () => {
-    if (aktivtVilkar) {
+  useEffect(() => {
+    Modal.setAppElement("#root");
+  }, []);
+
+  useEffect(() => {
+    if (aktivtVilkar && visNyVilkarModal) {
       let vilkar = getVilkarByVilkarreferanse(soknad.vilkar, aktivtVilkar);
       if (vilkar) {
         setModalVilkar(vilkar);
@@ -152,17 +156,7 @@ const NyttVilkarModal: React.FC<Props> = (props: Props) => {
         }, 10);
       }
     }
-  };
-
-  useEffect(() => {
-    Modal.setAppElement("#root");
-  }, []);
-
-  useEffect(() => {
-    if (aktivtVilkar && visNyVilkarModal) {
-      fyllInnAktivtVilkar();
-    }
-  }, [aktivtVilkar, visNyVilkarModal]);
+  }, [aktivtVilkar, visNyVilkarModal, soknad.vilkar]);
 
   const onChipToggled = (value: string) => {
     const selected = modalVilkar?.utbetalingsreferanse ?? [];

@@ -150,12 +150,13 @@ const NyttDokumentasjonkravModal: React.FC<Props> = (props: Props) => {
     setReferansefeltDisabled(false);
   };
 
-  const fyllInnAktivtDokumentasjonkrav = () => {
-    if (aktivtDokumentasjonkrav) {
-      let dokumentasjonkrav = getDokumentasjonkravByDokumentasjonkravreferanse(
-        soknad.dokumentasjonkrav,
-        aktivtDokumentasjonkrav,
-      );
+  useEffect(() => {
+    if (aktivtDokumentasjonkrav && visNyDokumentasjonkravModal) {
+      const dokumentasjonkrav =
+        getDokumentasjonkravByDokumentasjonkravreferanse(
+          soknad.dokumentasjonkrav,
+          aktivtDokumentasjonkrav,
+        );
       if (dokumentasjonkrav) {
         setModalDokumentasjonkrav(dokumentasjonkrav);
         setTimeout(() => {
@@ -163,13 +164,11 @@ const NyttDokumentasjonkravModal: React.FC<Props> = (props: Props) => {
         }, 10);
       }
     }
-  };
-
-  useEffect(() => {
-    if (aktivtDokumentasjonkrav && visNyDokumentasjonkravModal) {
-      fyllInnAktivtDokumentasjonkrav();
-    }
-  }, [aktivtDokumentasjonkrav, visNyDokumentasjonkravModal]);
+  }, [
+    aktivtDokumentasjonkrav,
+    visNyDokumentasjonkravModal,
+    soknad.dokumentasjonkrav,
+  ]);
 
   useEffect(() => {
     Modal.setAppElement("#root");
