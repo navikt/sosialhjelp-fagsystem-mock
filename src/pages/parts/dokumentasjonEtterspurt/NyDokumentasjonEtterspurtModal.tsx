@@ -331,10 +331,10 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
             onClick={onAddClick()}
             size="small"
           >
-            Legg til dokumentkrav
+            Legg til
           </Button>
           <Button
-            variant="secondary-neutral"
+            variant="tertiary-neutral"
             size="small"
             onClick={() => {
               setDefaultDokumentasjonEtterspurt();
