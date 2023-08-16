@@ -30,11 +30,6 @@
 }
 
 
-/* Overstyr css fra dekoratør: */
-.informasjon-side a:not(.knapp) {
-   border-bottom: none !important;
-}
-
 .splashscreen {
     background-color: white;
     text-align: center;

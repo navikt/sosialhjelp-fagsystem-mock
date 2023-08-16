@@ -167,7 +167,7 @@ export const initialModel: Model = {
 
 const reducer: Reducer<Model, Action> = (
   state: Model = initialModel,
-  action: Action
+  action: Action,
 ) => {
   switch (action.type) {
     case ActionTypeKeys.SET_AKTIV_SOKNAD: {
@@ -256,7 +256,6 @@ const reducer: Reducer<Model, Action> = (
     }
     case ActionTypeKeys.HENTET_SOKNAD: {
       const { fiksDigisosId, data } = action;
-
       const soknadFinnes = state.soknader.find((soknad: FsSoknad) => {
         return soknad.fiksDigisosId === fiksDigisosId;
       });
@@ -274,12 +273,12 @@ const reducer: Reducer<Model, Action> = (
 
       const sorterteHendelser = sorterEtterDatoStigende(
         data.hendelser,
-        (hendelser) => hendelser.hendelsestidspunkt
+        (hendelser) => hendelser.hendelsestidspunkt,
       );
       const fsSoknad = createFsSoknadFromHendelser(
         sorterteHendelser,
         fiksDigisosSokerJson,
-        fiksDigisosId
+        fiksDigisosId,
       );
 
       return {
@@ -445,7 +444,7 @@ const reducer: Reducer<Model, Action> = (
             .utbetalingerUtenSaksreferanse.find(
               (r) =>
                 r.utbetalingsreferanse ===
-                oppdatertUtbetaling.utbetalingsreferanse
+                oppdatertUtbetaling.utbetalingsreferanse,
             )
         ) {
           // Fjern fra liste over utbetalinger uten saksreferanse
@@ -455,8 +454,8 @@ const reducer: Reducer<Model, Action> = (
               utbetalingliste.filter(
                 (utbetaling) =>
                   utbetaling.utbetalingsreferanse !==
-                  oppdatertUtbetaling.utbetalingsreferanse
-              )
+                  oppdatertUtbetaling.utbetalingsreferanse,
+              ),
             )(s1);
           // Legg til i liste over utbetalinger under den valgte saken
           return oGetSoknad(forFiksDigisosId)
@@ -476,7 +475,7 @@ const reducer: Reducer<Model, Action> = (
             .composeLens(oFsSaksStatusUtbetalinger)
             .composeTraversal(oFsUtbetalingerTraversal)
             .composePrism(
-              oFsUtbetalingPrism(oppdatertUtbetaling.utbetalingsreferanse)
+              oFsUtbetalingPrism(oppdatertUtbetaling.utbetalingsreferanse),
             )
             .set(oppdatertUtbetaling)(s1);
         }
@@ -485,7 +484,7 @@ const reducer: Reducer<Model, Action> = (
           .composeLens(oFsUtbetalinger)
           .composeTraversal(oFsUtbetalingerTraversal)
           .composePrism(
-            oFsUtbetalingPrism(oppdatertUtbetaling.utbetalingsreferanse)
+            oFsUtbetalingPrism(oppdatertUtbetaling.utbetalingsreferanse),
           )
           .set(oppdatertUtbetaling)(s1);
       }
@@ -512,8 +511,8 @@ const reducer: Reducer<Model, Action> = (
         .composeTraversal(oFsDokumentasjonkravTraversal)
         .composePrism(
           oFsDokumentasjonkravPrism(
-            oppdatertDokumentasjonkrav.dokumentasjonkravreferanse
-          )
+            oppdatertDokumentasjonkrav.dokumentasjonkravreferanse,
+          ),
         )
         .set(oppdatertDokumentasjonkrav)(state);
 

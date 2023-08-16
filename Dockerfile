@@ -1,9 +1,12 @@
-FROM node:16-alpine
-ADD / /source
-WORKDIR /source
-ENV CI=false
+FROM node:20-alpine
+ENV NODE_ENV production
 
-# && npm run test
-RUN npm ci  && npm run build && npm install express
 
-CMD ["node", "server.js"]
+WORKDIR /app
+COPY package.json .
+COPY package-lock.json .
+COPY node_modules/ node_modules/
+COPY server.js server.js
+COPY build build/
+
+CMD ["node", "./server.js"]

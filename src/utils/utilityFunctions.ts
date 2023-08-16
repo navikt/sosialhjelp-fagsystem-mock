@@ -7,14 +7,15 @@ import Hendelse, {
   Vilkar,
 } from "../types/hendelseTypes";
 import { FsSaksStatus, FsSoknad } from "../redux/types";
+import { EffectCallback, useEffect } from "react";
 
 export const removeNullFieldsFromHendelser = (
-  fiksDigisosSokerJson: FiksDigisosSokerJson
+  fiksDigisosSokerJson: FiksDigisosSokerJson,
 ): FiksDigisosSokerJson => {
   let hednelserUtenNull = JSON.parse(
     JSON.stringify(fiksDigisosSokerJson.sak.soker.hendelser, (key, value) => {
       if (value !== null) return value;
-    })
+    }),
   );
   return {
     ...fiksDigisosSokerJson,
@@ -30,7 +31,7 @@ export const removeNullFieldsFromHendelser = (
 
 export const getLastHendelseOfType = (
   fiksDigisosSokerJson: FiksDigisosSokerJson,
-  hendelseType: HendelseType
+  hendelseType: HendelseType,
 ): Hendelse | undefined => {
   const hendelser: Hendelse[] = fiksDigisosSokerJson.sak.soker.hendelser;
   const hendelserCopied: Hendelse[] = hendelser.slice();
@@ -71,8 +72,11 @@ export const getAllUtbetalingsreferanser = (soknad: FsSoknad) => {
 
   soknad.saker.map((sak) =>
     sak.utbetalinger.map((utbetaling) =>
-      referanser.push(utbetaling.utbetalingsreferanse)
-    )
+      referanser.push(
+        utbetaling.utbetalingsreferanse +
+          getSakTittelFraSaksreferanse(soknad, utbetaling.utbetalingsreferanse),
+      ),
+    ),
   );
 
   return referanser;
@@ -80,7 +84,7 @@ export const getAllUtbetalingsreferanser = (soknad: FsSoknad) => {
 
 export const getSakTittelOgNrFraUtbetalingsreferanse = (
   soknad: FsSoknad,
-  referanse: string
+  referanse: string,
 ) => {
   let tittel = "";
 
@@ -89,7 +93,7 @@ export const getSakTittelOgNrFraUtbetalingsreferanse = (
       if (utbetaling.utbetalingsreferanse === referanse) {
         tittel = "(sak: " + sak.tittel + ", utbetaling: " + (idx + 1) + ")";
       }
-    })
+    }),
   );
 
   return tittel;
@@ -97,7 +101,7 @@ export const getSakTittelOgNrFraUtbetalingsreferanse = (
 
 export const getSakTittelFraSaksreferanse = (
   soknad: FsSoknad,
-  referanse: string
+  referanse: string,
 ) => {
   let tittel = "";
 
@@ -193,7 +197,7 @@ export const generateRandomId = (length: number) => {
 
 export const getFsSoknadByFiksDigisosId = (
   soknader: FsSoknad[],
-  fiksDigisosId: string
+  fiksDigisosId: string,
 ): FsSoknad | undefined => {
   return soknader.find((s) => {
     return s.fiksDigisosId === fiksDigisosId;
@@ -201,7 +205,7 @@ export const getFsSoknadByFiksDigisosId = (
 };
 
 export const fsSaksStatusToSaksStatus = (
-  fsSaksStatus: FsSaksStatus
+  fsSaksStatus: FsSaksStatus,
 ): SaksStatus => {
   return {
     type: HendelseType.SaksStatus,
@@ -227,14 +231,14 @@ export const generateNyFsSaksStatus = (tittel: string | null): FsSaksStatus => {
 };
 
 export const getAlleUtbetalingerFraSaker = (
-  saker: FsSaksStatus[]
+  saker: FsSaksStatus[],
 ): Utbetaling[] => {
   let utbetalingerListe: Utbetaling[] = [];
   saker.forEach((sak) =>
     sak.utbetalinger.forEach(
       (utbetalinger) =>
-        (utbetalingerListe = [...utbetalingerListe, utbetalinger])
-    )
+        (utbetalingerListe = [...utbetalingerListe, utbetalinger]),
+    ),
   );
   return utbetalingerListe;
 };
@@ -245,14 +249,14 @@ export const getAlleUtbetalinger = (soknad: FsSoknad): Utbetaling[] => {
   ];
   const alleUtbetalingerFraSaker = getAlleUtbetalingerFraSaker(soknad.saker);
   alleUtbetalingerFraSaker.forEach(
-    (utbetalinger) => (alleUtbetalinger = [...alleUtbetalinger, utbetalinger])
+    (utbetalinger) => (alleUtbetalinger = [...alleUtbetalinger, utbetalinger]),
   );
   return alleUtbetalinger.concat(alleUtbetalingerFraSaker);
 };
 
 export const getUtbetalingByUtbetalingsreferanse = (
   soknad: FsSoknad,
-  referanse: string
+  referanse: string,
 ): Utbetaling | undefined => {
   let alleUtbetalinger = getAlleUtbetalinger(soknad);
   return alleUtbetalinger.find((s) => s.utbetalingsreferanse === referanse);
@@ -260,7 +264,7 @@ export const getUtbetalingByUtbetalingsreferanse = (
 
 export const getVilkarByVilkarreferanse = (
   vilkar: Vilkar[],
-  referanse: string
+  referanse: string,
 ): Vilkar | undefined => {
   return vilkar.find((s) => {
     return s.vilkarreferanse === referanse;
@@ -269,9 +273,16 @@ export const getVilkarByVilkarreferanse = (
 
 export const getDokumentasjonkravByDokumentasjonkravreferanse = (
   dokumentasjonkrav: Dokumentasjonkrav[],
-  referanse: string
+  referanse: string,
 ): Dokumentasjonkrav | undefined => {
   return dokumentasjonkrav.find((s) => {
     return s.dokumentasjonkravreferanse === referanse;
   });
 };
+
+export function useEffectOnce(effect: EffectCallback) {
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(effect, []);
+}
+
+export default useEffectOnce;

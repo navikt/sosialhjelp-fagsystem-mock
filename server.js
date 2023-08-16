@@ -1,12 +1,10 @@
-const express = require('express');
+const express = require("express");
 const rateLimit = require("express-rate-limit");
 const app = express();
-const path = require('path');
+const path = require("path");
 const port = 8080;
 
-app.disable("x-powered-by")
-
-const buildPath = path.resolve(__dirname, "build");
+app.disable("x-powered-by");
 
 const basePath = "/sosialhjelp/fagsystem-mock";
 
@@ -18,20 +16,21 @@ const limiter = rateLimit({
 });
 
 app.use(limiter);
-app.set('trust proxy', 1) // 1 reverse proxy
+app.set("trust proxy", 1); // 1 reverse proxy
 
-app.use(basePath, express.static(buildPath, {index: false}));
+app.use(
+  basePath,
+  express.static(path.join(__dirname, "./", "build"), { index: false }),
+);
 
 app.get(`${basePath}/internal/isAlive|isReady`, (req, res) => {
-    res.status(200).send('This was a triumph')
+  res.status(200).send("This was a triumph");
 });
 
-app.use(basePath, (req, res) => {
-  res.sendFile(path.join(__dirname, "build", "index.html"));
+app.use(/^(?!.*\/(internal|static)\/).*$/, (req, res, next) => {
+  res.sendFile(path.join(__dirname, "./", "build", "index.html"));
 });
-
-
 
 app.listen(port, (req, res) => {
-    console.log(`listening on port ${port}`)
+  console.log(`listening on port ${port}`);
 });

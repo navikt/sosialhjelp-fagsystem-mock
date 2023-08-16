@@ -1,9 +1,8 @@
 import React from "react";
 import {connect} from "react-redux";
 import {DispatchProps, AppState} from "../redux/reduxTypes";
-import {ExampleModel} from "../redux/example/exampleTypes";
 
-type Props = ExampleModel & DispatchProps;
+type Props = DispatchProps;
 
 class UserGuide extends React.Component<Props, {}> {
 
@@ -22,7 +21,7 @@ class UserGuide extends React.Component<Props, {}> {
 }
 
 const mapStateToProps = (state: AppState) => ({
-    example: state.example
+    model: state.model
 });
 
 const mapDispatchToProps = (dispatch: any) => {

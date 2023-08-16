@@ -60,7 +60,7 @@ export const sendNyHendelseOgOppdaterModel = (
   nyHendelse: Hendelse,
   model: Model,
   dispatch: Dispatch,
-  actionToDispatchIfSuccess: AnyAction
+  actionToDispatchIfSuccess: AnyAction,
 ) => {
   dispatch(turnOnLoader());
   const soknad = getFsSoknadByFiksDigisosId(model.soknader, model.aktivSoknad)!;
@@ -69,14 +69,14 @@ export const sendNyHendelseOgOppdaterModel = (
     nyHendelse,
   ])(soknad);
   const fiksDigisosSokerJsonUtenNull = removeNullFieldsFromHendelser(
-    soknadUpdated.fiksDigisosSokerJson
+    soknadUpdated.fiksDigisosSokerJson,
   );
 
   const backendUrl = backendUrls[model.backendUrlTypeToUse];
   const queryParam = `?${FIKSDIGISOSID_URL_PARAM}=${model.aktivSoknad}`;
   fetchPost(
     `${backendUrl}${oppdaterDigisosSakUrl}${queryParam}`,
-    JSON.stringify(fiksDigisosSokerJsonUtenNull)
+    JSON.stringify(fiksDigisosSokerJsonUtenNull),
   )
     .then(() => {
       dispatch(visSuccessSnackbar());
@@ -89,7 +89,7 @@ export const sendNyHendelseOgOppdaterModel = (
 export const sendValgbareNavkontorTilMockBackend = (
   navKontorListe: NavKontor[],
   model: Model,
-  dispatch: Dispatch
+  dispatch: Dispatch,
 ) => {
   dispatch(turnOnLoader());
   const backendUrl = backendUrls[model.backendUrlTypeToUse];
@@ -111,7 +111,7 @@ export const sendPdfOgLeggPdfRefTilHendelseOgSend = (
   formData: FormData,
   model: Model,
   dispatch: Dispatch,
-  sendHendelseMedRef: (id: string) => void
+  sendHendelseMedRef: (id: string) => void,
 ) => {
   dispatch(turnOnLoader());
   const backendUrl = backendUrls[model.backendUrlTypeToUse];
@@ -137,7 +137,7 @@ export const sendPdfOgLeggPdfRefTilHendelseOgSend = (
 export const sendPdfOgOppdaterForelopigSvar = (
   formData: FormData,
   model: Model,
-  dispatch: Dispatch
+  dispatch: Dispatch,
 ) => {
   dispatch(turnOnLoader());
 
@@ -158,7 +158,7 @@ export const sendPdfOgOppdaterForelopigSvar = (
       nyHendelse,
       model,
       dispatch,
-      oppdaterForelopigSvar(model.aktivSoknad, nyHendelse)
+      oppdaterForelopigSvar(model.aktivSoknad, nyHendelse),
     );
   };
 
@@ -166,7 +166,7 @@ export const sendPdfOgOppdaterForelopigSvar = (
     formData,
     model,
     dispatch,
-    sendForelopigSvarMedRef
+    sendForelopigSvarMedRef,
   );
 };
 
@@ -175,7 +175,7 @@ export const sendPdfOgOppdaterVedtakFattet = (
   vedtakFattetUtfall: Utfall | null,
   saksreferanse: string,
   model: Model,
-  dispatch: Dispatch
+  dispatch: Dispatch,
 ) => {
   dispatch(turnOnLoader());
 
@@ -205,7 +205,7 @@ export const sendPdfOgOppdaterVedtakFattet = (
       nyHendelse,
       model,
       dispatch,
-      oppdaterVedtakFattet(model.aktivSoknad, nyHendelse)
+      oppdaterVedtakFattet(model.aktivSoknad, nyHendelse),
     );
   };
 
@@ -213,7 +213,7 @@ export const sendPdfOgOppdaterVedtakFattet = (
     formData,
     model,
     dispatch,
-    sendForelopigSvarMedRef
+    sendForelopigSvarMedRef,
   );
 };
 
@@ -221,7 +221,7 @@ export const sendPdfOgOppdaterDokumentasjonEtterspurt = (
   formData: FormData,
   dokumenter: Dokument[],
   model: Model,
-  dispatch: Dispatch
+  dispatch: Dispatch,
 ) => {
   dispatch(turnOnLoader());
 
@@ -242,7 +242,7 @@ export const sendPdfOgOppdaterDokumentasjonEtterspurt = (
       nyHendelse,
       model,
       dispatch,
-      oppdaterDokumentasjonEtterspurt(model.aktivSoknad, nyHendelse)
+      oppdaterDokumentasjonEtterspurt(model.aktivSoknad, nyHendelse),
     );
   };
 
@@ -250,7 +250,7 @@ export const sendPdfOgOppdaterDokumentasjonEtterspurt = (
     formData,
     model,
     dispatch,
-    sendForelopigSvarMedRef
+    sendForelopigSvarMedRef,
   );
 };
 
@@ -258,7 +258,7 @@ export const opprettDigisosSakHvisDenIkkeFinnes = (
   soknad: FsSoknad,
   backendUrlTypeToUse: keyof BackendUrls,
   dispatch: Dispatch,
-  fiksDigisosId: string
+  fiksDigisosId: string,
 ) => {
   dispatch(turnOnLoader());
   const backendUrl = backendUrls[backendUrlTypeToUse];
@@ -266,13 +266,13 @@ export const opprettDigisosSakHvisDenIkkeFinnes = (
     soknad = getInitialFsSoknad(fiksDigisosId);
   }
   const fiksDigisosSokerJsonUtenNull = removeNullFieldsFromHendelser(
-    soknad.fiksDigisosSokerJson
+    soknad.fiksDigisosSokerJson,
   );
 
   const queryParam = `?${FIKSDIGISOSID_URL_PARAM}=${fiksDigisosId}`;
   fetchPost(
     `${backendUrl}${oppdaterDigisosSakUrl}${queryParam}`,
-    JSON.stringify(fiksDigisosSokerJsonUtenNull)
+    JSON.stringify(fiksDigisosSokerJsonUtenNull),
   )
     .then((response: any) => {
       let fiksId = response.fiksDigisosId;
@@ -287,7 +287,7 @@ export const hentFsSoknadFraFiksEllerOpprettNy = (
   fiksDigisosId: string,
   backendUrlTypeToUse: keyof BackendUrls,
   dispatch: Dispatch,
-  papirSoknad?: boolean
+  papirSoknad?: boolean,
 ) => {
   dispatch(turnOnLoader());
   const backendUrl = backendUrls[backendUrlTypeToUse];
@@ -315,7 +315,7 @@ export const hentFsSoknadFraFiksEllerOpprettNy = (
           fiksDigisosId,
           papirSoknad ?? false,
           backendUrlTypeToUse,
-          dispatch
+          dispatch,
         );
       }
     })
@@ -327,18 +327,18 @@ export const opprettNyFsSoknadDersomDigisosIdIkkeEksistererHosFiks = (
   fiksDigisosId: string,
   papirSoknad: boolean,
   backendUrlTypeToUse: keyof BackendUrls,
-  dispatch: Dispatch
+  dispatch: Dispatch,
 ) => {
   dispatch(turnOnLoader());
   const backendUrl = backendUrls[backendUrlTypeToUse];
   const fiksDigisosSokerJsonUtenNull = removeNullFieldsFromHendelser(
-    getInitialFsSoknad(fiksDigisosId).fiksDigisosSokerJson
+    getInitialFsSoknad(fiksDigisosId).fiksDigisosSokerJson,
   );
 
   const queryParams = `?${FIKSDIGISOSID_URL_PARAM}=${fiksDigisosId}&isPapirSoknad=${papirSoknad}`;
   fetchPost(
     `${backendUrl}${oppdaterDigisosSakUrl}${queryParams}`,
-    JSON.stringify(fiksDigisosSokerJsonUtenNull)
+    JSON.stringify(fiksDigisosSokerJsonUtenNull),
   )
     .then((response: any) => {
       let fiksId = response.fiksDigisosId;
@@ -379,7 +379,7 @@ export const turnOffLoader = (): Action => {
 };
 
 export const setBackendUrlTypeToUse = (
-  backendUrlTypeToUse: keyof BackendUrls
+  backendUrlTypeToUse: keyof BackendUrls,
 ): Action => {
   return {
     type: ActionTypeKeys.SET_BACKEND_URL_TYPE_TO_USE,
@@ -421,7 +421,7 @@ export const setAktivtVilkar = (referanse: string | null): Action => {
 };
 
 export const setAktivtDokumentasjonkrav = (
-  referanse: string | null
+  referanse: string | null,
 ): Action => {
   return {
     type: ActionTypeKeys.SET_AKTIVT_DOKUMENTASJONKRAV,
@@ -528,7 +528,7 @@ export const nyFsSoknad = (nyFiksDigisosId: string): NyFsSoknad => {
 };
 export const hentetFsSoknad = (
   fiksDigisosId: string,
-  data: any
+  data: any,
 ): HentetFsSoknad => {
   return {
     type: ActionTypeKeys.HENTET_SOKNAD,
@@ -544,7 +544,7 @@ export const slettFsSoknad = (forFiksDigisosId: string): SlettFsSoknad => {
 };
 export const oppdaterFiksDigisosId = (
   forFiksDigisosId: string,
-  nyFiksDigisosId: string
+  nyFiksDigisosId: string,
 ): OppdaterFiksDigisosId => {
   return {
     type: ActionTypeKeys.OPPDATER_FIKS_DIGISOS_ID,
@@ -554,7 +554,7 @@ export const oppdaterFiksDigisosId = (
 };
 export const oppdaterSoknadsStatus = (
   forFiksDigisosId: string,
-  nySoknadsStatus: SoknadsStatus
+  nySoknadsStatus: SoknadsStatus,
 ): OppdaterSoknadsStatus => {
   return {
     type: ActionTypeKeys.OPPDATER_SOKNADS_STATUS,
@@ -564,7 +564,7 @@ export const oppdaterSoknadsStatus = (
 };
 export const oppdaterNavKontor = (
   forFiksDigisosId: string,
-  nyttNavKontor: TildeltNavKontor
+  nyttNavKontor: TildeltNavKontor,
 ): OppdaterNavKontor => {
   return {
     type: ActionTypeKeys.OPPDATER_NAV_KONTOR,
@@ -575,7 +575,7 @@ export const oppdaterNavKontor = (
 
 export const oppdaterDokumentasjonEtterspurt = (
   forFiksDigisosId: string,
-  nyDokumentasjonEtterspurt: DokumentasjonEtterspurt
+  nyDokumentasjonEtterspurt: DokumentasjonEtterspurt,
 ): OppdaterDokumentasjonEtterspurt => {
   return {
     type: ActionTypeKeys.OPPDATER_DOKUMENTASJON_ETTERSPURT,
@@ -586,7 +586,7 @@ export const oppdaterDokumentasjonEtterspurt = (
 
 export const oppdaterForelopigSvar = (
   forFiksDigisosId: string,
-  nyttForelopigSvar: ForelopigSvar
+  nyttForelopigSvar: ForelopigSvar,
 ): OppdaterForelopigSvar => {
   return {
     type: ActionTypeKeys.OPPDATER_FORELOPIG_SVAR,
@@ -596,7 +596,7 @@ export const oppdaterForelopigSvar = (
 };
 export const nyFsSaksStatus = (
   forFiksDigisosId: string,
-  nyFsSaksStatus: FsSaksStatus
+  nyFsSaksStatus: FsSaksStatus,
 ): NyFsSaksStatus => {
   return {
     type: ActionTypeKeys.NY_FS_SAKS_STATUS,
@@ -606,7 +606,7 @@ export const nyFsSaksStatus = (
 };
 export const oppdaterFsSaksStatus = (
   forFiksDigisosId: string,
-  oppdatertSaksstatus: SaksStatus
+  oppdatertSaksstatus: SaksStatus,
 ): OppdaterFsSaksStatus => {
   return {
     type: ActionTypeKeys.OPPDATER_FS_SAKS_STATUS,
@@ -616,7 +616,7 @@ export const oppdaterFsSaksStatus = (
 };
 export const nyUtbetaling = (
   forFiksDigisosId: string,
-  nyUtbetaling: Utbetaling
+  nyUtbetaling: Utbetaling,
 ): NyUtbetaling => {
   return {
     type: ActionTypeKeys.NY_UTBETALING,
@@ -626,7 +626,7 @@ export const nyUtbetaling = (
 };
 export const oppdaterUtbetaling = (
   forFiksDigisosId: string,
-  oppdatertUtbetaling: Utbetaling
+  oppdatertUtbetaling: Utbetaling,
 ): OppdaterUtbetaling => {
   return {
     type: ActionTypeKeys.OPPDATER_UTBETALING,
@@ -636,7 +636,7 @@ export const oppdaterUtbetaling = (
 };
 export const nyttDokumentasjonkrav = (
   forFiksDigisosId: string,
-  nyttDokumentasjonkrav: Dokumentasjonkrav
+  nyttDokumentasjonkrav: Dokumentasjonkrav,
 ): NyttDokumentasjonkrav => {
   return {
     type: ActionTypeKeys.NYTT_DOKUMENTASJONKRAV,
@@ -646,7 +646,7 @@ export const nyttDokumentasjonkrav = (
 };
 export const oppdaterDokumentasjonkrav = (
   forFiksDigisosId: string,
-  oppdatertDokumentasjonkrav: Dokumentasjonkrav
+  oppdatertDokumentasjonkrav: Dokumentasjonkrav,
 ): OppdaterDokumentasjonkrav => {
   return {
     type: ActionTypeKeys.OPPDATER_DOKUMENTASJONKRAV,
@@ -656,7 +656,7 @@ export const oppdaterDokumentasjonkrav = (
 };
 export const oppdaterVedtakFattet = (
   forFiksDigisosId: string,
-  oppdatertVedtakFattet: VedtakFattet
+  oppdatertVedtakFattet: VedtakFattet,
 ): OppdaterVedtakFattet => {
   return {
     type: ActionTypeKeys.OPPDATER_VEDTAK_FATTET,
@@ -667,7 +667,7 @@ export const oppdaterVedtakFattet = (
 
 export const nyttVilkar = (
   forFiksDigisosId: string,
-  nyttVilkar: Vilkar
+  nyttVilkar: Vilkar,
 ): NyttVilkar => {
   return {
     type: ActionTypeKeys.NYTT_VILKAR,
@@ -677,7 +677,7 @@ export const nyttVilkar = (
 };
 export const oppdaterVilkar = (
   forFiksDigisosId: string,
-  oppdatertVilkar: Vilkar
+  oppdatertVilkar: Vilkar,
 ): OppdaterVilkar => {
   return {
     type: ActionTypeKeys.OPPDATER_VILKAR,

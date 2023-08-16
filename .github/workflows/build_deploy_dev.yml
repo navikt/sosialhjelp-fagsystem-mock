@@ -1,15 +1,7 @@
-name: Build image
+name: Build and deploy to dev
 on:
-  push:
-    branches:
-      - "master"
-    tags-ignore:
-      - "**" # Don't build any tags
   workflow_dispatch:
 
-permissions:
-  contents: write
-  packages: write
 jobs:
   build:
     name: Build and push docker image
@@ -37,7 +29,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Create artifact version
         id: artifact-version
-        uses: navikt/sosialhjelp-ci/actions/create-artifact-version@v2
+        uses: navikt/sosialhjelp-ci/actions/create-artifact-version@master
       - name: Create docker image tags
         run: |
           echo "DOCKER_TAG=${{ env.DOCKER_IMAGE }}:${{ steps.artifact-version.outputs.version }}" >> $GITHUB_ENV
@@ -57,3 +49,12 @@ jobs:
         with:
           tag: ${{ steps.artifact-version.outputs.version }}
           commit: ${{ github.sha }}
+      - name: Deploy til dev
+        uses: nais/deploy/actions/deploy@v1
+        env:
+          APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY != '' && secrets.NAIS_DEPLOY_APIKEY || secrets.api_deploy_token }}
+          RESOURCE: nais.yaml
+          CLUSTER: dev-gcp
+          REF: ${{ github.sha }}
+          PRINT_PAYLOAD: true
+          IMAGE: ${{ env.DOCKER_TAG }}
