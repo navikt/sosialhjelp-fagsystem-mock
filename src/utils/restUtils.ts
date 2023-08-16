@@ -1,38 +1,6 @@
-import "whatwg-fetch";
-
 export function erDev(): boolean {
   const url = window.location.href;
   return url.indexOf("localhost:3000") > 0 || url.indexOf("localhost:3001") > 0;
-}
-
-export function getApiBaseUrl(): string {
-  if (erDev()) {
-    return "http://localhost:8080/sosialhjelp/innsyn-api/api/v1"; // /1234/SaksStatus
-  } else {
-    return getAbsoluteApiUrl() + "api/v1";
-  }
-}
-
-export function getDigisosApiControllerPath() {
-  return `${getApiBaseUrl()}/digisosapi/oppdaterDigisosSak`;
-}
-
-export function getApiBaseUrlForSwagger(): string {
-  if (erDev()) {
-    return "http://localhost:8080/sosialhjelp/innsyn-api/swagger-ui.html";
-  } else {
-    return getAbsoluteApiUrl() + "swagger-ui.html";
-  }
-}
-
-/**
- * Resolves API URL in a pathname independent way
- */
-function getAbsoluteApiUrl() {
-  return window.location.pathname.replace(
-    /^(\/([^/]+\/)?sosialhjelp\/)innsyn.+$/,
-    "$1login-api/innsyn-api/"
-  );
 }
 
 enum RequestMethod {
@@ -40,13 +8,6 @@ enum RequestMethod {
   POST = "POST",
   PUT = "PUT",
   DELETE = "DELETE",
-}
-
-export enum REST_STATUS {
-  OK = "OK",
-  FEILET = "FEILET",
-  PENDING = "PENDING",
-  INITIALISERT = "INITIALISERT",
 }
 
 const getHeaders = (): Headers => {
@@ -98,22 +59,6 @@ function sjekkStatuskode(response: Response) {
   throw new Error(response.statusText);
 }
 
-export function fetchToJson(urlPath: string) {
-  return serverRequest(RequestMethod.GET, urlPath, null);
-}
-
-export function fetchPut(urlPath: string, body: string) {
-  return serverRequest(RequestMethod.PUT, urlPath, body);
-}
-
 export function fetchPost(urlPath: string, body: string) {
   return serverRequest(RequestMethod.POST, urlPath, body);
-}
-
-export function fetchDelete(urlPath: string) {
-  const OPTIONS: RequestInit = {
-    headers: getHeaders(),
-    method: RequestMethod.DELETE,
-  };
-  return fetch(getApiBaseUrl() + urlPath, OPTIONS).then(sjekkStatuskode);
 }

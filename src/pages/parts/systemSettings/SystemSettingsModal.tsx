@@ -1,126 +1,106 @@
-import React from 'react';
-import {AppState, DispatchProps} from "../../../redux/reduxTypes";
-import {connect} from "react-redux";
-import {createStyles, Modal, Theme} from "@material-ui/core";
+import React, { useEffect } from "react";
+import { AppState, DispatchProps } from "../../../redux/reduxTypes";
+import { connect } from "react-redux";
+
 import {
-    opprettDigisosSakHvisDenIkkeFinnes,
-    setBackendUrlTypeToUse,
-    skjulSystemSettingsModal
+  opprettDigisosSakHvisDenIkkeFinnes,
+  setBackendUrlTypeToUse,
+  skjulSystemSettingsModal,
 } from "../../../redux/actions";
-import makeStyles from "@material-ui/core/styles/makeStyles";
-import Backdrop from "@material-ui/core/Backdrop/Backdrop";
-import Fade from "@material-ui/core/Fade";
-import {BackendUrls, FsSoknad, Model} from "../../../redux/types";
-import FormControl from "@material-ui/core/FormControl";
-import FormLabel from "@material-ui/core/FormLabel";
-import RadioGroup from "@material-ui/core/RadioGroup";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Radio from "@material-ui/core/Radio";
-import {backendUrls} from "../../../redux/reducer";
 
+import { BackendUrls, FsSoknad, Model } from "../../../redux/types";
 
-const useStyles = makeStyles((theme: Theme) =>
-    createStyles({
-        modal: {
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-        },
-        paper: {
-            backgroundColor: theme.palette.background.paper,
-            border: '2px solid #000',
-            boxShadow: theme.shadows[5],
-            padding: theme.spacing(2, 4, 3),
-        },
-        formControl: {
-            margin: theme.spacing(3)
-        }
-    }),
-);
+import { Modal, RadioGroup, Radio } from "@navikt/ds-react";
+import globals from "../../../globals.module.css";
+
+import { backendUrls } from "../../../redux/reducer";
 
 interface OwnProps {
-    soknad: FsSoknad|undefined;
+  soknad: FsSoknad | undefined;
 }
 
 interface StoreProps {
-    visSystemSettingsModal: boolean;
-    model: Model
+  visSystemSettingsModal: boolean;
+  model: Model;
 }
 
 type Props = DispatchProps & OwnProps & StoreProps;
 
-
 const SystemSettingsModal: React.FC<Props> = (props: Props) => {
-    const classes = useStyles();
-    const {visSystemSettingsModal, dispatch, soknad, model} = props;
+  const { visSystemSettingsModal, dispatch, soknad, model } = props;
 
-    const radios = Object.keys(backendUrls).map((backendUrlType: string) => {
-        // @ts-ignore
-        return (
-            <FormControlLabel
-                id={"system_settings_backend_url_radio_" + backendUrlType}
-                key={"urlLabel: " + backendUrlType}
-                value={backendUrlType}
-                control={<Radio/>}
-                label={backendUrlType}
-            />
-        );
-    });
-
-
+  const toRadioLabel = (backendUrlType: string) => {
+    switch (backendUrlType) {
+      case "lokalt":
+        return "innsyn-api lokalt (port 8080)";
+      case "mock":
+        return "digisos ekstern (dev-gcp)";
+      case "mockalt":
+        return "lokal mock-alt-api (port 8989)";
+      default:
+        return backendUrlType;
+    }
+  };
+  const radios = Object.keys(backendUrls).map((backendUrlType: string) => {
+    // @ts-ignore
     return (
-        <Modal
-            open={visSystemSettingsModal}
-            onClose={() => dispatch(skjulSystemSettingsModal())}
-            aria-labelledby="transition-modal-title"
-            aria-describedby="transition-modal-description"
-            className={classes.modal}
-            closeAfterTransition
-            BackdropComponent={Backdrop}
-            BackdropProps={{
-                timeout: 500,
-            }}
-        >
-            <Fade in={visSystemSettingsModal}>
-                <div className={classes.paper}>
-                    <FormControl component="fieldset" className={classes.formControl}>
-                        <FormLabel component="legend">Miljø</FormLabel>
-                        <RadioGroup
-                            aria-label="backend url"
-                            name="miljo"
-                            value={model.backendUrlTypeToUse}
-                            onClick={() => {
-                                dispatch(skjulSystemSettingsModal());
-                            }}
-                            onChange={
-                                (event, value) => {
-                                    dispatch(setBackendUrlTypeToUse(value as keyof BackendUrls));
-                                    if (soknad) {
-                                        opprettDigisosSakHvisDenIkkeFinnes(soknad, value as keyof BackendUrls, dispatch, soknad.fiksDigisosId);
-                                    }
-                                }}
-                        >
-                            {radios}
-                        </RadioGroup>
-                    </FormControl>
-                </div>
-            </Fade>
-        </Modal>
+      <Radio
+        id={"system_settings_backend_url_radio_" + backendUrlType}
+        key={"urlLabel: " + backendUrlType}
+        value={backendUrlType}
+      >
+        {toRadioLabel(backendUrlType)}
+      </Radio>
     );
+  });
+
+  useEffect(() => {
+    Modal.setAppElement("#root");
+  }, []);
+
+  return (
+    <Modal
+      open={visSystemSettingsModal}
+      onClose={() => dispatch(skjulSystemSettingsModal())}
+      className={globals.modal}
+    >
+      <Modal.Content>
+        <RadioGroup
+          legend="Miljø"
+          name="miljo"
+          value={model.backendUrlTypeToUse}
+          onChange={(value) => {
+            dispatch(setBackendUrlTypeToUse(value as keyof BackendUrls));
+            if (soknad) {
+              opprettDigisosSakHvisDenIkkeFinnes(
+                soknad,
+                value as keyof BackendUrls,
+                dispatch,
+                soknad.fiksDigisosId,
+              );
+            }
+            dispatch(skjulSystemSettingsModal());
+          }}
+        >
+          {radios}
+        </RadioGroup>
+      </Modal.Content>
+    </Modal>
+  );
 };
 
 const mapStateToProps = (state: AppState) => ({
-    visSystemSettingsModal: state.model.visSystemSettingsModal,
-    model: state.model
+  visSystemSettingsModal: state.model.visSystemSettingsModal,
+  model: state.model,
 });
 
 const mapDispatchToProps = (dispatch: any) => {
-    return {
-        dispatch
-    }
+  return {
+    dispatch,
+  };
 };
 
 export default connect(
-    mapStateToProps,
-    mapDispatchToProps
+  mapStateToProps,
+  mapDispatchToProps,
 )(SystemSettingsModal);

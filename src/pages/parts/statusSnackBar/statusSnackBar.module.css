@@ -1,0 +1,11 @@
+.toast {
+    position: fixed;
+    bottom: 16px;
+    left: 16px;
+    font-size: 1.25rem;
+    padding: 16px;
+}
+
+.toast svg {
+    margin-right: 8px;
+}

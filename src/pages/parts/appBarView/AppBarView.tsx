@@ -1,82 +1,62 @@
-import React from 'react';
-import {createStyles, makeStyles, Theme} from '@material-ui/core/styles';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
-import IconButton from '@material-ui/core/IconButton';
-import {Brightness2, Brightness4, Build} from "@material-ui/icons";
-import {AppState, DispatchProps} from "../../../redux/reduxTypes";
-import {connect} from "react-redux";
-import {Model} from "../../../redux/types";
-import {switchToDarkMode, switchToLightMode, visSystemSettingsModal} from "../../../redux/actions";
-
-const useStyles = makeStyles((theme: Theme) =>
-    createStyles({
-        root: {
-            flexGrow: 1,
-        },
-        menuButton: {
-            marginRight: theme.spacing(2),
-        },
-        title: {
-            flexGrow: 1,
-        },
-    }),
-);
-
-interface OwnProps {
-
-}
+import React from "react";
+import { AppState, DispatchProps } from "../../../redux/reduxTypes";
+import { connect } from "react-redux";
+import { Model } from "../../../redux/types";
+import {
+  switchToDarkMode,
+  switchToLightMode,
+  visSystemSettingsModal,
+} from "../../../redux/actions";
+import { InternalHeader } from "@navikt/ds-react";
+import { MoonIcon, SunIcon, WrenchIcon } from "@navikt/aksel-icons";
+interface OwnProps {}
 
 interface StoreProps {
-    model: Model
+  model: Model;
 }
 
 type Props = OwnProps & StoreProps & DispatchProps;
 
 const AppBarView: React.FC<Props> = (props: Props) => {
-    const classes = useStyles();
-    const {dispatch} = props;
+  const { dispatch } = props;
 
-    return (
-        <div className={classes.root}>
-            <AppBar position="static">
-                <Toolbar>
-                    <Typography variant="h6" className={classes.title}>
-                        Fagsystem-mock
-                    </Typography>
-                    <IconButton className={classes.menuButton} color="inherit" aria-label="menu"
-                                onClick={() => dispatch(visSystemSettingsModal())}
-                    >
-                        <Build/>
-                    </IconButton>
-                    <IconButton
-                        color="inherit"
-                        onClick={() => {
-                            props.model.thememode === 'light'
-                                ? props.dispatch(switchToDarkMode())
-                                : props.dispatch(switchToLightMode());
-                        }}
-                    >
-                        { props.model.thememode === 'light' ? <Brightness2/> : <Brightness4/>}
-                    </IconButton>
-                </Toolbar>
-            </AppBar>
-        </div>
-    );
+  return (
+    <InternalHeader>
+      <InternalHeader.Title as="h1" style={{ fontSize: "1.5rem" }}>
+        Fagsystem-mock
+      </InternalHeader.Title>
+      <InternalHeader.Button
+        style={{ marginLeft: "auto", fontSize: "1.5rem" }}
+        onClick={() => dispatch(visSystemSettingsModal())}
+      >
+        <WrenchIcon title="innstillinger" />
+      </InternalHeader.Button>
+      <InternalHeader.Button
+        style={{ fontSize: "1.5rem" }}
+        onClick={() => {
+          props.model.thememode === "light"
+            ? props.dispatch(switchToDarkMode())
+            : props.dispatch(switchToLightMode());
+        }}
+      >
+        {props.model.thememode === "light" ? (
+          <SunIcon title="a11y-title" />
+        ) : (
+          <MoonIcon title="a11y-title" />
+        )}
+      </InternalHeader.Button>
+    </InternalHeader>
+  );
 };
 
 const mapStateToProps = (state: AppState) => ({
-    model: state.model,
+  model: state.model,
 });
 
 const mapDispatchToProps = (dispatch: any) => {
-    return {
-        dispatch
-    }
+  return {
+    dispatch,
+  };
 };
 
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps
-)(AppBarView);
+export default connect(mapStateToProps, mapDispatchToProps)(AppBarView);

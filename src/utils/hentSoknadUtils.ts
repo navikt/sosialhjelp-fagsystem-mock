@@ -33,16 +33,16 @@ const manglerUtbetalingsReferanse = (utbetalingsreferanse: string[] | null) => {
 
 const getSisteUnikeElement = <T>(
   array: T[],
-  getTextProperty: (object: T) => string
+  getTextProperty: (object: T) => string,
 ) => {
   const arrayOfKeys = array.map((el) => getTextProperty(el));
   return array.filter(
-    (element, i) => arrayOfKeys.lastIndexOf(getTextProperty(element)) === i
+    (element, i) => arrayOfKeys.lastIndexOf(getTextProperty(element)) === i,
   );
 };
 export const sorterEtterDatoStigende = <T>(
   array: T[],
-  getTextProperty: (object: T) => string
+  getTextProperty: (object: T) => string,
 ) => {
   return array.sort(function (a, b) {
     const keyA = new Date(getTextProperty(a)),
@@ -56,7 +56,7 @@ export const sorterEtterDatoStigende = <T>(
 export const createFsSoknadFromHendelser = (
   hendelser: Hendelse[],
   fiksDigisosSokerJson: FiksDigisosSokerJson,
-  fiksDigisosId: string
+  fiksDigisosId: string,
 ) => {
   const sisteSoknadsStatus = hendelser
     .slice()
@@ -96,7 +96,7 @@ export const createFsSoknadFromHendelser = (
         hendelse.type === HendelseType.Vilkar &&
         manglerUtbetalingsReferanse(hendelse.utbetalingsreferanse)
       );
-    }
+    },
   ) as Vilkar[];
 
   const dokKravUtenUtbetaling = hendelser.filter((hendelse: Hendelse) => {
@@ -108,15 +108,15 @@ export const createFsSoknadFromHendelser = (
 
   const unikeVilkar = getSisteUnikeElement(
     vilkarUtenUtbetaling,
-    (vilkar: Vilkar) => vilkar.vilkarreferanse
+    (vilkar: Vilkar) => vilkar.vilkarreferanse,
   );
   const unikeDokkrav = getSisteUnikeElement(
     dokKravUtenUtbetaling,
-    (dokkrav: Dokumentasjonkrav) => dokkrav.dokumentasjonkravreferanse
+    (dokkrav: Dokumentasjonkrav) => dokkrav.dokumentasjonkravreferanse,
   );
   const unikeUtbetalinger = getSisteUnikeElement(
     utbetalingerUtenSak,
-    (utbetaling: Utbetaling) => utbetaling.utbetalingsreferanse
+    (utbetaling: Utbetaling) => utbetaling.utbetalingsreferanse,
   );
 
   const saksStatuser = hendelser.filter((hendelse: Hendelse) => {
@@ -126,12 +126,17 @@ export const createFsSoknadFromHendelser = (
   const unikeSaksHendelser = mergeSaksStatuserMedSammeReferanse(saksStatuser);
 
   const saker: FsSaksStatus[] = unikeSaksHendelser.map((sak: SaksStatus) => {
-    const utbetalingerTilSak = hendelser.filter((hendelse: Hendelse) => {
+    const alleUtbetalingerTilSak = hendelser.filter((hendelse: Hendelse) => {
       return (
         hendelse.type === HendelseType.Utbetaling &&
         hendelse.saksreferanse === sak.referanse
       );
     }) as Utbetaling[];
+
+    const utbetalingerTilSak = getSisteUnikeElement(
+      alleUtbetalingerTilSak,
+      (utbetaling: Utbetaling) => utbetaling.utbetalingsreferanse,
+    );
 
     const sisteVedtakTilSak = hendelser
       .slice()
@@ -149,7 +154,7 @@ export const createFsSoknadFromHendelser = (
       }
       return utbetalingerTilSak.find((utbetaling) => {
         return hendelse.utbetalingsreferanse?.includes(
-          utbetaling.utbetalingsreferanse
+          utbetaling.utbetalingsreferanse,
         );
       });
     }) as Vilkar[];
@@ -160,7 +165,7 @@ export const createFsSoknadFromHendelser = (
       }
       return utbetalingerTilSak.find((utbetaling) => {
         return hendelse.utbetalingsreferanse?.includes(
-          utbetaling.utbetalingsreferanse
+          utbetaling.utbetalingsreferanse,
         );
       });
     }) as Dokumentasjonkrav[];
@@ -182,8 +187,11 @@ export const createFsSoknadFromHendelser = (
     navKontor: sisteTildeltNavkontor,
     dokumentasjonEtterspurt: sisteDokumentasjonEtterspurt,
     forelopigSvar: sisteForelopigSvar,
-    vilkar: unikeVilkar,
-    dokumentasjonkrav: unikeDokkrav,
+    vilkar: [...unikeVilkar, ...saker.flatMap((sak) => sak.vilkar)],
+    dokumentasjonkrav: [
+      ...unikeDokkrav,
+      ...saker.flatMap((sak) => sak.dokumentasjonskrav),
+    ],
     utbetalingerUtenSaksreferanse: unikeUtbetalinger,
     saker: saker || [],
     fiksDigisosSokerJson: fiksDigisosSokerJson,

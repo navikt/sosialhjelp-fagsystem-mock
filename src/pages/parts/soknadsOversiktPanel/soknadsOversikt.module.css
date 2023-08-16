@@ -1,0 +1,27 @@
+.soknad_oversikt {
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-start;
+    flex: 1 0 11rem;
+}
+
+.soknadliste {
+    list-style-type: none ;
+    padding-inline-start:0;
+    margin: 0;
+}
+
+.soknadliste li{
+  margin-bottom: 8px;
+    width: fit-content;
+}
+
+.soknad_button {
+    text-align: start;
+
+
+}
+
+.valgtSoknad {
+    background-color: var(--a-bg-subtle);
+}

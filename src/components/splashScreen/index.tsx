@@ -1,25 +1,18 @@
 import * as React from "react";
 import { useEffect, useState } from "react";
 import logo from "./image3.png";
-
-interface State {
-  showSplashScreen: boolean;
-}
-
-const initialState = {
-  showSplashScreen: true, //seconds
-};
+import { erDev } from '../../utils/restUtils';
 
 const SplashScreen: React.FC<{}> = ({ children }) => {
-  const [state, setState] = useState(initialState as State);
+  const [showSplashScreen, setShowSplashScren] = useState(true);
 
   useEffect(() => {
     setTimeout(() => {
-      setState({ ...state, showSplashScreen: false });
-    }, 4000);
+        setShowSplashScren(false);
+    }, erDev() ? 0 : 2000);
   }, []);
 
-  if (state.showSplashScreen) {
+  if (showSplashScreen) {
     return (
       <div className={"splashscreen splashscreen-wrapper"}>
         <div className={"splashscreen-content"}>
