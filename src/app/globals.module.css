@@ -1,0 +1,127 @@
+@layer global {
+    .main {
+        position: relative;
+        padding: 16px 24px
+    }
+
+
+    .italicLabel {
+        font-style: italic
+    }
+
+    .flex {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+    }
+
+    .fitContent {
+        width: fit-content;
+    }
+
+    .flexRow {
+        display: flex;
+        align-items: flex-end;
+        gap: 16px;
+    }
+
+    .flexCol {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .panel {
+        background-color: #fff;
+        box-shadow: 0 0 2px rgba(0, 0, 0, 0.3);
+        border-radius: 4px;
+        padding: 20px;
+        word-break: break-word;
+        overflow-wrap: break-word;
+        margin-bottom: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+
+    .panel.fullWidth {
+        width: 100%
+    }
+
+    .modal {
+        padding: 20px 40px;
+        max-width: 80%;
+    }
+
+
+    .modal_gridContent {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+        width: 100%;
+        align-items: flex-start;
+
+
+    }
+
+
+.modal_gridContent > div {
+    flex-basis: 45%;
+
+}
+
+.modal_gridContent > .buttonGroup {
+    width: 100%;
+    display: flex;
+    align-items: flex-end;
+    gap: 16px;
+    margin-top: 1rem;
+    flex: 1 0 100%;
+    justify-content: center;
+}
+
+.modal_gridContent > .fullWidthItem {
+    max-width: 100%;
+    display: flex;
+    flex: 1 0 100%;
+}
+
+
+
+    .endreKnapp {
+        text-align: center;
+        margin-top: 1rem;
+    }
+
+    .mt {
+        margin-top: 16px;
+    }
+
+
+    .tabsList {
+        flex-grow: 1
+    }
+
+    .tabsList button {
+        flex-grow: 1
+    }
+
+    .tabsPanel {
+        max-width: 42rem;
+        margin: 16px auto 0;
+    }
+
+
+    .scroll {
+        overflow: auto;
+        width: 100%;
+    }
+
+
+}
+
+
+
+
+

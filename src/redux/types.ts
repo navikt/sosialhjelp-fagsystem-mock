@@ -55,9 +55,9 @@ export interface FsSaksStatus extends SaksStatus {
 }
 
 export interface BackendUrls {
-  lokalt: string;
+  lokalInnsyn: string;
   mock: string;
-  mockalt: string;
+  lokalMockalt: string;
 }
 
 export type Action =

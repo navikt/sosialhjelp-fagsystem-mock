@@ -1,6 +1,5 @@
 export function erDev(): boolean {
-  const url = window.location.href;
-  return url.indexOf("localhost:3000") > 0 || url.indexOf("localhost:3001") > 0;
+  return process.env.NEXT_PUBLIC_RUNTIME_ENVIRONMENT === "local";
 }
 
 enum RequestMethod {
@@ -21,7 +20,7 @@ const getHeaders = (): Headers => {
 export const serverRequest = (
   method: string,
   urlPath: string,
-  body: string | null
+  body: string | null,
 ) => {
   const OPTIONS: RequestInit = {
     credentials: "include",

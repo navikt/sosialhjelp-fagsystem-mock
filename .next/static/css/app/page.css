@@ -1,0 +1,268 @@
+/*!********************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[5].oneOf[7].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[5].oneOf[7].use[3]!./src/app/globals.module.css ***!
+  \********************************************************************************************************************************************************************************************************************************************************************/
+@layer global {
+    .globals_main__Ihxae {
+        position: relative;
+        padding: 16px 24px
+    }
+
+
+    .globals_italicLabel__fyEgo {
+        font-style: italic
+    }
+
+    .globals_flex__Hl7s7 {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+    }
+
+    .globals_fitContent__17HQr {
+        width: -moz-fit-content;
+        width: fit-content;
+    }
+
+    .globals_flexRow___gpe3 {
+        display: flex;
+        align-items: flex-end;
+        gap: 16px;
+    }
+
+    .globals_flexCol__QyXdP {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .globals_panel__ShdP_ {
+        background-color: #fff;
+        box-shadow: 0 0 2px rgba(0, 0, 0, 0.3);
+        border-radius: 4px;
+        padding: 20px;
+        word-break: break-word;
+        overflow-wrap: break-word;
+        margin-bottom: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+
+    .globals_panel__ShdP_.globals_fullWidth__GpYpr {
+        width: 100%
+    }
+
+    .globals_modal__jkMww {
+        padding: 20px 40px;
+        max-width: 80%;
+    }
+
+
+    .globals_modal_gridContent__8pHFS {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+        width: 100%;
+        align-items: flex-start;
+
+
+    }
+
+
+.globals_modal_gridContent__8pHFS > div {
+    flex-basis: 45%;
+
+}
+
+.globals_modal_gridContent__8pHFS > .globals_buttonGroup__uybvj {
+    width: 100%;
+    display: flex;
+    align-items: flex-end;
+    gap: 16px;
+    margin-top: 1rem;
+    flex: 1 0 100%;
+    justify-content: center;
+}
+
+.globals_modal_gridContent__8pHFS > .globals_fullWidthItem__z4rtr {
+    max-width: 100%;
+    display: flex;
+    flex: 1 0 100%;
+}
+
+
+
+    .globals_endreKnapp__sow5H {
+        text-align: center;
+        margin-top: 1rem;
+    }
+
+    .globals_mt__C1ZBi {
+        margin-top: 16px;
+    }
+
+
+    .globals_tabsList__671_O {
+        flex-grow: 1
+    }
+
+    .globals_tabsList__671_O button {
+        flex-grow: 1
+    }
+
+    .globals_tabsPanel__n1yjy {
+        max-width: 42rem;
+        margin: 16px auto 0;
+    }
+
+
+    .globals_scroll__vF28e {
+        overflow: auto;
+        width: 100%;
+    }
+
+
+}
+
+
+
+
+
+
+/*!***********************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[5].oneOf[7].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[5].oneOf[7].use[3]!./src/content/parts/soknadsOversiktPanel/soknadsOversikt.module.css ***!
+  \***********************************************************************************************************************************************************************************************************************************************************************************************************/
+.soknadsOversikt_soknad_oversikt__HyeDY {
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-start;
+    flex: 1 0 11rem;
+}
+
+.soknadsOversikt_soknadliste__T1D9o {
+    list-style-type: none ;
+    padding-inline-start:0;
+    margin: 0;
+}
+
+.soknadsOversikt_soknadliste__T1D9o li{
+  margin-bottom: 8px;
+    width: -moz-fit-content;
+    width: fit-content;
+}
+
+.soknadsOversikt_soknad_button__GIZ1B {
+    text-align: start;
+
+
+}
+
+.soknadsOversikt_valgtSoknad__oNnKs {
+    background-color: var(--a-bg-subtle);
+}
+/*!********************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[5].oneOf[7].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[5].oneOf[7].use[3]!./src/content/parts/utbetaling/utbetaling.module.css ***!
+  \********************************************************************************************************************************************************************************************************************************************************************************************/
+.utbetaling_utbetalingModal__GzUT1 {
+    align-items: center;
+}
+
+.utbetaling_togglegroup__16P_9 div[role="radiogroup"]{
+    min-width: 8rem;
+}
+
+.utbetaling_endreUtbetaling__QcTg7 {
+    text-align: center;
+    margin-top: 1rem;
+}
+
+.utbetaling_datoGruppe__Z5LK8 {
+
+    display: flex;
+    flex-basis: initial;
+    gap: 16px;
+
+}
+
+/*!****************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[5].oneOf[7].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[5].oneOf[7].use[3]!./src/content/parts/saksOversiktView/saksoversikt.module.css ***!
+  \****************************************************************************************************************************************************************************************************************************************************************************************************/
+.saksoversikt_saker__QoErw {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.saksoversikt_selectedTabLabel__4ldGy {
+    font-weight: bold;
+}
+
+/*!***********************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[5].oneOf[7].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[5].oneOf[7].use[3]!./src/content/parts/dokumentasjonEtterspurt/dokEtterpurt.module.css ***!
+  \***********************************************************************************************************************************************************************************************************************************************************************************************************/
+@layer global, components;
+
+@layer components {
+    .dokEtterpurt_dokEtterspurt__heGcM{
+        margin-bottom: 50px;
+    }
+
+    .dokEtterpurt_dokEtterspurtOversikt__qhq24 {
+        flex-basis: 100%;
+        max-width:100%;
+        margin-top: 1rem;
+    }
+
+    .dokEtterpurt_fyllut_knapper__byh5W {
+        max-width: 100%;
+        display:flex;
+        gap: 16px;
+        flex: 1 0 100%;
+        margin-top: 16px;
+        flex-wrap:wrap;
+    }
+}
+/*!****************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[5].oneOf[7].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[5].oneOf[7].use[3]!./src/content/parts/statusSnackBar/statusSnackBar.module.css ***!
+  \****************************************************************************************************************************************************************************************************************************************************************************************************/
+.statusSnackBar_toast__Fl5E3 {
+    position: fixed;
+    bottom: 16px;
+    left: 16px;
+    font-size: 1.25rem;
+    padding: 16px;
+}
+
+.statusSnackBar_toast__Fl5E3 svg {
+    margin-right: 8px;
+}
+/*!**************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[5].oneOf[7].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[5].oneOf[7].use[3]!./src/content/parts/panel/toppPanel.module.css ***!
+  \**************************************************************************************************************************************************************************************************************************************************************************************/
+.toppPanel_toppPanel__xS9K8 {
+    display:flex;
+    flex: 1 1 65%;
+    flex-direction: column;
+    gap: 16px;
+    align-items: flex-start;
+    word-break: break-word;
+    overflow-wrap: break-word;
+}
+/*!************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[5].oneOf[7].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[5].oneOf[7].use[3]!./src/content/forside.module.css ***!
+  \************************************************************************************************************************************************************************************************************************************************************************/
+.forside_progressBar__jSjNr {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    margin-top: -50px;
+    margin-left: -50px;
+}
+
+.forside_json_knapp__36jA0 {
+    position: fixed;
+    bottom: 16px;
+    right: 16px;
+}

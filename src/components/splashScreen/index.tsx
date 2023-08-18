@@ -1,15 +1,19 @@
 import * as React from "react";
 import { useEffect, useState } from "react";
-import logo from "./image3.png";
-import { erDev } from '../../utils/restUtils';
-
-const SplashScreen: React.FC<{}> = ({ children }) => {
+import { erDev } from "../../utils/restUtils";
+import Image from "next/image";
+// @ts-ignore
+import splash from "./splashImage.png";
+const SplashScreen = ({ children }: React.PropsWithChildren) => {
   const [showSplashScreen, setShowSplashScren] = useState(true);
 
   useEffect(() => {
-    setTimeout(() => {
+    setTimeout(
+      () => {
         setShowSplashScren(false);
-    }, erDev() ? 0 : 2000);
+      },
+      erDev() ? 0 : 2000,
+    );
   }, []);
 
   if (showSplashScreen) {
@@ -17,7 +21,7 @@ const SplashScreen: React.FC<{}> = ({ children }) => {
       <div className={"splashscreen splashscreen-wrapper"}>
         <div className={"splashscreen-content"}>
           <div className={"splashscreen-img"}>
-            <img src={logo} alt={""} />
+            <Image src={splash} alt={""} />
           </div>
         </div>
       </div>
