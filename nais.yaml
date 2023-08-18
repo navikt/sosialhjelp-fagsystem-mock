@@ -7,19 +7,19 @@ metadata:
     team: teamdigisos
 spec:
   image: {{image}}
-  port: 8080
+  port: 3000
   ingresses:
 {{#each ingresses}}
     - "{{this}}"
 {{/each}}
   liveness:
-    path: /sosialhjelp/fagsystem-mock/internal/isAlive
+    path: /sosialhjelp/fagsystem-mock/api/internal/isAlive
     initialDelay: 20
     timeout: 1
     periodSeconds: 5
     failureThreshold: 10
   readiness:
-    path: /sosialhjelp/fagsystem-mock/internal/isReady
+    path: /sosialhjelp/fagsystem-mock/api/internal/isAlive
     initialDelay: 20
     timeout: 1
   prometheus:
