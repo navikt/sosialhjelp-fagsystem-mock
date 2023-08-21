@@ -58,6 +58,7 @@ jobs:
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY != '' && secrets.NAIS_DEPLOY_APIKEY || secrets.api_deploy_token }}
           RESOURCE: nais.yaml
           CLUSTER: dev-gcp
+          VARS: nais/dev/mock.json
           REF: ${{ github.sha }}
           PRINT_PAYLOAD: true
           IMAGE: ${{ env.DOCKER_TAG }}
