@@ -2,6 +2,9 @@ name: Build and deploy to dev
 on:
   workflow_dispatch:
 
+permissions:
+  contents: write
+  packages: write
 jobs:
   build:
     name: Build and push docker image
