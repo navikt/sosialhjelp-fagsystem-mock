@@ -82,3 +82,10 @@ fieldset {
     -o-animation: fadeinfadeout 5s; /* Opera < 12.1 */
     animation: fadeinfadeout 5s;
 }
+
+.loading {
+    margin: 2rem auto;
+    display: flex;
+    justify-content: center;
+    width: 80vw;
+}
