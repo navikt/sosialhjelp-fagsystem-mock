@@ -2,6 +2,9 @@ name: Build and deploy to dev
 on:
   workflow_dispatch:
 
+permissions:
+  contents: write
+  packages: write
 jobs:
   build:
     name: Build and push docker image
@@ -55,6 +58,7 @@ jobs:
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY != '' && secrets.NAIS_DEPLOY_APIKEY || secrets.api_deploy_token }}
           RESOURCE: nais.yaml
           CLUSTER: dev-gcp
+          VARS: nais/dev/mock.json
           REF: ${{ github.sha }}
           PRINT_PAYLOAD: true
           IMAGE: ${{ env.DOCKER_TAG }}

@@ -50,6 +50,7 @@ import {
   createFsSoknadFromHendelser,
   sorterEtterDatoStigende,
 } from "../utils/hentSoknadUtils";
+import { ReadonlyURLSearchParams } from "next/navigation";
 
 export const defaultDokumentlagerRef: DokumentlagerExtended = {
   type: FilreferanseType.dokumentlager,
@@ -80,9 +81,9 @@ export const nyNavEnhetUrl: string = "/api/v1/mock/nyNavEnhet";
 export const FIKSDIGISOSID_URL_PARAM = "fiksDigisosId";
 
 export const backendUrls: BackendUrls = {
-  lokalt: backendUrlsLocalTemplate,
+  lokalInnsyn: backendUrlsLocalTemplate,
   mock: backendUrlsMockTemplate,
-  mockalt: backendUrlMockAltLocal,
+  lokalMockalt: backendUrlMockAltLocal,
 };
 
 export const getInitialFsSoknad = (fiksDigisosId: string): FsSoknad => {
@@ -118,9 +119,13 @@ export const getInitialFsSoknad = (fiksDigisosId: string): FsSoknad => {
   };
 };
 
-const idFromQueryOrRandomId = (): string => {
-  const query = new URLSearchParams(window.location.search);
-  const fiksdigisosid = query.get(FIKSDIGISOSID_URL_PARAM);
+export const idFromQueryOrRandomId = (
+  searchParams?: ReadonlyURLSearchParams,
+): string => {
+  if (!searchParams) {
+    return generateRandomId(11);
+  }
+  const fiksdigisosid = searchParams.get(FIKSDIGISOSID_URL_PARAM);
 
   if (fiksdigisosid && fiksdigisosid.length > 0) {
     return fiksdigisosid;
@@ -128,14 +133,11 @@ const idFromQueryOrRandomId = (): string => {
   return generateRandomId(11);
 };
 
-const initialId: string = idFromQueryOrRandomId();
-
 const getBackendUrlTypeToUse = (): keyof BackendUrls => {
-  const windowUrl = window.location.href;
-  if (windowUrl.includes("ekstern.dev.nav.no")) {
+  if (process.env.NEXT_PUBLIC_RUNTIME_ENVIRONMENT === "mock") {
     return "mock";
   } else {
-    return "mockalt";
+    return "lokalMockalt";
   }
 };
 
@@ -159,7 +161,7 @@ export const initialModel: Model = {
   snackbarVariant: "success",
 
   // Aktive ting
-  aktivSoknad: window.location.href.includes("www-q") ? "001" : initialId,
+  aktivSoknad: idFromQueryOrRandomId(),
   aktivUtbetaling: null,
   aktivtVilkar: null,
   aktivtDokumentasjonkrav: null,

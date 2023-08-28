@@ -1,3 +1,21 @@
+@import '@navikt/ds-css';
+
+body {
+    margin: 0;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background-color: #fafafa;
+}
+
+code {
+    font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+}
+
+fieldset {
+    border: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
 
 @keyframes fadeinfadeout {
     0% { opacity: 0; }
@@ -63,4 +81,11 @@
     -moz-animation: fadeinfadeout 5s; /* Firefox < 16 */
     -o-animation: fadeinfadeout 5s; /* Opera < 12.1 */
     animation: fadeinfadeout 5s;
+}
+
+.loading {
+    margin: 2rem auto;
+    display: flex;
+    justify-content: center;
+    width: 80vw;
 }
