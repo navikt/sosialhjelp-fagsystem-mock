@@ -5,7 +5,7 @@
   "homepage": "/sosialhjelp/fagsystem-mock/",
   "dependencies": {
     "@navikt/aksel-icons": "^4.12.1",
-    "@navikt/ds-css": "^4.12.1",
+    "@navikt/ds-css": "^5.4.0",
     "@navikt/ds-react": "^4.12.1",
     "dayjs": "^1.11.8",
     "fp-ts": "^2.16.0",
