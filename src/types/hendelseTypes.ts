@@ -145,7 +145,6 @@ export enum DokumentasjonkravStatus {
 }
 
 export enum SoknadsStatusType {
-  SENDT = "SENDT",
   MOTTATT = "MOTTATT",
   UNDER_BEHANDLING = "UNDER_BEHANDLING",
   FERDIGBEHANDLET = "FERDIGBEHANDLET",
