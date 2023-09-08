@@ -62,6 +62,7 @@ const SoknadStatusView: React.FC<Props> = (props: Props) => {
           value={soknad.soknadsStatus.status}
           onChange={(value) => {
             if (
+                value === SoknadsStatusType.SENDT ||
               value === SoknadsStatusType.MOTTATT ||
               value === SoknadsStatusType.UNDER_BEHANDLING ||
               value === SoknadsStatusType.FERDIGBEHANDLET ||
@@ -82,6 +83,7 @@ const SoknadStatusView: React.FC<Props> = (props: Props) => {
             }
           }}
         >
+          <Radio value={SoknadsStatusType.SENDT}>Sendt</Radio>
           <Radio value={SoknadsStatusType.MOTTATT}>Mottatt</Radio>
           <Radio value={SoknadsStatusType.UNDER_BEHANDLING}>
             {" "}
