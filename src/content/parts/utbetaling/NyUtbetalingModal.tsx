@@ -221,16 +221,15 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
 
   return (
     <Modal
-      aria-label="Ny utbetaling"
       className={globals.modal}
       open={visNyUtbetalingModal}
       onClose={() => {
         resetStateValues();
-
         props.dispatch(skjulNyUtbetalingModal());
       }}
+      header={{ heading: "Utbetaling" }}
     >
-      <Modal.Content className={`${globals.modal_gridContent} `}>
+      <Modal.Body className={`${globals.modal_gridContent} `}>
         <CustomTextField
           label={"Utbetalingsreferanse *"}
           value={modalUtbetaling.utbetalingsreferanse}
@@ -393,31 +392,29 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
             })
           }
         />
-        <div className={globals.buttonGroup}>
-          {aktivUtbetaling == null && (
-            <Button
-              size="small"
-              variant="secondary-neutral"
-              onClick={setDefaultUtbetaling}
-            >
-              Fyll ut alle felter
-            </Button>
-          )}
+      </Modal.Body>
+      <Modal.Footer>
+        <Button
+          size="small"
+          variant={aktivUtbetaling == null ? "primary" : "secondary-neutral"}
+          onClick={() => {
+            if (!visFeilmelding) {
+              sendUtbetaling();
+            }
+          }}
+        >
+          {aktivUtbetaling == null ? "Legg til utbetaling" : "Endre utbetaling"}
+        </Button>
+        {aktivUtbetaling == null && (
           <Button
             size="small"
-            variant={aktivUtbetaling == null ? "primary" : "secondary-neutral"}
-            onClick={() => {
-              if (!visFeilmelding) {
-                sendUtbetaling();
-              }
-            }}
+            variant="secondary-neutral"
+            onClick={setDefaultUtbetaling}
           >
-            {aktivUtbetaling == null
-              ? "Legg til utbetaling"
-              : "Endre utbetaling"}
+            Fyll ut alle felter
           </Button>
-        </div>
-      </Modal.Content>
+        )}
+      </Modal.Footer>
     </Modal>
   );
 };

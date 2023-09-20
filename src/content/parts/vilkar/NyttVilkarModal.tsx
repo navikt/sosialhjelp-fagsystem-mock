@@ -142,10 +142,6 @@ const NyttVilkarModal: React.FC<Props> = (props: Props) => {
   };
 
   useEffect(() => {
-    Modal.setAppElement("#root");
-  }, []);
-
-  useEffect(() => {
     if (aktivtVilkar && visNyVilkarModal) {
       let vilkar = getVilkarByVilkarreferanse(soknad.vilkar, aktivtVilkar);
       if (vilkar) {
@@ -172,17 +168,15 @@ const NyttVilkarModal: React.FC<Props> = (props: Props) => {
 
   return (
     <Modal
-      aria-label="Nytt vilkår"
       className={globals.modal}
       open={visNyVilkarModal}
       onClose={() => {
         props.dispatch(skjulNyVilkarModal());
-        setTimeout(() => {
-          resetStateValues();
-        }, 500);
+        resetStateValues();
       }}
+      header={{ heading: !!aktivtVilkar ? "Endre vilkår" : "Nytt vilkår" }}
     >
-      <Modal.Content className={globals.modal_gridContent}>
+      <Modal.Body className={globals.modal_gridContent}>
         <>
           <CustomTextField
             label={"Vilkårreferanse *"}
@@ -279,32 +273,31 @@ const NyttVilkarModal: React.FC<Props> = (props: Props) => {
             )}
           </Fieldset>
         </div>
-
-        <div className={globals.buttonGroup}>
-          {aktivtVilkar == null && (
-            <Button
-              size="small"
-              variant="secondary-neutral"
-              onClick={() => {
-                setDefaultVilkar();
-              }}
-            >
-              Fyll ut alle felter
-            </Button>
-          )}
+      </Modal.Body>
+      <Modal.Footer>
+        <Button
+          size="small"
+          variant={aktivtVilkar == null ? "primary" : "secondary-neutral"}
+          onClick={() => {
+            if (!visFeilmelding) {
+              sendVilkar();
+            }
+          }}
+        >
+          {aktivtVilkar == null ? "Legg til vilkår" : "Endre vilkår"}
+        </Button>
+        {aktivtVilkar == null && (
           <Button
             size="small"
-            variant={aktivtVilkar == null ? "primary" : "secondary-neutral"}
+            variant="secondary-neutral"
             onClick={() => {
-              if (!visFeilmelding) {
-                sendVilkar();
-              }
+              setDefaultVilkar();
             }}
           >
-            {aktivtVilkar == null ? "Legg til vilkår" : "Endre vilkår"}
+            Fyll ut alle felter
           </Button>
-        </div>
-      </Modal.Content>
+        )}
+      </Modal.Footer>
     </Modal>
   );
 };

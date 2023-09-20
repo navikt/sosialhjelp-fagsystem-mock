@@ -10,7 +10,7 @@ import {
 
 import { BackendUrls, FsSoknad, Model } from "../../../redux/types";
 
-import { Modal, RadioGroup, Radio } from "@navikt/ds-react";
+import { Modal, RadioGroup, Radio, Button } from "@navikt/ds-react";
 import globals from "../../../app/globals.module.css";
 
 import { backendUrls } from "../../../redux/reducer";
@@ -54,17 +54,13 @@ const SystemSettingsModal: React.FC<Props> = (props: Props) => {
     );
   });
 
-  useEffect(() => {
-    Modal.setAppElement("#root");
-  }, []);
-
   return (
     <Modal
       open={visSystemSettingsModal}
       onClose={() => dispatch(skjulSystemSettingsModal())}
       className={globals.modal}
     >
-      <Modal.Content>
+      <Modal.Body>
         <RadioGroup
           legend="Miljø"
           name="miljo"
@@ -84,7 +80,15 @@ const SystemSettingsModal: React.FC<Props> = (props: Props) => {
         >
           {radios}
         </RadioGroup>
-      </Modal.Content>
+      </Modal.Body>
+      <Modal.Footer>
+        <Button
+          size="small"
+          onClick={() => dispatch(skjulSystemSettingsModal())}
+        >
+          Avbryt
+        </Button>
+      </Modal.Footer>
     </Modal>
   );
 };
