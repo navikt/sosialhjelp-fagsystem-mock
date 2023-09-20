@@ -71,16 +71,6 @@
 
 }
 
-.modal_gridContent > .buttonGroup {
-    width: 100%;
-    display: flex;
-    align-items: flex-end;
-    gap: 16px;
-    margin-top: 1rem;
-    flex: 1 0 100%;
-    justify-content: center;
-}
-
 .modal_gridContent > .fullWidthItem {
     max-width: 100%;
     display: flex;

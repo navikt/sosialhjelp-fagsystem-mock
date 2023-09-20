@@ -170,10 +170,6 @@ const NyttDokumentasjonkravModal: React.FC<Props> = (props: Props) => {
     soknad.dokumentasjonkrav,
   ]);
 
-  useEffect(() => {
-    Modal.setAppElement("#root");
-  }, []);
-
   const onChipToggled = (value: string) => {
     const selected = modalDokumentasjonkrav?.utbetalingsreferanse ?? [];
     setModalDokumentasjonkrav({
@@ -186,17 +182,15 @@ const NyttDokumentasjonkravModal: React.FC<Props> = (props: Props) => {
 
   return (
     <Modal
-      aria-label="Nytt dokumentasjonskrav"
       className={globals.modal}
       open={visNyDokumentasjonkravModal}
       onClose={() => {
         props.dispatch(skjulNyDokumentasjonkravModal());
-        setTimeout(() => {
-          resetStateValues();
-        }, 500);
+        resetStateValues();
       }}
+      header={{ heading: "Dokumentasjonkrav" }}
     >
-      <Modal.Content className={globals.modal_gridContent}>
+      <Modal.Body className={globals.modal_gridContent}>
         <CustomTextField
           label={"Dokumentasjonkravreferanse *"}
           value={modalDokumentasjonkrav.dokumentasjonkravreferanse}
@@ -313,35 +307,35 @@ const NyttDokumentasjonkravModal: React.FC<Props> = (props: Props) => {
             })}
           </Chips>
         </Fieldset>
-        <div className={globals.buttonGroup}>
-          {aktivtDokumentasjonkrav == null && (
-            <Button
-              size="small"
-              variant="secondary-neutral"
-              onClick={() => {
-                setDefaultDokumentasjonkrav();
-              }}
-            >
-              Fyll ut alle felter
-            </Button>
-          )}
+      </Modal.Body>
+      <Modal.Footer>
+        <Button
+          size="small"
+          variant={
+            aktivtDokumentasjonkrav == null ? "primary" : "secondary-neutral"
+          }
+          onClick={() => {
+            if (!visFeilmelding) {
+              sendDokumentasjonkrav();
+            }
+          }}
+        >
+          {aktivtDokumentasjonkrav == null
+            ? "Legg til dokumentasjonkrav"
+            : "Endre dokumentasjonkrav"}
+        </Button>
+        {aktivtDokumentasjonkrav == null && (
           <Button
             size="small"
-            variant={
-              aktivtDokumentasjonkrav == null ? "primary" : "secondary-neutral"
-            }
+            variant="secondary-neutral"
             onClick={() => {
-              if (!visFeilmelding) {
-                sendDokumentasjonkrav();
-              }
+              setDefaultDokumentasjonkrav();
             }}
           >
-            {aktivtDokumentasjonkrav == null
-              ? "Legg til dokumentasjonkrav"
-              : "Endre dokumentasjonkrav"}
+            Fyll ut alle felter
           </Button>
-        </div>
-      </Modal.Content>
+        )}
+      </Modal.Footer>
     </Modal>
   );
 };

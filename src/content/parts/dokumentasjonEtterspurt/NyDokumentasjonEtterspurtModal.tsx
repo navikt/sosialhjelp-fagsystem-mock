@@ -272,23 +272,17 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
     };
   };
 
-  useEffect(() => {
-    Modal.setAppElement("#root");
-  }, []);
-
   return (
     <Modal
-      aria-label="Ny dokumentasjon etterspurt"
       className={globals.modal}
       open={visNyDokumentasjonEtterspurtModal}
       onClose={() => {
         dispatch(skjulNyDokumentasjonEtterspurtModal());
-        setTimeout(() => {
-          resetStateValues();
-        }, 500);
+        resetStateValues();
       }}
+      header={{ heading: "Dokumentasjon etterspurt" }}
     >
-      <Modal.Content className={globals.modal_gridContent}>
+      <Modal.Body className={globals.modal_gridContent}>
         <CustomTextField
           label={"Dokumenttype *"}
           value={modalDokument.dokumenttype}
@@ -346,21 +340,6 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
         <div className={styles.dokEtterspurtOversikt}>
           <DokumentasjonEtterspurtOversikt />
         </div>
-        <div className={globals.buttonGroup}>
-          <Button
-            size="small"
-            variant={
-              !dokumenterErAlleredeEtterspurt ? "primary" : "secondary-neutral"
-            }
-            onClick={() => {
-              sendDokumentasjonEtterspurt();
-            }}
-          >
-            {dokumenterErAlleredeEtterspurt
-              ? "Endre etterspurt dokumentasjon"
-              : "Etterspør dokumentasjon"}
-          </Button>
-        </div>
 
         <input
           id={"inputField vedtakFattet"}
@@ -384,7 +363,22 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
               : "application/pdf"
           }
         />
-      </Modal.Content>
+      </Modal.Body>
+      <Modal.Footer>
+        <Button
+          size="small"
+          variant={
+            !dokumenterErAlleredeEtterspurt ? "primary" : "secondary-neutral"
+          }
+          onClick={() => {
+            sendDokumentasjonEtterspurt();
+          }}
+        >
+          {dokumenterErAlleredeEtterspurt
+            ? "Endre etterspurt dokumentasjon"
+            : "Etterspør dokumentasjon"}
+        </Button>
+      </Modal.Footer>
     </Modal>
   );
 };

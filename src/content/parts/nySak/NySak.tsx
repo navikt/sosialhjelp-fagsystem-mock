@@ -30,10 +30,6 @@ const NySakModal: React.FC<Props> = (props: Props) => {
 
   const { visNySakModal, dispatch, model } = props;
 
-  useEffect(() => {
-    Modal.setAppElement("#root");
-  }, []);
-
   const onOpprettSak = () => {
     const fsSoknader = model.soknader;
     if (fsSoknader) {
@@ -61,23 +57,23 @@ const NySakModal: React.FC<Props> = (props: Props) => {
   };
   return (
     <Modal
-      aria-labelledby="Opprett ny sak"
       className={globals.modal}
       open={visNySakModal}
       onClose={() => props.dispatch(skjulNySakModal())}
+      header={{ heading: "Ny sak" }}
     >
-      <Modal.Content className={globals.flexRow}>
+      <Modal.Body className={globals.flexRow}>
         <TextField
-          label="Tittel på ny sak"
+          label="Tittel"
           value={tittel}
           onChange={(evt) => setTittel(evt.target.value)}
           autoComplete="off"
           size="small"
         />
         <Button onClick={onOpprettSak} size="small">
-          Opprett sak
+          Opprett
         </Button>
-      </Modal.Content>
+      </Modal.Body>
     </Modal>
   );
 };
