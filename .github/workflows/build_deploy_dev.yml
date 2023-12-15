@@ -53,7 +53,7 @@ jobs:
           tag: ${{ steps.artifact-version.outputs.version }}
           commit: ${{ github.sha }}
       - name: Deploy til dev
-        uses: nais/deploy/actions/deploy@v1
+        uses: nais/deploy/actions/deploy@v2
         env:
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY != '' && secrets.NAIS_DEPLOY_APIKEY || secrets.api_deploy_token }}
           RESOURCE: nais.yaml
