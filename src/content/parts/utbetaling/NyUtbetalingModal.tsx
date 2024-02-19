@@ -108,8 +108,12 @@ const defaultUtbetaling: Utbetaling = {
 };
 
 const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
-  const [modalUtbetaling, setModalUtbetaling] =
-    useState<Utbetaling>(initialUtbetaling);
+
+  const utbetaling: Utbetaling = initialUtbetaling;
+  utbetaling.utbetalingsreferanse = generateFilreferanseId()
+
+  const [modalUtbetaling, setModalUtbetaling] = useState<Utbetaling>(utbetaling);
+
   const [kontonummerLabelPlaceholder, setKontonummerLabelPlaceholder] =
     useState("Kontonummer (Ikke satt)");
 
