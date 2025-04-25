@@ -1,16 +1,21 @@
 name: Build and deploy to dev
+
 on:
   workflow_dispatch:
 
 permissions:
   contents: read
   id-token: write
+
 jobs:
   build:
     name: Build and push docker image
     runs-on: ubuntu-latest
-    env:
-      DOCKER_IMAGE: ghcr.io/${{ github.repository }}/${{ github.event.repository.name }}
+    permissions:
+      contents: read
+      id-token: write
+    outputs:
+      image: ${{ steps.docker-push.outputs.image }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v3
@@ -31,7 +36,14 @@ jobs:
           project_id: ${{ vars.NAIS_MANAGEMENT_PROJECT_ID }}
           identity_provider: ${{ secrets.NAIS_WORKLOAD_IDENTITY_PROVIDER }}
           tag: latest
-      - name: Deploy til dev
+
+  deploy:
+    name: Deploy til dev
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Deploy
         uses: nais/deploy/actions/deploy@v2
         env:
           RESOURCE: nais.yaml
