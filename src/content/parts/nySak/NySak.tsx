@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { AppState } from "../../../redux/reduxTypes";
+import { RootState } from "../../../store";
 import { useDispatch, useSelector } from "react-redux";
 import { Button, Modal, TextField } from "@navikt/ds-react";
 import globals from "../../../app/globals.module.css";
@@ -16,7 +16,7 @@ import { NY_FS_SAKS_STATUS, SKJUL_NY_SAK_MODAL } from "../../../redux/reducer";
 const NySakModal = () => {
   const [tittel, setTittel] = useState("");
 
-  const { visNySakModal, model } = useSelector((state: AppState) => ({
+  const { visNySakModal, model } = useSelector((state: RootState) => ({
     visNySakModal: state.model.visNySakModal,
     model: state.model,
   }));
@@ -48,13 +48,13 @@ const NySakModal = () => {
         setTittel("");
       }
     }
-    dispatch(SKJUL_NY_SAK_MODAL);
+    dispatch(SKJUL_NY_SAK_MODAL());
   };
   return (
     <Modal
       className={globals.modal}
       open={visNySakModal}
-      onClose={() => dispatch(SKJUL_NY_SAK_MODAL)}
+      onClose={() => dispatch(SKJUL_NY_SAK_MODAL())}
       header={{ heading: "Ny sak" }}
     >
       <Modal.Body className={globals.flexRow}>

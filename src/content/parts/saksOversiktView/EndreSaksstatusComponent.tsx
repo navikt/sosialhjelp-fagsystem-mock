@@ -1,5 +1,5 @@
 import React from "react";
-import { AppState } from "../../../redux/reduxTypes";
+import { RootState } from "../../../store";
 import { useDispatch, useSelector } from "react-redux";
 
 import { sendNyHendelseOgOppdaterModel } from "../../../redux/actions";
@@ -20,7 +20,7 @@ interface Props {
 }
 
 const EndreSaksstatusComponent: React.FC<Props> = ({ soknad, sak }: Props) => {
-  const model = useSelector((state: AppState) => state.model);
+  const model = useSelector((state: RootState) => state.model);
   const dispatch = useDispatch();
   return (
     <Select
@@ -29,7 +29,7 @@ const EndreSaksstatusComponent: React.FC<Props> = ({ soknad, sak }: Props) => {
       label="Endre saksstatus"
       value={sak.status ? sak.status : ""}
       onChange={(evt) => {
-        let value = evt.target.value;
+        const value = evt.target.value;
         if (
           value === SaksStatusType.UNDER_BEHANDLING ||
           value === SaksStatusType.BEHANDLES_IKKE ||

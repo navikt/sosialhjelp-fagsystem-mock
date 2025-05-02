@@ -1,33 +1,29 @@
-import React, { useEffect } from "react";
-import { AppState, DispatchProps } from "../../../redux/reduxTypes";
-import { connect } from "react-redux";
+import { RootState } from "../../../store";
+import { useDispatch, useSelector } from "react-redux";
 
-import {
-  opprettDigisosSakHvisDenIkkeFinnes,
-  setBackendUrlTypeToUse,
-  skjulSystemSettingsModal,
-} from "../../../redux/actions";
+import { opprettDigisosSakHvisDenIkkeFinnes } from "../../../redux/actions";
 
-import { BackendUrls, FsSoknad, Model } from "../../../redux/types";
+import { BackendUrls, FsSoknad } from "../../../redux/types";
 
 import { Modal, RadioGroup, Radio, Button } from "@navikt/ds-react";
 import globals from "../../../app/globals.module.css";
 
-import { backendUrls } from "../../../redux/reducer";
+import {
+  backendUrls,
+  SET_BACKEND_URL_TYPE_TO_USE,
+  SKJUL_SYSTEM_SETTINGS_MODAL,
+} from "../../../redux/reducer";
 
-interface OwnProps {
+interface Props {
   soknad: FsSoknad | undefined;
 }
 
-interface StoreProps {
-  visSystemSettingsModal: boolean;
-  model: Model;
-}
-
-type Props = DispatchProps & OwnProps & StoreProps;
-
-const SystemSettingsModal: React.FC<Props> = (props: Props) => {
-  const { visSystemSettingsModal, dispatch, soknad, model } = props;
+const SystemSettingsModal = ({ soknad }: Props) => {
+  const { visSystemSettingsModal, model } = useSelector((state: RootState) => ({
+    visSystemSettingsModal: state.model.visSystemSettingsModal,
+    model: state.model,
+  }));
+  const dispatch = useDispatch();
 
   const toRadioLabel = (backendUrlType: string) => {
     switch (backendUrlType) {
@@ -42,7 +38,6 @@ const SystemSettingsModal: React.FC<Props> = (props: Props) => {
     }
   };
   const radios = Object.keys(backendUrls).map((backendUrlType: string) => {
-    // @ts-ignore
     return (
       <Radio
         id={"system_settings_backend_url_radio_" + backendUrlType}
@@ -57,7 +52,7 @@ const SystemSettingsModal: React.FC<Props> = (props: Props) => {
   return (
     <Modal
       open={visSystemSettingsModal}
-      onClose={() => dispatch(skjulSystemSettingsModal())}
+      onClose={() => dispatch(SKJUL_SYSTEM_SETTINGS_MODAL())}
       className={globals.modal}
       aria-label={"Systeminnstillinger"}
     >
@@ -66,8 +61,8 @@ const SystemSettingsModal: React.FC<Props> = (props: Props) => {
           legend="Miljø"
           name="miljo"
           value={model.backendUrlTypeToUse}
-          onChange={(value) => {
-            dispatch(setBackendUrlTypeToUse(value as keyof BackendUrls));
+          onChange={async (value) => {
+            dispatch(SET_BACKEND_URL_TYPE_TO_USE(value as keyof BackendUrls));
             if (soknad) {
               opprettDigisosSakHvisDenIkkeFinnes(
                 soknad,
@@ -76,7 +71,7 @@ const SystemSettingsModal: React.FC<Props> = (props: Props) => {
                 soknad.fiksDigisosId,
               );
             }
-            dispatch(skjulSystemSettingsModal());
+            dispatch(SKJUL_SYSTEM_SETTINGS_MODAL());
           }}
         >
           {radios}
@@ -85,7 +80,7 @@ const SystemSettingsModal: React.FC<Props> = (props: Props) => {
       <Modal.Footer>
         <Button
           size="small"
-          onClick={() => dispatch(skjulSystemSettingsModal())}
+          onClick={() => dispatch(SKJUL_SYSTEM_SETTINGS_MODAL())}
         >
           Avbryt
         </Button>
@@ -94,18 +89,4 @@ const SystemSettingsModal: React.FC<Props> = (props: Props) => {
   );
 };
 
-const mapStateToProps = (state: AppState) => ({
-  visSystemSettingsModal: state.model.visSystemSettingsModal,
-  model: state.model,
-});
-
-const mapDispatchToProps = (dispatch: any) => {
-  return {
-    dispatch,
-  };
-};
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(SystemSettingsModal);
+export default SystemSettingsModal;

@@ -1,14 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { AppState, DispatchProps } from "../../../redux/reduxTypes";
-import { connect } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
-  nyttVilkar,
-  oppdaterVilkar,
   sendNyHendelseOgOppdaterModel,
-  setAktivtVilkar,
-  skjulNyVilkarModal,
 } from "../../../redux/actions";
-import { FsSoknad, Model } from "../../../redux/types";
+import { FsSoknad } from "../../../redux/types";
 import {
   generateFilreferanseId,
   getAllUtbetalingsreferanser,
@@ -32,19 +27,16 @@ import {
   BodyShort,
 } from "@navikt/ds-react";
 import globals from "../../../app/globals.module.css";
+import {
+  NYTT_VILKAR,
+  OPPDATER_VILKAR,
+  SET_AKTIVT_VILKAR, SKJUL_NY_VILKAR_MODAL
+} from "../../../redux/reducer";
+import { RootState } from "../../../store";
 
-interface OwnProps {
+interface Props {
   soknad: FsSoknad;
 }
-
-interface StoreProps {
-  visNyVilkarModal: boolean;
-  model: Model;
-  aktivtVilkar: string | undefined | null;
-  modalSaksreferanse: string | null;
-}
-
-type Props = DispatchProps & OwnProps & StoreProps;
 
 const initialVilkar: Vilkar = {
   type: HendelseType.Vilkar,
@@ -68,22 +60,22 @@ const defaultVilkar: Vilkar = {
   saksreferanse: null,
 };
 
-const NyttVilkarModal: React.FC<Props> = (props: Props) => {
+const NyttVilkarModal: React.FC<Props> = ({ soknad }: Props) => {
+  const { visNyVilkarModal, modalSaksreferanse, aktivtVilkar, model } =
+    useSelector((state: RootState) => ({
+      visNyVilkarModal: state.model.visNyVilkarModal,
+      model: state.model,
+      aktivtVilkar: state.model.aktivtVilkar,
+      modalSaksreferanse: state.model.modalSaksreferanse,
+    }));
+
+  const dispatch = useDispatch();
+
   const [modalVilkar, setModalVilkar] = useState<Vilkar>(initialVilkar);
 
   const [visFeilmelding, setVisFeilmelding] = useState(false);
-  const [referansefeltDisabled, setReferansefeltDisabled] = useState(
-    !!props.aktivtVilkar,
-  );
-
-  const {
-    visNyVilkarModal,
-    dispatch,
-    model,
-    soknad,
-    aktivtVilkar,
-    modalSaksreferanse,
-  } = props;
+  const [referansefeltDisabled, setReferansefeltDisabled] =
+    useState(!!aktivtVilkar);
 
   function resetStateValues() {
     setModalVilkar({
@@ -93,7 +85,7 @@ const NyttVilkarModal: React.FC<Props> = (props: Props) => {
     setVisFeilmelding(false);
     setReferansefeltDisabled(false);
 
-    dispatch(setAktivtVilkar(null));
+    dispatch(SET_AKTIVT_VILKAR(null));
   }
 
   const sendVilkar = () => {
@@ -105,17 +97,23 @@ const NyttVilkarModal: React.FC<Props> = (props: Props) => {
         nyHendelse,
         model,
         dispatch,
-        nyttVilkar(soknad.fiksDigisosId, nyHendelse),
+        NYTT_VILKAR({
+          forFiksDigisosId: soknad.fiksDigisosId,
+          nyttVilkar: nyHendelse,
+        }),
       );
     } else {
       sendNyHendelseOgOppdaterModel(
         nyHendelse,
         model,
         dispatch,
-        oppdaterVilkar(soknad.fiksDigisosId, nyHendelse),
+        OPPDATER_VILKAR({
+          forFiksDigisosId: soknad.fiksDigisosId,
+          oppdatertVilkar: nyHendelse,
+        }),
       );
     }
-    dispatch(dispatch(skjulNyVilkarModal()));
+    dispatch(SKJUL_NY_VILKAR_MODAL());
 
     setTimeout(() => {
       resetStateValues();
@@ -143,7 +141,7 @@ const NyttVilkarModal: React.FC<Props> = (props: Props) => {
 
   useEffect(() => {
     if (aktivtVilkar && visNyVilkarModal) {
-      let vilkar = getVilkarByVilkarreferanse(soknad.vilkar, aktivtVilkar);
+      const vilkar = getVilkarByVilkarreferanse(soknad.vilkar, aktivtVilkar);
       if (vilkar) {
         setModalVilkar(vilkar);
 
@@ -171,7 +169,7 @@ const NyttVilkarModal: React.FC<Props> = (props: Props) => {
       className={globals.modal}
       open={visNyVilkarModal}
       onClose={() => {
-        props.dispatch(skjulNyVilkarModal());
+        dispatch(SKJUL_NY_VILKAR_MODAL());
         resetStateValues();
       }}
       header={{ heading: !!aktivtVilkar ? "Endre vilkår" : "Nytt vilkår" }}
@@ -207,7 +205,7 @@ const NyttVilkarModal: React.FC<Props> = (props: Props) => {
             size="small"
             label="Status"
             value={modalVilkar.status ? modalVilkar.status : ""}
-            onChange={(evt: any) =>
+            onChange={(evt) =>
               setModalVilkar({
                 ...modalVilkar,
                 status: evt.target.value as VilkarStatus,
@@ -302,17 +300,4 @@ const NyttVilkarModal: React.FC<Props> = (props: Props) => {
   );
 };
 
-const mapStateToProps = (state: AppState) => ({
-  visNyVilkarModal: state.model.visNyVilkarModal,
-  model: state.model,
-  aktivtVilkar: state.model.aktivtVilkar,
-  modalSaksreferanse: state.model.modalSaksreferanse,
-});
-
-const mapDispatchToProps = (dispatch: any) => {
-  return {
-    dispatch,
-  };
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(NyttVilkarModal);
+export default NyttVilkarModal;

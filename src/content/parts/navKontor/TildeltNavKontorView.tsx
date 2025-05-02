@@ -1,5 +1,5 @@
 import React from "react";
-import { AppState } from "../../../redux/reduxTypes";
+import { RootState } from "../../../store";
 import { useDispatch, useSelector } from "react-redux";
 import { HendelseType, TildeltNavKontor } from "../../../types/hendelseTypes";
 import { getNow } from "../../../utils/utilityFunctions";
@@ -18,7 +18,7 @@ interface Props {
 
 const TildeldeltNavkontorView: React.FC<Props> = ({ soknad }: Props) => {
   const dispatch = useDispatch();
-  const model = useSelector((state: AppState) => state.model);
+  const model = useSelector((state: RootState) => state.model);
 
   const navKontor0: NavKontor = {
     id: "1208",
@@ -63,7 +63,7 @@ const TildeldeltNavkontorView: React.FC<Props> = ({ soknad }: Props) => {
         soknad.navKontor ? soknad.navKontor.navKontor : "",
       )}
       onChange={(evt) => {
-        let navKontorEnhetsNr = evt.target.value as string;
+        const navKontorEnhetsNr = evt.target.value as string;
 
         if (navKontorEnhetsNr === "") {
           return;

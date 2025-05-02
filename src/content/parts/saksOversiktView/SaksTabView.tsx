@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { AppState } from "../../../redux/reduxTypes";
+import { RootState } from "../../../store";
 import { useDispatch, useSelector } from "react-redux";
 
 import { HendelseType, SaksStatus } from "../../../types/hendelseTypes";
@@ -24,7 +24,7 @@ interface Props {
 
 const SaksTabView = ({ soknad, sak }: Props) => {
   const [tittel, setTittel] = useState("");
-  const model = useSelector((state: AppState) => state.model);
+  const model = useSelector((state: RootState) => state.model);
   const dispatch = useDispatch();
 
   return (

@@ -1,13 +1,16 @@
 import React from "react";
-import { AppState } from "../../../redux/reduxTypes";
+import { RootState } from "../../../store";
 import { useDispatch, useSelector } from "react-redux";
-import { switchToDarkMode, switchToLightMode } from "../../../redux/actions";
 import { InternalHeader } from "@navikt/ds-react";
 import { MoonIcon, SunIcon, WrenchIcon } from "@navikt/aksel-icons";
-import { VIS_SYSTEM_SETTINGS_MODAL } from "../../../redux/reducer";
+import {
+  SWITCH_TO_DARK_MODE,
+  SWITCH_TO_LIGHT_MODE,
+  VIS_SYSTEM_SETTINGS_MODAL,
+} from "../../../redux/reducer";
 
 const AppBarView = () => {
-  const thememode = useSelector((state: AppState) => state.model.thememode);
+  const thememode = useSelector((state: RootState) => state.model.thememode);
 
   const dispatch = useDispatch();
 
@@ -18,16 +21,18 @@ const AppBarView = () => {
       </InternalHeader.Title>
       <InternalHeader.Button
         style={{ marginLeft: "auto", fontSize: "1.5rem" }}
-        onClick={() => dispatch(VIS_SYSTEM_SETTINGS_MODAL)}
+        onClick={() => dispatch(VIS_SYSTEM_SETTINGS_MODAL())}
       >
         <WrenchIcon title="innstillinger" />
       </InternalHeader.Button>
       <InternalHeader.Button
         style={{ fontSize: "1.5rem" }}
         onClick={() => {
-          thememode === "light"
-            ? dispatch(switchToDarkMode())
-            : dispatch(switchToLightMode());
+          if (thememode === "light") {
+            dispatch(SWITCH_TO_DARK_MODE());
+          } else {
+            dispatch(SWITCH_TO_LIGHT_MODE());
+          }
         }}
       >
         {thememode === "light" ? (

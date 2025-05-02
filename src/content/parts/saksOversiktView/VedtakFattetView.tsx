@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import { AppState } from "../../../redux/reduxTypes";
+import { RootState } from "../../../store";
 import { useDispatch, useSelector } from "react-redux";
 
 import {
@@ -30,7 +30,7 @@ const VedtakFattetView: React.FC<Props> = ({ soknad, sak }: Props) => {
   const [vedtakFattetUtfall, setVedtakFattetUtfall] = useState<Utfall | null>(
     null,
   );
-  const model = useSelector((state: AppState) => state.model);
+  const model = useSelector((state: RootState) => state.model);
   const dispatch = useDispatch();
   const inputEl = useRef<HTMLInputElement>(null);
 
@@ -58,7 +58,7 @@ const VedtakFattetView: React.FC<Props> = ({ soknad, sak }: Props) => {
           size="small"
           value={vedtakFattetUtfall ? vedtakFattetUtfall : ""}
           onChange={(evt) => {
-            let value = evt.target.value;
+            const value = evt.target.value;
             if (
               value === Utfall.INNVILGET ||
               value === Utfall.DELVIS_INNVILGET ||

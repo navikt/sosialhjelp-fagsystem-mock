@@ -1,16 +1,8 @@
 "use client";
-import { Metadata } from "next";
 import "../App.css";
 import React from "react";
 import { Provider } from "react-redux";
 import store from "../store";
-
-const metadata: Metadata = {
-  title: "Fagsystemmock",
-  description: "Mocking av fagsystem for sosialhjelp",
-};
-
-const store = store();
 
 export default function RootLayout({
   // Layouts must accept a children prop.

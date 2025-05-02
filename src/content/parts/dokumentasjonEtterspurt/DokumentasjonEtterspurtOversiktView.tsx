@@ -1,5 +1,5 @@
 import React from "react";
-import { AppState } from "../../../redux/reduxTypes";
+import { RootState } from "../../../store";
 import { useDispatch, useSelector } from "react-redux";
 import { v4 as uuidv4 } from "uuid";
 import { FsSoknad } from "../../../redux/types";
@@ -20,7 +20,7 @@ interface Props {
 }
 
 const DokumentasjonEtterspurtOversiktView: React.FC<Props> = ({soknad}: Props) => {
-  const model = useSelector((state: AppState) => state.model);
+  const model = useSelector((state: RootState) => state.model);
   const dispatch = useDispatch()
 
   const dokumenterErAlleredeEtterspurt =
@@ -81,7 +81,7 @@ const DokumentasjonEtterspurtOversiktView: React.FC<Props> = ({soknad}: Props) =
           if (dokumenterErAlleredeEtterspurt) {
             dispatchNyHendelseMedTomDokumentasjonEtterspurt();
           } else {
-            dispatch(VIS_NY_DOKUMENTASJON_ETTERSPURT_MODAL);
+            dispatch(VIS_NY_DOKUMENTASJON_ETTERSPURT_MODAL());
           }
         }}
       >
@@ -116,7 +116,7 @@ const DokumentasjonEtterspurtOversiktView: React.FC<Props> = ({soknad}: Props) =
                 size="small"
                 variant="secondary-neutral"
                 onClick={() => {
-                  dispatch(VIS_NY_DOKUMENTASJON_ETTERSPURT_MODAL);
+                  dispatch(VIS_NY_DOKUMENTASJON_ETTERSPURT_MODAL());
                 }}
               >
                 Endre etterspurt dokumentasjon

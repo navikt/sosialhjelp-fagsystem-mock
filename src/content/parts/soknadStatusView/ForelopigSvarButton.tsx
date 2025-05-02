@@ -6,7 +6,7 @@ import {
   OPPDATER_FORELOPIG_SVAR,
 } from "../../../redux/reducer";
 import { sendNyHendelseOgOppdaterModel } from "../../../redux/actions";
-import { AppState } from "../../../redux/reduxTypes";
+import { RootState } from "../../../store";
 import { FsSoknad } from "../../../redux/types";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -15,7 +15,7 @@ interface Props {
 }
 
 const ForelopigSvarButton = ({ soknad }: Props) => {
-  const model = useSelector((state: AppState) => state.model);
+  const model = useSelector((state: RootState) => state.model);
   const dispatch = useDispatch();
 
   return (

@@ -21,7 +21,10 @@ const DokumentasjonkravTabView: React.FC<Props> = ({
 }: Props) => {
   const dispatch = useDispatch();
 
-  const makeTableRow = (type: string, value: any) => {
+  const makeTableRow = (
+    type: string,
+    value: boolean | string[] | null | string,
+  ) => {
     if (typeof value === "boolean") {
       value = value ? "Ja" : "Nei";
     }
@@ -144,7 +147,7 @@ const DokumentasjonkravTabView: React.FC<Props> = ({
                 dokumentasjonkrav.dokumentasjonkravreferanse,
               ),
             );
-            dispatch(VIS_NY_DOKUMENTASJONKRAV_MODAL);
+            dispatch(VIS_NY_DOKUMENTASJONKRAV_MODAL());
           }}
         >
           Endre dokumentasjonkrav

@@ -1,24 +1,18 @@
 import React, { useState } from "react";
-import { DispatchProps } from "../../../redux/reduxTypes";
-import { connect } from "react-redux";
-import {
-  setAktivUtbetaling,
-  visNyUtbetalingModal,
-} from "../../../redux/actions";
+import { useDispatch } from "react-redux";
 import UtbetalingTabView from "./UtbetalingTabView";
 import { Utbetaling } from "../../../types/hendelseTypes";
 import { Button, Tabs } from "@navikt/ds-react";
 import globals from "../../../app/globals.module.css";
+import { SET_AKTIV_UTBETALING, VIS_NY_UTBETALING_MODAL } from "../../../redux/reducer";
 
-interface OwnProps {
+interface Props {
   utbetalingListe: Utbetaling[];
   saksreferanse: string | null;
 }
 
-type Props = DispatchProps & OwnProps;
-
-const UtbetalingOversiktView: React.FC<Props> = (props: Props) => {
-  const { utbetalingListe, dispatch, saksreferanse } = props;
+const UtbetalingOversiktView: React.FC<Props> = ({ utbetalingListe, saksreferanse }: Props) => {
+  const dispatch = useDispatch();
   const [aktivUtbetalingIdx, setAktivUtbetalingIdx] = useState(0);
   const [antallUtbetalinger, setAntallUtbetalinger] = useState(0);
 
@@ -35,8 +29,8 @@ const UtbetalingOversiktView: React.FC<Props> = (props: Props) => {
         size="small"
         className={`${globals.fitContent}`}
         onClick={() => {
-          dispatch(setAktivUtbetaling(null));
-          dispatch(visNyUtbetalingModal(saksreferanse));
+          dispatch(SET_AKTIV_UTBETALING(null));
+          dispatch(VIS_NY_UTBETALING_MODAL(saksreferanse));
         }}
       >
         Ny utbetaling
@@ -80,10 +74,5 @@ const UtbetalingOversiktView: React.FC<Props> = (props: Props) => {
   );
 };
 
-const mapDispatchToProps = (dispatch: any) => {
-  return {
-    dispatch,
-  };
-};
 
-export default connect(mapDispatchToProps)(UtbetalingOversiktView);
+export default UtbetalingOversiktView;

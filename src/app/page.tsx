@@ -3,9 +3,8 @@
 import React, { Suspense, useEffect } from "react";
 import Loading from "./loading";
 import Forside from ".././content/Forside";
-import { setAktivSoknad } from "../redux/actions";
 import { useSearchParams } from "next/navigation";
-import { idFromQueryOrRandomId } from "../redux/reducer";
+import { idFromQueryOrRandomId, SET_AKTIV_SOKNAD } from "../redux/reducer";
 import { useDispatch } from "react-redux";
 
 export default function Page() {
@@ -14,7 +13,7 @@ export default function Page() {
 
   useEffect(() => {
     const fiksDigisosId = idFromQueryOrRandomId(searchParams);
-    dispatch(setAktivSoknad(fiksDigisosId));
+    dispatch(SET_AKTIV_SOKNAD(fiksDigisosId));
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

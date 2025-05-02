@@ -1,6 +1,6 @@
 import React, { useRef } from "react";
-import { AppState, DispatchProps } from "../../../redux/reduxTypes";
-import { connect, useDispatch, useSelector } from "react-redux";
+import { RootState } from "../../../store";
+import { useDispatch, useSelector } from "react-redux";
 import { BodyShort, Heading, Panel, Radio, RadioGroup } from "@navikt/ds-react";
 import globals from "../../../app/globals.module.css";
 
@@ -10,21 +10,21 @@ import {
   SoknadsStatusType,
 } from "../../../types/hendelseTypes";
 
-import { FsSoknad, Model } from "../../../redux/types";
+import { FsSoknad } from "../../../redux/types";
 import {
-  oppdaterSoknadsStatus,
   sendNyHendelseOgOppdaterModel,
   sendPdfOgOppdaterForelopigSvar,
 } from "../../../redux/actions";
 import { getNow } from "../../../utils/utilityFunctions";
 import ForelopigSvarButton from "./ForelopigSvarButton";
+import { OPPDATER_SOKNADS_STATUS } from "../../../redux/reducer";
 
 interface Props {
   soknad: FsSoknad;
 }
 
 const SoknadStatusView = ({ soknad }: Props) => {
-  const model = useSelector((state: AppState) => state.model);
+  const model = useSelector((state: RootState) => state.model);
   const dispatch = useDispatch();
   const inputEl = useRef<HTMLInputElement>(null);
 
@@ -35,7 +35,7 @@ const SoknadStatusView = ({ soknad }: Props) => {
     const formData = new FormData();
     formData.append("file", files[0], files[0].name);
 
-    dispatch(sendPdfOgOppdaterForelopigSvar(formData, model, dispatch));
+    dispatch(sendPdfOgOppdaterForelopigSvar(formData));
   };
 
   function getAntallForelopigSvarHendelser() {
@@ -72,7 +72,10 @@ const SoknadStatusView = ({ soknad }: Props) => {
                 nyHendelse,
                 model,
                 dispatch,
-                oppdaterSoknadsStatus(soknad.fiksDigisosId, nyHendelse),
+                OPPDATER_SOKNADS_STATUS({
+                  forFiksDigisosId: soknad.fiksDigisosId,
+                  nySoknadsStatus: nyHendelse,
+                }),
               );
             }
           }}

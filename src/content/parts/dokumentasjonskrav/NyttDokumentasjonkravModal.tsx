@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { AppState } from "../../../redux/reduxTypes";
+import { RootState } from "../../../store";
 import { useDispatch, useSelector } from "react-redux";
 import { sendNyHendelseOgOppdaterModel } from "../../../redux/actions";
 import { FsSoknad } from "../../../redux/types";
@@ -46,7 +46,7 @@ const initialDokumentasjonkrav: Dokumentasjonkrav = {
   saksreferanse: "",
 };
 
-let date = new Date();
+const date = new Date();
 date.setDate(new Date().getDate() + 7);
 date.setHours(12);
 const defaultFrist = getShortDateISOString(date);
@@ -71,7 +71,7 @@ const NyttDokumentasjonkravModal: React.FC<Props> = ({ soknad }: Props) => {
     model,
     aktivtDokumentasjonkrav,
     modalSaksreferanse,
-  } = useSelector((state: AppState) => ({
+  } = useSelector((state: RootState) => ({
     visNyDokumentasjonkravModal: state.model.visNyDokumentasjonkravModal,
     model: state.model,
     aktivtDokumentasjonkrav: state.model.aktivtDokumentasjonkrav,
@@ -94,7 +94,7 @@ const NyttDokumentasjonkravModal: React.FC<Props> = ({ soknad }: Props) => {
   };
 
   const sendDokumentasjonkrav = () => {
-    let fristDate = getDateOrNullFromDateString(modalDokumentasjonkrav.frist);
+    const fristDate = getDateOrNullFromDateString(modalDokumentasjonkrav.frist);
 
     const nyHendelse: Dokumentasjonkrav = {
       ...modalDokumentasjonkrav,
@@ -124,7 +124,7 @@ const NyttDokumentasjonkravModal: React.FC<Props> = ({ soknad }: Props) => {
       );
     }
 
-    dispatch(dispatch(SKJUL_NY_DOKUMENTASJONKRAV_MODAL));
+    dispatch(SKJUL_NY_DOKUMENTASJONKRAV_MODAL());
 
     setTimeout(() => {
       resetStateValues();
@@ -185,7 +185,7 @@ const NyttDokumentasjonkravModal: React.FC<Props> = ({ soknad }: Props) => {
       className={globals.modal}
       open={visNyDokumentasjonkravModal}
       onClose={() => {
-        dispatch(SKJUL_NY_DOKUMENTASJONKRAV_MODAL);
+        dispatch(SKJUL_NY_DOKUMENTASJONKRAV_MODAL());
         resetStateValues();
       }}
       header={{ heading: "Dokumentasjonkrav" }}
@@ -241,7 +241,7 @@ const NyttDokumentasjonkravModal: React.FC<Props> = ({ soknad }: Props) => {
           value={
             modalDokumentasjonkrav.status ? modalDokumentasjonkrav.status : ""
           }
-          onChange={(evt: any) =>
+          onChange={(evt) =>
             setModalDokumentasjonkrav({
               ...modalDokumentasjonkrav,
               status: evt.target.value as DokumentasjonkravStatus,

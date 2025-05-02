@@ -1,6 +1,6 @@
 import React from "react";
 import Image from "next/image";
-// @ts-ignore
+// @ts-expect-error dunno lol
 import notfoundimg from "./404.png";
 
 const NotFound = () => {

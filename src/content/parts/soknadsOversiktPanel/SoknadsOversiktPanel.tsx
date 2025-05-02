@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { AppState, Dispatch } from "../../../redux/reduxTypes";
+import { RootState } from "../../../store";
 import { useDispatch, useSelector } from "react-redux";
 import { FsSoknad } from "../../../redux/types";
 import { hentFsSoknadFraFiksEllerOpprettNy } from "../../../redux/actions";
@@ -13,7 +13,7 @@ import styles from "./soknadsOversikt.module.css";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 const SoknadsOversiktPanel = () => {
-  const { model, soknader, aktivSoknad } = useSelector((state: AppState) => ({
+  const { model, soknader, aktivSoknad } = useSelector((state: RootState) => ({
     soknader: state.model.soknader,
     aktivSoknad: state.model.aktivSoknad,
     model: state.model,
@@ -24,7 +24,7 @@ const SoknadsOversiktPanel = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
-  const onSoknadClick = (dispatch: Dispatch, fiksDigisosId: string) => {
+  const onSoknadClick = (fiksDigisosId: string) => {
     const urlParams = new URLSearchParams(Array.from(searchParams.entries()));
     urlParams.set(FIKSDIGISOSID_URL_PARAM, fiksDigisosId.trim());
 
@@ -81,7 +81,7 @@ const SoknadsOversiktPanel = () => {
                 variant="tertiary-neutral"
                 className={styles.soknad_button}
                 onClick={() =>
-                  onSoknadClick(dispatch, soknad.fiksDigisosId)
+                  onSoknadClick(soknad.fiksDigisosId)
                 }
               >
                 <>{soknad.fiksDigisosId}</>

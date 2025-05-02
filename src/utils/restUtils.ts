@@ -5,8 +5,6 @@ export function erDev(): boolean {
 enum RequestMethod {
   GET = "GET",
   POST = "POST",
-  PUT = "PUT",
-  DELETE = "DELETE",
 }
 
 const getHeaders = (): Headers => {
@@ -36,13 +34,13 @@ export const serverRequest = (
         const jsonResponse = toJson(response);
         resolve(jsonResponse);
       })
-      .catch((reason: any) => reject(reason));
+      .catch((reason: Error) => reject(reason));
   });
 };
 
 export function toJson<T>(response: Response): Promise<T> {
   if (response.status === 204) {
-    return response.text() as Promise<any>;
+    return response.text() as Promise<T>;
   }
   return response.json();
 }

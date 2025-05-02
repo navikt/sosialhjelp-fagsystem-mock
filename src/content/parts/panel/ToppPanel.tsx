@@ -1,5 +1,5 @@
 import React from "react";
-import { AppState } from "../../../redux/reduxTypes";
+import { RootState } from "../../../store";
 import { useSelector } from "react-redux";
 
 import { getFsSoknadByFiksDigisosId } from "../../../utils/utilityFunctions";
@@ -13,7 +13,7 @@ import globals from "../../../app/globals.module.css";
 import styles from "./toppPanel.module.css";
 
 const ToppPanel = () => {
-  const { soknad, backendUrlTypeToUse } = useSelector((state: AppState) => ({
+  const { soknad, backendUrlTypeToUse } = useSelector((state: RootState) => ({
     soknad: getFsSoknadByFiksDigisosId(
       state.model.soknader,
       state.model.aktivSoknad,

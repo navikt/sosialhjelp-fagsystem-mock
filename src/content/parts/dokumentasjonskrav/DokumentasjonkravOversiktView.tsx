@@ -32,7 +32,7 @@ const DokumentasjonkravOversiktView: React.FC<Props> = ({ soknad }: Props) => {
         size="small"
         className={globals.fitContent}
         onClick={() => {
-          dispatch(VIS_NY_DOKUMENTASJONKRAV_MODAL);
+          dispatch(VIS_NY_DOKUMENTASJONKRAV_MODAL());
         }}
       >
         Nytt dokumentasjonkrav

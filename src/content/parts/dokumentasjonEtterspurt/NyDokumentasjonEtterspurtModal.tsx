@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { AppState } from "../../../redux/reduxTypes";
+import { RootState } from "../../../store";
 import { useDispatch, useSelector } from "react-redux";
 import { v4 as uuidv4 } from "uuid";
 import {
@@ -59,7 +59,7 @@ const initialDokument: Dokument = {
 };
 
 const defaultFrist = () => {
-  let date = new Date();
+  const date = new Date();
   date.setDate(new Date().getDate() + 7); // En uke frem i tid
   date.setHours(12);
   const innsendelsesfrist = date.toISOString();
@@ -68,7 +68,7 @@ const defaultFrist = () => {
 
 const NyDokumentasjonEtterspurtModal: React.FC<Props> = ({ soknad }: Props) => {
   const { model, visNyDokumentasjonEtterspurtModal } = useSelector(
-    (state: AppState) => ({
+    (state: RootState) => ({
       model: state.model,
       visNyDokumentasjonEtterspurtModal:
         state.model.visNyDokumentasjonEtterspurtModal,
@@ -120,7 +120,7 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = ({ soknad }: Props) => {
       dispatch,
     );
 
-    dispatch(dispatch(SKJUL_NY_DOKUMENTASJON_ETTERSPURT_MODAL));
+    dispatch(SKJUL_NY_DOKUMENTASJON_ETTERSPURT_MODAL());
 
     setTimeout(() => {
       resetStateValues();
@@ -128,7 +128,7 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = ({ soknad }: Props) => {
   };
 
   const leggTilDokument = () => {
-    let innsendelsesfristDate = getDateOrNullFromDateString(
+    const innsendelsesfristDate = getDateOrNullFromDateString(
       modalDokument.innsendelsesfrist,
     );
     const nyttDokument: Dokument = {
@@ -170,7 +170,7 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = ({ soknad }: Props) => {
       }),
     );
 
-    dispatch(dispatch(SKJUL_NY_DOKUMENTASJON_ETTERSPURT_MODAL));
+    dispatch(SKJUL_NY_DOKUMENTASJON_ETTERSPURT_MODAL());
 
     setTimeout(() => {
       resetStateValues();
@@ -217,7 +217,7 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = ({ soknad }: Props) => {
             aria-label="delete"
             size="small"
             onClick={() => {
-              let dokumenter = [...modalDokumentasjonEtterspurt.dokumenter];
+              const dokumenter = [...modalDokumentasjonEtterspurt.dokumenter];
               dokumenter.splice(idx, 1);
               setModalDokumentasjonEtterspurt({
                 ...modalDokumentasjonEtterspurt,
@@ -277,7 +277,7 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = ({ soknad }: Props) => {
       className={globals.modal}
       open={visNyDokumentasjonEtterspurtModal}
       onClose={() => {
-        dispatch(SKJUL_NY_DOKUMENTASJON_ETTERSPURT_MODAL);
+        dispatch(SKJUL_NY_DOKUMENTASJON_ETTERSPURT_MODAL());
         resetStateValues();
       }}
       header={{ heading: "Dokumentasjon etterspurt" }}

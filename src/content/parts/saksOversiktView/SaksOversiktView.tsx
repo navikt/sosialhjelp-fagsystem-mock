@@ -32,7 +32,7 @@ const SaksOversiktView: React.FC<Props> = (props: Props) => {
         Saksoversikt:
       </Heading>
       <div className={globals.fitContent}>
-        <Button onClick={() => dispatch(VIS_NY_SAK_MODAL)} size="small">
+        <Button onClick={() => dispatch(VIS_NY_SAK_MODAL())} size="small">
           Opprett ny sak
         </Button>
       </div>

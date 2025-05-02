@@ -1,22 +1,18 @@
 import React, { useState } from "react";
-import { DispatchProps } from "../../../redux/reduxTypes";
-import { connect } from "react-redux";
-
-import { visNyVilkarModal } from "../../../redux/actions";
+import { useDispatch } from "react-redux";
 import { FsSoknad } from "../../../redux/types";
 import VilkarTabView from "./VilkarTabView";
 import { Vilkar } from "../../../types/hendelseTypes";
 import { Button, Heading, Panel, Tabs } from "@navikt/ds-react";
 import globals from "../../../app/globals.module.css";
+import { VIS_NY_VILKAR_MODAL } from "../../../redux/reducer";
 
-interface OwnProps {
+interface Props {
   soknad: FsSoknad;
 }
 
-type Props = DispatchProps & OwnProps;
-
-const VilkarOversiktView: React.FC<Props> = (props: Props) => {
-  const { soknad, dispatch } = props;
+const VilkarOversiktView: React.FC<Props> = ({ soknad }: Props) => {
+  const dispatch = useDispatch();
   const [aktivtVilkarIdx, setAktivtVilkarIdx] = useState(0);
   const [antallVilkar, setAntallVilkar] = useState(0);
 
@@ -34,7 +30,7 @@ const VilkarOversiktView: React.FC<Props> = (props: Props) => {
         size="small"
         className={globals.fitContent}
         onClick={() => {
-          dispatch(visNyVilkarModal());
+          dispatch(VIS_NY_VILKAR_MODAL());
         }}
       >
         Nytt vilkår
@@ -75,10 +71,4 @@ const VilkarOversiktView: React.FC<Props> = (props: Props) => {
   );
 };
 
-const mapDispatchToProps = (dispatch: any) => {
-  return {
-    dispatch,
-  };
-};
-
-export default connect(mapDispatchToProps)(VilkarOversiktView);
+export default VilkarOversiktView;

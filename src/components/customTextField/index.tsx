@@ -1,18 +1,16 @@
 import React, { Dispatch, SetStateAction } from "react";
 import { TextField } from "@navikt/ds-react";
 
-interface OwnProps {
+interface Props {
   label: string;
-  value: any;
-  setValue: (v: any) => any;
+  value: string | null | undefined;
+  setValue: (v: string) => void;
   inputType?: string;
   required?: boolean;
   visFeilmelding?: boolean;
   setVisFeilmelding?: Dispatch<SetStateAction<boolean>>;
   referansefeltDisabled?: boolean;
 }
-
-type Props = OwnProps;
 
 const CustomTextField: React.FC<Props> = (props: Props) => {
   const {

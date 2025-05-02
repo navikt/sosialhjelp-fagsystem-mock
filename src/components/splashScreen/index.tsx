@@ -2,7 +2,7 @@ import * as React from "react";
 import { useEffect, useState } from "react";
 import { erDev } from "../../utils/restUtils";
 import Image from "next/image";
-// @ts-ignore
+// @ts-expect-error dunno lol
 import splash from "./splashImage.png";
 const SplashScreen = ({ children }: React.PropsWithChildren) => {
   const [showSplashScreen, setShowSplashScren] = useState(true);

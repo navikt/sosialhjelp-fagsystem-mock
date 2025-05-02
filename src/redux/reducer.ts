@@ -1,29 +1,29 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import {
-  Action, ActionTypeKeys,
   BackendUrls,
   FsSaksStatus,
   FsSoknad,
-  Model, OppdaterVedtakFattet
+  Model,
 } from "./types";
-import Hendelse, {
+import {
   DigisosSokerJson,
   DokumentasjonEtterspurt,
   Dokumentasjonkrav,
   DokumentlagerExtended,
   FiksDigisosSokerJson,
-  FilreferanseType, ForelopigSvar,
-  HendelseType, SaksStatus,
-  SaksStatusType,
+  FilreferanseType,
+  ForelopigSvar,
+  HendelseType,
+  SaksStatus,
   SoknadsStatus,
   SoknadsStatusType,
-  SvarutExtended, TildeltNavKontor,
-  Utbetaling, VedtakFattet,
-  Vilkar
+  TildeltNavKontor,
+  Utbetaling,
+  VedtakFattet,
+  Vilkar,
 } from "../types/hendelseTypes";
 import {
   fsSaksStatusToSaksStatus,
-  generateFilreferanseId,
   generateRandomId,
   getNow,
 } from "../utils/utilityFunctions";
@@ -39,13 +39,6 @@ export const defaultDokumentlagerRef: DokumentlagerExtended = {
   tittel: "01 - qwer - dokumentalger",
 };
 
-export const defaultSvarutRef: SvarutExtended = {
-  type: FilreferanseType.svarut,
-  id: generateFilreferanseId(),
-  nr: 1,
-  tittel: "DOC1 - Nødhjelp innvilget - svarut",
-};
-
 export const backendUrlsLocalTemplate: string =
   "http://localhost:8080/sosialhjelp/innsyn-api";
 export const backendUrlsMockTemplate: string =
@@ -55,7 +48,6 @@ export const backendUrlMockAltLocal: string =
 
 export const oppdaterDigisosSakUrl: string =
   "/api/v1/digisosapi/oppdaterDigisosSak";
-export const hentDigisosSakUrl: string = "/fiks/digisos/api/v1/soknader/";
 export const nyNavEnhetUrl: string = "/api/v1/mock/nyNavEnhet";
 
 export const FIKSDIGISOSID_URL_PARAM = "fiksDigisosId";
@@ -157,7 +149,10 @@ const modelSlice = createSlice({
     SET_AKTIVT_DOKUMENTASJONKRAV(state, action: PayloadAction<string | null>) {
       state.aktivtDokumentasjonkrav = action.payload;
     },
-    SET_BACKEND_URL_TYPE_TO_USE(state, action: PayloadAction<keyof BackendUrls>) {
+    SET_BACKEND_URL_TYPE_TO_USE(
+      state,
+      action: PayloadAction<keyof BackendUrls>,
+    ) {
       state.backendUrlTypeToUse = action.payload;
     },
     TURN_ON_LOADER(state) {
@@ -262,7 +257,10 @@ const modelSlice = createSlice({
     },
     OPPDATER_FIKS_DIGISOS_ID(
       state,
-      action: PayloadAction<{ forFiksDigisosId: string; nyFiksDigisosId: string }>,
+      action: PayloadAction<{
+        forFiksDigisosId: string;
+        nyFiksDigisosId: string;
+      }>,
     ) {
       const { forFiksDigisosId, nyFiksDigisosId } = action.payload;
       const soknad = state.soknader.find(
@@ -274,7 +272,10 @@ const modelSlice = createSlice({
     },
     OPPDATER_SOKNADS_STATUS(
       state,
-      action: PayloadAction<{ forFiksDigisosId: string; nySoknadsStatus: SoknadsStatus }>,
+      action: PayloadAction<{
+        forFiksDigisosId: string;
+        nySoknadsStatus: SoknadsStatus;
+      }>,
     ) {
       const { forFiksDigisosId, nySoknadsStatus } = action.payload;
       const soknad = state.soknader.find(
@@ -285,57 +286,115 @@ const modelSlice = createSlice({
         soknad.fiksDigisosSokerJson.sak.soker.hendelser.push(nySoknadsStatus);
       }
     },
-    OPPDATER_NAV_KONTOR(state, action: PayloadAction<{ forFiksDigisosId: string; nyttNavKontor: TildeltNavKontor }>) {
+    OPPDATER_NAV_KONTOR(
+      state,
+      action: PayloadAction<{
+        forFiksDigisosId: string;
+        nyttNavKontor: TildeltNavKontor;
+      }>,
+    ) {
       const { forFiksDigisosId, nyttNavKontor } = action.payload;
-      const soknad = state.soknader.find((s) => s.fiksDigisosId === forFiksDigisosId);
+      const soknad = state.soknader.find(
+        (s) => s.fiksDigisosId === forFiksDigisosId,
+      );
       if (soknad) {
         soknad.navKontor = nyttNavKontor;
         soknad.fiksDigisosSokerJson.sak.soker.hendelser.push(nyttNavKontor);
       }
     },
-    OPPDATER_DOKUMENTASJON_ETTERSPURT(state, action: PayloadAction<{ forFiksDigisosId: string; nyDokumentasjonEtterspurt: DokumentasjonEtterspurt }>) {
+    OPPDATER_DOKUMENTASJON_ETTERSPURT(
+      state,
+      action: PayloadAction<{
+        forFiksDigisosId: string;
+        nyDokumentasjonEtterspurt: DokumentasjonEtterspurt;
+      }>,
+    ) {
       const { forFiksDigisosId, nyDokumentasjonEtterspurt } = action.payload;
-      const soknad = state.soknader.find((s) => s.fiksDigisosId === forFiksDigisosId);
+      const soknad = state.soknader.find(
+        (s) => s.fiksDigisosId === forFiksDigisosId,
+      );
       if (soknad) {
         soknad.dokumentasjonEtterspurt = nyDokumentasjonEtterspurt;
-        soknad.fiksDigisosSokerJson.sak.soker.hendelser.push(nyDokumentasjonEtterspurt);
+        soknad.fiksDigisosSokerJson.sak.soker.hendelser.push(
+          nyDokumentasjonEtterspurt,
+        );
       }
     },
-    OPPDATER_FORELOPIG_SVAR(state, action: PayloadAction<{ forFiksDigisosId: string; nyttForelopigSvar: ForelopigSvar }>) {
+    OPPDATER_FORELOPIG_SVAR(
+      state,
+      action: PayloadAction<{
+        forFiksDigisosId: string;
+        nyttForelopigSvar: ForelopigSvar;
+      }>,
+    ) {
       const { forFiksDigisosId, nyttForelopigSvar } = action.payload;
-      const soknad = state.soknader.find((s) => s.fiksDigisosId === forFiksDigisosId);
+      const soknad = state.soknader.find(
+        (s) => s.fiksDigisosId === forFiksDigisosId,
+      );
       if (soknad) {
         soknad.forelopigSvar = nyttForelopigSvar;
         soknad.fiksDigisosSokerJson.sak.soker.hendelser.push(nyttForelopigSvar);
       }
     },
-    NY_FS_SAKS_STATUS(state, action: PayloadAction<{ forFiksDigisosId: string; nyFsSaksStatus: FsSaksStatus }>) {
+    NY_FS_SAKS_STATUS(
+      state,
+      action: PayloadAction<{
+        forFiksDigisosId: string;
+        nyFsSaksStatus: FsSaksStatus;
+      }>,
+    ) {
       const { forFiksDigisosId, nyFsSaksStatus } = action.payload;
-      const soknad = state.soknader.find((s) => s.fiksDigisosId === forFiksDigisosId);
+      const soknad = state.soknader.find(
+        (s) => s.fiksDigisosId === forFiksDigisosId,
+      );
       if (soknad) {
         soknad.saker.push(nyFsSaksStatus);
-        soknad.fiksDigisosSokerJson.sak.soker.hendelser.push(fsSaksStatusToSaksStatus(nyFsSaksStatus));
+        soknad.fiksDigisosSokerJson.sak.soker.hendelser.push(
+          fsSaksStatusToSaksStatus(nyFsSaksStatus),
+        );
       }
     },
-    OPPDATER_FS_SAKS_STATUS(state, action: PayloadAction<{ forFiksDigisosId: string; oppdatertSaksstatus: SaksStatus }>) {
+    OPPDATER_FS_SAKS_STATUS(
+      state,
+      action: PayloadAction<{
+        forFiksDigisosId: string;
+        oppdatertSaksstatus: SaksStatus;
+      }>,
+    ) {
       const { forFiksDigisosId, oppdatertSaksstatus } = action.payload;
-      const soknad = state.soknader.find((s) => s.fiksDigisosId === forFiksDigisosId);
+      const soknad = state.soknader.find(
+        (s) => s.fiksDigisosId === forFiksDigisosId,
+      );
       if (soknad) {
-        const saksStatus = soknad.saker.find((s) => s.referanse === oppdatertSaksstatus.referanse);
+        const saksStatus = soknad.saker.find(
+          (s) => s.referanse === oppdatertSaksstatus.referanse,
+        );
         if (saksStatus) {
           saksStatus.tittel = oppdatertSaksstatus.tittel;
           saksStatus.status = oppdatertSaksstatus.status;
         }
-        soknad.fiksDigisosSokerJson.sak.soker.hendelser.push(oppdatertSaksstatus);
+        soknad.fiksDigisosSokerJson.sak.soker.hendelser.push(
+          oppdatertSaksstatus,
+        );
       }
     },
-    NY_UTBETALING(state, action: PayloadAction<{ forFiksDigisosId: string; nyUtbetaling: Utbetaling }>) {
+    NY_UTBETALING(
+      state,
+      action: PayloadAction<{
+        forFiksDigisosId: string;
+        nyUtbetaling: Utbetaling;
+      }>,
+    ) {
       const { forFiksDigisosId, nyUtbetaling } = action.payload;
-      const soknad = state.soknader.find((s) => s.fiksDigisosId === forFiksDigisosId);
+      const soknad = state.soknader.find(
+        (s) => s.fiksDigisosId === forFiksDigisosId,
+      );
       if (soknad) {
         soknad.fiksDigisosSokerJson.sak.soker.hendelser.push(nyUtbetaling);
         if (nyUtbetaling.saksreferanse) {
-          const saksStatus = soknad.saker.find((s) => s.referanse === nyUtbetaling.saksreferanse);
+          const saksStatus = soknad.saker.find(
+            (s) => s.referanse === nyUtbetaling.saksreferanse,
+          );
           if (saksStatus) {
             saksStatus.utbetalinger.push(nyUtbetaling);
           }
@@ -344,81 +403,151 @@ const modelSlice = createSlice({
         }
       }
     },
-    OPPDATER_UTBETALING(state, action: PayloadAction<{ forFiksDigisosId: string; oppdatertUtbetaling: Utbetaling }>) {
+    OPPDATER_UTBETALING(
+      state,
+      action: PayloadAction<{
+        forFiksDigisosId: string;
+        oppdatertUtbetaling: Utbetaling;
+      }>,
+    ) {
       const { forFiksDigisosId, oppdatertUtbetaling } = action.payload;
-      const soknad = state.soknader.find((s) => s.fiksDigisosId === forFiksDigisosId);
+      const soknad = state.soknader.find(
+        (s) => s.fiksDigisosId === forFiksDigisosId,
+      );
       if (soknad) {
-        soknad.fiksDigisosSokerJson.sak.soker.hendelser.push(oppdatertUtbetaling);
+        soknad.fiksDigisosSokerJson.sak.soker.hendelser.push(
+          oppdatertUtbetaling,
+        );
         if (oppdatertUtbetaling.saksreferanse) {
-          const saksStatus = soknad.saker.find((s) => s.referanse === oppdatertUtbetaling.saksreferanse);
+          const saksStatus = soknad.saker.find(
+            (s) => s.referanse === oppdatertUtbetaling.saksreferanse,
+          );
           if (saksStatus) {
             const utbetalingIndex = saksStatus.utbetalinger.findIndex(
-              (u) => u.utbetalingsreferanse === oppdatertUtbetaling.utbetalingsreferanse,
+              (u) =>
+                u.utbetalingsreferanse ===
+                oppdatertUtbetaling.utbetalingsreferanse,
             );
             if (utbetalingIndex !== -1) {
               saksStatus.utbetalinger[utbetalingIndex] = oppdatertUtbetaling;
             } else {
-              soknad.utbetalingerUtenSaksreferanse = soknad.utbetalingerUtenSaksreferanse.filter(
-                (u) => u.utbetalingsreferanse !== oppdatertUtbetaling.utbetalingsreferanse,
-              );
+              soknad.utbetalingerUtenSaksreferanse =
+                soknad.utbetalingerUtenSaksreferanse.filter(
+                  (u) =>
+                    u.utbetalingsreferanse !==
+                    oppdatertUtbetaling.utbetalingsreferanse,
+                );
               saksStatus.utbetalinger.push(oppdatertUtbetaling);
             }
           }
         } else {
-          const utbetalingIndex = soknad.utbetalingerUtenSaksreferanse.findIndex(
-            (u) => u.utbetalingsreferanse === oppdatertUtbetaling.utbetalingsreferanse,
-          );
+          const utbetalingIndex =
+            soknad.utbetalingerUtenSaksreferanse.findIndex(
+              (u) =>
+                u.utbetalingsreferanse ===
+                oppdatertUtbetaling.utbetalingsreferanse,
+            );
           if (utbetalingIndex !== -1) {
-            soknad.utbetalingerUtenSaksreferanse[utbetalingIndex] = oppdatertUtbetaling;
+            soknad.utbetalingerUtenSaksreferanse[utbetalingIndex] =
+              oppdatertUtbetaling;
           }
         }
       }
     },
-    NYTT_DOKUMENTASJONKRAV(state, action: PayloadAction<{ forFiksDigisosId: string; nyttDokumentasjonkrav: Dokumentasjonkrav }>) {
+    NYTT_DOKUMENTASJONKRAV(
+      state,
+      action: PayloadAction<{
+        forFiksDigisosId: string;
+        nyttDokumentasjonkrav: Dokumentasjonkrav;
+      }>,
+    ) {
       const { forFiksDigisosId, nyttDokumentasjonkrav } = action.payload;
-      const soknad = state.soknader.find((s) => s.fiksDigisosId === forFiksDigisosId);
+      const soknad = state.soknader.find(
+        (s) => s.fiksDigisosId === forFiksDigisosId,
+      );
       if (soknad) {
         soknad.dokumentasjonkrav.push(nyttDokumentasjonkrav);
-        soknad.fiksDigisosSokerJson.sak.soker.hendelser.push(nyttDokumentasjonkrav);
+        soknad.fiksDigisosSokerJson.sak.soker.hendelser.push(
+          nyttDokumentasjonkrav,
+        );
       }
     },
-    OPPDATER_DOKUMENTASJONKRAV(state, action: PayloadAction<{ forFiksDigisosId: string; oppdatertDokumentasjonkrav: Dokumentasjonkrav }>) {
+    OPPDATER_DOKUMENTASJONKRAV(
+      state,
+      action: PayloadAction<{
+        forFiksDigisosId: string;
+        oppdatertDokumentasjonkrav: Dokumentasjonkrav;
+      }>,
+    ) {
       const { forFiksDigisosId, oppdatertDokumentasjonkrav } = action.payload;
-      const soknad = state.soknader.find((s) => s.fiksDigisosId === forFiksDigisosId);
+      const soknad = state.soknader.find(
+        (s) => s.fiksDigisosId === forFiksDigisosId,
+      );
       if (soknad) {
         const kravIndex = soknad.dokumentasjonkrav.findIndex(
-          (k) => k.dokumentasjonkravreferanse === oppdatertDokumentasjonkrav.dokumentasjonkravreferanse,
+          (k) =>
+            k.dokumentasjonkravreferanse ===
+            oppdatertDokumentasjonkrav.dokumentasjonkravreferanse,
         );
         if (kravIndex !== -1) {
           soknad.dokumentasjonkrav[kravIndex] = oppdatertDokumentasjonkrav;
         }
-        soknad.fiksDigisosSokerJson.sak.soker.hendelser.push(oppdatertDokumentasjonkrav);
+        soknad.fiksDigisosSokerJson.sak.soker.hendelser.push(
+          oppdatertDokumentasjonkrav,
+        );
       }
     },
-    OPPDATER_VEDTAK_FATTET(state, action: PayloadAction<{ forFiksDigisosId: string; oppdatertVedtakFattet: VedtakFattet }>) {
+    OPPDATER_VEDTAK_FATTET(
+      state,
+      action: PayloadAction<{
+        forFiksDigisosId: string;
+        oppdatertVedtakFattet: VedtakFattet;
+      }>,
+    ) {
       const { forFiksDigisosId, oppdatertVedtakFattet } = action.payload;
-      const soknad = state.soknader.find((s) => s.fiksDigisosId === forFiksDigisosId);
+      const soknad = state.soknader.find(
+        (s) => s.fiksDigisosId === forFiksDigisosId,
+      );
       if (soknad) {
-        const saksStatus = soknad.saker.find((s) => s.referanse === oppdatertVedtakFattet.saksreferanse);
+        const saksStatus = soknad.saker.find(
+          (s) => s.referanse === oppdatertVedtakFattet.saksreferanse,
+        );
         if (saksStatus) {
           saksStatus.vedtakFattet = oppdatertVedtakFattet;
         }
-        soknad.fiksDigisosSokerJson.sak.soker.hendelser.push(oppdatertVedtakFattet);
+        soknad.fiksDigisosSokerJson.sak.soker.hendelser.push(
+          oppdatertVedtakFattet,
+        );
       }
     },
-    NYTT_VILKAR(state, action: PayloadAction<{ forFiksDigisosId: string; nyttVilkar: Vilkar }>) {
+    NYTT_VILKAR(
+      state,
+      action: PayloadAction<{ forFiksDigisosId: string; nyttVilkar: Vilkar }>,
+    ) {
       const { forFiksDigisosId, nyttVilkar } = action.payload;
-      const soknad = state.soknader.find((s) => s.fiksDigisosId === forFiksDigisosId);
+      const soknad = state.soknader.find(
+        (s) => s.fiksDigisosId === forFiksDigisosId,
+      );
       if (soknad) {
         soknad.vilkar.push(nyttVilkar);
         soknad.fiksDigisosSokerJson.sak.soker.hendelser.push(nyttVilkar);
       }
     },
-    OPPDATER_VILKAR(state, action: PayloadAction<{ forFiksDigisosId: string; oppdatertVilkar: Vilkar }>) {
+    OPPDATER_VILKAR(
+      state,
+      action: PayloadAction<{
+        forFiksDigisosId: string;
+        oppdatertVilkar: Vilkar;
+      }>,
+    ) {
       const { forFiksDigisosId, oppdatertVilkar } = action.payload;
-      const soknad = state.soknader.find((s) => s.fiksDigisosId === forFiksDigisosId);
+      const soknad = state.soknader.find(
+        (s) => s.fiksDigisosId === forFiksDigisosId,
+      );
       if (soknad) {
-        const vilkarIndex = soknad.vilkar.findIndex((v) => v.vilkarreferanse === oppdatertVilkar.vilkarreferanse);
+        const vilkarIndex = soknad.vilkar.findIndex(
+          (v) => v.vilkarreferanse === oppdatertVilkar.vilkarreferanse,
+        );
         if (vilkarIndex !== -1) {
           soknad.vilkar[vilkarIndex] = oppdatertVilkar;
         }
@@ -455,7 +584,6 @@ export const {
   SKJUL_SNACKBAR,
   NY_SOKNAD,
   HENTET_SOKNAD,
-  SLETT_SOKNAD,
   OPPDATER_FIKS_DIGISOS_ID,
   OPPDATER_SOKNADS_STATUS,
   OPPDATER_NAV_KONTOR,
@@ -473,4 +601,3 @@ export const {
 } = modelSlice.actions;
 
 export default modelSlice.reducer;
-
