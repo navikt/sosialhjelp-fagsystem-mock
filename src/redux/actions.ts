@@ -52,7 +52,11 @@ import {
   FIKSDIGISOSID_URL_PARAM,
   getInitialFsSoknad,
   nyNavEnhetUrl,
+  OPPDATER_FORELOPIG_SVAR,
   oppdaterDigisosSakUrl,
+  TURN_OFF_LOADER,
+  TURN_ON_LOADER,
+  VIS_SUCCESS_SNACKBAR,
 } from "./reducer";
 import { Dispatch } from "./reduxTypes";
 
@@ -62,7 +66,7 @@ export const sendNyHendelseOgOppdaterModel = (
   dispatch: Dispatch,
   actionToDispatchIfSuccess: AnyAction,
 ) => {
-  dispatch(turnOnLoader());
+  dispatch(TURN_ON_LOADER);
   const soknad = getFsSoknadByFiksDigisosId(model.soknader, model.aktivSoknad)!;
   const soknadUpdated = oHendelser.modify((a: Hendelse[]) => [
     ...a,
@@ -79,11 +83,11 @@ export const sendNyHendelseOgOppdaterModel = (
     JSON.stringify(fiksDigisosSokerJsonUtenNull),
   )
     .then(() => {
-      dispatch(visSuccessSnackbar());
+      dispatch(VIS_SUCCESS_SNACKBAR);
       dispatch(actionToDispatchIfSuccess);
     })
     .catch((reason) => runOnErrorResponse(reason, dispatch))
-    .finally(() => dispatch(turnOffLoader()));
+    .finally(() => dispatch(TURN_OFF_LOADER));
 };
 
 export const sendValgbareNavkontorTilMockBackend = (
@@ -113,7 +117,7 @@ export const sendPdfOgLeggPdfRefTilHendelseOgSend = (
   dispatch: Dispatch,
   sendHendelseMedRef: (id: string) => void,
 ) => {
-  dispatch(turnOnLoader());
+  dispatch(TURN_ON_LOADER);
   const backendUrl = backendUrls[model.backendUrlTypeToUse];
   fetch(`${backendUrl}/api/v1/digisosapi/${model.aktivSoknad}/filOpplasting`, {
     method: "POST",
@@ -130,7 +134,7 @@ export const sendPdfOgLeggPdfRefTilHendelseOgSend = (
     })
     .catch((reason) => {
       runOnErrorResponse(reason, dispatch);
-      dispatch(turnOffLoader());
+      dispatch(TURN_OFF_LOADER);
     });
 };
 
@@ -139,7 +143,7 @@ export const sendPdfOgOppdaterForelopigSvar = (
   model: Model,
   dispatch: Dispatch,
 ) => {
-  dispatch(turnOnLoader());
+  dispatch(TURN_ON_LOADER);
 
   const sendForelopigSvarMedRef = (id: string) => {
     const nyHendelse: ForelopigSvar = {
@@ -158,7 +162,10 @@ export const sendPdfOgOppdaterForelopigSvar = (
       nyHendelse,
       model,
       dispatch,
-      oppdaterForelopigSvar(model.aktivSoknad, nyHendelse),
+      OPPDATER_FORELOPIG_SVAR({
+        forFiksDigisosId: model.aktivSoknad,
+        nyttForelopigSvar: nyHendelse,
+      }),
     );
   };
 

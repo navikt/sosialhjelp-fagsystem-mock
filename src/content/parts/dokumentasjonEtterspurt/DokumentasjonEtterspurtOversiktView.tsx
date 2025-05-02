@@ -1,13 +1,8 @@
 import React from "react";
-import { AppState, DispatchProps } from "../../../redux/reduxTypes";
-import { connect } from "react-redux";
+import { AppState } from "../../../redux/reduxTypes";
+import { useDispatch, useSelector } from "react-redux";
 import { v4 as uuidv4 } from "uuid";
-import {
-  oppdaterDokumentasjonEtterspurt,
-  sendNyHendelseOgOppdaterModel,
-  visNyDokumentasjonEtterspurtModal,
-} from "../../../redux/actions";
-import { FsSoknad, Model } from "../../../redux/types";
+import { FsSoknad } from "../../../redux/types";
 import {
   Dokument,
   DokumentasjonEtterspurt,
@@ -17,19 +12,16 @@ import { Button, Table, Heading, Panel } from "@navikt/ds-react";
 import globals from "../../../app/globals.module.css";
 import styles from "./dokEtterpurt.module.css";
 import { getNow, getShortDateISOString } from "../../../utils/utilityFunctions";
+import { OPPDATER_DOKUMENTASJON_ETTERSPURT, VIS_NY_DOKUMENTASJON_ETTERSPURT_MODAL } from "../../../redux/reducer";
+import { sendNyHendelseOgOppdaterModel } from "../../../redux/actions";
 
-interface StoreProps {
-  model: Model;
-}
-
-interface OwnProps {
+interface Props {
   soknad: FsSoknad;
 }
 
-type Props = DispatchProps & StoreProps & OwnProps;
-
-const DokumentasjonEtterspurtOversiktView: React.FC<Props> = (props: Props) => {
-  const { soknad, model, dispatch } = props;
+const DokumentasjonEtterspurtOversiktView: React.FC<Props> = ({soknad}: Props) => {
+  const model = useSelector((state: AppState) => state.model);
+  const dispatch = useDispatch()
 
   const dokumenterErAlleredeEtterspurt =
     soknad.dokumentasjonEtterspurt &&
@@ -71,7 +63,7 @@ const DokumentasjonEtterspurtOversiktView: React.FC<Props> = (props: Props) => {
         nyHendelse,
         model,
         dispatch,
-        oppdaterDokumentasjonEtterspurt(soknad.fiksDigisosId, nyHendelse),
+        OPPDATER_DOKUMENTASJON_ETTERSPURT({forFiksDigisosId: soknad.fiksDigisosId, nyDokumentasjonEtterspurt: nyHendelse}),
       );
     }
   }
@@ -89,7 +81,7 @@ const DokumentasjonEtterspurtOversiktView: React.FC<Props> = (props: Props) => {
           if (dokumenterErAlleredeEtterspurt) {
             dispatchNyHendelseMedTomDokumentasjonEtterspurt();
           } else {
-            dispatch(visNyDokumentasjonEtterspurtModal());
+            dispatch(VIS_NY_DOKUMENTASJON_ETTERSPURT_MODAL);
           }
         }}
       >
@@ -124,7 +116,7 @@ const DokumentasjonEtterspurtOversiktView: React.FC<Props> = (props: Props) => {
                 size="small"
                 variant="secondary-neutral"
                 onClick={() => {
-                  dispatch(visNyDokumentasjonEtterspurtModal());
+                  dispatch(VIS_NY_DOKUMENTASJON_ETTERSPURT_MODAL);
                 }}
               >
                 Endre etterspurt dokumentasjon
@@ -136,17 +128,4 @@ const DokumentasjonEtterspurtOversiktView: React.FC<Props> = (props: Props) => {
   );
 };
 
-const mapStateToProps = (state: AppState) => ({
-  model: state.model,
-});
-
-const mapDispatchToProps = (dispatch: any) => {
-  return {
-    dispatch,
-  };
-};
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(DokumentasjonEtterspurtOversiktView);
+export default DokumentasjonEtterspurtOversiktView;

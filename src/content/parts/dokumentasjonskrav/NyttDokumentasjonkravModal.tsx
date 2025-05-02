@@ -1,14 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { AppState, DispatchProps } from "../../../redux/reduxTypes";
-import { connect } from "react-redux";
-import {
-  nyttDokumentasjonkrav,
-  oppdaterDokumentasjonkrav,
-  sendNyHendelseOgOppdaterModel,
-  setAktivtDokumentasjonkrav,
-  skjulNyDokumentasjonkravModal,
-} from "../../../redux/actions";
-import { FsSoknad, Model } from "../../../redux/types";
+import { AppState } from "../../../redux/reduxTypes";
+import { useDispatch, useSelector } from "react-redux";
+import { sendNyHendelseOgOppdaterModel } from "../../../redux/actions";
+import { FsSoknad } from "../../../redux/types";
 import {
   generateFilreferanseId,
   getAllUtbetalingsreferanser,
@@ -29,19 +23,16 @@ import CustomTextField from "../../../components/customTextField";
 import CustomDatePicker from "../../../components/customDatePicker";
 import { Button, Modal, Select, Chips, Fieldset } from "@navikt/ds-react";
 import globals from "../../../app/globals.module.css";
+import {
+  NYTT_DOKUMENTASJONKRAV,
+  OPPDATER_DOKUMENTASJONKRAV,
+  SET_AKTIVT_DOKUMENTASJONKRAV,
+  SKJUL_NY_DOKUMENTASJONKRAV_MODAL,
+} from "../../../redux/reducer";
 
-interface OwnProps {
+interface Props {
   soknad: FsSoknad;
 }
-
-interface StoreProps {
-  visNyDokumentasjonkravModal: boolean;
-  model: Model;
-  aktivtDokumentasjonkrav: string | undefined | null;
-  modalSaksreferanse: string | null;
-}
-
-type Props = DispatchProps & OwnProps & StoreProps;
 
 const initialDokumentasjonkrav: Dokumentasjonkrav = {
   type: HendelseType.Dokumentasjonkrav,
@@ -73,20 +64,23 @@ const defaultDokumentasjonkrav: Dokumentasjonkrav = {
   saksreferanse: null,
 };
 
-const NyttDokumentasjonkravModal: React.FC<Props> = (props: Props) => {
+const NyttDokumentasjonkravModal: React.FC<Props> = ({ soknad }: Props) => {
+  const dispatch = useDispatch();
+  const {
+    visNyDokumentasjonkravModal,
+    model,
+    aktivtDokumentasjonkrav,
+    modalSaksreferanse,
+  } = useSelector((state: AppState) => ({
+    visNyDokumentasjonkravModal: state.model.visNyDokumentasjonkravModal,
+    model: state.model,
+    aktivtDokumentasjonkrav: state.model.aktivtDokumentasjonkrav,
+    modalSaksreferanse: state.model.modalSaksreferanse,
+  }));
   const [modalDokumentasjonkrav, setModalDokumentasjonkrav] =
     useState<Dokumentasjonkrav>(initialDokumentasjonkrav);
   const [visFeilmelding, setVisFeilmelding] = useState(false);
   const [referansefeltDisabled, setReferansefeltDisabled] = useState(false);
-
-  const {
-    visNyDokumentasjonkravModal,
-    dispatch,
-    model,
-    soknad,
-    aktivtDokumentasjonkrav,
-    modalSaksreferanse,
-  } = props;
 
   const resetStateValues = () => {
     setModalDokumentasjonkrav({
@@ -96,7 +90,7 @@ const NyttDokumentasjonkravModal: React.FC<Props> = (props: Props) => {
     setVisFeilmelding(false);
     setReferansefeltDisabled(false);
 
-    dispatch(setAktivtDokumentasjonkrav(null));
+    dispatch(SET_AKTIVT_DOKUMENTASJONKRAV(null));
   };
 
   const sendDokumentasjonkrav = () => {
@@ -113,18 +107,24 @@ const NyttDokumentasjonkravModal: React.FC<Props> = (props: Props) => {
         nyHendelse,
         model,
         dispatch,
-        nyttDokumentasjonkrav(soknad.fiksDigisosId, nyHendelse),
+        NYTT_DOKUMENTASJONKRAV({
+          forFiksDigisosId: soknad.fiksDigisosId,
+          nyttDokumentasjonkrav: nyHendelse,
+        }),
       );
     } else {
       sendNyHendelseOgOppdaterModel(
         nyHendelse,
         model,
         dispatch,
-        oppdaterDokumentasjonkrav(soknad.fiksDigisosId, nyHendelse),
+        OPPDATER_DOKUMENTASJONKRAV({
+          forFiksDigisosId: soknad.fiksDigisosId,
+          oppdatertDokumentasjonkrav: nyHendelse,
+        }),
       );
     }
 
-    dispatch(dispatch(skjulNyDokumentasjonkravModal()));
+    dispatch(dispatch(SKJUL_NY_DOKUMENTASJONKRAV_MODAL));
 
     setTimeout(() => {
       resetStateValues();
@@ -185,7 +185,7 @@ const NyttDokumentasjonkravModal: React.FC<Props> = (props: Props) => {
       className={globals.modal}
       open={visNyDokumentasjonkravModal}
       onClose={() => {
-        props.dispatch(skjulNyDokumentasjonkravModal());
+        dispatch(SKJUL_NY_DOKUMENTASJONKRAV_MODAL);
         resetStateValues();
       }}
       header={{ heading: "Dokumentasjonkrav" }}
@@ -340,20 +340,4 @@ const NyttDokumentasjonkravModal: React.FC<Props> = (props: Props) => {
   );
 };
 
-const mapStateToProps = (state: AppState) => ({
-  visNyDokumentasjonkravModal: state.model.visNyDokumentasjonkravModal,
-  model: state.model,
-  aktivtDokumentasjonkrav: state.model.aktivtDokumentasjonkrav,
-  modalSaksreferanse: state.model.modalSaksreferanse,
-});
-
-const mapDispatchToProps = (dispatch: any) => {
-  return {
-    dispatch,
-  };
-};
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(NyttDokumentasjonkravModal);
+export default NyttDokumentasjonkravModal;

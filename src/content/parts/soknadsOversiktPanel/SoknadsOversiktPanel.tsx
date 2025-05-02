@@ -1,28 +1,24 @@
 import React, { useState } from "react";
-import { AppState, Dispatch, DispatchProps } from "../../../redux/reduxTypes";
-import { connect } from "react-redux";
-import { FsSoknad, Model } from "../../../redux/types";
+import { AppState, Dispatch } from "../../../redux/reduxTypes";
+import { useDispatch, useSelector } from "react-redux";
+import { FsSoknad } from "../../../redux/types";
+import { hentFsSoknadFraFiksEllerOpprettNy } from "../../../redux/actions";
 import {
-  hentFsSoknadFraFiksEllerOpprettNy,
-  setAktivSoknad,
-} from "../../../redux/actions";
-import { FIKSDIGISOSID_URL_PARAM } from "../../../redux/reducer";
+  FIKSDIGISOSID_URL_PARAM,
+  SET_AKTIV_SOKNAD,
+} from "../../../redux/reducer";
 import { Button, Checkbox, Heading, Panel, TextField } from "@navikt/ds-react";
 import globals from "../../../app/globals.module.css";
 import styles from "./soknadsOversikt.module.css";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
-interface StoreProps {
-  soknader: FsSoknad[];
-  aktivSoknad: string;
-  model: Model;
-}
-
-type Props = DispatchProps & StoreProps;
-
-const SoknadsOversiktPanel: React.FC<Props> = (props: Props) => {
-  const { soknader, aktivSoknad, model } = props;
-
+const SoknadsOversiktPanel = () => {
+  const { model, soknader, aktivSoknad } = useSelector((state: AppState) => ({
+    soknader: state.model.soknader,
+    aktivSoknad: state.model.aktivSoknad,
+    model: state.model,
+  }));
+  const dispatch = useDispatch();
   const [fiksDigisosId, setFiksDigisosId] = useState("");
   const [papirSoknad, setPapirSoknad] = useState(false);
   const searchParams = useSearchParams();
@@ -36,7 +32,7 @@ const SoknadsOversiktPanel: React.FC<Props> = (props: Props) => {
     const query = search ? `?${search}` : "";
 
     router.push(`${pathname}${query}`);
-    dispatch(setAktivSoknad(fiksDigisosId.trim()));
+    dispatch(SET_AKTIV_SOKNAD(fiksDigisosId.trim()));
   };
 
   const onHentSoknadClick = () => {
@@ -47,18 +43,18 @@ const SoknadsOversiktPanel: React.FC<Props> = (props: Props) => {
       hentFsSoknadFraFiksEllerOpprettNy(
         fiksDigisosId,
         model.backendUrlTypeToUse,
-        props.dispatch,
+        dispatch,
       );
     } else if (
       fiksDigisosId.length !== 0 &&
       model.soknader.find((soknad) => soknad.fiksDigisosId === fiksDigisosId)
     ) {
-      props.dispatch(setAktivSoknad(fiksDigisosId));
+      dispatch(SET_AKTIV_SOKNAD(fiksDigisosId));
     } else {
       hentFsSoknadFraFiksEllerOpprettNy(
         "001",
         model.backendUrlTypeToUse,
-        props.dispatch,
+        dispatch,
         papirSoknad,
       );
     }
@@ -85,7 +81,7 @@ const SoknadsOversiktPanel: React.FC<Props> = (props: Props) => {
                 variant="tertiary-neutral"
                 className={styles.soknad_button}
                 onClick={() =>
-                  onSoknadClick(props.dispatch, soknad.fiksDigisosId)
+                  onSoknadClick(dispatch, soknad.fiksDigisosId)
                 }
               >
                 <>{soknad.fiksDigisosId}</>
@@ -118,19 +114,4 @@ const SoknadsOversiktPanel: React.FC<Props> = (props: Props) => {
   );
 };
 
-const mapStateToProps = (state: AppState) => ({
-  soknader: state.model.soknader,
-  aktivSoknad: state.model.aktivSoknad,
-  model: state.model,
-});
-
-const mapDispatchToProps = (dispatch: any) => {
-  return {
-    dispatch,
-  };
-};
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(SoknadsOversiktPanel);
+export default SoknadsOversiktPanel;

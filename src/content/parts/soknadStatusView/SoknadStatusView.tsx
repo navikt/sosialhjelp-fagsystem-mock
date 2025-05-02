@@ -1,6 +1,6 @@
 import React, { useRef } from "react";
 import { AppState, DispatchProps } from "../../../redux/reduxTypes";
-import { connect } from "react-redux";
+import { connect, useDispatch, useSelector } from "react-redux";
 import { BodyShort, Heading, Panel, Radio, RadioGroup } from "@navikt/ds-react";
 import globals from "../../../app/globals.module.css";
 
@@ -19,18 +19,13 @@ import {
 import { getNow } from "../../../utils/utilityFunctions";
 import ForelopigSvarButton from "./ForelopigSvarButton";
 
-interface OwnProps {
+interface Props {
   soknad: FsSoknad;
 }
 
-interface StoreProps {
-  model: Model;
-}
-
-type Props = DispatchProps & OwnProps & StoreProps;
-
-const SoknadStatusView: React.FC<Props> = (props: Props) => {
-  const { dispatch, soknad, model } = props;
+const SoknadStatusView = ({ soknad }: Props) => {
+  const model = useSelector((state: AppState) => state.model);
+  const dispatch = useDispatch();
   const inputEl = useRef<HTMLInputElement>(null);
 
   const handleFileUpload = (files: FileList) => {
@@ -128,14 +123,4 @@ const SoknadStatusView: React.FC<Props> = (props: Props) => {
   );
 };
 
-const mapStateToProps = (state: AppState) => ({
-  model: state.model,
-});
-
-const mapDispatchToProps = (dispatch: any) => {
-  return {
-    dispatch,
-  };
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(SoknadStatusView);
+export default SoknadStatusView;

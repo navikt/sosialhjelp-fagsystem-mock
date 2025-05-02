@@ -1,9 +1,8 @@
 import React, { useRef, useState } from "react";
-import { AppState, DispatchProps } from "../../../redux/reduxTypes";
-import { connect } from "react-redux";
+import { AppState } from "../../../redux/reduxTypes";
+import { useDispatch, useSelector } from "react-redux";
 
 import {
-  oppdaterVedtakFattet,
   sendNyHendelseOgOppdaterModel,
   sendPdfOgOppdaterVedtakFattet,
 } from "../../../redux/actions";
@@ -13,28 +12,26 @@ import {
   VedtakFattet,
 } from "../../../types/hendelseTypes";
 import { getNow } from "../../../utils/utilityFunctions";
-import { FsSaksStatus, FsSoknad, Model } from "../../../redux/types";
+import { FsSaksStatus, FsSoknad } from "../../../redux/types";
 
-import { defaultDokumentlagerRef } from "../../../redux/reducer";
+import {
+  defaultDokumentlagerRef,
+  OPPDATER_VEDTAK_FATTET,
+} from "../../../redux/reducer";
 import { Button, Select } from "@navikt/ds-react";
 import globals from "../../../app/globals.module.css";
 
-interface OwnProps {
+interface Props {
   soknad: FsSoknad;
   sak: FsSaksStatus;
 }
 
-interface StoreProps {
-  model: Model;
-}
-
-type Props = DispatchProps & OwnProps & StoreProps;
-
-const VedtakFattetView: React.FC<Props> = (props: Props) => {
+const VedtakFattetView: React.FC<Props> = ({ soknad, sak }: Props) => {
   const [vedtakFattetUtfall, setVedtakFattetUtfall] = useState<Utfall | null>(
     null,
   );
-  const { dispatch, soknad, model, sak } = props;
+  const model = useSelector((state: AppState) => state.model);
+  const dispatch = useDispatch();
   const inputEl = useRef<HTMLInputElement>(null);
 
   const handleFileUpload = (files: FileList) => {
@@ -111,7 +108,10 @@ const VedtakFattetView: React.FC<Props> = (props: Props) => {
               nyHendelse,
               model,
               dispatch,
-              oppdaterVedtakFattet(soknad.fiksDigisosId, nyHendelse),
+              OPPDATER_VEDTAK_FATTET({
+                forFiksDigisosId: soknad.fiksDigisosId,
+                oppdatertVedtakFattet: nyHendelse,
+              }),
             );
           }}
         >
@@ -144,14 +144,4 @@ const VedtakFattetView: React.FC<Props> = (props: Props) => {
   );
 };
 
-const mapStateToProps = (state: AppState) => ({
-  model: state.model,
-});
-
-const mapDispatchToProps = (dispatch: any) => {
-  return {
-    dispatch,
-  };
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(VedtakFattetView);
+export default VedtakFattetView;

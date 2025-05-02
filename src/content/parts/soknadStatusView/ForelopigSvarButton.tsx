@@ -1,28 +1,22 @@
 import { Button } from "@navikt/ds-react";
 import { ForelopigSvar, HendelseType } from "../../../types/hendelseTypes";
 import { getNow } from "../../../utils/utilityFunctions";
-import { defaultDokumentlagerRef } from "../../../redux/reducer";
 import {
-  oppdaterForelopigSvar,
-  sendNyHendelseOgOppdaterModel,
-} from "../../../redux/actions";
-import React from "react";
-import { AppState, DispatchProps } from "../../../redux/reduxTypes";
-import { connect } from "react-redux";
-import { FsSoknad, Model } from "../../../redux/types";
+  defaultDokumentlagerRef,
+  OPPDATER_FORELOPIG_SVAR,
+} from "../../../redux/reducer";
+import { sendNyHendelseOgOppdaterModel } from "../../../redux/actions";
+import { AppState } from "../../../redux/reduxTypes";
+import { FsSoknad } from "../../../redux/types";
+import { useDispatch, useSelector } from "react-redux";
 
-interface OwnProps {
+interface Props {
   soknad: FsSoknad;
 }
 
-interface StoreProps {
-  model: Model;
-}
-
-type Props = DispatchProps & OwnProps & StoreProps;
-
-const ForelopigSvarButton = (props: Props) => {
-  const { dispatch, soknad, model } = props;
+const ForelopigSvarButton = ({ soknad }: Props) => {
+  const model = useSelector((state: AppState) => state.model);
+  const dispatch = useDispatch();
 
   return (
     <Button
@@ -44,7 +38,10 @@ const ForelopigSvarButton = (props: Props) => {
           nyHendelse,
           model,
           dispatch,
-          oppdaterForelopigSvar(soknad.fiksDigisosId, nyHendelse)
+          OPPDATER_FORELOPIG_SVAR({
+            forFiksDigisosId: soknad.fiksDigisosId,
+            nyttForelopigSvar: nyHendelse,
+          }),
         );
       }}
     >
@@ -53,17 +50,4 @@ const ForelopigSvarButton = (props: Props) => {
   );
 };
 
-const mapStateToProps = (state: AppState) => ({
-  model: state.model,
-});
-
-const mapDispatchToProps = (dispatch: any) => {
-  return {
-    dispatch,
-  };
-};
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(ForelopigSvarButton);
+export default ForelopigSvarButton;

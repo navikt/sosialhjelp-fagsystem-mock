@@ -1,15 +1,12 @@
 import React, { useState } from "react";
-import { AppState, DispatchProps } from "../../../redux/reduxTypes";
-import { connect } from "react-redux";
+import { AppState } from "../../../redux/reduxTypes";
+import { useDispatch, useSelector } from "react-redux";
 
 import { HendelseType, SaksStatus } from "../../../types/hendelseTypes";
 
-import { FsSaksStatus, FsSoknad, Model } from "../../../redux/types";
+import { FsSaksStatus, FsSoknad } from "../../../redux/types";
 
-import {
-  sendNyHendelseOgOppdaterModel,
-  oppdaterFsSaksStatus,
-} from "../../../redux/actions";
+import { sendNyHendelseOgOppdaterModel } from "../../../redux/actions";
 import { getNow } from "../../../utils/utilityFunctions";
 
 import EndreSaksstatusComponent from "./EndreSaksstatusComponent";
@@ -18,20 +15,17 @@ import UtbetalingOversiktView from "../utbetaling/UtbetalingOversiktView";
 import { Button, Label, TextField } from "@navikt/ds-react";
 import globals from "../../../app/globals.module.css";
 import styles from "./saksoversikt.module.css";
-interface OwnProps {
+import { OPPDATER_FS_SAKS_STATUS } from "../../../redux/reducer";
+
+interface Props {
   sak: FsSaksStatus;
   soknad: FsSoknad;
 }
 
-interface StoreProps {
-  model: Model;
-}
-
-type Props = DispatchProps & OwnProps & StoreProps;
-
-const SaksTabView: React.FC<Props> = (props: Props) => {
+const SaksTabView = ({ soknad, sak }: Props) => {
   const [tittel, setTittel] = useState("");
-  const { sak, dispatch, model, soknad } = props;
+  const model = useSelector((state: AppState) => state.model);
+  const dispatch = useDispatch();
 
   return (
     <div className={styles.saker}>
@@ -59,7 +53,10 @@ const SaksTabView: React.FC<Props> = (props: Props) => {
                 nyHendelse,
                 model,
                 dispatch,
-                oppdaterFsSaksStatus(soknad.fiksDigisosId, nyHendelse),
+                OPPDATER_FS_SAKS_STATUS({
+                  forFiksDigisosId: soknad.fiksDigisosId,
+                  oppdatertSaksstatus: nyHendelse,
+                }),
               );
             }
           }}
@@ -85,14 +82,4 @@ const SaksTabView: React.FC<Props> = (props: Props) => {
   );
 };
 
-const mapStateToProps = (state: AppState) => ({
-  model: state.model,
-});
-
-const mapDispatchToProps = (dispatch: any) => {
-  return {
-    dispatch,
-  };
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(SaksTabView);
+export default SaksTabView;

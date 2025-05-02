@@ -1,28 +1,24 @@
 import React from "react";
-import { AppState, DispatchProps } from "../../../redux/reduxTypes";
-import { connect } from "react-redux";
+import { AppState } from "../../../redux/reduxTypes";
+import { useDispatch, useSelector } from "react-redux";
 import { HendelseType, TildeltNavKontor } from "../../../types/hendelseTypes";
 import { getNow } from "../../../utils/utilityFunctions";
 import {
   sendNyHendelseOgOppdaterModel,
-  oppdaterNavKontor,
   sendValgbareNavkontorTilMockBackend,
 } from "../../../redux/actions";
-import { FsSoknad, Model } from "../../../redux/types";
+import { FsSoknad } from "../../../redux/types";
 import { Select } from "@navikt/ds-react";
 import { NavKontor } from "../../../types/additionalTypes";
-interface OwnProps {
+import { OPPDATER_NAV_KONTOR } from "../../../redux/reducer";
+
+interface Props {
   soknad: FsSoknad;
 }
 
-interface StoreProps {
-  model: Model;
-}
-
-type Props = DispatchProps & OwnProps & StoreProps;
-
-const TildeldeltNavkontorView: React.FC<Props> = (props: Props) => {
-  const { dispatch, soknad, model } = props;
+const TildeldeltNavkontorView: React.FC<Props> = ({ soknad }: Props) => {
+  const dispatch = useDispatch();
+  const model = useSelector((state: AppState) => state.model);
 
   const navKontor0: NavKontor = {
     id: "1208",
@@ -85,7 +81,7 @@ const TildeldeltNavkontorView: React.FC<Props> = (props: Props) => {
           nyHendelse,
           model,
           dispatch,
-          oppdaterNavKontor(soknad.fiksDigisosId, nyHendelse),
+          OPPDATER_NAV_KONTOR({forFiksDigisosId: soknad.fiksDigisosId, nyttNavKontor: nyHendelse}),
         );
       }}
     >
@@ -95,17 +91,4 @@ const TildeldeltNavkontorView: React.FC<Props> = (props: Props) => {
   );
 };
 
-const mapStateToProps = (state: AppState) => ({
-  model: state.model,
-});
-
-const mapDispatchToProps = (dispatch: any) => {
-  return {
-    dispatch,
-  };
-};
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(TildeldeltNavkontorView);
+export default TildeldeltNavkontorView;

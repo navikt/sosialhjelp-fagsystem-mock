@@ -1,24 +1,25 @@
-import { Reducer } from "redux";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import {
-  Action,
-  ActionTypeKeys,
+  Action, ActionTypeKeys,
   BackendUrls,
   FsSaksStatus,
   FsSoknad,
-  Model,
+  Model, OppdaterVedtakFattet
 } from "./types";
 import Hendelse, {
+  DigisosSokerJson,
+  DokumentasjonEtterspurt,
   Dokumentasjonkrav,
   DokumentlagerExtended,
   FiksDigisosSokerJson,
-  FilreferanseType,
-  HendelseType,
+  FilreferanseType, ForelopigSvar,
+  HendelseType, SaksStatus,
   SaksStatusType,
   SoknadsStatus,
   SoknadsStatusType,
-  SvarutExtended,
-  Utbetaling,
-  Vilkar,
+  SvarutExtended, TildeltNavKontor,
+  Utbetaling, VedtakFattet,
+  Vilkar
 } from "../types/hendelseTypes";
 import {
   fsSaksStatusToSaksStatus,
@@ -26,26 +27,6 @@ import {
   generateRandomId,
   getNow,
 } from "../utils/utilityFunctions";
-import {
-  oDokumentasjonEtterspurt,
-  oForelopigSvar,
-  oFsDokumentasjonkrav,
-  oFsDokumentasjonkravPrism,
-  oFsDokumentasjonkravTraversal,
-  oFsSaker,
-  oFsSakerTraversal,
-  oFsSaksStatusPrism,
-  oFsSaksStatusUtbetalinger,
-  oFsUtbetalinger,
-  oFsUtbetalingerTraversal,
-  oFsUtbetalingPrism,
-  oFsVilkar,
-  oFsVilkarPrism,
-  oFsVilkarTraversal,
-  oGetSoknad,
-  oHendelser,
-  oNavKontor,
-} from "./optics";
 import {
   createFsSoknadFromHendelser,
   sorterEtterDatoStigende,
@@ -58,7 +39,6 @@ export const defaultDokumentlagerRef: DokumentlagerExtended = {
   tittel: "01 - qwer - dokumentalger",
 };
 
-// OBS: defaultSvarutRef er ikke testet
 export const defaultSvarutRef: SvarutExtended = {
   type: FilreferanseType.svarut,
   id: generateFilreferanseId(),
@@ -144,11 +124,7 @@ const getBackendUrlTypeToUse = (): keyof BackendUrls => {
 export const initialModel: Model = {
   loaderOn: false,
   backendUrlTypeToUse: getBackendUrlTypeToUse(),
-
-  //
   soknader: [],
-
-  // Visnings
   thememode: "light",
   visNySakModal: false,
   visNyDokumentasjonEtterspurtModal: false,
@@ -159,111 +135,105 @@ export const initialModel: Model = {
   visSystemSettingsModal: false,
   visSnackbar: false,
   snackbarVariant: "success",
-
-  // Aktive ting
   aktivSoknad: idFromQueryOrRandomId(),
   aktivUtbetaling: null,
   aktivtVilkar: null,
   aktivtDokumentasjonkrav: null,
 };
 
-const reducer: Reducer<Model, Action> = (
-  state: Model = initialModel,
-  action: Action,
-) => {
-  switch (action.type) {
-    case ActionTypeKeys.SET_AKTIV_SOKNAD: {
-      return { ...state, aktivSoknad: action.fiksDigisosId };
-    }
-    case ActionTypeKeys.SET_AKTIV_UTBETALING: {
-      return { ...state, aktivUtbetaling: action.referanse };
-    }
-    case ActionTypeKeys.SET_AKTIVT_VILKAR: {
-      return { ...state, aktivtVilkar: action.referanse };
-    }
-    case ActionTypeKeys.SET_AKTIVT_DOKUMENTASJONKRAV: {
-      return { ...state, aktivtDokumentasjonkrav: action.referanse };
-    }
-    case ActionTypeKeys.SET_BACKEND_URL_TYPE_TO_USE:
-      return { ...state, backendUrlTypeToUse: action.backendUrlTypeToUse };
-    case ActionTypeKeys.TURN_ON_LOADER:
-      return { ...state, loaderOn: true };
-    case ActionTypeKeys.TURN_OFF_LOADER:
-      return { ...state, loaderOn: false };
-    case ActionTypeKeys.SWITCH_TO_LIGHT_MODE: {
-      return { ...state, thememode: "light" };
-    }
-    case ActionTypeKeys.SWITCH_TO_DARK_MODE: {
-      return { ...state, thememode: "dark" };
-    }
-    case ActionTypeKeys.VIS_NY_SAK_MODAL: {
-      return { ...state, visNySakModal: true };
-    }
-    case ActionTypeKeys.VIS_NY_DOKUMENTASJON_ETTERSPURT_MODAL: {
-      return { ...state, visNyDokumentasjonEtterspurtModal: true };
-    }
-    case ActionTypeKeys.VIS_NY_UTBETALING_MODAL: {
-      return {
-        ...state,
-        visNyUtbetalingModal: true,
-        modalSaksreferanse: action.saksreferanse,
-      };
-    }
-    case ActionTypeKeys.VIS_NY_VILKAR_MODAL: {
-      return { ...state, visNyVilkarModal: true };
-    }
-    case ActionTypeKeys.VIS_NY_DOKUMENTASJONKRAV_MODAL: {
-      return { ...state, visNyDokumentasjonkravModal: true };
-    }
-    case ActionTypeKeys.VIS_SYSTEM_SETTINGS_MODAL: {
-      return { ...state, visSystemSettingsModal: true };
-    }
-    case ActionTypeKeys.VIS_SUCCESS_SNACKBAR: {
-      return { ...state, visSnackbar: true, snackbarVariant: "success" };
-    }
-    case ActionTypeKeys.VIS_ERROR_SNACKBAR: {
-      return { ...state, visSnackbar: true, snackbarVariant: "error" };
-    }
-    case ActionTypeKeys.SKJUL_NY_SAK_MODAL: {
-      return { ...state, visNySakModal: false };
-    }
-    case ActionTypeKeys.SKJUL_NY_DOKUMENTASJON_ETTERSPURT_MODAL: {
-      return { ...state, visNyDokumentasjonEtterspurtModal: false };
-    }
-    case ActionTypeKeys.SKJUL_NY_UTBETALING_MODAL: {
-      return { ...state, visNyUtbetalingModal: false };
-    }
-    case ActionTypeKeys.SKJUL_NY_VILKAR_MODAL: {
-      return { ...state, visNyVilkarModal: false };
-    }
-    case ActionTypeKeys.SKJUL_NY_DOKUMENTASJONKRAV_MODAL: {
-      return { ...state, visNyDokumentasjonkravModal: false };
-    }
-    case ActionTypeKeys.SKJUL_SYSTEM_SETTINGS_MODAL: {
-      return { ...state, visSystemSettingsModal: false };
-    }
-    case ActionTypeKeys.SKJUL_SNACKBAR: {
-      return { ...state, visSnackbar: false };
-    }
+const modelSlice = createSlice({
+  name: "model",
+  initialState: initialModel,
+  reducers: {
+    SET_AKTIV_SOKNAD(state, action: PayloadAction<string>) {
+      state.aktivSoknad = action.payload;
+    },
+    SET_AKTIV_UTBETALING(state, action: PayloadAction<string | null>) {
+      state.aktivUtbetaling = action.payload;
+    },
+    SET_AKTIVT_VILKAR(state, action: PayloadAction<string | null>) {
+      state.aktivtVilkar = action.payload;
+    },
+    SET_AKTIVT_DOKUMENTASJONKRAV(state, action: PayloadAction<string | null>) {
+      state.aktivtDokumentasjonkrav = action.payload;
+    },
+    SET_BACKEND_URL_TYPE_TO_USE(state, action: PayloadAction<keyof BackendUrls>) {
+      state.backendUrlTypeToUse = action.payload;
+    },
+    TURN_ON_LOADER(state) {
+      state.loaderOn = true;
+    },
+    TURN_OFF_LOADER(state) {
+      state.loaderOn = false;
+    },
+    SWITCH_TO_LIGHT_MODE(state) {
+      state.thememode = "light";
+    },
+    SWITCH_TO_DARK_MODE(state) {
+      state.thememode = "dark";
+    },
+    VIS_NY_SAK_MODAL(state) {
+      state.visNySakModal = true;
+    },
+    SKJUL_NY_SAK_MODAL(state) {
+      state.visNySakModal = false;
+    },
+    VIS_NY_DOKUMENTASJON_ETTERSPURT_MODAL(state) {
+      state.visNyDokumentasjonEtterspurtModal = true;
+    },
+    SKJUL_NY_DOKUMENTASJON_ETTERSPURT_MODAL(state) {
+      state.visNyDokumentasjonEtterspurtModal = false;
+    },
+    VIS_NY_UTBETALING_MODAL(state, action: PayloadAction<string | null>) {
+      state.visNyUtbetalingModal = true;
+      state.modalSaksreferanse = action.payload;
+    },
+    SKJUL_NY_UTBETALING_MODAL(state) {
+      state.visNyUtbetalingModal = false;
+    },
+    VIS_NY_VILKAR_MODAL(state) {
+      state.visNyVilkarModal = true;
+    },
+    SKJUL_NY_VILKAR_MODAL(state) {
+      state.visNyVilkarModal = false;
+    },
+    VIS_NY_DOKUMENTASJONKRAV_MODAL(state) {
+      state.visNyDokumentasjonkravModal = true;
+    },
+    SKJUL_NY_DOKUMENTASJONKRAV_MODAL(state) {
+      state.visNyDokumentasjonkravModal = false;
+    },
+    VIS_SYSTEM_SETTINGS_MODAL(state) {
+      state.visSystemSettingsModal = true;
+    },
+    SKJUL_SYSTEM_SETTINGS_MODAL(state) {
+      state.visSystemSettingsModal = false;
+    },
+    VIS_SUCCESS_SNACKBAR(state) {
+      state.visSnackbar = true;
+      state.snackbarVariant = "success";
+    },
+    VIS_ERROR_SNACKBAR(state) {
+      state.visSnackbar = true;
+      state.snackbarVariant = "error";
+    },
+    SKJUL_SNACKBAR(state) {
+      state.visSnackbar = false;
+    },
+    NY_SOKNAD(state, action: PayloadAction<string>) {
+      const newFsSoknad = getInitialFsSoknad(action.payload);
+      state.soknader.push(newFsSoknad);
+    },
+    HENTET_SOKNAD(
+      state,
+      action: PayloadAction<{ fiksDigisosId: string; data: DigisosSokerJson }>,
+    ) {
+      const { fiksDigisosId, data } = action.payload;
+      const soknadFinnes = state.soknader.find(
+        (soknad) => soknad.fiksDigisosId === fiksDigisosId,
+      );
+      if (soknadFinnes) return;
 
-    case ActionTypeKeys.NY_SOKNAD: {
-      const { nyFiksDigisosId } = action;
-
-      const newFsSoknad: FsSoknad = getInitialFsSoknad(nyFiksDigisosId);
-
-      return {
-        ...state,
-        soknader: [...state.soknader, newFsSoknad],
-      };
-    }
-    case ActionTypeKeys.HENTET_SOKNAD: {
-      const { fiksDigisosId, data } = action;
-      const soknadFinnes = state.soknader.find((soknad: FsSoknad) => {
-        return soknad.fiksDigisosId === fiksDigisosId;
-      });
-      if (soknadFinnes) {
-        return state;
-      }
       const fiksDigisosSokerJson = {
         sak: {
           soker: {
@@ -283,289 +253,224 @@ const reducer: Reducer<Model, Action> = (
         fiksDigisosId,
       );
 
-      return {
-        ...state,
-        soknader: [...state.soknader, fsSoknad],
-      };
-    }
-    case ActionTypeKeys.SLETT_SOKNAD: {
-      const { forFiksDigisosId } = action;
-
-      return {
-        ...state,
-        soknader: state.soknader.filter((s: FsSoknad) => {
-          return s.fiksDigisosId !== forFiksDigisosId;
-        }),
-      };
-    }
-    case ActionTypeKeys.OPPDATER_FIKS_DIGISOS_ID: {
-      const { forFiksDigisosId, nyFiksDigisosId } = action;
-
-      return {
-        ...state,
-        soknader: state.soknader.map((s: FsSoknad) => {
-          if (s.fiksDigisosId === forFiksDigisosId) {
-            return {
-              ...s,
-              fiksDigisosId: nyFiksDigisosId,
-            };
-          } else {
-            return s;
-          }
-        }),
-      };
-    }
-    case ActionTypeKeys.OPPDATER_SOKNADS_STATUS: {
-      const { forFiksDigisosId, nySoknadsStatus } = action;
-
-      return {
-        ...state,
-        soknader: state.soknader.map((s: FsSoknad) => {
-          if (s.fiksDigisosId === forFiksDigisosId) {
-            return {
-              ...s,
-              soknadsStatus: nySoknadsStatus,
-              fiksDigisosSokerJson: {
-                ...s.fiksDigisosSokerJson,
-                sak: {
-                  ...s.fiksDigisosSokerJson.sak,
-                  soker: {
-                    ...s.fiksDigisosSokerJson.sak.soker,
-                    hendelser: [
-                      ...s.fiksDigisosSokerJson.sak.soker.hendelser,
-                      nySoknadsStatus,
-                    ],
-                  },
-                },
-              },
-            };
-          } else {
-            return s;
-          }
-        }),
-      };
-    }
-    case ActionTypeKeys.OPPDATER_NAV_KONTOR: {
-      const { forFiksDigisosId, nyttNavKontor } = action;
-
-      const s1 = oGetSoknad(forFiksDigisosId)
-        .composeLens(oNavKontor)
-        .set(nyttNavKontor)(state);
-
-      return oGetSoknad(forFiksDigisosId)
-        .composeLens(oHendelser)
-        .modify((a: Hendelse[]) => [...a, nyttNavKontor])(s1);
-    }
-    case ActionTypeKeys.OPPDATER_DOKUMENTASJON_ETTERSPURT: {
-      const { forFiksDigisosId, nyDokumentasjonEtterspurt } = action;
-
-      const s1 = oGetSoknad(forFiksDigisosId)
-        .composeLens(oDokumentasjonEtterspurt)
-        .set(nyDokumentasjonEtterspurt)(state);
-      return oGetSoknad(forFiksDigisosId)
-        .composeLens(oHendelser)
-        .modify((a: Hendelse[]) => [...a, nyDokumentasjonEtterspurt])(s1);
-    }
-    case ActionTypeKeys.OPPDATER_FORELOPIG_SVAR: {
-      const { forFiksDigisosId, nyttForelopigSvar } = action;
-
-      const s1 = oGetSoknad(forFiksDigisosId)
-        .composeLens(oForelopigSvar)
-        .set(nyttForelopigSvar)(state);
-      return oGetSoknad(forFiksDigisosId)
-        .composeLens(oHendelser)
-        .modify((a: Hendelse[]) => [...a, nyttForelopigSvar])(s1);
-    }
-    case ActionTypeKeys.NY_FS_SAKS_STATUS: {
-      const { forFiksDigisosId, nyFsSaksStatus } = action;
-
-      const s1 = oGetSoknad(forFiksDigisosId)
-        .composeLens(oFsSaker)
-        .modify((s: FsSaksStatus[]) => [...s, nyFsSaksStatus])(state);
-      return oGetSoknad(forFiksDigisosId)
-        .composeLens(oHendelser)
-        .modify((a: Hendelse[]) => [
-          ...a,
-          fsSaksStatusToSaksStatus(nyFsSaksStatus),
-        ])(s1);
-    }
-    case ActionTypeKeys.OPPDATER_FS_SAKS_STATUS: {
-      const { forFiksDigisosId, oppdatertSaksstatus } = action;
-      const tittel: string | null = oppdatertSaksstatus.tittel;
-      const status: SaksStatusType | null = oppdatertSaksstatus.status;
-
-      const s1 = oGetSoknad(forFiksDigisosId)
-        .composeLens(oFsSaker)
-        .composeTraversal(oFsSakerTraversal)
-        .composePrism(oFsSaksStatusPrism(oppdatertSaksstatus.referanse))
-        .modify((fsSaksStatus: FsSaksStatus) => {
-          return { ...fsSaksStatus, tittel, status };
-        })(state);
-
-      return oGetSoknad(forFiksDigisosId)
-        .composeLens(oHendelser)
-        .modify((a: Hendelse[]) => [...a, oppdatertSaksstatus])(s1);
-    }
-    case ActionTypeKeys.NY_UTBETALING: {
-      const { forFiksDigisosId, nyUtbetaling } = action;
-
-      const s1 = oGetSoknad(forFiksDigisosId)
-        .composeLens(oHendelser)
-        .modify((a: Hendelse[]) => [...a, nyUtbetaling])(state);
-
-      if (nyUtbetaling.saksreferanse) {
-        return oGetSoknad(forFiksDigisosId)
-          .composeLens(oFsSaker)
-          .composeTraversal(oFsSakerTraversal)
-          .composePrism(oFsSaksStatusPrism(nyUtbetaling.saksreferanse))
-          .composeLens(oFsSaksStatusUtbetalinger)
-          .modify((utbetalinger: Utbetaling[]) => [
-            ...utbetalinger,
-            nyUtbetaling,
-          ])(s1);
-      } else {
-        return oGetSoknad(forFiksDigisosId)
-          .composeLens(oFsUtbetalinger)
-          .modify((utbetalingListe: Utbetaling[]) => [
-            ...utbetalingListe,
-            nyUtbetaling,
-          ])(s1);
+      state.soknader.push(fsSoknad);
+    },
+    SLETT_SOKNAD(state, action: PayloadAction<string>) {
+      state.soknader = state.soknader.filter(
+        (soknad) => soknad.fiksDigisosId !== action.payload,
+      );
+    },
+    OPPDATER_FIKS_DIGISOS_ID(
+      state,
+      action: PayloadAction<{ forFiksDigisosId: string; nyFiksDigisosId: string }>,
+    ) {
+      const { forFiksDigisosId, nyFiksDigisosId } = action.payload;
+      const soknad = state.soknader.find(
+        (soknad) => soknad.fiksDigisosId === forFiksDigisosId,
+      );
+      if (soknad) {
+        soknad.fiksDigisosId = nyFiksDigisosId;
       }
-    }
-    case ActionTypeKeys.OPPDATER_UTBETALING: {
-      const { forFiksDigisosId, oppdatertUtbetaling } = action;
-
-      const s1 = oGetSoknad(forFiksDigisosId)
-        .composeLens(oHendelser)
-        .modify((a: Hendelse[]) => [...a, oppdatertUtbetaling])(state);
-
-      if (oppdatertUtbetaling.saksreferanse) {
-        if (
-          state.soknader
-            .find((s) => s.fiksDigisosId === forFiksDigisosId)!
-            .utbetalingerUtenSaksreferanse.find(
-              (r) =>
-                r.utbetalingsreferanse ===
-                oppdatertUtbetaling.utbetalingsreferanse,
-            )
-        ) {
-          // Fjern fra liste over utbetalinger uten saksreferanse
-          const s2 = oGetSoknad(forFiksDigisosId)
-            .composeLens(oFsUtbetalinger)
-            .modify((utbetalingliste) =>
-              utbetalingliste.filter(
-                (utbetaling) =>
-                  utbetaling.utbetalingsreferanse !==
-                  oppdatertUtbetaling.utbetalingsreferanse,
-              ),
-            )(s1);
-          // Legg til i liste over utbetalinger under den valgte saken
-          return oGetSoknad(forFiksDigisosId)
-            .composeLens(oFsSaker)
-            .composeTraversal(oFsSakerTraversal)
-            .composePrism(oFsSaksStatusPrism(oppdatertUtbetaling.saksreferanse))
-            .composeLens(oFsSaksStatusUtbetalinger)
-            .modify((utbetaling: Utbetaling[]) => [
-              ...utbetaling,
-              oppdatertUtbetaling,
-            ])(s2);
-        } else {
-          return oGetSoknad(forFiksDigisosId)
-            .composeLens(oFsSaker)
-            .composeTraversal(oFsSakerTraversal)
-            .composePrism(oFsSaksStatusPrism(oppdatertUtbetaling.saksreferanse))
-            .composeLens(oFsSaksStatusUtbetalinger)
-            .composeTraversal(oFsUtbetalingerTraversal)
-            .composePrism(
-              oFsUtbetalingPrism(oppdatertUtbetaling.utbetalingsreferanse),
-            )
-            .set(oppdatertUtbetaling)(s1);
+    },
+    OPPDATER_SOKNADS_STATUS(
+      state,
+      action: PayloadAction<{ forFiksDigisosId: string; nySoknadsStatus: SoknadsStatus }>,
+    ) {
+      const { forFiksDigisosId, nySoknadsStatus } = action.payload;
+      const soknad = state.soknader.find(
+        (soknad) => soknad.fiksDigisosId === forFiksDigisosId,
+      );
+      if (soknad) {
+        soknad.soknadsStatus = nySoknadsStatus;
+        soknad.fiksDigisosSokerJson.sak.soker.hendelser.push(nySoknadsStatus);
+      }
+    },
+    OPPDATER_NAV_KONTOR(state, action: PayloadAction<{ forFiksDigisosId: string; nyttNavKontor: TildeltNavKontor }>) {
+      const { forFiksDigisosId, nyttNavKontor } = action.payload;
+      const soknad = state.soknader.find((s) => s.fiksDigisosId === forFiksDigisosId);
+      if (soknad) {
+        soknad.navKontor = nyttNavKontor;
+        soknad.fiksDigisosSokerJson.sak.soker.hendelser.push(nyttNavKontor);
+      }
+    },
+    OPPDATER_DOKUMENTASJON_ETTERSPURT(state, action: PayloadAction<{ forFiksDigisosId: string; nyDokumentasjonEtterspurt: DokumentasjonEtterspurt }>) {
+      const { forFiksDigisosId, nyDokumentasjonEtterspurt } = action.payload;
+      const soknad = state.soknader.find((s) => s.fiksDigisosId === forFiksDigisosId);
+      if (soknad) {
+        soknad.dokumentasjonEtterspurt = nyDokumentasjonEtterspurt;
+        soknad.fiksDigisosSokerJson.sak.soker.hendelser.push(nyDokumentasjonEtterspurt);
+      }
+    },
+    OPPDATER_FORELOPIG_SVAR(state, action: PayloadAction<{ forFiksDigisosId: string; nyttForelopigSvar: ForelopigSvar }>) {
+      const { forFiksDigisosId, nyttForelopigSvar } = action.payload;
+      const soknad = state.soknader.find((s) => s.fiksDigisosId === forFiksDigisosId);
+      if (soknad) {
+        soknad.forelopigSvar = nyttForelopigSvar;
+        soknad.fiksDigisosSokerJson.sak.soker.hendelser.push(nyttForelopigSvar);
+      }
+    },
+    NY_FS_SAKS_STATUS(state, action: PayloadAction<{ forFiksDigisosId: string; nyFsSaksStatus: FsSaksStatus }>) {
+      const { forFiksDigisosId, nyFsSaksStatus } = action.payload;
+      const soknad = state.soknader.find((s) => s.fiksDigisosId === forFiksDigisosId);
+      if (soknad) {
+        soknad.saker.push(nyFsSaksStatus);
+        soknad.fiksDigisosSokerJson.sak.soker.hendelser.push(fsSaksStatusToSaksStatus(nyFsSaksStatus));
+      }
+    },
+    OPPDATER_FS_SAKS_STATUS(state, action: PayloadAction<{ forFiksDigisosId: string; oppdatertSaksstatus: SaksStatus }>) {
+      const { forFiksDigisosId, oppdatertSaksstatus } = action.payload;
+      const soknad = state.soknader.find((s) => s.fiksDigisosId === forFiksDigisosId);
+      if (soknad) {
+        const saksStatus = soknad.saker.find((s) => s.referanse === oppdatertSaksstatus.referanse);
+        if (saksStatus) {
+          saksStatus.tittel = oppdatertSaksstatus.tittel;
+          saksStatus.status = oppdatertSaksstatus.status;
         }
-      } else {
-        return oGetSoknad(forFiksDigisosId)
-          .composeLens(oFsUtbetalinger)
-          .composeTraversal(oFsUtbetalingerTraversal)
-          .composePrism(
-            oFsUtbetalingPrism(oppdatertUtbetaling.utbetalingsreferanse),
-          )
-          .set(oppdatertUtbetaling)(s1);
+        soknad.fiksDigisosSokerJson.sak.soker.hendelser.push(oppdatertSaksstatus);
       }
-    }
-    case ActionTypeKeys.NYTT_DOKUMENTASJONKRAV: {
-      const { forFiksDigisosId, nyttDokumentasjonkrav } = action;
+    },
+    NY_UTBETALING(state, action: PayloadAction<{ forFiksDigisosId: string; nyUtbetaling: Utbetaling }>) {
+      const { forFiksDigisosId, nyUtbetaling } = action.payload;
+      const soknad = state.soknader.find((s) => s.fiksDigisosId === forFiksDigisosId);
+      if (soknad) {
+        soknad.fiksDigisosSokerJson.sak.soker.hendelser.push(nyUtbetaling);
+        if (nyUtbetaling.saksreferanse) {
+          const saksStatus = soknad.saker.find((s) => s.referanse === nyUtbetaling.saksreferanse);
+          if (saksStatus) {
+            saksStatus.utbetalinger.push(nyUtbetaling);
+          }
+        } else {
+          soknad.utbetalingerUtenSaksreferanse.push(nyUtbetaling);
+        }
+      }
+    },
+    OPPDATER_UTBETALING(state, action: PayloadAction<{ forFiksDigisosId: string; oppdatertUtbetaling: Utbetaling }>) {
+      const { forFiksDigisosId, oppdatertUtbetaling } = action.payload;
+      const soknad = state.soknader.find((s) => s.fiksDigisosId === forFiksDigisosId);
+      if (soknad) {
+        soknad.fiksDigisosSokerJson.sak.soker.hendelser.push(oppdatertUtbetaling);
+        if (oppdatertUtbetaling.saksreferanse) {
+          const saksStatus = soknad.saker.find((s) => s.referanse === oppdatertUtbetaling.saksreferanse);
+          if (saksStatus) {
+            const utbetalingIndex = saksStatus.utbetalinger.findIndex(
+              (u) => u.utbetalingsreferanse === oppdatertUtbetaling.utbetalingsreferanse,
+            );
+            if (utbetalingIndex !== -1) {
+              saksStatus.utbetalinger[utbetalingIndex] = oppdatertUtbetaling;
+            } else {
+              soknad.utbetalingerUtenSaksreferanse = soknad.utbetalingerUtenSaksreferanse.filter(
+                (u) => u.utbetalingsreferanse !== oppdatertUtbetaling.utbetalingsreferanse,
+              );
+              saksStatus.utbetalinger.push(oppdatertUtbetaling);
+            }
+          }
+        } else {
+          const utbetalingIndex = soknad.utbetalingerUtenSaksreferanse.findIndex(
+            (u) => u.utbetalingsreferanse === oppdatertUtbetaling.utbetalingsreferanse,
+          );
+          if (utbetalingIndex !== -1) {
+            soknad.utbetalingerUtenSaksreferanse[utbetalingIndex] = oppdatertUtbetaling;
+          }
+        }
+      }
+    },
+    NYTT_DOKUMENTASJONKRAV(state, action: PayloadAction<{ forFiksDigisosId: string; nyttDokumentasjonkrav: Dokumentasjonkrav }>) {
+      const { forFiksDigisosId, nyttDokumentasjonkrav } = action.payload;
+      const soknad = state.soknader.find((s) => s.fiksDigisosId === forFiksDigisosId);
+      if (soknad) {
+        soknad.dokumentasjonkrav.push(nyttDokumentasjonkrav);
+        soknad.fiksDigisosSokerJson.sak.soker.hendelser.push(nyttDokumentasjonkrav);
+      }
+    },
+    OPPDATER_DOKUMENTASJONKRAV(state, action: PayloadAction<{ forFiksDigisosId: string; oppdatertDokumentasjonkrav: Dokumentasjonkrav }>) {
+      const { forFiksDigisosId, oppdatertDokumentasjonkrav } = action.payload;
+      const soknad = state.soknader.find((s) => s.fiksDigisosId === forFiksDigisosId);
+      if (soknad) {
+        const kravIndex = soknad.dokumentasjonkrav.findIndex(
+          (k) => k.dokumentasjonkravreferanse === oppdatertDokumentasjonkrav.dokumentasjonkravreferanse,
+        );
+        if (kravIndex !== -1) {
+          soknad.dokumentasjonkrav[kravIndex] = oppdatertDokumentasjonkrav;
+        }
+        soknad.fiksDigisosSokerJson.sak.soker.hendelser.push(oppdatertDokumentasjonkrav);
+      }
+    },
+    OPPDATER_VEDTAK_FATTET(state, action: PayloadAction<{ forFiksDigisosId: string; oppdatertVedtakFattet: VedtakFattet }>) {
+      const { forFiksDigisosId, oppdatertVedtakFattet } = action.payload;
+      const soknad = state.soknader.find((s) => s.fiksDigisosId === forFiksDigisosId);
+      if (soknad) {
+        const saksStatus = soknad.saker.find((s) => s.referanse === oppdatertVedtakFattet.saksreferanse);
+        if (saksStatus) {
+          saksStatus.vedtakFattet = oppdatertVedtakFattet;
+        }
+        soknad.fiksDigisosSokerJson.sak.soker.hendelser.push(oppdatertVedtakFattet);
+      }
+    },
+    NYTT_VILKAR(state, action: PayloadAction<{ forFiksDigisosId: string; nyttVilkar: Vilkar }>) {
+      const { forFiksDigisosId, nyttVilkar } = action.payload;
+      const soknad = state.soknader.find((s) => s.fiksDigisosId === forFiksDigisosId);
+      if (soknad) {
+        soknad.vilkar.push(nyttVilkar);
+        soknad.fiksDigisosSokerJson.sak.soker.hendelser.push(nyttVilkar);
+      }
+    },
+    OPPDATER_VILKAR(state, action: PayloadAction<{ forFiksDigisosId: string; oppdatertVilkar: Vilkar }>) {
+      const { forFiksDigisosId, oppdatertVilkar } = action.payload;
+      const soknad = state.soknader.find((s) => s.fiksDigisosId === forFiksDigisosId);
+      if (soknad) {
+        const vilkarIndex = soknad.vilkar.findIndex((v) => v.vilkarreferanse === oppdatertVilkar.vilkarreferanse);
+        if (vilkarIndex !== -1) {
+          soknad.vilkar[vilkarIndex] = oppdatertVilkar;
+        }
+        soknad.fiksDigisosSokerJson.sak.soker.hendelser.push(oppdatertVilkar);
+      }
+    },
+  },
+});
 
-      const s1 = oGetSoknad(forFiksDigisosId)
-        .composeLens(oFsDokumentasjonkrav)
-        .modify((dokumentasjonkravListe: Dokumentasjonkrav[]) => [
-          ...dokumentasjonkravListe,
-          nyttDokumentasjonkrav,
-        ])(state);
+export const {
+  SET_AKTIV_SOKNAD,
+  SET_AKTIV_UTBETALING,
+  SET_AKTIVT_VILKAR,
+  SET_AKTIVT_DOKUMENTASJONKRAV,
+  SET_BACKEND_URL_TYPE_TO_USE,
+  TURN_ON_LOADER,
+  TURN_OFF_LOADER,
+  SWITCH_TO_LIGHT_MODE,
+  SWITCH_TO_DARK_MODE,
+  VIS_NY_SAK_MODAL,
+  SKJUL_NY_SAK_MODAL,
+  VIS_NY_DOKUMENTASJON_ETTERSPURT_MODAL,
+  SKJUL_NY_DOKUMENTASJON_ETTERSPURT_MODAL,
+  VIS_NY_UTBETALING_MODAL,
+  SKJUL_NY_UTBETALING_MODAL,
+  VIS_NY_VILKAR_MODAL,
+  SKJUL_NY_VILKAR_MODAL,
+  VIS_NY_DOKUMENTASJONKRAV_MODAL,
+  SKJUL_NY_DOKUMENTASJONKRAV_MODAL,
+  VIS_SYSTEM_SETTINGS_MODAL,
+  SKJUL_SYSTEM_SETTINGS_MODAL,
+  VIS_SUCCESS_SNACKBAR,
+  VIS_ERROR_SNACKBAR,
+  SKJUL_SNACKBAR,
+  NY_SOKNAD,
+  HENTET_SOKNAD,
+  SLETT_SOKNAD,
+  OPPDATER_FIKS_DIGISOS_ID,
+  OPPDATER_SOKNADS_STATUS,
+  OPPDATER_NAV_KONTOR,
+  OPPDATER_DOKUMENTASJON_ETTERSPURT,
+  OPPDATER_FORELOPIG_SVAR,
+  NY_FS_SAKS_STATUS,
+  OPPDATER_FS_SAKS_STATUS,
+  NY_UTBETALING,
+  OPPDATER_UTBETALING,
+  NYTT_DOKUMENTASJONKRAV,
+  OPPDATER_DOKUMENTASJONKRAV,
+  OPPDATER_VEDTAK_FATTET,
+  NYTT_VILKAR,
+  OPPDATER_VILKAR,
+} = modelSlice.actions;
 
-      return oGetSoknad(forFiksDigisosId)
-        .composeLens(oHendelser)
-        .modify((a: Hendelse[]) => [...a, nyttDokumentasjonkrav])(s1);
-    }
-    case ActionTypeKeys.OPPDATER_DOKUMENTASJONKRAV: {
-      const { forFiksDigisosId, oppdatertDokumentasjonkrav } = action;
+export default modelSlice.reducer;
 
-      const s1 = oGetSoknad(forFiksDigisosId)
-        .composeLens(oFsDokumentasjonkrav)
-        .composeTraversal(oFsDokumentasjonkravTraversal)
-        .composePrism(
-          oFsDokumentasjonkravPrism(
-            oppdatertDokumentasjonkrav.dokumentasjonkravreferanse,
-          ),
-        )
-        .set(oppdatertDokumentasjonkrav)(state);
-
-      return oGetSoknad(forFiksDigisosId)
-        .composeLens(oHendelser)
-        .modify((a: Hendelse[]) => [...a, oppdatertDokumentasjonkrav])(s1);
-    }
-    case ActionTypeKeys.OPPDATER_VEDTAK_FATTET: {
-      const { forFiksDigisosId, oppdatertVedtakFattet } = action;
-
-      const s1 = oGetSoknad(forFiksDigisosId)
-        .composeLens(oFsSaker)
-        .composeTraversal(oFsSakerTraversal)
-        .composePrism(oFsSaksStatusPrism(oppdatertVedtakFattet.saksreferanse))
-        .modify((fsSaksStatus: FsSaksStatus) => {
-          return { ...fsSaksStatus, oppdatertVedtakFattet };
-        })(state);
-
-      return oGetSoknad(forFiksDigisosId)
-        .composeLens(oHendelser)
-        .modify((a: Hendelse[]) => [...a, oppdatertVedtakFattet])(s1);
-    }
-
-    case ActionTypeKeys.NYTT_VILKAR: {
-      const { forFiksDigisosId, nyttVilkar } = action;
-
-      const s1 = oGetSoknad(forFiksDigisosId)
-        .composeLens(oFsVilkar)
-        .modify((vilkarListe: Vilkar[]) => [...vilkarListe, nyttVilkar])(state);
-
-      return oGetSoknad(forFiksDigisosId)
-        .composeLens(oHendelser)
-        .modify((a: Hendelse[]) => [...a, nyttVilkar])(s1);
-    }
-    case ActionTypeKeys.OPPDATER_VILKAR: {
-      const { forFiksDigisosId, oppdatertVilkar } = action;
-
-      const s1 = oGetSoknad(forFiksDigisosId)
-        .composeLens(oFsVilkar)
-        .composeTraversal(oFsVilkarTraversal)
-        .composePrism(oFsVilkarPrism(oppdatertVilkar.vilkarreferanse))
-        .set(oppdatertVilkar)(state);
-
-      return oGetSoknad(forFiksDigisosId)
-        .composeLens(oHendelser)
-        .modify((a: Hendelse[]) => [...a, oppdatertVilkar])(s1);
-    }
-
-    default:
-      return state;
-  }
-};
-
-export default reducer;
