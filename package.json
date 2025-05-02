@@ -7,8 +7,8 @@
     "@navikt/aksel-icons": "^5.5.0",
     "@navikt/ds-css": "^5.5.0",
     "@navikt/ds-react": "^5.5.0",
-    "dayjs": "^1.11.8",
-    "fp-ts": "^2.16.0",
+    "dayjs": "^1.11.13",
+    "fp-ts": "^2.16.10",
     "monocle-ts": "^2.3.13",
     "next": "^13.4.17",
     "react": "^18.2.0",
@@ -48,8 +48,8 @@
     "eslint": "^8.47.0",
     "eslint-config-next": "^13.4.18",
     "lint-staged": "^13.0.3",
-    "prettier": "^3.0.1",
-    "typescript": "^5.1.6"
+    "prettier": "^3.5.3",
+    "typescript": "^5.8.3"
   },
   "lint-staged": {
     "*.{js,css,md}": "prettier --write",
