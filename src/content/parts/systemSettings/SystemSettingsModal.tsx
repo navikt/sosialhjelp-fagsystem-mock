@@ -59,6 +59,7 @@ const SystemSettingsModal: React.FC<Props> = (props: Props) => {
       open={visSystemSettingsModal}
       onClose={() => dispatch(skjulSystemSettingsModal())}
       className={globals.modal}
+      aria-label={"Systeminnstillinger"}
     >
       <Modal.Body>
         <RadioGroup
