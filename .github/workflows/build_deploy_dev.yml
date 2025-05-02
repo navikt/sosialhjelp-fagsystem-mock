@@ -33,8 +33,6 @@ jobs:
         id: docker-push
         with:
           team: teamdigisos
-          project_id: ${{ vars.NAIS_MANAGEMENT_PROJECT_ID }}
-          identity_provider: ${{ secrets.NAIS_WORKLOAD_IDENTITY_PROVIDER }}
           tag: latest
 
   deploy:
