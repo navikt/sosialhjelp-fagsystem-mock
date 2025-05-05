@@ -1,34 +1,29 @@
 import React, { SyntheticEvent } from "react";
-import { AppState, DispatchProps } from "../../../redux/reduxTypes";
-import { Model } from "../../../redux/types";
-import { connect } from "react-redux";
-import { skjulSnackbar } from "../../../redux/actions";
+import { RootState} from "../../../store";
+import { useDispatch, useSelector } from "react-redux";
 import { Tag } from "@navikt/ds-react";
 import styles from "./statusSnackBar.module.css";
 import { CheckmarkIcon, XMarkOctagonIcon } from "@navikt/aksel-icons";
 import useTimeout from "../../../utils/useTimeout";
-interface StoreProps {
-  visSnackbar: boolean;
-  snackbarVariant: "success" | "error";
-  model: Model;
-}
-
-type Props = DispatchProps & StoreProps;
+import { SKJUL_SNACKBAR } from "../../../redux/reducer";
 
 const variantIcon = {
   success: <CheckmarkIcon title="success" />,
   error: <XMarkOctagonIcon title="error" />,
 };
 
-const StatusSnackBarView: React.FC<Props> = (props: Props) => {
-  const { visSnackbar, snackbarVariant, dispatch } = props;
-
+const StatusSnackBarView = () => {
+  const {visSnackbar, snackbarVariant} = useSelector((state: RootState) => ({
+    visSnackbar: state.model.visSnackbar,
+    snackbarVariant: state.model.snackbarVariant,
+  }));
+  const dispatch = useDispatch();
   function handleClose(event?: SyntheticEvent, reason?: string) {
     if (reason === "clickaway") {
       return;
     }
 
-    dispatch(skjulSnackbar());
+    dispatch(SKJUL_SNACKBAR());
   }
 
   useTimeout(handleClose, 2000, visSnackbar);
@@ -49,16 +44,4 @@ const StatusSnackBarView: React.FC<Props> = (props: Props) => {
   ) : null;
 };
 
-const mapStateToProps = (state: AppState) => ({
-  visSnackbar: state.model.visSnackbar,
-  snackbarVariant: state.model.snackbarVariant,
-  model: state.model,
-});
-
-const mapDispatchToProps = (dispatch: any) => {
-  return {
-    dispatch,
-  };
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(StatusSnackBarView);
+export default StatusSnackBarView;

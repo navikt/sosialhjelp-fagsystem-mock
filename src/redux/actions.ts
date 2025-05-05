@@ -1,44 +1,14 @@
-import {
-  Action,
-  ActionTypeKeys,
-  BackendUrls,
-  FsSaksStatus,
-  FsSoknad,
-  HentetFsSoknad,
-  Model,
-  NyFsSaksStatus,
-  NyFsSoknad,
-  NyttDokumentasjonkrav,
-  NyttVilkar,
-  NyUtbetaling,
-  OppdaterDokumentasjonEtterspurt,
-  OppdaterDokumentasjonkrav,
-  OppdaterFiksDigisosId,
-  OppdaterForelopigSvar,
-  OppdaterFsSaksStatus,
-  OppdaterNavKontor,
-  OppdaterSoknadsStatus,
-  OppdaterUtbetaling,
-  OppdaterVedtakFattet,
-  OppdaterVilkar,
-  SlettFsSoknad,
-} from "./types";
+import { BackendUrls, FsSoknad, Model } from "./types";
 import Hendelse, {
+  DigisosSokerJson,
   Dokument,
   DokumentasjonEtterspurt,
-  Dokumentasjonkrav,
   FilreferanseType,
   ForelopigSvar,
   HendelseType,
-  SaksStatus,
-  SoknadsStatus,
-  TildeltNavKontor,
-  Utbetaling,
   Utfall,
   VedtakFattet,
-  Vilkar,
 } from "../types/hendelseTypes";
-import { AnyAction } from "redux";
 import {
   getFsSoknadByFiksDigisosId,
   getNow,
@@ -51,18 +21,30 @@ import {
   backendUrls,
   FIKSDIGISOSID_URL_PARAM,
   getInitialFsSoknad,
+  HENTET_SOKNAD,
+  NY_SOKNAD,
   nyNavEnhetUrl,
+  OPPDATER_DOKUMENTASJON_ETTERSPURT,
+  OPPDATER_FIKS_DIGISOS_ID,
+  OPPDATER_FORELOPIG_SVAR,
+  OPPDATER_VEDTAK_FATTET,
   oppdaterDigisosSakUrl,
+  SET_AKTIV_SOKNAD,
+  TURN_OFF_LOADER,
+  TURN_ON_LOADER,
+  VIS_ERROR_SNACKBAR,
+  VIS_SUCCESS_SNACKBAR,
 } from "./reducer";
-import { Dispatch } from "./reduxTypes";
+import { UnknownAction } from "@reduxjs/toolkit";
+import {AppDispatch, RootState} from "../store";
 
 export const sendNyHendelseOgOppdaterModel = (
   nyHendelse: Hendelse,
   model: Model,
-  dispatch: Dispatch,
-  actionToDispatchIfSuccess: AnyAction,
+  dispatch: AppDispatch,
+  actionToDispatchIfSuccess: UnknownAction,
 ) => {
-  dispatch(turnOnLoader());
+  dispatch(TURN_ON_LOADER());
   const soknad = getFsSoknadByFiksDigisosId(model.soknader, model.aktivSoknad)!;
   const soknadUpdated = oHendelser.modify((a: Hendelse[]) => [
     ...a,
@@ -79,19 +61,19 @@ export const sendNyHendelseOgOppdaterModel = (
     JSON.stringify(fiksDigisosSokerJsonUtenNull),
   )
     .then(() => {
-      dispatch(visSuccessSnackbar());
+      dispatch(VIS_SUCCESS_SNACKBAR());
       dispatch(actionToDispatchIfSuccess);
     })
     .catch((reason) => runOnErrorResponse(reason, dispatch))
-    .finally(() => dispatch(turnOffLoader()));
+    .finally(() => dispatch(TURN_OFF_LOADER()));
 };
 
 export const sendValgbareNavkontorTilMockBackend = (
   navKontorListe: NavKontor[],
   model: Model,
-  dispatch: Dispatch,
+  dispatch: AppDispatch,
 ) => {
-  dispatch(turnOnLoader());
+  dispatch(TURN_ON_LOADER());
   const backendUrl = backendUrls[model.backendUrlTypeToUse];
   fetch(`${backendUrl}${nyNavEnhetUrl}`, {
     method: "POST",
@@ -103,17 +85,17 @@ export const sendValgbareNavkontorTilMockBackend = (
     }),
   }).catch((reason) => {
     runOnErrorResponse(reason, dispatch);
-    dispatch(turnOffLoader());
+    dispatch(TURN_OFF_LOADER());
   });
 };
 
 export const sendPdfOgLeggPdfRefTilHendelseOgSend = (
   formData: FormData,
   model: Model,
-  dispatch: Dispatch,
+  dispatch: AppDispatch,
   sendHendelseMedRef: (id: string) => void,
 ) => {
-  dispatch(turnOnLoader());
+  dispatch(TURN_ON_LOADER());
   const backendUrl = backendUrls[model.backendUrlTypeToUse];
   fetch(`${backendUrl}/api/v1/digisosapi/${model.aktivSoknad}/filOpplasting`, {
     method: "POST",
@@ -130,54 +112,53 @@ export const sendPdfOgLeggPdfRefTilHendelseOgSend = (
     })
     .catch((reason) => {
       runOnErrorResponse(reason, dispatch);
-      dispatch(turnOffLoader());
+      dispatch(TURN_OFF_LOADER());
     });
 };
 
-export const sendPdfOgOppdaterForelopigSvar = (
-  formData: FormData,
-  model: Model,
-  dispatch: Dispatch,
-) => {
-  dispatch(turnOnLoader());
-
-  const sendForelopigSvarMedRef = (id: string) => {
-    const nyHendelse: ForelopigSvar = {
-      type: HendelseType.ForelopigSvar,
-      hendelsestidspunkt: getNow(),
-      forvaltningsbrev: {
-        referanse: {
-          type: FilreferanseType.dokumentlager,
-          id: id,
+export const sendPdfOgOppdaterForelopigSvar =
+  (formData: FormData) =>
+  async (dispatch: AppDispatch, getState: () => RootState) => {
+    dispatch(TURN_ON_LOADER());
+    const sendForelopigSvarMedRef = (id: string) => {
+      const nyHendelse: ForelopigSvar = {
+        type: HendelseType.ForelopigSvar,
+        hendelsestidspunkt: getNow(),
+        forvaltningsbrev: {
+          referanse: {
+            type: FilreferanseType.dokumentlager,
+            id: id,
+          },
         },
-      },
-      vedlegg: [],
-    };
+        vedlegg: [],
+      };
 
-    sendNyHendelseOgOppdaterModel(
-      nyHendelse,
-      model,
+      sendNyHendelseOgOppdaterModel(
+        nyHendelse,
+        getState().model,
+        dispatch,
+        OPPDATER_FORELOPIG_SVAR({
+          forFiksDigisosId: getState().model.aktivSoknad,
+          nyttForelopigSvar: nyHendelse,
+        }),
+      );
+    };
+    sendPdfOgLeggPdfRefTilHendelseOgSend(
+      formData,
+      getState().model,
       dispatch,
-      oppdaterForelopigSvar(model.aktivSoknad, nyHendelse),
+      sendForelopigSvarMedRef,
     );
   };
-
-  sendPdfOgLeggPdfRefTilHendelseOgSend(
-    formData,
-    model,
-    dispatch,
-    sendForelopigSvarMedRef,
-  );
-};
 
 export const sendPdfOgOppdaterVedtakFattet = (
   formData: FormData,
   vedtakFattetUtfall: Utfall | null,
   saksreferanse: string,
   model: Model,
-  dispatch: Dispatch,
+  dispatch: AppDispatch,
 ) => {
-  dispatch(turnOnLoader());
+  dispatch(TURN_ON_LOADER());
 
   const sendForelopigSvarMedRef = (id: string) => {
     const nyHendelse: VedtakFattet = {
@@ -205,7 +186,10 @@ export const sendPdfOgOppdaterVedtakFattet = (
       nyHendelse,
       model,
       dispatch,
-      oppdaterVedtakFattet(model.aktivSoknad, nyHendelse),
+      OPPDATER_VEDTAK_FATTET({
+        forFiksDigisosId: model.aktivSoknad,
+        oppdatertVedtakFattet: nyHendelse,
+      }),
     );
   };
 
@@ -221,9 +205,9 @@ export const sendPdfOgOppdaterDokumentasjonEtterspurt = (
   formData: FormData,
   dokumenter: Dokument[],
   model: Model,
-  dispatch: Dispatch,
+  dispatch: AppDispatch,
 ) => {
-  dispatch(turnOnLoader());
+  dispatch(TURN_ON_LOADER());
 
   const sendForelopigSvarMedRef = (id: string) => {
     const nyHendelse: DokumentasjonEtterspurt = {
@@ -242,7 +226,10 @@ export const sendPdfOgOppdaterDokumentasjonEtterspurt = (
       nyHendelse,
       model,
       dispatch,
-      oppdaterDokumentasjonEtterspurt(model.aktivSoknad, nyHendelse),
+      OPPDATER_DOKUMENTASJON_ETTERSPURT({
+        forFiksDigisosId: model.aktivSoknad,
+        nyDokumentasjonEtterspurt: nyHendelse,
+      }),
     );
   };
 
@@ -257,10 +244,10 @@ export const sendPdfOgOppdaterDokumentasjonEtterspurt = (
 export const opprettDigisosSakHvisDenIkkeFinnes = (
   soknad: FsSoknad,
   backendUrlTypeToUse: keyof BackendUrls,
-  dispatch: Dispatch,
+  dispatch: AppDispatch,
   fiksDigisosId: string,
 ) => {
-  dispatch(turnOnLoader());
+  dispatch(TURN_ON_LOADER());
   const backendUrl = backendUrls[backendUrlTypeToUse];
   if (!soknad) {
     soknad = getInitialFsSoknad(fiksDigisosId);
@@ -274,22 +261,27 @@ export const opprettDigisosSakHvisDenIkkeFinnes = (
     `${backendUrl}${oppdaterDigisosSakUrl}${queryParam}`,
     JSON.stringify(fiksDigisosSokerJsonUtenNull),
   )
-    .then((response: any) => {
-      let fiksId = response.fiksDigisosId;
-      dispatch(oppdaterFiksDigisosId(fiksDigisosId, fiksId));
-      dispatch(setAktivSoknad(fiksId));
+    .then((response) => {
+      const fiksId = (response as { fiksDigisosId: string }).fiksDigisosId;
+      dispatch(
+        OPPDATER_FIKS_DIGISOS_ID({
+          forFiksDigisosId: fiksDigisosId,
+          nyFiksDigisosId: fiksId,
+        }),
+      );
+      dispatch(SET_AKTIV_SOKNAD(fiksId));
     })
     .catch((reason) => runOnErrorResponse(reason, dispatch))
-    .finally(() => dispatch(turnOffLoader()));
+    .finally(() => dispatch(TURN_OFF_LOADER()));
 };
 
 export const hentFsSoknadFraFiksEllerOpprettNy = (
   fiksDigisosId: string,
   backendUrlTypeToUse: keyof BackendUrls,
-  dispatch: Dispatch,
+  dispatch: AppDispatch,
   papirSoknad?: boolean,
 ) => {
-  dispatch(turnOnLoader());
+  dispatch(TURN_ON_LOADER());
   const backendUrl = backendUrls[backendUrlTypeToUse];
   const url = `${backendUrl}/api/v1/digisosapi/${fiksDigisosId}/innsynsfil`;
   fetch(url, {
@@ -304,12 +296,12 @@ export const hentFsSoknadFraFiksEllerOpprettNy = (
       if (response.status === 200) {
         response
           .json()
-          .then((data: any) => {
-            dispatch(hentetFsSoknad(fiksDigisosId, data));
-            dispatch(setAktivSoknad(fiksDigisosId));
+          .then((data: DigisosSokerJson) => {
+            dispatch(HENTET_SOKNAD({ fiksDigisosId, data }));
+            dispatch(SET_AKTIV_SOKNAD(fiksDigisosId));
           })
           .catch((reason) => runOnErrorResponse(reason, dispatch))
-          .finally(() => dispatch(turnOffLoader()));
+          .finally(() => dispatch(TURN_OFF_LOADER()));
       } else {
         return opprettNyFsSoknadDersomDigisosIdIkkeEksistererHosFiks(
           fiksDigisosId,
@@ -320,16 +312,16 @@ export const hentFsSoknadFraFiksEllerOpprettNy = (
       }
     })
     .catch((reason) => runOnErrorResponse(reason, dispatch))
-    .finally(() => dispatch(turnOffLoader()));
+    .finally(() => dispatch(TURN_OFF_LOADER()));
 };
 
 export const opprettNyFsSoknadDersomDigisosIdIkkeEksistererHosFiks = (
   fiksDigisosId: string,
   papirSoknad: boolean,
   backendUrlTypeToUse: keyof BackendUrls,
-  dispatch: Dispatch,
+  dispatch: AppDispatch,
 ) => {
-  dispatch(turnOnLoader());
+  dispatch(TURN_ON_LOADER());
   const backendUrl = backendUrls[backendUrlTypeToUse];
   const fiksDigisosSokerJsonUtenNull = removeNullFieldsFromHendelser(
     getInitialFsSoknad(fiksDigisosId).fiksDigisosSokerJson,
@@ -340,17 +332,20 @@ export const opprettNyFsSoknadDersomDigisosIdIkkeEksistererHosFiks = (
     `${backendUrl}${oppdaterDigisosSakUrl}${queryParams}`,
     JSON.stringify(fiksDigisosSokerJsonUtenNull),
   )
-    .then((response: any) => {
-      let fiksId = response.fiksDigisosId;
-      dispatch(nyFsSoknad(fiksId));
-      dispatch(setAktivSoknad(fiksId));
+    .then((response) => {
+      const fiksId = (response as { fiksDigisosId: string }).fiksDigisosId;
+      dispatch(NY_SOKNAD(fiksId));
+      dispatch(SET_AKTIV_SOKNAD(fiksId));
     })
     .catch((reason) => runOnErrorResponse(reason, dispatch))
-    .finally(() => dispatch(turnOffLoader()));
+    .finally(() => dispatch(TURN_OFF_LOADER()));
 };
 
-const runOnErrorResponse = (reason: any, dispatch: Dispatch) => {
-  dispatch(visErrorSnackbar());
+const runOnErrorResponse = (
+  reason: { message: string },
+  dispatch: AppDispatch,
+) => {
+  dispatch(VIS_ERROR_SNACKBAR());
   switch (reason.message) {
     case "Not Found": {
       console.warn("Got 404. Specify a valid backend url...");
@@ -364,324 +359,4 @@ const runOnErrorResponse = (reason: any, dispatch: Dispatch) => {
       console.warn("Unhandled reason with message: " + reason.message);
     }
   }
-};
-
-export const turnOnLoader = (): Action => {
-  return {
-    type: ActionTypeKeys.TURN_ON_LOADER,
-  };
-};
-
-export const turnOffLoader = (): Action => {
-  return {
-    type: ActionTypeKeys.TURN_OFF_LOADER,
-  };
-};
-
-export const setBackendUrlTypeToUse = (
-  backendUrlTypeToUse: keyof BackendUrls,
-): Action => {
-  return {
-    type: ActionTypeKeys.SET_BACKEND_URL_TYPE_TO_USE,
-    backendUrlTypeToUse,
-  };
-};
-
-export const switchToDarkMode = (): Action => {
-  return {
-    type: ActionTypeKeys.SWITCH_TO_DARK_MODE,
-  };
-};
-
-export const switchToLightMode = (): Action => {
-  return {
-    type: ActionTypeKeys.SWITCH_TO_LIGHT_MODE,
-  };
-};
-
-export const setAktivSoknad = (fiksDigisosId: string): Action => {
-  return {
-    type: ActionTypeKeys.SET_AKTIV_SOKNAD,
-    fiksDigisosId,
-  };
-};
-
-export const setAktivUtbetaling = (referanse: string | null): Action => {
-  return {
-    type: ActionTypeKeys.SET_AKTIV_UTBETALING,
-    referanse,
-  };
-};
-
-export const setAktivtVilkar = (referanse: string | null): Action => {
-  return {
-    type: ActionTypeKeys.SET_AKTIVT_VILKAR,
-    referanse,
-  };
-};
-
-export const setAktivtDokumentasjonkrav = (
-  referanse: string | null,
-): Action => {
-  return {
-    type: ActionTypeKeys.SET_AKTIVT_DOKUMENTASJONKRAV,
-    referanse,
-  };
-};
-
-export const visNySakModal = (): Action => {
-  return {
-    type: ActionTypeKeys.VIS_NY_SAK_MODAL,
-  };
-};
-
-export const skjulNySakModal = (): Action => {
-  return {
-    type: ActionTypeKeys.SKJUL_NY_SAK_MODAL,
-  };
-};
-
-export const visNyDokumentasjonEtterspurtModal = (): Action => {
-  return {
-    type: ActionTypeKeys.VIS_NY_DOKUMENTASJON_ETTERSPURT_MODAL,
-  };
-};
-
-export const visNyUtbetalingModal = (saksreferanse: string | null): Action => {
-  return {
-    type: ActionTypeKeys.VIS_NY_UTBETALING_MODAL,
-    saksreferanse,
-  };
-};
-
-export const skjulNyUtbetalingModal = (): Action => {
-  return {
-    type: ActionTypeKeys.SKJUL_NY_UTBETALING_MODAL,
-  };
-};
-
-export const visNyVilkarModal = (): Action => {
-  return {
-    type: ActionTypeKeys.VIS_NY_VILKAR_MODAL,
-  };
-};
-
-export const skjulNyVilkarModal = (): Action => {
-  return {
-    type: ActionTypeKeys.SKJUL_NY_VILKAR_MODAL,
-  };
-};
-
-export const visNyDokumentasjonkravModal = (): Action => {
-  return {
-    type: ActionTypeKeys.VIS_NY_DOKUMENTASJONKRAV_MODAL,
-  };
-};
-
-export const skjulNyDokumentasjonkravModal = (): Action => {
-  return {
-    type: ActionTypeKeys.SKJUL_NY_DOKUMENTASJONKRAV_MODAL,
-  };
-};
-
-export const skjulNyDokumentasjonEtterspurtModal = (): Action => {
-  return {
-    type: ActionTypeKeys.SKJUL_NY_DOKUMENTASJON_ETTERSPURT_MODAL,
-  };
-};
-
-export const visSystemSettingsModal = () => {
-  return {
-    type: ActionTypeKeys.VIS_SYSTEM_SETTINGS_MODAL,
-  };
-};
-
-export const skjulSystemSettingsModal = () => {
-  return {
-    type: ActionTypeKeys.SKJUL_SYSTEM_SETTINGS_MODAL,
-  };
-};
-
-export const visSuccessSnackbar = () => {
-  return {
-    type: ActionTypeKeys.VIS_SUCCESS_SNACKBAR,
-  };
-};
-
-export const visErrorSnackbar = () => {
-  return {
-    type: ActionTypeKeys.VIS_ERROR_SNACKBAR,
-  };
-};
-
-export const skjulSnackbar = () => {
-  return {
-    type: ActionTypeKeys.SKJUL_SNACKBAR,
-  };
-};
-
-export const nyFsSoknad = (nyFiksDigisosId: string): NyFsSoknad => {
-  return {
-    type: ActionTypeKeys.NY_SOKNAD,
-    nyFiksDigisosId,
-  };
-};
-export const hentetFsSoknad = (
-  fiksDigisosId: string,
-  data: any,
-): HentetFsSoknad => {
-  return {
-    type: ActionTypeKeys.HENTET_SOKNAD,
-    fiksDigisosId,
-    data,
-  };
-};
-export const slettFsSoknad = (forFiksDigisosId: string): SlettFsSoknad => {
-  return {
-    type: ActionTypeKeys.SLETT_SOKNAD,
-    forFiksDigisosId,
-  };
-};
-export const oppdaterFiksDigisosId = (
-  forFiksDigisosId: string,
-  nyFiksDigisosId: string,
-): OppdaterFiksDigisosId => {
-  return {
-    type: ActionTypeKeys.OPPDATER_FIKS_DIGISOS_ID,
-    forFiksDigisosId,
-    nyFiksDigisosId,
-  };
-};
-export const oppdaterSoknadsStatus = (
-  forFiksDigisosId: string,
-  nySoknadsStatus: SoknadsStatus,
-): OppdaterSoknadsStatus => {
-  return {
-    type: ActionTypeKeys.OPPDATER_SOKNADS_STATUS,
-    forFiksDigisosId,
-    nySoknadsStatus,
-  };
-};
-export const oppdaterNavKontor = (
-  forFiksDigisosId: string,
-  nyttNavKontor: TildeltNavKontor,
-): OppdaterNavKontor => {
-  return {
-    type: ActionTypeKeys.OPPDATER_NAV_KONTOR,
-    forFiksDigisosId,
-    nyttNavKontor,
-  };
-};
-
-export const oppdaterDokumentasjonEtterspurt = (
-  forFiksDigisosId: string,
-  nyDokumentasjonEtterspurt: DokumentasjonEtterspurt,
-): OppdaterDokumentasjonEtterspurt => {
-  return {
-    type: ActionTypeKeys.OPPDATER_DOKUMENTASJON_ETTERSPURT,
-    forFiksDigisosId,
-    nyDokumentasjonEtterspurt,
-  };
-};
-
-export const oppdaterForelopigSvar = (
-  forFiksDigisosId: string,
-  nyttForelopigSvar: ForelopigSvar,
-): OppdaterForelopigSvar => {
-  return {
-    type: ActionTypeKeys.OPPDATER_FORELOPIG_SVAR,
-    forFiksDigisosId,
-    nyttForelopigSvar,
-  };
-};
-export const nyFsSaksStatus = (
-  forFiksDigisosId: string,
-  nyFsSaksStatus: FsSaksStatus,
-): NyFsSaksStatus => {
-  return {
-    type: ActionTypeKeys.NY_FS_SAKS_STATUS,
-    forFiksDigisosId,
-    nyFsSaksStatus,
-  };
-};
-export const oppdaterFsSaksStatus = (
-  forFiksDigisosId: string,
-  oppdatertSaksstatus: SaksStatus,
-): OppdaterFsSaksStatus => {
-  return {
-    type: ActionTypeKeys.OPPDATER_FS_SAKS_STATUS,
-    forFiksDigisosId,
-    oppdatertSaksstatus,
-  };
-};
-export const nyUtbetaling = (
-  forFiksDigisosId: string,
-  nyUtbetaling: Utbetaling,
-): NyUtbetaling => {
-  return {
-    type: ActionTypeKeys.NY_UTBETALING,
-    forFiksDigisosId,
-    nyUtbetaling,
-  };
-};
-export const oppdaterUtbetaling = (
-  forFiksDigisosId: string,
-  oppdatertUtbetaling: Utbetaling,
-): OppdaterUtbetaling => {
-  return {
-    type: ActionTypeKeys.OPPDATER_UTBETALING,
-    forFiksDigisosId,
-    oppdatertUtbetaling,
-  };
-};
-export const nyttDokumentasjonkrav = (
-  forFiksDigisosId: string,
-  nyttDokumentasjonkrav: Dokumentasjonkrav,
-): NyttDokumentasjonkrav => {
-  return {
-    type: ActionTypeKeys.NYTT_DOKUMENTASJONKRAV,
-    forFiksDigisosId,
-    nyttDokumentasjonkrav,
-  };
-};
-export const oppdaterDokumentasjonkrav = (
-  forFiksDigisosId: string,
-  oppdatertDokumentasjonkrav: Dokumentasjonkrav,
-): OppdaterDokumentasjonkrav => {
-  return {
-    type: ActionTypeKeys.OPPDATER_DOKUMENTASJONKRAV,
-    forFiksDigisosId,
-    oppdatertDokumentasjonkrav,
-  };
-};
-export const oppdaterVedtakFattet = (
-  forFiksDigisosId: string,
-  oppdatertVedtakFattet: VedtakFattet,
-): OppdaterVedtakFattet => {
-  return {
-    type: ActionTypeKeys.OPPDATER_VEDTAK_FATTET,
-    forFiksDigisosId,
-    oppdatertVedtakFattet,
-  };
-};
-
-export const nyttVilkar = (
-  forFiksDigisosId: string,
-  nyttVilkar: Vilkar,
-): NyttVilkar => {
-  return {
-    type: ActionTypeKeys.NYTT_VILKAR,
-    forFiksDigisosId,
-    nyttVilkar,
-  };
-};
-export const oppdaterVilkar = (
-  forFiksDigisosId: string,
-  oppdatertVilkar: Vilkar,
-): OppdaterVilkar => {
-  return {
-    type: ActionTypeKeys.OPPDATER_VILKAR,
-    forFiksDigisosId,
-    oppdatertVilkar,
-  };
 };

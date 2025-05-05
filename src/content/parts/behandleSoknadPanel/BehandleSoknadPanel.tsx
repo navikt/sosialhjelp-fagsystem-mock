@@ -1,9 +1,8 @@
 import React from "react";
-import { AppState, DispatchProps } from "../../../redux/reduxTypes";
-import { connect } from "react-redux";
+import { RootState } from "../../../store";
+import {  useSelector } from "react-redux";
 import SaksOversiktView from "../saksOversiktView/SaksOversiktView";
 import { getFsSoknadByFiksDigisosId } from "../../../utils/utilityFunctions";
-import { FsSoknad } from "../../../redux/types";
 import VilkarOversiktView from "../vilkar/VilkarOversiktView";
 import DokumentasjonkravOversiktView from "../dokumentasjonskrav/DokumentasjonkravOversiktView";
 import DokumentasjonEtterspurtOversiktView from "../dokumentasjonEtterspurt/DokumentasjonEtterspurtOversiktView";
@@ -16,15 +15,14 @@ import NyDokumentasjonEtterspurt from "../dokumentasjonEtterspurt/NyDokumentasjo
 import { Heading, Ingress, Panel } from "@navikt/ds-react";
 import globals from "../../../app/globals.module.css";
 
-interface StoreProps {
-  soknad: FsSoknad | undefined;
-  visNyUtbetalingModal: boolean;
-}
-
-type Props = DispatchProps & StoreProps;
-
-const BehandleSoknadPanel: React.FC<Props> = (props: Props) => {
-  const { soknad, visNyUtbetalingModal } = props;
+const BehandleSoknadPanel = () => {
+  const { soknad, visNyUtbetalingModal } = useSelector((state: RootState) => ({
+    soknad: getFsSoknadByFiksDigisosId(
+      state.model.soknader,
+      state.model.aktivSoknad,
+    ),
+    visNyUtbetalingModal: state.model.visNyUtbetalingModal,
+  }));
 
   if (soknad) {
     return (
@@ -68,22 +66,4 @@ const BehandleSoknadPanel: React.FC<Props> = (props: Props) => {
   );
 };
 
-const mapStateToProps = (state: AppState) => {
-  const { aktivSoknad } = state.model;
-  const { soknader } = state.model;
-  return {
-    soknad: getFsSoknadByFiksDigisosId(soknader, aktivSoknad),
-    visNyUtbetalingModal: state.model.visNyUtbetalingModal,
-  };
-};
-
-const mapDispatchToProps = (dispatch: any) => {
-  return {
-    dispatch,
-  };
-};
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(BehandleSoknadPanel);
+export default BehandleSoknadPanel;

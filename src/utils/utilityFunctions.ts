@@ -12,7 +12,7 @@ import { EffectCallback, useEffect } from "react";
 export const removeNullFieldsFromHendelser = (
   fiksDigisosSokerJson: FiksDigisosSokerJson,
 ): FiksDigisosSokerJson => {
-  let hednelserUtenNull = JSON.parse(
+  const hendelserUtenNull = JSON.parse(
     JSON.stringify(fiksDigisosSokerJson.sak.soker.hendelser, (key, value) => {
       if (value !== null) return value;
     }),
@@ -23,7 +23,7 @@ export const removeNullFieldsFromHendelser = (
       ...fiksDigisosSokerJson.sak,
       soker: {
         ...fiksDigisosSokerJson.sak.soker,
-        hendelser: hednelserUtenNull,
+        hendelser: hendelserUtenNull,
       },
     },
   };
@@ -56,8 +56,8 @@ export const getDateOrNullFromDateString = (date: string | null) => {
   if (date === null || !isValidDate(date)) {
     return null;
   } else {
-    let dateNumber = Date.parse(date);
-    let newDate = new Date(dateNumber);
+    const dateNumber = Date.parse(date);
+    const newDate = new Date(dateNumber);
     newDate.setHours(12);
     return newDate;
   }
@@ -68,7 +68,7 @@ export function getNow(): string {
 }
 
 export const getAllUtbetalingsreferanser = (soknad: FsSoknad) => {
-  let referanser: string[] = [];
+  const referanser: string[] = [];
 
   soknad.saker.map((sak) =>
     sak.utbetalinger.map((utbetaling) =>
@@ -189,7 +189,7 @@ export const generateRandomId = (length: number) => {
   const characters =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
   const charactersLength = characters.length;
-  for (var i = 0; i < length; i++) {
+  for (let i = 0; i < length; i++) {
     result += characters.charAt(Math.floor(Math.random() * charactersLength));
   }
   return result;
@@ -258,7 +258,7 @@ export const getUtbetalingByUtbetalingsreferanse = (
   soknad: FsSoknad,
   referanse: string,
 ): Utbetaling | undefined => {
-  let alleUtbetalinger = getAlleUtbetalinger(soknad);
+  const alleUtbetalinger = getAlleUtbetalinger(soknad);
   return alleUtbetalinger.find((s) => s.utbetalingsreferanse === referanse);
 };
 

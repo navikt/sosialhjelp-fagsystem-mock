@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
-import { AppState, DispatchProps } from "../redux/reduxTypes";
-import { connect } from "react-redux";
+import { RootState } from "../store";
+import { useDispatch, useSelector } from "react-redux";
 import SoknadsOversiktPanel from "./parts/soknadsOversiktPanel/SoknadsOversiktPanel";
 import BehandleSoknadPanel from "./parts/behandleSoknadPanel/BehandleSoknadPanel";
 import AppBarView from "./parts/appBarView/AppBarView";
@@ -12,35 +12,30 @@ import {
 } from "../utils/utilityFunctions";
 import ToppPanel from "./parts/panel/ToppPanel";
 import { hentFsSoknadFraFiksEllerOpprettNy } from "../redux/actions";
-import { Model } from "../redux/types";
 import SplashScreen from "../components/splashScreen";
 import { Button, Loader } from "@navikt/ds-react";
 import { FileJsonIcon } from "@navikt/aksel-icons";
 import globals from "../app/globals.module.css";
 import styles from "./forside.module.css";
 
-interface StoreProps {
-  model: Model;
-}
-
-type Props = DispatchProps & StoreProps;
-
-const Forside: React.FC<Props> = (props: Props) => {
+const Forside = () => {
+  const model = useSelector((state: RootState) => state.model);
+  const dispatch = useDispatch();
   useEffect(() => {
     hentFsSoknadFraFiksEllerOpprettNy(
-      props.model.aktivSoknad,
-      props.model.backendUrlTypeToUse,
-      props.dispatch,
+      model.aktivSoknad,
+      model.backendUrlTypeToUse,
+      dispatch,
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const loaderOn = props.model.loaderOn;
+  const loaderOn = model.loaderOn;
 
   const onVisJSON = () => {
     const fiksDigisosSokerJson = getFsSoknadByFiksDigisosId(
-      props.model.soknader,
-      props.model.aktivSoknad,
+      model.soknader,
+      model.aktivSoknad,
     )!.fiksDigisosSokerJson;
     const fiksDigisosSokerJsonUtenNull =
       removeNullFieldsFromHendelser(fiksDigisosSokerJson);
@@ -64,10 +59,7 @@ const Forside: React.FC<Props> = (props: Props) => {
         <BehandleSoknadPanel />
 
         <SystemSettingsModal
-          soknad={getFsSoknadByFiksDigisosId(
-            props.model.soknader,
-            props.model.aktivSoknad,
-          )}
+          soknad={getFsSoknadByFiksDigisosId(model.soknader, model.aktivSoknad)}
         />
 
         <StatusSnackBarView />
@@ -93,14 +85,4 @@ const Forside: React.FC<Props> = (props: Props) => {
   );
 };
 
-const mapStateToProps = (state: AppState) => ({
-  model: state.model,
-});
-
-const mapDispatchToProps = (dispatch: any) => {
-  return {
-    dispatch,
-  };
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(Forside);
+export default Forside;

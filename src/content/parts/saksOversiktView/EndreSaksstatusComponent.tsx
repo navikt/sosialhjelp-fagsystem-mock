@@ -1,35 +1,27 @@
 import React from "react";
-import { AppState, DispatchProps } from "../../../redux/reduxTypes";
-import { connect } from "react-redux";
+import { RootState } from "../../../store";
+import { useDispatch, useSelector } from "react-redux";
 
-import {
-  sendNyHendelseOgOppdaterModel,
-  oppdaterFsSaksStatus,
-} from "../../../redux/actions";
+import { sendNyHendelseOgOppdaterModel } from "../../../redux/actions";
 import {
   HendelseType,
   SaksStatus,
   SaksStatusType,
 } from "../../../types/hendelseTypes";
 import { getNow } from "../../../utils/utilityFunctions";
-import { FsSaksStatus, FsSoknad, Model } from "../../../redux/types";
+import { FsSaksStatus, FsSoknad } from "../../../redux/types";
 
 import { Select } from "@navikt/ds-react";
 import globals from "../../../app/globals.module.css";
-interface OwnProps {
+import { OPPDATER_FS_SAKS_STATUS } from "../../../redux/reducer";
+interface Props {
   soknad: FsSoknad;
   sak: FsSaksStatus;
 }
 
-interface StoreProps {
-  model: Model;
-}
-
-type Props = DispatchProps & OwnProps & StoreProps;
-
-const EndreSaksstatusComponent: React.FC<Props> = (props: Props) => {
-  const { dispatch, soknad, model, sak } = props;
-
+const EndreSaksstatusComponent: React.FC<Props> = ({ soknad, sak }: Props) => {
+  const model = useSelector((state: RootState) => state.model);
+  const dispatch = useDispatch();
   return (
     <Select
       className={globals.fitContent}
@@ -37,7 +29,7 @@ const EndreSaksstatusComponent: React.FC<Props> = (props: Props) => {
       label="Endre saksstatus"
       value={sak.status ? sak.status : ""}
       onChange={(evt) => {
-        let value = evt.target.value;
+        const value = evt.target.value;
         if (
           value === SaksStatusType.UNDER_BEHANDLING ||
           value === SaksStatusType.BEHANDLES_IKKE ||
@@ -56,7 +48,10 @@ const EndreSaksstatusComponent: React.FC<Props> = (props: Props) => {
             nyHendelse,
             model,
             dispatch,
-            oppdaterFsSaksStatus(soknad.fiksDigisosId, nyHendelse),
+            OPPDATER_FS_SAKS_STATUS({
+              forFiksDigisosId: soknad.fiksDigisosId,
+              oppdatertSaksstatus: nyHendelse,
+            }),
           );
         }
       }}
@@ -81,17 +76,4 @@ const EndreSaksstatusComponent: React.FC<Props> = (props: Props) => {
   );
 };
 
-const mapStateToProps = (state: AppState) => ({
-  model: state.model,
-});
-
-const mapDispatchToProps = (dispatch: any) => {
-  return {
-    dispatch,
-  };
-};
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(EndreSaksstatusComponent);
+export default EndreSaksstatusComponent;

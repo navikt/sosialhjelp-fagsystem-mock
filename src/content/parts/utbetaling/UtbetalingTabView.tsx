@@ -1,25 +1,26 @@
 import React from "react";
-import { DispatchProps } from "../../../redux/reduxTypes";
-import { connect } from "react-redux";
+import { useDispatch } from "react-redux";
 import { Utbetaling, UtbetalingStatus } from "../../../types/hendelseTypes";
-import {
-  setAktivUtbetaling,
-  visNyUtbetalingModal,
-} from "../../../redux/actions";
 
 import { Button, Table } from "@navikt/ds-react";
 import globals from "../../../app/globals.module.css";
 import styles from "./utbetaling.module.css";
-interface OwnProps {
+import {
+  SET_AKTIV_UTBETALING,
+  VIS_NY_UTBETALING_MODAL,
+} from "../../../redux/reducer";
+
+interface Props {
   utbetaling: Utbetaling;
 }
 
-type Props = DispatchProps & OwnProps;
+const UtbetalingTabView: React.FC<Props> = ({ utbetaling }: Props) => {
+  const dispatch = useDispatch();
 
-const UtbetalingTabView: React.FC<Props> = (props: Props) => {
-  const { utbetaling, dispatch } = props;
-
-  const makeTableRow = (type: string, value: any) => {
+  const makeTableRow = (
+    type: string,
+    value: boolean | string | number | null,
+  ) => {
     if (typeof value === "boolean") {
       value = value ? "Ja" : "Nei";
     }
@@ -91,8 +92,8 @@ const UtbetalingTabView: React.FC<Props> = (props: Props) => {
           size="small"
           variant={"secondary-neutral"}
           onClick={() => {
-            dispatch(setAktivUtbetaling(utbetaling.utbetalingsreferanse));
-            dispatch(visNyUtbetalingModal(utbetaling.saksreferanse));
+            dispatch(SET_AKTIV_UTBETALING(utbetaling.utbetalingsreferanse));
+            dispatch(VIS_NY_UTBETALING_MODAL(utbetaling.saksreferanse));
           }}
         >
           Endre utbetaling
@@ -102,10 +103,4 @@ const UtbetalingTabView: React.FC<Props> = (props: Props) => {
   );
 };
 
-const mapDispatchToProps = (dispatch: any) => {
-  return {
-    dispatch,
-  };
-};
-
-export default connect(mapDispatchToProps)(UtbetalingTabView);
+export default UtbetalingTabView;

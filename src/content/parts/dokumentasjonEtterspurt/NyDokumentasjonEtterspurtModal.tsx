@@ -1,15 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
-import { AppState, DispatchProps } from "../../../redux/reduxTypes";
-import { connect } from "react-redux";
+import { RootState } from "../../../store";
+import { useDispatch, useSelector } from "react-redux";
 import { v4 as uuidv4 } from "uuid";
 import {
-  oppdaterDokumentasjonEtterspurt,
   sendNyHendelseOgOppdaterModel,
   sendPdfOgOppdaterDokumentasjonEtterspurt,
-  skjulNyDokumentasjonEtterspurtModal,
 } from "../../../redux/actions";
 
-import { FsSoknad, Model } from "../../../redux/types";
+import { FsSoknad } from "../../../redux/types";
 
 import {
   Dokument,
@@ -30,17 +28,14 @@ import { BodyLong, Button, Modal, Table } from "@navikt/ds-react";
 import globals from "../../../app/globals.module.css";
 import styles from "./dokEtterpurt.module.css";
 import { TrashIcon } from "@navikt/aksel-icons";
+import {
+  OPPDATER_DOKUMENTASJON_ETTERSPURT,
+  SKJUL_NY_DOKUMENTASJON_ETTERSPURT_MODAL,
+} from "../../../redux/reducer";
 
-interface OwnProps {
+interface Props {
   soknad: FsSoknad;
 }
-
-interface StoreProps {
-  visNyDokumentasjonEtterspurtModal: boolean;
-  model: Model;
-}
-
-type Props = DispatchProps & OwnProps & StoreProps;
 
 const standardRef = "2c75227d-64f8-4db6-b718-3b6dd6beb450";
 const initialDokumentasjonEtterspurt: DokumentasjonEtterspurt = {
@@ -64,37 +59,39 @@ const initialDokument: Dokument = {
 };
 
 const defaultFrist = () => {
-  let date = new Date();
+  const date = new Date();
   date.setDate(new Date().getDate() + 7); // En uke frem i tid
   date.setHours(12);
   const innsendelsesfrist = date.toISOString();
   return innsendelsesfrist;
 };
 
-const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
+const NyDokumentasjonEtterspurtModal: React.FC<Props> = ({ soknad }: Props) => {
+  const { model, visNyDokumentasjonEtterspurtModal } = useSelector(
+    (state: RootState) => ({
+      model: state.model,
+      visNyDokumentasjonEtterspurtModal:
+        state.model.visNyDokumentasjonEtterspurtModal,
+    }),
+  );
+  const dispatch = useDispatch();
+
   const [modalDokumentasjonEtterspurt, setModalDokumentasjonEtterspurt] =
     useState<DokumentasjonEtterspurt>(initialDokumentasjonEtterspurt);
 
   useEffect(() => {
-    if (
-      props.soknad.dokumentasjonEtterspurt &&
-      props.visNyDokumentasjonEtterspurtModal
-    ) {
+    if (soknad.dokumentasjonEtterspurt && visNyDokumentasjonEtterspurtModal) {
       setModalDokumentasjonEtterspurt({
-        ...props.soknad.dokumentasjonEtterspurt,
+        ...soknad.dokumentasjonEtterspurt,
       });
     }
-  }, [
-    props.soknad.dokumentasjonEtterspurt,
-    props.visNyDokumentasjonEtterspurtModal,
-  ]);
+  }, [soknad.dokumentasjonEtterspurt, visNyDokumentasjonEtterspurtModal]);
 
   const [modalDokument, setModalDokument] = useState<Dokument>(initialDokument);
   const [visFeilmelding, setVisFeilmelding] = useState(false);
   const [visFeilmeldingDatePicker, setVisFeilmeldingDatePicker] =
     useState(false);
 
-  const { visNyDokumentasjonEtterspurtModal, dispatch, model, soknad } = props;
   const inputEl = useRef<HTMLInputElement>(null);
 
   const dokumenterErAlleredeEtterspurt =
@@ -123,7 +120,7 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
       dispatch,
     );
 
-    dispatch(dispatch(skjulNyDokumentasjonEtterspurtModal()));
+    dispatch(SKJUL_NY_DOKUMENTASJON_ETTERSPURT_MODAL());
 
     setTimeout(() => {
       resetStateValues();
@@ -131,7 +128,7 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
   };
 
   const leggTilDokument = () => {
-    let innsendelsesfristDate = getDateOrNullFromDateString(
+    const innsendelsesfristDate = getDateOrNullFromDateString(
       modalDokument.innsendelsesfrist,
     );
     const nyttDokument: Dokument = {
@@ -167,10 +164,13 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
       nyHendelse,
       model,
       dispatch,
-      oppdaterDokumentasjonEtterspurt(soknad.fiksDigisosId, nyHendelse),
+      OPPDATER_DOKUMENTASJON_ETTERSPURT({
+        forFiksDigisosId: soknad.fiksDigisosId,
+        nyDokumentasjonEtterspurt: nyHendelse,
+      }),
     );
 
-    dispatch(dispatch(skjulNyDokumentasjonEtterspurtModal()));
+    dispatch(SKJUL_NY_DOKUMENTASJON_ETTERSPURT_MODAL());
 
     setTimeout(() => {
       resetStateValues();
@@ -217,7 +217,7 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
             aria-label="delete"
             size="small"
             onClick={() => {
-              let dokumenter = [...modalDokumentasjonEtterspurt.dokumenter];
+              const dokumenter = [...modalDokumentasjonEtterspurt.dokumenter];
               dokumenter.splice(idx, 1);
               setModalDokumentasjonEtterspurt({
                 ...modalDokumentasjonEtterspurt,
@@ -277,7 +277,7 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
       className={globals.modal}
       open={visNyDokumentasjonEtterspurtModal}
       onClose={() => {
-        dispatch(skjulNyDokumentasjonEtterspurtModal());
+        dispatch(SKJUL_NY_DOKUMENTASJON_ETTERSPURT_MODAL());
         resetStateValues();
       }}
       header={{ heading: "Dokumentasjon etterspurt" }}
@@ -383,19 +383,4 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = (props: Props) => {
   );
 };
 
-const mapStateToProps = (state: AppState) => ({
-  visNyDokumentasjonEtterspurtModal:
-    state.model.visNyDokumentasjonEtterspurtModal,
-  model: state.model,
-});
-
-const mapDispatchToProps = (dispatch: any) => {
-  return {
-    dispatch,
-  };
-};
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(NyDokumentasjonEtterspurtModal);
+export default NyDokumentasjonEtterspurtModal;

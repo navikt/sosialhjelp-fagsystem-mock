@@ -1,29 +1,30 @@
 import React from "react";
-import { DispatchProps } from "../../../redux/reduxTypes";
-import { connect } from "react-redux";
+import { useDispatch } from "react-redux";
 import {
   Dokumentasjonkrav,
   DokumentasjonkravStatus,
 } from "../../../types/hendelseTypes";
-
-import {
-  setAktivtDokumentasjonkrav,
-  visNyDokumentasjonkravModal,
-} from "../../../redux/actions";
 import { formatDateString } from "../../../utils/utilityFunctions";
 import { Button, Table } from "@navikt/ds-react";
 import globals from "../../../app/globals.module.css";
+import {
+  SET_AKTIVT_DOKUMENTASJONKRAV,
+  VIS_NY_DOKUMENTASJONKRAV_MODAL,
+} from "../../../redux/reducer";
 
-interface OwnProps {
+interface Props {
   dokumentasjonkrav: Dokumentasjonkrav;
 }
 
-type Props = DispatchProps & OwnProps;
+const DokumentasjonkravTabView: React.FC<Props> = ({
+  dokumentasjonkrav,
+}: Props) => {
+  const dispatch = useDispatch();
 
-const DokumentasjonkravTabView: React.FC<Props> = (props: Props) => {
-  const { dokumentasjonkrav, dispatch } = props;
-
-  const makeTableRow = (type: string, value: any) => {
+  const makeTableRow = (
+    type: string,
+    value: boolean | string[] | null | string,
+  ) => {
     if (typeof value === "boolean") {
       value = value ? "Ja" : "Nei";
     }
@@ -142,11 +143,11 @@ const DokumentasjonkravTabView: React.FC<Props> = (props: Props) => {
           variant="secondary-neutral"
           onClick={() => {
             dispatch(
-              setAktivtDokumentasjonkrav(
+              SET_AKTIVT_DOKUMENTASJONKRAV(
                 dokumentasjonkrav.dokumentasjonkravreferanse,
               ),
             );
-            dispatch(visNyDokumentasjonkravModal());
+            dispatch(VIS_NY_DOKUMENTASJONKRAV_MODAL());
           }}
         >
           Endre dokumentasjonkrav
@@ -156,10 +157,4 @@ const DokumentasjonkravTabView: React.FC<Props> = (props: Props) => {
   );
 };
 
-const mapDispatchToProps = (dispatch: any) => {
-  return {
-    dispatch,
-  };
-};
-
-export default connect(mapDispatchToProps)(DokumentasjonkravTabView);
+export default DokumentasjonkravTabView;

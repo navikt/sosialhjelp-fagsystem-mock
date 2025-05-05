@@ -17,12 +17,14 @@ const mergeSaksStatuserMedSammeReferanse = (saksStatuser: SaksStatus[]) => {
   const mergetSaksStatuser = new Map();
   saksStatuser.forEach((item: SaksStatus) => {
     const propertyValue = item["referanse"];
-    mergetSaksStatuser.has(propertyValue)
-      ? mergetSaksStatuser.set(propertyValue, {
-          ...mergetSaksStatuser.get(propertyValue),
-          ...item,
-        })
-      : mergetSaksStatuser.set(propertyValue, item);
+    if (mergetSaksStatuser.has(propertyValue)) {
+      mergetSaksStatuser.set(propertyValue, {
+        ...mergetSaksStatuser.get(propertyValue),
+        ...item,
+      });
+    } else {
+      mergetSaksStatuser.set(propertyValue, item);
+    }
   });
   return Array.from(mergetSaksStatuser.values());
 };
@@ -90,14 +92,12 @@ export const createFsSoknadFromHendelser = (
     return hendelse.type === HendelseType.Utbetaling && !hendelse.saksreferanse;
   }) as Utbetaling[];
 
-  const vilkarUtenUtbetaling = hendelser.filter(
-    (hendelse: Hendelse, index, self) => {
-      return (
-        hendelse.type === HendelseType.Vilkar &&
-        manglerUtbetalingsReferanse(hendelse.utbetalingsreferanse)
-      );
-    },
-  ) as Vilkar[];
+  const vilkarUtenUtbetaling = hendelser.filter((hendelse: Hendelse) => {
+    return (
+      hendelse.type === HendelseType.Vilkar &&
+      manglerUtbetalingsReferanse(hendelse.utbetalingsreferanse)
+    );
+  }) as Vilkar[];
 
   const dokKravUtenUtbetaling = hendelser.filter((hendelse: Hendelse) => {
     return (

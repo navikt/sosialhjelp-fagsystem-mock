@@ -183,13 +183,6 @@ export interface Svarut {
   nr: number; // Filnummer i SvarUt-forsendelsen.
 }
 
-export interface SvarutExtended {
-  type: FilreferanseType.svarut;
-  id: string;
-  nr: number;
-  tittel: string;
-}
-
 export interface Dokumentlager {
   type: FilreferanseType.dokumentlager;
   id: string; // pattern "^[0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f]-[0-9a-f][0-9a-f][0-9a-f][0-9a-f]-[0-9a-f][0-9a-f][0-9a-f][0-9a-f]-[0-9a-f][0-9a-f][0-9a-f][0-9a-f]-[0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f]$"
@@ -217,7 +210,7 @@ export interface Dokument {
   dokumentreferanse: string | null;
 }
 
-export interface Version {}
+export type Version = unknown
 
 export interface Avsender {
   systemnavn: string;

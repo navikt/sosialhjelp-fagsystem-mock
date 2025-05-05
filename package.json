@@ -7,6 +7,7 @@
     "@navikt/aksel-icons": "^7.21.0",
     "@navikt/ds-css": "^7.21.0",
     "@navikt/ds-react": "^7.21.0",
+    "@reduxjs/toolkit": "^2.7.0",
     "dayjs": "^1.11.13",
     "fp-ts": "^2.16.10",
     "monocle-ts": "^2.3.13",
@@ -14,8 +15,6 @@
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-redux": "^8.1.2",
-    "redux": "^4.2.1",
-    "redux-thunk": "^2.4.2",
     "uuid": "^11.1.0"
   },
   "scripts": {

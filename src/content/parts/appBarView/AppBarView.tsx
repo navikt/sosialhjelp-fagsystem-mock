@@ -1,24 +1,18 @@
 import React from "react";
-import { AppState, DispatchProps } from "../../../redux/reduxTypes";
-import { connect } from "react-redux";
-import { Model } from "../../../redux/types";
-import {
-  switchToDarkMode,
-  switchToLightMode,
-  visSystemSettingsModal,
-} from "../../../redux/actions";
+import { RootState } from "../../../store";
+import { useDispatch, useSelector } from "react-redux";
 import { InternalHeader } from "@navikt/ds-react";
 import { MoonIcon, SunIcon, WrenchIcon } from "@navikt/aksel-icons";
-interface OwnProps {}
+import {
+  SWITCH_TO_DARK_MODE,
+  SWITCH_TO_LIGHT_MODE,
+  VIS_SYSTEM_SETTINGS_MODAL,
+} from "../../../redux/reducer";
 
-interface StoreProps {
-  model: Model;
-}
+const AppBarView = () => {
+  const thememode = useSelector((state: RootState) => state.model.thememode);
 
-type Props = OwnProps & StoreProps & DispatchProps;
-
-const AppBarView: React.FC<Props> = (props: Props) => {
-  const { dispatch } = props;
+  const dispatch = useDispatch();
 
   return (
     <InternalHeader>
@@ -27,19 +21,21 @@ const AppBarView: React.FC<Props> = (props: Props) => {
       </InternalHeader.Title>
       <InternalHeader.Button
         style={{ marginLeft: "auto", fontSize: "1.5rem" }}
-        onClick={() => dispatch(visSystemSettingsModal())}
+        onClick={() => dispatch(VIS_SYSTEM_SETTINGS_MODAL())}
       >
         <WrenchIcon title="innstillinger" />
       </InternalHeader.Button>
       <InternalHeader.Button
         style={{ fontSize: "1.5rem" }}
         onClick={() => {
-          props.model.thememode === "light"
-            ? props.dispatch(switchToDarkMode())
-            : props.dispatch(switchToLightMode());
+          if (thememode === "light") {
+            dispatch(SWITCH_TO_DARK_MODE());
+          } else {
+            dispatch(SWITCH_TO_LIGHT_MODE());
+          }
         }}
       >
-        {props.model.thememode === "light" ? (
+        {thememode === "light" ? (
           <SunIcon title="a11y-title" />
         ) : (
           <MoonIcon title="a11y-title" />
@@ -49,14 +45,4 @@ const AppBarView: React.FC<Props> = (props: Props) => {
   );
 };
 
-const mapStateToProps = (state: AppState) => ({
-  model: state.model,
-});
-
-const mapDispatchToProps = (dispatch: any) => {
-  return {
-    dispatch,
-  };
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(AppBarView);
+export default AppBarView;

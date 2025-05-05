@@ -1,34 +1,26 @@
-import React, { useEffect, useState } from "react";
-import { AppState, DispatchProps } from "../../../redux/reduxTypes";
-import { connect } from "react-redux";
+import React, { useState } from "react";
+import { RootState } from "../../../store";
+import { useDispatch, useSelector } from "react-redux";
 import { Button, Modal, TextField } from "@navikt/ds-react";
 import globals from "../../../app/globals.module.css";
-import {
-  nyFsSaksStatus,
-  sendNyHendelseOgOppdaterModel,
-  skjulNySakModal,
-} from "../../../redux/actions";
+import { sendNyHendelseOgOppdaterModel } from "../../../redux/actions";
 
-import { FsSoknad, Model } from "../../../redux/types";
+import { FsSoknad } from "../../../redux/types";
 import {
   fsSaksStatusToSaksStatus,
   generateNyFsSaksStatus,
   getFsSoknadByFiksDigisosId,
 } from "../../../utils/utilityFunctions";
+import { NY_FS_SAKS_STATUS, SKJUL_NY_SAK_MODAL } from "../../../redux/reducer";
 
-interface OwnProps {}
-
-interface StoreProps {
-  visNySakModal: boolean;
-  model: Model;
-}
-
-type Props = DispatchProps & OwnProps & StoreProps;
-
-const NySakModal: React.FC<Props> = (props: Props) => {
+const NySakModal = () => {
   const [tittel, setTittel] = useState("");
 
-  const { visNySakModal, dispatch, model } = props;
+  const { visNySakModal, model } = useSelector((state: RootState) => ({
+    visNySakModal: state.model.visNySakModal,
+    model: state.model,
+  }));
+  const dispatch = useDispatch();
 
   const onOpprettSak = () => {
     const fsSoknader = model.soknader;
@@ -47,19 +39,22 @@ const NySakModal: React.FC<Props> = (props: Props) => {
           nyHendelse,
           model,
           dispatch,
-          nyFsSaksStatus(model.aktivSoknad, fsSaksStatus),
+          NY_FS_SAKS_STATUS({
+            forFiksDigisosId: model.aktivSoknad,
+            nyFsSaksStatus: fsSaksStatus,
+          }),
         );
 
         setTittel("");
       }
     }
-    dispatch(skjulNySakModal());
+    dispatch(SKJUL_NY_SAK_MODAL());
   };
   return (
     <Modal
       className={globals.modal}
       open={visNySakModal}
-      onClose={() => props.dispatch(skjulNySakModal())}
+      onClose={() => dispatch(SKJUL_NY_SAK_MODAL())}
       header={{ heading: "Ny sak" }}
     >
       <Modal.Body className={globals.flexRow}>
@@ -78,15 +73,4 @@ const NySakModal: React.FC<Props> = (props: Props) => {
   );
 };
 
-const mapStateToProps = (state: AppState) => ({
-  visNySakModal: state.model.visNySakModal,
-  model: state.model,
-});
-
-const mapDispatchToProps = (dispatch: any) => {
-  return {
-    dispatch,
-  };
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(NySakModal);
+export default NySakModal;

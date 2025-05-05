@@ -1,16 +1,10 @@
 import React, { useState } from "react";
-import { AppState, DispatchProps } from "../../../redux/reduxTypes";
-import { connect } from "react-redux";
+import { RootState } from "../../../store";
+import { useDispatch, useSelector } from "react-redux";
 
-import {
-  nyUtbetaling,
-  oppdaterUtbetaling,
-  sendNyHendelseOgOppdaterModel,
-  setAktivUtbetaling,
-  skjulNyUtbetalingModal,
-} from "../../../redux/actions";
+import { sendNyHendelseOgOppdaterModel } from "../../../redux/actions";
 
-import { FsSoknad, Model } from "../../../redux/types";
+import { FsSoknad } from "../../../redux/types";
 import useEffectOnce, {
   formatDateString,
   generateFilreferanseId,
@@ -37,19 +31,16 @@ import {
 } from "@navikt/ds-react";
 import globals from "../../../app/globals.module.css";
 import styles from "./utbetaling.module.css";
+import {
+  NY_UTBETALING,
+  OPPDATER_UTBETALING,
+  SET_AKTIV_UTBETALING,
+  SKJUL_NY_UTBETALING_MODAL,
+} from "../../../redux/reducer";
 
-interface OwnProps {
+interface Props {
   soknad: FsSoknad;
 }
-
-interface StoreProps {
-  visNyUtbetalingModal: boolean;
-  model: Model;
-  aktivUtbetaling: string | undefined | null;
-  modalSaksreferanse: string | null;
-}
-
-type Props = DispatchProps & OwnProps & StoreProps;
 
 const initialUtbetaling: Utbetaling = {
   type: HendelseType.Utbetaling,
@@ -107,12 +98,20 @@ const defaultUtbetaling: Utbetaling = {
   utbetalingsmetode: "Bankkonto",
 };
 
-const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
-
+const NyUtbetalingModal = ({ soknad }: Props) => {
+  const { visNyUtbetalingModal, modalSaksreferanse, aktivUtbetaling, model } =
+    useSelector((state: RootState) => ({
+      visNyUtbetalingModal: state.model.visNyUtbetalingModal,
+      model: state.model,
+      aktivUtbetaling: state.model.aktivUtbetaling,
+      modalSaksreferanse: state.model.modalSaksreferanse,
+    }));
+  const dispatch = useDispatch();
   const utbetaling: Utbetaling = initialUtbetaling;
-  utbetaling.utbetalingsreferanse = generateFilreferanseId()
+  utbetaling.utbetalingsreferanse = generateFilreferanseId();
 
-  const [modalUtbetaling, setModalUtbetaling] = useState<Utbetaling>(utbetaling);
+  const [modalUtbetaling, setModalUtbetaling] =
+    useState<Utbetaling>(utbetaling);
 
   const [kontonummerLabelPlaceholder, setKontonummerLabelPlaceholder] =
     useState("Kontonummer (Ikke satt)");
@@ -120,18 +119,9 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
   const [visFeilmelding, setVisFeilmelding] = useState(false);
   const [referansefeltDisabled, setReferansefeltDisabled] = useState(false);
 
-  const {
-    visNyUtbetalingModal,
-    dispatch,
-    model,
-    soknad,
-    aktivUtbetaling,
-    modalSaksreferanse,
-  } = props;
-
   useEffectOnce(() => {
     if (aktivUtbetaling) {
-      let utbetaling = getUtbetalingByUtbetalingsreferanse(
+      const utbetaling = getUtbetalingByUtbetalingsreferanse(
         soknad,
         aktivUtbetaling,
       );
@@ -166,7 +156,7 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
     setKontonummerLabelPlaceholder("Kontonummer (Ikke satt)");
     setVisFeilmelding(false);
     setReferansefeltDisabled(false);
-    dispatch(setAktivUtbetaling(null));
+    dispatch(SET_AKTIV_UTBETALING(null));
   };
 
   const sendUtbetaling = () => {
@@ -189,19 +179,25 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
         nyHendelse,
         model,
         dispatch,
-        nyUtbetaling(soknad.fiksDigisosId, nyHendelse),
+        NY_UTBETALING({
+          forFiksDigisosId: soknad.fiksDigisosId,
+          nyUtbetaling: nyHendelse,
+        }),
       );
     } else {
       sendNyHendelseOgOppdaterModel(
         nyHendelse,
         model,
         dispatch,
-        oppdaterUtbetaling(soknad.fiksDigisosId, nyHendelse),
+        OPPDATER_UTBETALING({
+          forFiksDigisosId: soknad.fiksDigisosId,
+          oppdatertUtbetaling: nyHendelse,
+        }),
       );
     }
     resetStateValues();
 
-    dispatch(dispatch(skjulNyUtbetalingModal()));
+    dispatch(SKJUL_NY_UTBETALING_MODAL());
   };
 
   const setDefaultUtbetaling = () => {
@@ -229,7 +225,7 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
       open={visNyUtbetalingModal}
       onClose={() => {
         resetStateValues();
-        props.dispatch(skjulNyUtbetalingModal());
+        dispatch(SKJUL_NY_UTBETALING_MODAL());
       }}
       header={{ heading: "Utbetaling" }}
     >
@@ -272,9 +268,9 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
         </Select>
         <CustomTextField
           label={"Beløp"}
-          value={modalUtbetaling.belop}
+          value={modalUtbetaling.belop?.toString()}
           inputType={"number"}
-          setValue={(verdi: number) =>
+          setValue={(verdi: string) =>
             setModalUtbetaling({ ...modalUtbetaling, belop: +verdi })
           }
         />
@@ -423,17 +419,4 @@ const NyUtbetalingModal: React.FC<Props> = (props: Props) => {
   );
 };
 
-const mapStateToProps = (state: AppState) => ({
-  visNyUtbetalingModal: state.model.visNyUtbetalingModal,
-  model: state.model,
-  aktivUtbetaling: state.model.aktivUtbetaling,
-  modalSaksreferanse: state.model.modalSaksreferanse,
-});
-
-const mapDispatchToProps = (dispatch: any) => {
-  return {
-    dispatch,
-  };
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(NyUtbetalingModal);
+export default NyUtbetalingModal;

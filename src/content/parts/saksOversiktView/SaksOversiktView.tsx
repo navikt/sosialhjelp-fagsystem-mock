@@ -1,21 +1,19 @@
 import React, { useState } from "react";
-import { DispatchProps } from "../../../redux/reduxTypes";
-import { connect } from "react-redux";
-import { visNySakModal } from "../../../redux/actions";
+import { useDispatch } from "react-redux";
 import SaksTabView from "./SaksTabView";
 import { FsSaksStatus, FsSoknad } from "../../../redux/types";
 import { Button, Heading, Panel, Tabs } from "@navikt/ds-react";
 import globals from "../../../app/globals.module.css";
 import styles from "./saksoversikt.module.css";
+import { VIS_NY_SAK_MODAL } from "../../../redux/reducer";
 
-interface OwnProps {
+interface Props {
   soknad: FsSoknad;
 }
 
-type Props = DispatchProps & OwnProps;
-
 const SaksOversiktView: React.FC<Props> = (props: Props) => {
-  const { soknad, dispatch } = props;
+  const { soknad } = props;
+  const dispatch = useDispatch();
   const [aktivSakRef, setAktivSakRef] = useState("");
   const [antallSaker, setAntallSaker] = useState(0);
 
@@ -34,7 +32,7 @@ const SaksOversiktView: React.FC<Props> = (props: Props) => {
         Saksoversikt:
       </Heading>
       <div className={globals.fitContent}>
-        <Button onClick={() => dispatch(visNySakModal())} size="small">
+        <Button onClick={() => dispatch(VIS_NY_SAK_MODAL())} size="small">
           Opprett ny sak
         </Button>
       </div>
@@ -66,7 +64,7 @@ const SaksOversiktView: React.FC<Props> = (props: Props) => {
                 );
               })}
             </Tabs.List>
-            {soknad.saker.map((sak: FsSaksStatus, idx) => {
+            {soknad.saker.map((sak: FsSaksStatus) => {
               return (
                 <Tabs.Panel
                   key={"tabPanel:" + sak.referanse}
@@ -83,10 +81,4 @@ const SaksOversiktView: React.FC<Props> = (props: Props) => {
   );
 };
 
-const mapDispatchToProps = (dispatch: any) => {
-  return {
-    dispatch,
-  };
-};
-
-export default connect(mapDispatchToProps)(SaksOversiktView);
+export default SaksOversiktView;

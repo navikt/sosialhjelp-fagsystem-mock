@@ -1,23 +1,17 @@
 import React from "react";
-import { DispatchProps } from "../../../redux/reduxTypes";
-import { connect } from "react-redux";
 import { Vilkar, VilkarStatus } from "../../../types/hendelseTypes";
-import { setAktivtVilkar, visNyVilkarModal } from "../../../redux/actions";
 import { Button, Table } from "@navikt/ds-react";
 import globals from "../../../app/globals.module.css";
+import { useDispatch } from "react-redux";
+import { SET_AKTIVT_VILKAR, VIS_NY_VILKAR_MODAL } from "../../../redux/reducer";
 
-interface OwnProps {
+interface Props {
   vilkar: Vilkar;
 }
 
-interface StoreProps {}
-
-type Props = DispatchProps & OwnProps & StoreProps;
-
-const VilkarTabView: React.FC<Props> = (props: Props) => {
-  const { vilkar, dispatch } = props;
-
-  const makeTableRow = (type: string, value: any) => {
+const VilkarTabView: React.FC<Props> = ({ vilkar }: Props) => {
+  const dispatch = useDispatch();
+  const makeTableRow = (type: string, value: boolean | null | string | string[]) => {
     if (typeof value === "boolean") {
       value = value ? "Ja" : "Nei";
     }
@@ -124,8 +118,8 @@ const VilkarTabView: React.FC<Props> = (props: Props) => {
           size="small"
           variant="secondary-neutral"
           onClick={() => {
-            dispatch(setAktivtVilkar(vilkar.vilkarreferanse));
-            dispatch(visNyVilkarModal());
+            dispatch(SET_AKTIVT_VILKAR(vilkar.vilkarreferanse));
+            dispatch(VIS_NY_VILKAR_MODAL());
           }}
         >
           Endre vilkår
@@ -135,12 +129,4 @@ const VilkarTabView: React.FC<Props> = (props: Props) => {
   );
 };
 
-const mapStateToProps = () => ({});
-
-const mapDispatchToProps = (dispatch: any) => {
-  return {
-    dispatch,
-  };
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(VilkarTabView);
+export default VilkarTabView;

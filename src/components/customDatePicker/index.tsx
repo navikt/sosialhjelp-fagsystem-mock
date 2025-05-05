@@ -4,8 +4,8 @@ import dayjs from "dayjs";
 
 interface OwnProps {
   label: string;
-  value: any;
-  setValue: (v: string) => any;
+  value: string | null;
+  setValue: (v: string) => void;
   required?: boolean;
   visFeilmelding?: boolean;
   setVisFeilmelding?: Dispatch<SetStateAction<boolean>>;

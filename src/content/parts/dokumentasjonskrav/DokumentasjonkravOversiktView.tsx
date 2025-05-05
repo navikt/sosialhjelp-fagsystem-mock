@@ -1,21 +1,18 @@
 import React, { useState } from "react";
-import { DispatchProps } from "../../../redux/reduxTypes";
-import { connect } from "react-redux";
-import { visNyDokumentasjonkravModal } from "../../../redux/actions";
+import { useDispatch } from "react-redux";
 import { FsSoknad } from "../../../redux/types";
 import DokumentasjonkravTabView from "./DokumentasjonkravTabView";
 import { Dokumentasjonkrav } from "../../../types/hendelseTypes";
 import { Button, Heading, Panel, Tabs } from "@navikt/ds-react";
 import globals from "../../../app/globals.module.css";
+import { VIS_NY_DOKUMENTASJONKRAV_MODAL } from "../../../redux/reducer";
 
-interface OwnProps {
+interface Props {
   soknad: FsSoknad;
 }
 
-type Props = DispatchProps & OwnProps;
-
-const DokumentasjonkravOversiktView: React.FC<Props> = (props: Props) => {
-  const { soknad, dispatch } = props;
+const DokumentasjonkravOversiktView: React.FC<Props> = ({ soknad }: Props) => {
+  const dispatch = useDispatch();
   const [aktivtDokumentasjonkravIdx, setAktivtDokumentasjonkravIdx] =
     useState(0);
   const [antallDokumentasjonkrav, setAntallDokumentasjonkrav] = useState(0);
@@ -35,7 +32,7 @@ const DokumentasjonkravOversiktView: React.FC<Props> = (props: Props) => {
         size="small"
         className={globals.fitContent}
         onClick={() => {
-          dispatch(visNyDokumentasjonkravModal());
+          dispatch(VIS_NY_DOKUMENTASJONKRAV_MODAL());
         }}
       >
         Nytt dokumentasjonkrav
@@ -89,10 +86,4 @@ const DokumentasjonkravOversiktView: React.FC<Props> = (props: Props) => {
   );
 };
 
-const mapDispatchToProps = (dispatch: any) => {
-  return {
-    dispatch,
-  };
-};
-
-export default connect(mapDispatchToProps)(DokumentasjonkravOversiktView);
+export default DokumentasjonkravOversiktView;
