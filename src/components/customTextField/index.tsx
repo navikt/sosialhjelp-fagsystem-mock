@@ -8,7 +8,7 @@ interface Props {
   inputType?: string;
   required?: boolean;
   visFeilmelding?: boolean;
-  setVisFeilmelding?: Dispatch<SetStateAction<boolean>>;
+  setVisFeilmelding?: (bool: boolean) => void;
   referansefeltDisabled?: boolean;
 }
 

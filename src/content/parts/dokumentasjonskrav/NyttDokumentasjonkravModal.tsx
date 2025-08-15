@@ -64,6 +64,8 @@ const defaultDokumentasjonkrav: Dokumentasjonkrav = {
   saksreferanse: null,
 };
 
+type ErrorableField = "status" | "dokumentasjonkravreferanse";
+
 const NyttDokumentasjonkravModal: React.FC<Props> = ({ soknad }: Props) => {
   const dispatch = useDispatch();
   const {
@@ -79,7 +81,7 @@ const NyttDokumentasjonkravModal: React.FC<Props> = ({ soknad }: Props) => {
   }));
   const [modalDokumentasjonkrav, setModalDokumentasjonkrav] =
     useState<Dokumentasjonkrav>(initialDokumentasjonkrav);
-  const [visFeilmelding, setVisFeilmelding] = useState(false);
+  const [fieldsWithError, setFieldsWithError] = useState<ErrorableField[]>([]);
   const [referansefeltDisabled, setReferansefeltDisabled] = useState(false);
 
   const resetStateValues = () => {
@@ -87,7 +89,7 @@ const NyttDokumentasjonkravModal: React.FC<Props> = ({ soknad }: Props) => {
       ...initialDokumentasjonkrav,
       dokumentasjonkravreferanse: generateFilreferanseId(),
     });
-    setVisFeilmelding(false);
+    setFieldsWithError([]);
     setReferansefeltDisabled(false);
 
     dispatch(SET_AKTIVT_DOKUMENTASJONKRAV(null));
@@ -146,7 +148,7 @@ const NyttDokumentasjonkravModal: React.FC<Props> = ({ soknad }: Props) => {
       });
     }
 
-    setVisFeilmelding(false);
+    setFieldsWithError([]);
     setReferansefeltDisabled(false);
   };
 
@@ -202,8 +204,20 @@ const NyttDokumentasjonkravModal: React.FC<Props> = ({ soknad }: Props) => {
           }
           required={true}
           referansefeltDisabled={referansefeltDisabled}
-          visFeilmelding={visFeilmelding}
-          setVisFeilmelding={setVisFeilmelding}
+          visFeilmelding={fieldsWithError.includes(
+            "dokumentasjonkravreferanse",
+          )}
+          setVisFeilmelding={(b: boolean) => {
+            if (b) {
+              setFieldsWithError((prev) =>
+                !prev.includes("dokumentasjonkravreferanse")
+                  ? [...prev, "dokumentasjonkravreferanse"]
+                  : prev,
+              );
+            } else {
+              setFieldsWithError((prev) => prev.filter((x) => x !== "status"));
+            }
+          }}
         />
         <CustomTextField
           label={"Tittel"}
@@ -238,15 +252,17 @@ const NyttDokumentasjonkravModal: React.FC<Props> = ({ soknad }: Props) => {
         <Select
           size="small"
           label="Status *"
+          error={fieldsWithError.includes("status") && "Status er påkrevd"}
           value={
             modalDokumentasjonkrav.status ? modalDokumentasjonkrav.status : ""
           }
-          onChange={(evt) =>
+          onChange={(evt) => {
             setModalDokumentasjonkrav({
               ...modalDokumentasjonkrav,
               status: evt.target.value as DokumentasjonkravStatus,
-            })
-          }
+            });
+            setFieldsWithError((prev) => prev.filter((x) => x !== "status"));
+          }}
         >
           <option hidden disabled value=""></option>
           <option value={DokumentasjonkravStatus.RELEVANT}>Relevant</option>
@@ -315,8 +331,18 @@ const NyttDokumentasjonkravModal: React.FC<Props> = ({ soknad }: Props) => {
             aktivtDokumentasjonkrav == null ? "primary" : "secondary-neutral"
           }
           onClick={() => {
-            if (!visFeilmelding) {
-              sendDokumentasjonkrav();
+            const _errors: ErrorableField[] = [];
+            if (modalDokumentasjonkrav.status == null) {
+              _errors.push("status");
+            }
+            if (
+              modalDokumentasjonkrav.dokumentasjonkravreferanse.length === 0
+            ) {
+              _errors.push("dokumentasjonkravreferanse");
+            }
+            setFieldsWithError(_errors)
+            if (_errors.length === 0 && fieldsWithError.length === 0) {
+              return sendDokumentasjonkrav();
             }
           }}
         >
