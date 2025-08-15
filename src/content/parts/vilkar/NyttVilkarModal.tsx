@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  sendNyHendelseOgOppdaterModel,
-} from "../../../redux/actions";
+import { sendNyHendelseOgOppdaterModel } from "../../../redux/actions";
 import { FsSoknad } from "../../../redux/types";
 import {
   generateFilreferanseId,
@@ -30,7 +28,8 @@ import globals from "../../../app/globals.module.css";
 import {
   NYTT_VILKAR,
   OPPDATER_VILKAR,
-  SET_AKTIVT_VILKAR, SKJUL_NY_VILKAR_MODAL
+  SET_AKTIVT_VILKAR,
+  SKJUL_NY_VILKAR_MODAL,
 } from "../../../redux/reducer";
 import { RootState } from "../../../store";
 
@@ -74,6 +73,7 @@ const NyttVilkarModal: React.FC<Props> = ({ soknad }: Props) => {
   const [modalVilkar, setModalVilkar] = useState<Vilkar>(initialVilkar);
 
   const [visFeilmelding, setVisFeilmelding] = useState(false);
+  const [visStatusFeilmelding, setVisStatusFeilmelding] = useState(true);
   const [referansefeltDisabled, setReferansefeltDisabled] =
     useState(!!aktivtVilkar);
 
@@ -204,14 +204,17 @@ const NyttVilkarModal: React.FC<Props> = ({ soknad }: Props) => {
           <Select
             size="small"
             label="Status"
+            error={visStatusFeilmelding ? "Status er påkrevd" : null}
             value={modalVilkar.status ? modalVilkar.status : ""}
-            onChange={(evt) =>
+            onChange={(evt) => {
+              setVisStatusFeilmelding(false);
               setModalVilkar({
                 ...modalVilkar,
                 status: evt.target.value as VilkarStatus,
-              })
-            }
+              });
+            }}
           >
+            <option hidden={true} />
             <option value={VilkarStatus.RELEVANT}>Relevant</option>
             <option value={VilkarStatus.ANNULLERT}>Annullert</option>
             <option value={VilkarStatus.OPPFYLT}>Oppfylt</option>
@@ -277,7 +280,9 @@ const NyttVilkarModal: React.FC<Props> = ({ soknad }: Props) => {
           size="small"
           variant={aktivtVilkar == null ? "primary" : "secondary-neutral"}
           onClick={() => {
-            if (!visFeilmelding) {
+            if (modalVilkar.status === null) {
+              setVisStatusFeilmelding(true);
+            } else if (!visFeilmelding) {
               sendVilkar();
             }
           }}
