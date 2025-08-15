@@ -24,7 +24,6 @@ import {
 } from "../types/hendelseTypes";
 import {
   fsSaksStatusToSaksStatus,
-  generateRandomId,
   getNow,
 } from "../utils/utilityFunctions";
 import {
@@ -95,14 +94,14 @@ export const idFromQueryOrRandomId = (
   searchParams?: ReadonlyURLSearchParams,
 ): string => {
   if (!searchParams) {
-    return generateRandomId(11);
+    return crypto.randomUUID();
   }
   const fiksdigisosid = searchParams.get(FIKSDIGISOSID_URL_PARAM);
 
   if (fiksdigisosid && fiksdigisosid.length > 0) {
     return fiksdigisosid;
   }
-  return generateRandomId(11);
+  return crypto.randomUUID();
 };
 
 const getBackendUrlTypeToUse = (): keyof BackendUrls => {
