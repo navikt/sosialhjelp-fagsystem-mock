@@ -17,7 +17,7 @@ updates:
   - package-ecosystem: npm
     directory: '/'
     cooldown:
-      default-days: 5
+      default-days: 7
     schedule:
       interval: daily
     # Set to 0 to disable version updates for npm dependencies (does not affect security-updates)
