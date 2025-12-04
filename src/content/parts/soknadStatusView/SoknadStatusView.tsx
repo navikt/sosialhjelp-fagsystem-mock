@@ -1,6 +1,6 @@
 import React, { useRef } from "react";
-import { RootState } from "../../../store";
-import { useDispatch, useSelector } from "react-redux";
+import { RootState, useAppDispatch } from "../../../store";
+import { useSelector } from "react-redux";
 import { BodyShort, Heading, Panel, Radio, RadioGroup } from "@navikt/ds-react";
 import globals from "../../../app/globals.module.css";
 
@@ -25,7 +25,7 @@ interface Props {
 
 const SoknadStatusView = ({ soknad }: Props) => {
   const model = useSelector((state: RootState) => state.model);
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const inputEl = useRef<HTMLInputElement>(null);
 
   const handleFileUpload = (files: FileList) => {
