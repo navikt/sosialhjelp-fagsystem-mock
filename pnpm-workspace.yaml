@@ -1,4 +1,11 @@
 packages:
   - '.'
 minimumReleaseAge: 10080
-
+minimumReleaseAgeExclude:
+  - next@15.3.6
+  - eslint-config-next@15.3.6
+  - "@next/eslint-plugin-next@15.3.6"
+  - csp-header@6.2.1
+  - "@next/env@15.3.6"
+  - react@19.2.1
+  - react-dom@19.2.1
