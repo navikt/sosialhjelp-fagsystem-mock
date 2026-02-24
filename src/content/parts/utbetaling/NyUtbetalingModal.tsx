@@ -107,8 +107,7 @@ const NyUtbetalingModal = ({ soknad }: Props) => {
       modalSaksreferanse: state.model.modalSaksreferanse,
     }));
   const dispatch = useDispatch();
-  const utbetaling: Utbetaling = initialUtbetaling;
-  utbetaling.utbetalingsreferanse = generateFilreferanseId();
+  const utbetaling: Utbetaling = {...initialUtbetaling, utbetalingsreferanse: generateFilreferanseId()};
 
   const [modalUtbetaling, setModalUtbetaling] =
     useState<Utbetaling>(utbetaling);

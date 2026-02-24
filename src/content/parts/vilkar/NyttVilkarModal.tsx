@@ -143,6 +143,7 @@ const NyttVilkarModal: React.FC<Props> = ({ soknad }: Props) => {
     if (aktivtVilkar && visNyVilkarModal) {
       const vilkar = getVilkarByVilkarreferanse(soknad.vilkar, aktivtVilkar);
       if (vilkar) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setModalVilkar(vilkar);
 
         setTimeout(() => {

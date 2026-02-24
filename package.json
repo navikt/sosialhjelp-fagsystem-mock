@@ -23,7 +23,7 @@
     "build": "next build",
     "start": "next start",
     "typeCheck": "tsc",
-    "lint": "next lint",
+    "lint": "eslint src --max-warnings=0",
     "test": "next test",
     "prettier": "prettier -w \"src/**/*.ts\""
   },

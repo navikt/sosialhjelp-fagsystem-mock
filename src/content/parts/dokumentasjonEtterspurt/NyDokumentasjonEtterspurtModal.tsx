@@ -147,6 +147,7 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = ({ soknad }: Props) => {
   };
 
   const createDokumentreferanse = () => {
+    // eslint-disable-next-line react-hooks/purity
     const randomId = Math.round(Math.random() * 1_000_000);
     return "mock-dokref-" + randomId;
   };

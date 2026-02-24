@@ -160,6 +160,7 @@ const NyttDokumentasjonkravModal: React.FC<Props> = ({ soknad }: Props) => {
           aktivtDokumentasjonkrav,
         );
       if (dokumentasjonkrav) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setModalDokumentasjonkrav(dokumentasjonkrav);
         setTimeout(() => {
           setReferansefeltDisabled(true);
