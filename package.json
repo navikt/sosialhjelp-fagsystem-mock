@@ -11,9 +11,9 @@
     "dayjs": "^1.11.19",
     "fp-ts": "^2.16.11",
     "monocle-ts": "^2.3.13",
-    "next": "15.3.8",
-    "react": "^19.2.4",
-    "react-dom": "^19.2.4",
+    "next": "16.1.6",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
     "react-redux": "^9.2.0",
     "uuid": "^11.1.0"
   },
@@ -40,15 +40,14 @@
     ]
   },
   "devDependencies": {
-    "@eslint/eslintrc": "^3.3.3",
     "@eslint/js": "^10.0.1",
     "@types/jest": "^29.5.14",
     "@types/node": "^24.10.13",
-    "@types/react": "^19.2.14",
-    "@types/react-dom": "^19.2.3",
+    "@types/react": "19.2.14",
+    "@types/react-dom": "19.2.3",
     "@types/uuid": "^10.0.0",
     "eslint": "^10.0.0",
-    "eslint-config-next": "^16.1.6",
+    "eslint-config-next": "16.1.6",
     "lint-staged": "^15.5.2",
     "prettier": "^3.8.1",
     "typescript": "^5.9.3"
@@ -59,5 +58,11 @@
   },
   "overrides": {
     "semver": "7.5.3"
+  },
+  "pnpm": {
+    "overrides": {
+      "@types/react": "19.2.14",
+      "@types/react-dom": "19.2.3"
+    }
   }
 }
