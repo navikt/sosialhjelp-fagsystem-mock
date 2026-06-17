@@ -1,5 +1,8 @@
 packages:
   - '.'
+allowBuilds:
+  sharp: set this to true or false
+  unrs-resolver: set this to true or false
 minimumReleaseAge: 10080
 minimumReleaseAgeExclude:
   - next@15.3.8
