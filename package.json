@@ -54,10 +54,5 @@
   "lint-staged": {
     "*.{js,css,md}": "prettier --write",
     "*.{js,jsx,ts,tsx}": "eslint src --max-warnings=0"
-  },
-  "overrides": {
-    "semver": "7.5.3",
-    "@types/react": "19.2.14",
-    "@types/react-dom": "19.2.3"
   }
 }
