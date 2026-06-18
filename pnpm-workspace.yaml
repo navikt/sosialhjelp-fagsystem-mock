@@ -6,3 +6,4 @@ allowBuilds:
 minimumReleaseAge: 2880
 overrides:
   postcss@<8.5.10: ^8.5.10
+  react-day-picker: 9.13.2
