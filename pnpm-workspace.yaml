@@ -3,7 +3,7 @@ packages:
 allowBuilds:
   sharp: set this to true or false
   unrs-resolver: set this to true or false
-minimumReleaseAge: 10080
+minimumReleaseAge: 2880
 minimumReleaseAgeExclude:
   - next@15.3.8
   - eslint-config-next@15.3.8
@@ -12,3 +12,6 @@ minimumReleaseAgeExclude:
   - "@next/env@15.3.8"
   - react@19.2.1
   - react-dom@19.2.1
+  - postcss@8.5.10
+overrides:
+  postcss@<8.5.10: ^8.5.10
