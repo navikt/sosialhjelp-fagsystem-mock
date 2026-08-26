@@ -11,7 +11,7 @@ updates:
       interval: daily
     open-pull-requests-limit: 5
     cooldown:
-       default-days: 7
+      default-days: 7
 
   - package-ecosystem: docker
     directory: '/'
@@ -20,27 +20,20 @@ updates:
     cooldown:
       default-days: 7
 
-  - package-ecosystem: npm
-    directory: '/'
-    cooldown:
-      default-days: 7
+  - package-ecosystem: "npm"
+    directory: "/"
     schedule:
       interval: daily
-    # Set to 0 to disable version updates for npm dependencies (does not affect security-updates)
-    open-pull-requests-limit: 5
-    ignore:
-      - dependency-name: "*"
-        update-types: [ "version-update:semver-patch" ]
-    registries:
-      - npm-github
     groups:
-      aksel-dependencies:
+      patch-dependencies:
         patterns:
-          - "@navikt/ds-*"
-          - "@navikt/aksel-*"
-      react-dependencies:
+          - "*"
+        update-types:
+          - "patch"
+      minor-dependencies:
         patterns:
-          - 'react'
-          - 'react-dom'
-          - '@types/react'
-          - '@types/react-dom'
+          - "*"
+        update-types:
+          - "minor"
+    commit-message:
+      prefix: "[npm]"
