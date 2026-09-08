@@ -7,8 +7,8 @@ settings:
 overrides:
   postcss@<8.5.10: ^8.5.10
   react-day-picker: 9.13.2
-  sharp: '>=0.35.0'
-  browserslist: '>=4.28.7'
+  sharp@<0.35.0: ^0.35.4
+  browserslist@<4.28.7: ^4.28.9
 
 importers:
 
@@ -2123,7 +2123,7 @@ packages:
     resolution: {integrity: sha512-UQ+MSxlhRm1bzjhU+DcuXfjFO1FzNtqhK5+9Yvlp90ItDLk5vT932A0rFu619nf7RVS+Y/VeaUW1jaRDqZ8VJw==}
     hasBin: true
     peerDependencies:
-      browserslist: '>=4.28.7'
+      browserslist: ^4.28.9
 
   uri-js@4.4.1:
     resolution: {integrity: sha512-7rKUyy33Q1yc98pQ1DAmLtwX109F7TIfWlW1Ydo8Wl1ii1SeHieeh0HHfPeL2fMXK6z0s8ecKs9frCuLJvndBg==}
