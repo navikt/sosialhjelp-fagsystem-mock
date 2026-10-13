@@ -15,6 +15,9 @@ export interface Model {
   loaderOn: boolean;
   backendUrlTypeToUse: keyof BackendUrls;
   thememode: "light" | "dark";
+  fnr: string;
+  brukere: Bruker[];
+  brukereFeil: boolean;
 
   soknader: FsSoknad[];
 
@@ -32,6 +35,15 @@ export interface Model {
   aktivUtbetaling: string | null; // utbetalingsreferanse
   aktivtVilkar: string | null; // vilkarreferanse
   aktivtDokumentasjonkrav: string | null; // dokumentasjonkravreferanse
+}
+
+export interface Bruker {
+  fnr: string;
+  navn: {
+    fornavn: string;
+    mellomnavn: string;
+    etternavn: string;
+  };
 }
 
 export interface FsSoknad {

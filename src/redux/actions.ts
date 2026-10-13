@@ -1,4 +1,4 @@
-import { BackendUrls, FsSoknad, Model } from "./types";
+import { BackendUrls, Bruker, FsSoknad, Model } from "./types";
 import Hendelse, {
   DigisosSokerJson,
   Dokument,
@@ -22,6 +22,7 @@ import {
   FIKSDIGISOSID_URL_PARAM,
   getInitialFsSoknad,
   HENTET_SOKNAD,
+  mockAltBrukereUrls,
   NY_SOKNAD,
   nyNavEnhetUrl,
   OPPDATER_DOKUMENTASJON_ETTERSPURT,
@@ -30,6 +31,8 @@ import {
   OPPDATER_VEDTAK_FATTET,
   oppdaterDigisosSakUrl,
   SET_AKTIV_SOKNAD,
+  SET_BRUKERE,
+  SET_BRUKERE_FEIL,
   TURN_OFF_LOADER,
   TURN_ON_LOADER,
   VIS_ERROR_SNACKBAR,
@@ -246,6 +249,7 @@ export const opprettDigisosSakHvisDenIkkeFinnes = (
   backendUrlTypeToUse: keyof BackendUrls,
   dispatch: AppDispatch,
   fiksDigisosId: string,
+  fnr: string,
 ) => {
   dispatch(TURN_ON_LOADER());
   const backendUrl = backendUrls[backendUrlTypeToUse];
@@ -256,7 +260,7 @@ export const opprettDigisosSakHvisDenIkkeFinnes = (
     soknad.fiksDigisosSokerJson,
   );
 
-  const queryParam = `?${FIKSDIGISOSID_URL_PARAM}=${fiksDigisosId}`;
+  const queryParam = `?${FIKSDIGISOSID_URL_PARAM}=${fiksDigisosId}&fnr=${encodeURIComponent(fnr)}`;
   fetchPost(
     `${backendUrl}${oppdaterDigisosSakUrl}${queryParam}`,
     JSON.stringify(fiksDigisosSokerJsonUtenNull),
@@ -279,6 +283,7 @@ export const hentFsSoknadFraFiksEllerOpprettNy = (
   fiksDigisosId: string,
   backendUrlTypeToUse: keyof BackendUrls,
   dispatch: AppDispatch,
+  fnr: string,
   papirSoknad?: boolean,
 ) => {
   dispatch(TURN_ON_LOADER());
@@ -308,6 +313,7 @@ export const hentFsSoknadFraFiksEllerOpprettNy = (
           papirSoknad ?? false,
           backendUrlTypeToUse,
           dispatch,
+          fnr,
         );
       }
     })
@@ -320,6 +326,7 @@ export const opprettNyFsSoknadDersomDigisosIdIkkeEksistererHosFiks = (
   papirSoknad: boolean,
   backendUrlTypeToUse: keyof BackendUrls,
   dispatch: AppDispatch,
+  fnr: string,
 ) => {
   dispatch(TURN_ON_LOADER());
   const backendUrl = backendUrls[backendUrlTypeToUse];
@@ -327,7 +334,7 @@ export const opprettNyFsSoknadDersomDigisosIdIkkeEksistererHosFiks = (
     getInitialFsSoknad(fiksDigisosId).fiksDigisosSokerJson,
   );
 
-  const queryParams = `?${FIKSDIGISOSID_URL_PARAM}=${fiksDigisosId}&isPapirSoknad=${papirSoknad}`;
+  const queryParams = `?${FIKSDIGISOSID_URL_PARAM}=${fiksDigisosId}&isPapirSoknad=${papirSoknad}&fnr=${encodeURIComponent(fnr)}`;
   fetchPost(
     `${backendUrl}${oppdaterDigisosSakUrl}${queryParams}`,
     JSON.stringify(fiksDigisosSokerJsonUtenNull),
@@ -339,6 +346,24 @@ export const opprettNyFsSoknadDersomDigisosIdIkkeEksistererHosFiks = (
     })
     .catch((reason) => runOnErrorResponse(reason, dispatch))
     .finally(() => dispatch(TURN_OFF_LOADER()));
+};
+
+export const hentBrukere = (
+  backendUrlTypeToUse: keyof BackendUrls,
+  dispatch: AppDispatch,
+) => {
+  fetch(mockAltBrukereUrls[backendUrlTypeToUse])
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(response.statusText);
+      }
+      return response.json() as Promise<Bruker[]>;
+    })
+    .then((brukere) => dispatch(SET_BRUKERE(brukere)))
+    .catch((reason) => {
+      dispatch(SET_BRUKERE_FEIL(true));
+      console.warn("Kunne ikke hente brukere: " + reason.message);
+    });
 };
 
 const runOnErrorResponse = (

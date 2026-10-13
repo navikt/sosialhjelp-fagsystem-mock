@@ -11,7 +11,7 @@ import {
   removeNullFieldsFromHendelser,
 } from "../utils/utilityFunctions";
 import ToppPanel from "./parts/panel/ToppPanel";
-import { hentFsSoknadFraFiksEllerOpprettNy } from "../redux/actions";
+import { hentBrukere, hentFsSoknadFraFiksEllerOpprettNy } from "../redux/actions";
 import SplashScreen from "../components/splashScreen";
 import { Button, Loader } from "@navikt/ds-react";
 import { FileJsonIcon } from "@navikt/aksel-icons";
@@ -26,7 +26,9 @@ const Forside = () => {
       model.aktivSoknad,
       model.backendUrlTypeToUse,
       dispatch,
+      model.fnr,
     );
+    hentBrukere(model.backendUrlTypeToUse, dispatch);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

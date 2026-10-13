@@ -45,6 +45,12 @@ export const backendUrlsMockTemplate: string =
 export const backendUrlMockAltLocal: string =
   "http://localhost:8989/sosialhjelp/mock-alt-api/innsyn-api";
 
+export const mockAltBrukereUrls: BackendUrls = {
+  lokalInnsyn: "http://localhost:8989/sosialhjelp/mock-alt-api/mock-alt/v2/brukere/",
+  mock: "https://digisos.ekstern.dev.nav.no/sosialhjelp/mock-alt-api/mock-alt/v2/brukere/",
+  lokalMockalt: "http://localhost:8989/sosialhjelp/mock-alt-api/mock-alt/v2/brukere/",
+};
+
 export const oppdaterDigisosSakUrl: string =
   "/api/v1/digisosapi/oppdaterDigisosSak";
 export const nyNavEnhetUrl: string = "/api/v1/mock/nyNavEnhet";
@@ -112,9 +118,17 @@ const getBackendUrlTypeToUse = (): keyof BackendUrls => {
   }
 };
 
+const getFnr = (): string =>
+  typeof window === "undefined"
+    ? "26504547549"
+    : window.localStorage.getItem("fnr") ?? "26504547549";
+
 export const initialModel: Model = {
   loaderOn: false,
   backendUrlTypeToUse: getBackendUrlTypeToUse(),
+  fnr: getFnr(),
+  brukere: [],
+  brukereFeil: false,
   soknader: [],
   thememode: "light",
   visNySakModal: false,
@@ -153,6 +167,16 @@ const modelSlice = createSlice({
       action: PayloadAction<keyof BackendUrls>,
     ) {
       state.backendUrlTypeToUse = action.payload;
+    },
+    SET_FNR(state, action: PayloadAction<string>) {
+      state.fnr = action.payload;
+    },
+    SET_BRUKERE(state, action: PayloadAction<Model["brukere"]>) {
+      state.brukere = action.payload;
+      state.brukereFeil = false;
+    },
+    SET_BRUKERE_FEIL(state, action: PayloadAction<boolean>) {
+      state.brukereFeil = action.payload;
     },
     TURN_ON_LOADER(state) {
       state.loaderOn = true;
@@ -562,6 +586,9 @@ export const {
   SET_AKTIVT_VILKAR,
   SET_AKTIVT_DOKUMENTASJONKRAV,
   SET_BACKEND_URL_TYPE_TO_USE,
+  SET_FNR,
+  SET_BRUKERE,
+  SET_BRUKERE_FEIL,
   TURN_ON_LOADER,
   TURN_OFF_LOADER,
   SWITCH_TO_LIGHT_MODE,

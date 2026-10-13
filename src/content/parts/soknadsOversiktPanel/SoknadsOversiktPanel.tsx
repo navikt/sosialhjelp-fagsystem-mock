@@ -44,6 +44,7 @@ const SoknadsOversiktPanel = () => {
         fiksDigisosId,
         model.backendUrlTypeToUse,
         dispatch,
+        model.fnr,
       );
     } else if (
       fiksDigisosId.length !== 0 &&
@@ -55,6 +56,7 @@ const SoknadsOversiktPanel = () => {
         "001",
         model.backendUrlTypeToUse,
         dispatch,
+        model.fnr,
         papirSoknad,
       );
     }
