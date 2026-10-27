@@ -1,19 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
+import { proxyRouteHandler } from "@navikt/next-api-proxy";
 import { getTarget, resolveProxyPath } from "../../../../server/proxyRoutes";
-import { AuthError, getOboAuthorizationHeader } from "../../../../server/backendAuth";
+import { AuthError, getOboToken } from "../../../../server/backendAuth";
 
 export const dynamic = "force-dynamic";
-
-const FORWARDED_REQUEST_HEADERS = ["content-type", "accept"];
-const FORWARDED_RESPONSE_HEADERS = ["content-type"];
 
 const proxy = async (
   request: NextRequest,
   { params }: { params: Promise<{ path: string[] }> },
 ) => {
-  const backendUrl = process.env.FAGSYSTEM_BACKEND_URL;
-  if (!backendUrl) {
-    return NextResponse.json({ error: "FAGSYSTEM_BACKEND_URL mangler" }, { status: 500 });
+  const hostname = process.env.FAGSYSTEM_BACKEND_HOST;
+  if (!hostname) {
+    return NextResponse.json({ error: "FAGSYSTEM_BACKEND_HOST mangler" }, { status: 500 });
   }
 
   const { path } = await params;
@@ -31,18 +29,10 @@ const proxy = async (
       );
   }
 
-  const headers = new Headers();
-  for (const name of FORWARDED_REQUEST_HEADERS) {
-    const value = request.headers.get(name);
-    if (value) headers.set(name, value);
-  }
-
+  let bearerToken: string | undefined;
   if (target === "fiks") {
     try {
-      headers.set(
-        "authorization",
-        await getOboAuthorizationHeader(request.headers.get("authorization")),
-      );
+      bearerToken = await getOboToken(request);
     } catch (e) {
       const status = e instanceof AuthError ? e.status : 500;
       console.error("Auth mot fagsystem-backend feilet:", (e as Error).message);
@@ -50,33 +40,21 @@ const proxy = async (
     }
   }
 
-  const url = new URL(resolved.path, backendUrl.endsWith("/") ? backendUrl : `${backendUrl}/`);
-  url.search = request.nextUrl.search;
-
-  let upstream: Response;
+  const basePath = process.env.FAGSYSTEM_BACKEND_BASE_PATH ?? "";
+  const port = process.env.FAGSYSTEM_BACKEND_PORT || undefined;
+  const https = process.env.FAGSYSTEM_BACKEND_HTTPS === "true";
   try {
-    upstream = await fetch(url, {
-      method: request.method,
-      headers,
-      body: request.method === "GET" ? undefined : request.body,
-      // Nødvendig for å strømme request-body (multipart ved filopplasting)
-      duplex: "half",
-      cache: "no-store",
-    } as RequestInit);
+    return await proxyRouteHandler(request, {
+      hostname,
+      port,
+      https,
+      path: `/${[basePath, resolved.path].map((part) => part.replace(/^\/+|\/+$/g, "")).filter(Boolean).join("/")}`,
+      bearerToken,
+    });
   } catch (e) {
     console.error(`Fikk ikke kontakt med ${target}-backend:`, (e as Error).message);
     return NextResponse.json({ error: "Backend utilgjengelig" }, { status: 502 });
   }
-
-  const responseHeaders = new Headers();
-  for (const name of FORWARDED_RESPONSE_HEADERS) {
-    const value = upstream.headers.get(name);
-    if (value) responseHeaders.set(name, value);
-  }
-  return new NextResponse(upstream.body, {
-    status: upstream.status,
-    headers: responseHeaders,
-  });
 };
 
 export { proxy as GET, proxy as POST };

@@ -5,7 +5,9 @@
   ],
   "prometheusEnabled": false,
   "target": "mock-alt",
-  "backendUrl": "https://digisos.ekstern.dev.nav.no/sosialhjelp/mock-alt-api",
+  "backendHost": "digisos.ekstern.dev.nav.no",
+  "backendBasePath": "/sosialhjelp/mock-alt-api",
+  "backendHttps": "true",
   "innsynUrl": "https://digisos.ekstern.dev.nav.no/sosialhjelp/innsyn",
   "outboundHost": "digisos.ekstern.dev.nav.no"
 }

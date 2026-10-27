@@ -5,9 +5,9 @@ type Method = "GET" | "POST";
 interface RouteRule {
   pattern: RegExp;
   methods: Method[];
-  /** Sti hos mock-alt-api, relativ til FAGSYSTEM_BACKEND_URL. null = ikke støttet. */
+  /** Sti hos mock-alt-api, relativ til FAGSYSTEM_BACKEND_BASE_PATH. null = ikke støttet. */
   mockAlt: ((match: RegExpMatchArray) => string) | null;
-  /** Sti hos sosialhjelp-fagsystem-backend, relativ til FAGSYSTEM_BACKEND_URL. null = ikke støttet. */
+  /** Sti hos sosialhjelp-fagsystem-backend, relativ til FAGSYSTEM_BACKEND_BASE_PATH. null = ikke støttet. */
   fiks: ((match: RegExpMatchArray) => string) | null;
 }
 

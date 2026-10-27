@@ -38,8 +38,16 @@ spec:
   env:
     - name: FAGSYSTEM_TARGET
       value: "{{target}}"
-    - name: FAGSYSTEM_BACKEND_URL
-      value: "{{backendUrl}}"
+    - name: FAGSYSTEM_BACKEND_HOST
+      value: "{{backendHost}}"
+    - name: FAGSYSTEM_BACKEND_BASE_PATH
+      value: "{{backendBasePath}}"
+    - name: FAGSYSTEM_BACKEND_HTTPS
+      value: "{{backendHttps}}"
+{{#if backendPort}}
+    - name: FAGSYSTEM_BACKEND_PORT
+      value: "{{backendPort}}"
+{{/if}}
     - name: INNSYN_URL
       value: "{{innsynUrl}}"
 {{#if backendScope}}
