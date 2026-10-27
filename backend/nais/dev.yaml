@@ -1,0 +1,64 @@
+apiVersion: "nais.io/v1alpha1"
+kind: "Application"
+metadata:
+  name: sosialhjelp-fagsystem-backend
+  namespace: teamdigisos
+  labels:
+    team: teamdigisos
+spec:
+  image: {{image}}
+  port: 8080
+  liveness:
+    path: /internal/isAlive
+  readiness:
+    path: /internal/isReady
+  prometheus:
+    enabled: true
+    path: /internal/prometheus
+  replicas:
+    # Én replika: Fiks IO-abonnementet skal kun ha én konsument.
+    min: 1
+    max: 1
+  resources:
+    limits:
+      memory: 512Mi
+    requests:
+      cpu: 20m
+      memory: 256Mi
+  azure:
+    application:
+      enabled: true
+  maskinporten:
+    enabled: true
+    scopes:
+      consumes:
+        - name: "ks:fiks"
+  gcp:
+    sqlInstances:
+      - type: POSTGRES_17
+        tier: db-f1-micro
+        databases:
+          - name: fagsystem
+            envVarPrefix: DB
+  accessPolicy:
+    inbound:
+      rules:
+        - application: sosialhjelp-fagsystem-mock-fiks
+    outbound:
+      external:
+        - host: api.fiks.test.ks.no
+        - host: io.fiks.test.ks.no
+          ports:
+            - port: 5671
+  env:
+    - name: FIKS_BASE_URL
+      value: https://api.fiks.test.ks.no
+    - name: FIKS_MASKINPORTEN_SCOPE
+      value: "ks:fiks"
+  # Hemmeligheter (opprettes manuelt i Nais Console, placeholder inntil videre):
+  # FIKS_ORG_ID, FIKS_INTEGRASJON_ID, FIKS_INTEGRASJON_PASSORD,
+  # FIKS_IO_KONTO_ID, FIKS_IO_PRIVATE_KEY,
+  # VIRKSOMHETSSERTIFIKAT_KEYSTORE, VIRKSOMHETSSERTIFIKAT_KEYSTORE_PASSWORD,
+  # VIRKSOMHETSSERTIFIKAT_KEY_ALIAS, VIRKSOMHETSSERTIFIKAT_KEY_PASSWORD
+  envFrom:
+    - secret: sosialhjelp-fagsystem-backend-fiks

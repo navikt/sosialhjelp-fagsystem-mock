@@ -5,6 +5,9 @@ on:
       - "main"
     tags-ignore:
       - "**" # Don't build any tags
+    paths-ignore:
+      - "backend/**"
+      - ".github/workflows/backend.yml"
   workflow_dispatch:
 
 permissions:

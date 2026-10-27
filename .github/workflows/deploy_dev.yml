@@ -6,6 +6,9 @@ jobs:
   deploy:
     name: Deploy to dev-gcp
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        variant: [mock, fiks]
     permissions:
       contents: read
       id-token: write
@@ -17,7 +20,7 @@ jobs:
         env:
           RESOURCE: nais.yaml
           CLUSTER: dev-gcp
-          VARS: nais/dev/mock.json
+          VARS: nais/dev/${{ matrix.variant }}.json
           REF: ${{ github.sha }}
           PRINT_PAYLOAD: true
           VAR: image=europe-north1-docker.pkg.dev/nais-management-233d/teamdigisos/sosialhjelp-fagsystem-mock-mock:latest

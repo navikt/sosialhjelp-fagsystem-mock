@@ -11,7 +11,13 @@ import {
   removeNullFieldsFromHendelser,
 } from "../utils/utilityFunctions";
 import ToppPanel from "./parts/panel/ToppPanel";
-import { hentBrukere, hentFsSoknadFraFiksEllerOpprettNy } from "../redux/actions";
+import { FIKSDIGISOSID_URL_PARAM } from "../redux/reducer";
+import {
+  hentBrukere,
+  hentFiksSaker,
+  hentFsSoknadFraFiksEllerOpprettNy,
+  hentProxyInfo,
+} from "../redux/actions";
 import SplashScreen from "../components/splashScreen";
 import { Button, Loader } from "@navikt/ds-react";
 import { FileJsonIcon } from "@navikt/aksel-icons";
@@ -26,13 +32,23 @@ const Forside = () => {
     if (hasLoadedInitialData.current) return;
 
     hasLoadedInitialData.current = true;
-    hentFsSoknadFraFiksEllerOpprettNy(
-      model.aktivSoknad,
-      model.backendUrlTypeToUse,
-      dispatch,
-      model.fnr,
-    );
-    hentBrukere(model.backendUrlTypeToUse, dispatch);
+    hentProxyInfo(dispatch)
+      .then((info) => {
+        if (info.target === "mock-alt") {
+          hentFsSoknadFraFiksEllerOpprettNy(model.aktivSoknad, dispatch, model.fnr);
+          hentBrukere(dispatch);
+        } else {
+          // Mot Fiks opprettes saker ikke automatisk ved sidelast. Kun hent hvis id er gitt i URL.
+          const idFraUrl = new URLSearchParams(window.location.search).get(
+            FIKSDIGISOSID_URL_PARAM,
+          );
+          if (idFraUrl) {
+            hentFsSoknadFraFiksEllerOpprettNy(idFraUrl, dispatch, model.fnr);
+          }
+          hentFiksSaker(dispatch);
+        }
+      })
+      .catch(() => console.warn("Kunne ikke hente proxy-info"));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -64,9 +80,7 @@ const Forside = () => {
         </div>
         <BehandleSoknadPanel />
 
-        <SystemSettingsModal
-          soknad={getFsSoknadByFiksDigisosId(model.soknader, model.aktivSoknad)}
-        />
+        <SystemSettingsModal />
 
         <StatusSnackBarView />
 

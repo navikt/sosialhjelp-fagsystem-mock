@@ -7,35 +7,25 @@ import { getFsSoknadByFiksDigisosId } from "../../../utils/utilityFunctions";
 import SoknadStatusView from "../soknadStatusView/SoknadStatusView";
 
 import TildeldeltNavkontorView from "../navKontor/TildeltNavKontorView";
-import { backendUrls } from "../../../redux/reducer";
 import { BodyShort, Heading, Link, Panel } from "@navikt/ds-react";
 import globals from "../../../app/globals.module.css";
 import styles from "./toppPanel.module.css";
 
 const ToppPanel = () => {
-  const { soknad, backendUrlTypeToUse } = useSelector(
+  const { soknad, innsynUrl } = useSelector(
     (state: RootState) => ({
       soknad: getFsSoknadByFiksDigisosId(
         state.model.soknader,
         state.model.aktivSoknad,
       ),
-      backendUrlTypeToUse: state.model.backendUrlTypeToUse,
+      innsynUrl: state.model.proxyInfo?.innsynUrl,
     }),
     shallowEqual,
   );
-  const backendUrl = backendUrls[backendUrlTypeToUse];
   if (soknad) {
-    let frontendUrl =
-      backendUrl.substring(0, backendUrl.search("/sosialhjelp/")) +
-      "/sosialhjelp/innsyn/" +
-      soknad.fiksDigisosId +
-      "/status";
-    if (frontendUrl.includes("localhost:8080")) {
-      frontendUrl = frontendUrl.replace("localhost:8080", "localhost:3000");
-    }
-    if (frontendUrl.includes("localhost:8989")) {
-      frontendUrl = frontendUrl.replace("localhost:8989", "localhost:3000");
-    }
+    const frontendUrl = innsynUrl
+      ? `${innsynUrl}/${soknad.fiksDigisosId}/status`
+      : undefined;
     return (
       <div className={styles.toppPanel}>
         <Panel className={`${globals.panel} ${styles.toppPanel}`}>
@@ -43,9 +33,11 @@ const ToppPanel = () => {
             Oversikt over søknaden
           </Heading>
           <BodyShort>FiksDigisosId: {soknad.fiksDigisosId}</BodyShort>
-          <Link href={frontendUrl} target="_blank" rel="noopener noreferrer">
-            {frontendUrl}
-          </Link>
+          {frontendUrl && (
+            <Link href={frontendUrl} target="_blank" rel="noopener noreferrer">
+              {frontendUrl}
+            </Link>
+          )}
           <TildeldeltNavkontorView soknad={soknad} />
         </Panel>
         <SoknadStatusView soknad={soknad} />

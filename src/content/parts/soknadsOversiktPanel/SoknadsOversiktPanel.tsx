@@ -45,7 +45,6 @@ const SoknadsOversiktPanel = () => {
     ) {
       hentFsSoknadFraFiksEllerOpprettNy(
         fiksDigisosId,
-        model.backendUrlTypeToUse,
         dispatch,
         model.fnr,
       );
@@ -57,7 +56,6 @@ const SoknadsOversiktPanel = () => {
     } else {
       hentFsSoknadFraFiksEllerOpprettNy(
         "001",
-        model.backendUrlTypeToUse,
         dispatch,
         model.fnr,
         papirSoknad,
@@ -93,6 +91,32 @@ const SoknadsOversiktPanel = () => {
           );
         })}
       </ul>
+      {model.proxyInfo?.target === "fiks" && (
+        <>
+          <Heading level="4" size="small">
+            Saker i Fiks
+          </Heading>
+          <ul className={styles.soknadliste}>
+            {model.fiksSaker.map((sak) => (
+              <li key={"FiksSak: " + sak.fiksDigisosId}>
+                <Button
+                  size="small"
+                  variant="tertiary-neutral"
+                  className={styles.soknad_button}
+                  onClick={() => {
+                    if (!soknader.some((s) => s.fiksDigisosId === sak.fiksDigisosId)) {
+                      hentFsSoknadFraFiksEllerOpprettNy(sak.fiksDigisosId, dispatch, model.fnr);
+                    }
+                    onSoknadClick(sak.fiksDigisosId);
+                  }}
+                >
+                  {sak.fiksDigisosId} ({sak.kilde === "FIKS_IO" ? "mottatt" : "opprettet"})
+                </Button>
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
       <TextField
         id="ny_soknad_input"
         label="FiksDigisosId"

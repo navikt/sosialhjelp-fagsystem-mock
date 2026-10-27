@@ -35,3 +35,35 @@ spec:
     requests:
       cpu: 1m
       memory: 64Mi
+  env:
+    - name: FAGSYSTEM_TARGET
+      value: "{{target}}"
+    - name: FAGSYSTEM_BACKEND_URL
+      value: "{{backendUrl}}"
+    - name: INNSYN_URL
+      value: "{{innsynUrl}}"
+{{#if backendScope}}
+    - name: FAGSYSTEM_BACKEND_SCOPE
+      value: "{{backendScope}}"
+{{/if}}
+{{#if azureLogin}}
+  azure:
+    application:
+      enabled: true
+      allowAllUsers: true
+    sidecar:
+      enabled: true
+      autoLogin: true
+      autoLoginIgnorePaths:
+        - /sosialhjelp/fagsystem-mock/api/internal/*
+{{/if}}
+  accessPolicy:
+    outbound:
+{{#if outboundApp}}
+      rules:
+        - application: {{outboundApp}}
+{{/if}}
+{{#if outboundHost}}
+      external:
+        - host: {{outboundHost}}
+{{/if}}

@@ -1,0 +1,13 @@
+{
+  "applicationName": "sosialhjelp-fagsystem-mock-fiks",
+  "ingresses": [
+    "https://sosialhjelp-fagsystem-mock-fiks.ansatt.dev.nav.no/sosialhjelp/fagsystem-mock"
+  ],
+  "prometheusEnabled": false,
+  "target": "fiks",
+  "backendUrl": "http://sosialhjelp-fagsystem-backend",
+  "backendScope": "api://dev-gcp.teamdigisos.sosialhjelp-fagsystem-backend/.default",
+  "innsynUrl": "https://www.ansatt.dev.nav.no/sosialhjelp/innsyn",
+  "azureLogin": true,
+  "outboundApp": "sosialhjelp-fagsystem-backend"
+}
