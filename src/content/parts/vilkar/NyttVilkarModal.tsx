@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch, shallowEqual, useSelector } from "react-redux";
 import { sendNyHendelseOgOppdaterModel } from "../../../redux/actions";
 import { FsSoknad } from "../../../redux/types";
 import {
@@ -61,12 +61,15 @@ const defaultVilkar: Vilkar = {
 
 const NyttVilkarModal: React.FC<Props> = ({ soknad }: Props) => {
   const { visNyVilkarModal, modalSaksreferanse, aktivtVilkar, model } =
-    useSelector((state: RootState) => ({
-      visNyVilkarModal: state.model.visNyVilkarModal,
-      model: state.model,
-      aktivtVilkar: state.model.aktivtVilkar,
-      modalSaksreferanse: state.model.modalSaksreferanse,
-    }));
+    useSelector(
+      (state: RootState) => ({
+        visNyVilkarModal: state.model.visNyVilkarModal,
+        model: state.model,
+        aktivtVilkar: state.model.aktivtVilkar,
+        modalSaksreferanse: state.model.modalSaksreferanse,
+      }),
+      shallowEqual,
+    );
 
   const dispatch = useDispatch();
 

@@ -1,5 +1,5 @@
 import React, { SyntheticEvent } from "react";
-import { RootState} from "../../../store";
+import { RootState } from "../../../store";
 import { useDispatch, useSelector } from "react-redux";
 import { Tag } from "@navikt/ds-react";
 import styles from "./statusSnackBar.module.css";
@@ -13,10 +13,12 @@ const variantIcon = {
 };
 
 const StatusSnackBarView = () => {
-  const {visSnackbar, snackbarVariant} = useSelector((state: RootState) => ({
-    visSnackbar: state.model.visSnackbar,
-    snackbarVariant: state.model.snackbarVariant,
-  }));
+  const visSnackbar = useSelector(
+    (state: RootState) => state.model.visSnackbar,
+  );
+  const snackbarVariant = useSelector(
+    (state: RootState) => state.model.snackbarVariant,
+  );
   const dispatch = useDispatch();
   function handleClose(event?: SyntheticEvent, reason?: string) {
     if (reason === "clickaway") {

@@ -1,7 +1,10 @@
 import { RootState } from "../../../store";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch, shallowEqual, useSelector } from "react-redux";
 
-import { hentBrukere, opprettDigisosSakHvisDenIkkeFinnes } from "../../../redux/actions";
+import {
+  hentBrukere,
+  opprettDigisosSakHvisDenIkkeFinnes,
+} from "../../../redux/actions";
 
 import { BackendUrls, FsSoknad } from "../../../redux/types";
 
@@ -27,10 +30,13 @@ interface Props {
 }
 
 const SystemSettingsModal = ({ soknad }: Props) => {
-  const { visSystemSettingsModal, model } = useSelector((state: RootState) => ({
-    visSystemSettingsModal: state.model.visSystemSettingsModal,
-    model: state.model,
-  }));
+  const { visSystemSettingsModal, model } = useSelector(
+    (state: RootState) => ({
+      visSystemSettingsModal: state.model.visSystemSettingsModal,
+      model: state.model,
+    }),
+    shallowEqual,
+  );
   const dispatch = useDispatch();
 
   const toRadioLabel = (backendUrlType: string) => {
@@ -106,7 +112,8 @@ const SystemSettingsModal = ({ soknad }: Props) => {
                 bruker.navn.etternavn,
               ]
                 .filter(Boolean)
-                .join(" ")} ({bruker.fnr})
+                .join(" ")}{" "}
+              ({bruker.fnr})
             </option>
           ))}
         </Select>

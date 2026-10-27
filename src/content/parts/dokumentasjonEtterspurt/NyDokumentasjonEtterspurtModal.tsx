@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { RootState } from "../../../store";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch, shallowEqual, useSelector } from "react-redux";
 import { v4 as uuidv4 } from "uuid";
 import {
   sendNyHendelseOgOppdaterModel,
@@ -73,6 +73,7 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = ({ soknad }: Props) => {
       visNyDokumentasjonEtterspurtModal:
         state.model.visNyDokumentasjonEtterspurtModal,
     }),
+    shallowEqual,
   );
   const dispatch = useDispatch();
 

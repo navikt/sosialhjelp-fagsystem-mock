@@ -1,6 +1,6 @@
 import React from "react";
 import { RootState } from "../../../store";
-import {  useSelector } from "react-redux";
+import { shallowEqual, useSelector } from "react-redux";
 import SaksOversiktView from "../saksOversiktView/SaksOversiktView";
 import { getFsSoknadByFiksDigisosId } from "../../../utils/utilityFunctions";
 import VilkarOversiktView from "../vilkar/VilkarOversiktView";
@@ -16,13 +16,16 @@ import { Heading, Ingress, Panel } from "@navikt/ds-react";
 import globals from "../../../app/globals.module.css";
 
 const BehandleSoknadPanel = () => {
-  const { soknad, visNyUtbetalingModal } = useSelector((state: RootState) => ({
-    soknad: getFsSoknadByFiksDigisosId(
-      state.model.soknader,
-      state.model.aktivSoknad,
-    ),
-    visNyUtbetalingModal: state.model.visNyUtbetalingModal,
-  }));
+  const { soknad, visNyUtbetalingModal } = useSelector(
+    (state: RootState) => ({
+      soknad: getFsSoknadByFiksDigisosId(
+        state.model.soknader,
+        state.model.aktivSoknad,
+      ),
+      visNyUtbetalingModal: state.model.visNyUtbetalingModal,
+    }),
+    shallowEqual,
+  );
 
   if (soknad) {
     return (

@@ -239,6 +239,14 @@ const modelSlice = createSlice({
       state.visSnackbar = false;
     },
     NY_SOKNAD(state, action: PayloadAction<string>) {
+      if (
+        state.soknader.some(
+          (soknad) => soknad.fiksDigisosId === action.payload,
+        )
+      ) {
+        return;
+      }
+
       const newFsSoknad = getInitialFsSoknad(action.payload);
       state.soknader.push(newFsSoknad);
     },
@@ -290,6 +298,16 @@ const modelSlice = createSlice({
         (soknad) => soknad.fiksDigisosId === forFiksDigisosId,
       );
       if (soknad) {
+        const soknadMedNyId = state.soknader.find(
+          (soknad) => soknad.fiksDigisosId === nyFiksDigisosId,
+        );
+        if (soknadMedNyId) {
+          state.soknader = state.soknader.filter(
+            (soknad) => soknad.fiksDigisosId !== forFiksDigisosId,
+          );
+          return;
+        }
+
         soknad.fiksDigisosId = nyFiksDigisosId;
       }
     },

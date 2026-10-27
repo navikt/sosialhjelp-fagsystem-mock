@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { RootState } from "../../../store";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch, shallowEqual, useSelector } from "react-redux";
 import { sendNyHendelseOgOppdaterModel } from "../../../redux/actions";
 import { FsSoknad } from "../../../redux/types";
 import {
@@ -73,12 +73,15 @@ const NyttDokumentasjonkravModal: React.FC<Props> = ({ soknad }: Props) => {
     model,
     aktivtDokumentasjonkrav,
     modalSaksreferanse,
-  } = useSelector((state: RootState) => ({
-    visNyDokumentasjonkravModal: state.model.visNyDokumentasjonkravModal,
-    model: state.model,
-    aktivtDokumentasjonkrav: state.model.aktivtDokumentasjonkrav,
-    modalSaksreferanse: state.model.modalSaksreferanse,
-  }));
+  } = useSelector(
+    (state: RootState) => ({
+      visNyDokumentasjonkravModal: state.model.visNyDokumentasjonkravModal,
+      model: state.model,
+      aktivtDokumentasjonkrav: state.model.aktivtDokumentasjonkrav,
+      modalSaksreferanse: state.model.modalSaksreferanse,
+    }),
+    shallowEqual,
+  );
   const [modalDokumentasjonkrav, setModalDokumentasjonkrav] =
     useState<Dokumentasjonkrav>(initialDokumentasjonkrav);
   const [fieldsWithError, setFieldsWithError] = useState<ErrorableField[]>([]);
@@ -341,7 +344,7 @@ const NyttDokumentasjonkravModal: React.FC<Props> = ({ soknad }: Props) => {
             ) {
               _errors.push("dokumentasjonkravreferanse");
             }
-            setFieldsWithError(_errors)
+            setFieldsWithError(_errors);
             if (_errors.length === 0 && fieldsWithError.length === 0) {
               return sendDokumentasjonkrav();
             }

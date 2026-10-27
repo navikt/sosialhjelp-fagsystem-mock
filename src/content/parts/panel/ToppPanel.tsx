@@ -1,6 +1,6 @@
 import React from "react";
 import { RootState } from "../../../store";
-import { useSelector } from "react-redux";
+import { shallowEqual, useSelector } from "react-redux";
 
 import { getFsSoknadByFiksDigisosId } from "../../../utils/utilityFunctions";
 
@@ -13,13 +13,16 @@ import globals from "../../../app/globals.module.css";
 import styles from "./toppPanel.module.css";
 
 const ToppPanel = () => {
-  const { soknad, backendUrlTypeToUse } = useSelector((state: RootState) => ({
-    soknad: getFsSoknadByFiksDigisosId(
-      state.model.soknader,
-      state.model.aktivSoknad,
-    ),
-    backendUrlTypeToUse: state.model.backendUrlTypeToUse,
-  }));
+  const { soknad, backendUrlTypeToUse } = useSelector(
+    (state: RootState) => ({
+      soknad: getFsSoknadByFiksDigisosId(
+        state.model.soknader,
+        state.model.aktivSoknad,
+      ),
+      backendUrlTypeToUse: state.model.backendUrlTypeToUse,
+    }),
+    shallowEqual,
+  );
   const backendUrl = backendUrls[backendUrlTypeToUse];
   if (soknad) {
     let frontendUrl =

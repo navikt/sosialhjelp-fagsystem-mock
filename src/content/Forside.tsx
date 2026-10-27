@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { RootState } from "../store";
 import { useDispatch, useSelector } from "react-redux";
 import SoknadsOversiktPanel from "./parts/soknadsOversiktPanel/SoknadsOversiktPanel";
@@ -21,7 +21,11 @@ import styles from "./forside.module.css";
 const Forside = () => {
   const model = useSelector((state: RootState) => state.model);
   const dispatch = useDispatch();
+  const hasLoadedInitialData = useRef(false);
   useEffect(() => {
+    if (hasLoadedInitialData.current) return;
+
+    hasLoadedInitialData.current = true;
     hentFsSoknadFraFiksEllerOpprettNy(
       model.aktivSoknad,
       model.backendUrlTypeToUse,

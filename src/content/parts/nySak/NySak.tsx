@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { RootState } from "../../../store";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch, shallowEqual, useSelector } from "react-redux";
 import { Button, Modal, TextField } from "@navikt/ds-react";
 import globals from "../../../app/globals.module.css";
 import { sendNyHendelseOgOppdaterModel } from "../../../redux/actions";
@@ -16,10 +16,13 @@ import { NY_FS_SAKS_STATUS, SKJUL_NY_SAK_MODAL } from "../../../redux/reducer";
 const NySakModal = () => {
   const [tittel, setTittel] = useState("");
 
-  const { visNySakModal, model } = useSelector((state: RootState) => ({
-    visNySakModal: state.model.visNySakModal,
-    model: state.model,
-  }));
+  const { visNySakModal, model } = useSelector(
+    (state: RootState) => ({
+      visNySakModal: state.model.visNySakModal,
+      model: state.model,
+    }),
+    shallowEqual,
+  );
   const dispatch = useDispatch();
 
   const onOpprettSak = () => {

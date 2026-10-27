@@ -278,8 +278,16 @@ it("adds a FsSoknadObject to state based on DigisosSokerJson", () => {
     },
     dokumentasjonEtterspurt: undefined,
     forelopigSvar: undefined,
-    vilkar: [vilkarUtenUtbetaling1Endret, vilkarUtenUtbetaling2],
-    dokumentasjonkrav: [dokKravUtenUtbetaling1Endret, dokKravUtenUtbetaling2],
+    vilkar: [
+      vilkarUtenUtbetaling1Endret,
+      vilkarUtenUtbetaling2,
+      vilkarSak1,
+    ],
+    dokumentasjonkrav: [
+      dokKravUtenUtbetaling1Endret,
+      dokKravUtenUtbetaling2,
+      dokKrav,
+    ],
     utbetalingerUtenSaksreferanse: [
       utbetalingUtenSak1Endret,
       utbetalingUtenSak2,

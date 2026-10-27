@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { RootState } from "../../../store";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch, shallowEqual, useSelector } from "react-redux";
 
 import { sendNyHendelseOgOppdaterModel } from "../../../redux/actions";
 
@@ -100,14 +100,20 @@ const defaultUtbetaling: Utbetaling = {
 
 const NyUtbetalingModal = ({ soknad }: Props) => {
   const { visNyUtbetalingModal, modalSaksreferanse, aktivUtbetaling, model } =
-    useSelector((state: RootState) => ({
-      visNyUtbetalingModal: state.model.visNyUtbetalingModal,
-      model: state.model,
-      aktivUtbetaling: state.model.aktivUtbetaling,
-      modalSaksreferanse: state.model.modalSaksreferanse,
-    }));
+    useSelector(
+      (state: RootState) => ({
+        visNyUtbetalingModal: state.model.visNyUtbetalingModal,
+        model: state.model,
+        aktivUtbetaling: state.model.aktivUtbetaling,
+        modalSaksreferanse: state.model.modalSaksreferanse,
+      }),
+      shallowEqual,
+    );
   const dispatch = useDispatch();
-  const utbetaling: Utbetaling = {...initialUtbetaling, utbetalingsreferanse: generateFilreferanseId()};
+  const utbetaling: Utbetaling = {
+    ...initialUtbetaling,
+    utbetalingsreferanse: generateFilreferanseId(),
+  };
 
   const [modalUtbetaling, setModalUtbetaling] =
     useState<Utbetaling>(utbetaling);

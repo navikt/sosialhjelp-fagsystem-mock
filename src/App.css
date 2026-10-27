@@ -76,6 +76,7 @@ fieldset {
 
 .splashscreen-img img {
     height: 100%;
+    width: auto;
 
     -webkit-animation: fadeinfadeout 5s; /* Safari, Chrome and Opera > 12.1 */
     -moz-animation: fadeinfadeout 5s; /* Firefox < 16 */
