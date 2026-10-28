@@ -1,0 +1,77 @@
+apiVersion: "nais.io/v1alpha1"
+kind: "Application"
+metadata:
+  name: sosialhjelp-fagsystem-backend
+  namespace: teamdigisos
+  labels:
+    team: teamdigisos
+spec:
+  image: {{image}}
+  port: 8080
+  liveness:
+    path: /internal/isAlive
+  readiness:
+    path: /internal/isReady
+  prometheus:
+    enabled: true
+    path: /internal/prometheus
+  replicas:
+    # Én replika: Fiks IO-abonnementet skal kun ha én konsument.
+    min: 1
+    max: 1
+  resources:
+    limits:
+      memory: 512Mi
+    requests:
+      cpu: 20m
+      memory: 256Mi
+  azure:
+    application:
+      enabled: true
+  maskinporten:
+    enabled: true
+    scopes:
+      consumes:
+        - name: "ks:fiks"
+  gcp:
+    sqlInstances:
+      - type: POSTGRES_17
+        tier: db-f1-micro
+        databases:
+          - name: fagsystem
+            envVarPrefix: DB
+  accessPolicy:
+    inbound:
+      rules:
+        - application: sosialhjelp-fagsystem-mock-fiks
+    outbound:
+      external:
+        - host: api.fiks.test.ks.no
+        - host: io.fiks.test.ks.no
+          ports:
+            - port: 5671
+  env:
+    - name: FIKS_BASE_URL
+      value: https://api.fiks.test.ks.no
+    - name: FIKS_MASKINPORTEN_SCOPE
+      value: "ks:fiks"
+    - name: FIKS_ORG_ID
+      value: "0eb83fd2-e2d4-45cd-adde-631c4e1df537"
+    # Felles test-virksomhetssertifikat i GCP Secret Manager (krever secretAccessor)
+    - name: VIRKSOMHETSSERTIFIKAT_PROJECT_ID
+      value: virksomhetssertifikat-dev
+    - name: VIRKSOMHETSSERTIFIKAT_SECRET_ID
+      value: test-virksomhetssertifikat-felles-keystore-jceks_2018-2021
+    - name: VIRKSOMHETSSERTIFIKAT_VERSION_ID
+      value: "4"
+    - name: VIRKSOMHETSSERTIFIKAT_PASSWORD_PROJECT_ID
+      value: virksomhetssertifikat-dev
+    - name: VIRKSOMHETSSERTIFIKAT_PASSWORD_SECRET_ID
+      value: test-keystore-credentials-json
+    - name: VIRKSOMHETSSERTIFIKAT_PASSWORD_VERSION_ID
+      value: "3"
+  envFrom:
+    # Gir FIKS_INTEGRASJON_ID og FIKS_INTEGRASJON_PASSORD
+    - secret: fs-fiks-integrasjon-id
+    # Gir FIKS_IO_KONTO_ID og FIKS_IO_PRIVATE_KEY
+    - secret: fs-fiks-io

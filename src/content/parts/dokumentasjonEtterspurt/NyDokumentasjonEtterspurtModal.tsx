@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { startTransition, useEffect, useRef, useState } from "react";
 import { RootState } from "../../../store";
 import { useDispatch, shallowEqual, useSelector } from "react-redux";
 import { v4 as uuidv4 } from "uuid";
@@ -82,8 +82,10 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = ({ soknad }: Props) => {
 
   useEffect(() => {
     if (soknad.dokumentasjonEtterspurt && visNyDokumentasjonEtterspurtModal) {
-      setModalDokumentasjonEtterspurt({
-        ...soknad.dokumentasjonEtterspurt,
+      startTransition(() => {
+        setModalDokumentasjonEtterspurt({
+          ...soknad.dokumentasjonEtterspurt,
+        } as DokumentasjonEtterspurt);
       });
     }
   }, [soknad.dokumentasjonEtterspurt, visNyDokumentasjonEtterspurtModal]);
@@ -233,8 +235,8 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = ({ soknad }: Props) => {
     );
   };
 
-  const DokumentasjonEtterspurtOversikt = () => {
-    return modalDokumentasjonEtterspurt.dokumenter.length > 0 ? (
+  const dokumentasjonEtterspurtOversikt =
+    modalDokumentasjonEtterspurt.dokumenter.length > 0 ? (
       <div className={globals.scroll}>
         <Table className={globals.table} size="small">
           <Table.Header>
@@ -258,7 +260,6 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = ({ soknad }: Props) => {
         <BodyLong>Ingen dokumenter er lagt til</BodyLong>
       </>
     );
-  };
 
   const onAddClick = () => {
     return () => {
@@ -340,7 +341,7 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = ({ soknad }: Props) => {
           </Button>
         </div>
         <div className={styles.dokEtterspurtOversikt}>
-          <DokumentasjonEtterspurtOversikt />
+          {dokumentasjonEtterspurtOversikt}
         </div>
 
         <input

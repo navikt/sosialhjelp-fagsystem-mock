@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import {
-  BackendUrls,
+  FiksSak,
+  ProxyInfo,
   FsSaksStatus,
   FsSoknad,
   Model,
@@ -38,30 +39,14 @@ export const defaultDokumentlagerRef: DokumentlagerExtended = {
   tittel: "01 - qwer - dokumentalger",
 };
 
-export const backendUrlsLocalTemplate: string =
-  "http://localhost:8080/sosialhjelp/innsyn-api";
-export const backendUrlsMockTemplate: string =
-  "https://digisos.ekstern.dev.nav.no/sosialhjelp/mock-alt-api/innsyn-api";
-export const backendUrlMockAltLocal: string =
-  "http://localhost:8989/sosialhjelp/mock-alt-api/innsyn-api";
+/** Alle backend-kall går via proxyen på Next-serveren. Målet (mock-alt-api eller Fiks) settes per miljø. */
+export const proxyBaseUrl: string = "/sosialhjelp/fagsystem-mock/api/proxy";
+export const proxyInfoUrl: string = "/sosialhjelp/fagsystem-mock/api/proxy-info/";
 
-export const mockAltBrukereUrls: BackendUrls = {
-  lokalInnsyn: "http://localhost:8989/sosialhjelp/mock-alt-api/mock-alt/v2/brukere/",
-  mock: "https://digisos.ekstern.dev.nav.no/sosialhjelp/mock-alt-api/mock-alt/v2/brukere/",
-  lokalMockalt: "http://localhost:8989/sosialhjelp/mock-alt-api/mock-alt/v2/brukere/",
-};
-
-export const oppdaterDigisosSakUrl: string =
-  "/api/v1/digisosapi/oppdaterDigisosSak";
-export const nyNavEnhetUrl: string = "/api/v1/mock/nyNavEnhet";
+export const proxyUrl = (path: string, query?: string): string =>
+  `${proxyBaseUrl}/${path}/${query ? `?${query}` : ""}`;
 
 export const FIKSDIGISOSID_URL_PARAM = "fiksDigisosId";
-
-export const backendUrls: BackendUrls = {
-  lokalInnsyn: backendUrlsLocalTemplate,
-  mock: backendUrlsMockTemplate,
-  lokalMockalt: backendUrlMockAltLocal,
-};
 
 export const getInitialFsSoknad = (fiksDigisosId: string): FsSoknad => {
   const initialSoknadsStatusHendelse: SoknadsStatus = {
@@ -110,14 +95,6 @@ export const idFromQueryOrRandomId = (
   return crypto.randomUUID();
 };
 
-const getBackendUrlTypeToUse = (): keyof BackendUrls => {
-  if (process.env.NEXT_PUBLIC_RUNTIME_ENVIRONMENT === "mock") {
-    return "mock";
-  } else {
-    return "lokalMockalt";
-  }
-};
-
 const getFnr = (): string =>
   typeof window === "undefined"
     ? "26504547549"
@@ -125,7 +102,8 @@ const getFnr = (): string =>
 
 export const initialModel: Model = {
   loaderOn: false,
-  backendUrlTypeToUse: getBackendUrlTypeToUse(),
+  proxyInfo: null,
+  fiksSaker: [],
   fnr: getFnr(),
   brukere: [],
   brukereFeil: false,
@@ -162,11 +140,11 @@ const modelSlice = createSlice({
     SET_AKTIVT_DOKUMENTASJONKRAV(state, action: PayloadAction<string | null>) {
       state.aktivtDokumentasjonkrav = action.payload;
     },
-    SET_BACKEND_URL_TYPE_TO_USE(
-      state,
-      action: PayloadAction<keyof BackendUrls>,
-    ) {
-      state.backendUrlTypeToUse = action.payload;
+    SET_PROXY_INFO(state, action: PayloadAction<ProxyInfo>) {
+      state.proxyInfo = action.payload;
+    },
+    SET_FIKS_SAKER(state, action: PayloadAction<FiksSak[]>) {
+      state.fiksSaker = action.payload;
     },
     SET_FNR(state, action: PayloadAction<string>) {
       state.fnr = action.payload;
@@ -603,7 +581,8 @@ export const {
   SET_AKTIV_UTBETALING,
   SET_AKTIVT_VILKAR,
   SET_AKTIVT_DOKUMENTASJONKRAV,
-  SET_BACKEND_URL_TYPE_TO_USE,
+  SET_PROXY_INFO,
+  SET_FIKS_SAKER,
   SET_FNR,
   SET_BRUKERE,
   SET_BRUKERE_FEIL,

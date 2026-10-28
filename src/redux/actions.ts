@@ -1,4 +1,4 @@
-import { BackendUrls, Bruker, FsSoknad, Model } from "./types";
+import { Bruker, FiksSak, FsSoknad, Model, ProxyInfo } from "./types";
 import Hendelse, {
   DigisosSokerJson,
   Dokument,
@@ -18,21 +18,21 @@ import { fetchPost } from "../utils/restUtils";
 import { NavKontor } from "../types/additionalTypes";
 import { oHendelser } from "./optics";
 import {
-  backendUrls,
   FIKSDIGISOSID_URL_PARAM,
   getInitialFsSoknad,
   HENTET_SOKNAD,
-  mockAltBrukereUrls,
   NY_SOKNAD,
-  nyNavEnhetUrl,
   OPPDATER_DOKUMENTASJON_ETTERSPURT,
   OPPDATER_FIKS_DIGISOS_ID,
   OPPDATER_FORELOPIG_SVAR,
   OPPDATER_VEDTAK_FATTET,
-  oppdaterDigisosSakUrl,
+  proxyInfoUrl,
+  proxyUrl,
   SET_AKTIV_SOKNAD,
   SET_BRUKERE,
   SET_BRUKERE_FEIL,
+  SET_PROXY_INFO,
+  SET_FIKS_SAKER,
   TURN_OFF_LOADER,
   TURN_ON_LOADER,
   VIS_ERROR_SNACKBAR,
@@ -57,10 +57,9 @@ export const sendNyHendelseOgOppdaterModel = (
     soknadUpdated.fiksDigisosSokerJson,
   );
 
-  const backendUrl = backendUrls[model.backendUrlTypeToUse];
-  const queryParam = `?${FIKSDIGISOSID_URL_PARAM}=${model.aktivSoknad}`;
+  const query = `${FIKSDIGISOSID_URL_PARAM}=${encodeURIComponent(model.aktivSoknad)}`;
   fetchPost(
-    `${backendUrl}${oppdaterDigisosSakUrl}${queryParam}`,
+    proxyUrl("digisosapi/oppdaterDigisosSak", query),
     JSON.stringify(fiksDigisosSokerJsonUtenNull),
   )
     .then(() => {
@@ -77,13 +76,11 @@ export const sendValgbareNavkontorTilMockBackend = (
   dispatch: AppDispatch,
 ) => {
   dispatch(TURN_ON_LOADER());
-  const backendUrl = backendUrls[model.backendUrlTypeToUse];
-  fetch(`${backendUrl}${nyNavEnhetUrl}`, {
+  fetch(proxyUrl("mock/nyNavEnhet"), {
     method: "POST",
     body: JSON.stringify(navKontorListe),
     headers: new Headers({
       "Content-Type": "application/json",
-      Authorization: "Bearer 1234",
       Accept: "*/*",
     }),
   }).catch((reason) => {
@@ -99,12 +96,10 @@ export const sendPdfOgLeggPdfRefTilHendelseOgSend = (
   sendHendelseMedRef: (id: string) => void,
 ) => {
   dispatch(TURN_ON_LOADER());
-  const backendUrl = backendUrls[model.backendUrlTypeToUse];
-  fetch(`${backendUrl}/api/v1/digisosapi/${model.aktivSoknad}/filOpplasting`, {
+  fetch(proxyUrl(`digisosapi/${encodeURIComponent(model.aktivSoknad)}/filOpplasting`), {
     method: "POST",
     body: formData,
     headers: new Headers({
-      Authorization: "Bearer 1234",
       Accept: "*/*",
     }),
   })
@@ -246,13 +241,11 @@ export const sendPdfOgOppdaterDokumentasjonEtterspurt = (
 
 export const opprettDigisosSakHvisDenIkkeFinnes = (
   soknad: FsSoknad,
-  backendUrlTypeToUse: keyof BackendUrls,
   dispatch: AppDispatch,
   fiksDigisosId: string,
   fnr: string,
 ) => {
   dispatch(TURN_ON_LOADER());
-  const backendUrl = backendUrls[backendUrlTypeToUse];
   if (!soknad) {
     soknad = getInitialFsSoknad(fiksDigisosId);
   }
@@ -260,9 +253,9 @@ export const opprettDigisosSakHvisDenIkkeFinnes = (
     soknad.fiksDigisosSokerJson,
   );
 
-  const queryParam = `?${FIKSDIGISOSID_URL_PARAM}=${fiksDigisosId}&fnr=${encodeURIComponent(fnr)}`;
+  const query = `${FIKSDIGISOSID_URL_PARAM}=${encodeURIComponent(fiksDigisosId)}&fnr=${encodeURIComponent(fnr)}`;
   fetchPost(
-    `${backendUrl}${oppdaterDigisosSakUrl}${queryParam}`,
+    proxyUrl("digisosapi/oppdaterDigisosSak", query),
     JSON.stringify(fiksDigisosSokerJsonUtenNull),
   )
     .then((response) => {
@@ -281,14 +274,12 @@ export const opprettDigisosSakHvisDenIkkeFinnes = (
 
 export const hentFsSoknadFraFiksEllerOpprettNy = (
   fiksDigisosId: string,
-  backendUrlTypeToUse: keyof BackendUrls,
   dispatch: AppDispatch,
   fnr: string,
   papirSoknad?: boolean,
 ) => {
   dispatch(TURN_ON_LOADER());
-  const backendUrl = backendUrls[backendUrlTypeToUse];
-  const url = `${backendUrl}/api/v1/digisosapi/${fiksDigisosId}/innsynsfil`;
+  const url = proxyUrl(`digisosapi/${encodeURIComponent(fiksDigisosId)}/innsynsfil`);
   fetch(url, {
     headers: new Headers({
       "Content-Type": "application/json",
@@ -311,7 +302,6 @@ export const hentFsSoknadFraFiksEllerOpprettNy = (
         return opprettNyFsSoknadDersomDigisosIdIkkeEksistererHosFiks(
           fiksDigisosId,
           papirSoknad ?? false,
-          backendUrlTypeToUse,
           dispatch,
           fnr,
         );
@@ -324,19 +314,17 @@ export const hentFsSoknadFraFiksEllerOpprettNy = (
 export const opprettNyFsSoknadDersomDigisosIdIkkeEksistererHosFiks = (
   fiksDigisosId: string,
   papirSoknad: boolean,
-  backendUrlTypeToUse: keyof BackendUrls,
   dispatch: AppDispatch,
   fnr: string,
 ) => {
   dispatch(TURN_ON_LOADER());
-  const backendUrl = backendUrls[backendUrlTypeToUse];
   const fiksDigisosSokerJsonUtenNull = removeNullFieldsFromHendelser(
     getInitialFsSoknad(fiksDigisosId).fiksDigisosSokerJson,
   );
 
-  const queryParams = `?${FIKSDIGISOSID_URL_PARAM}=${fiksDigisosId}&isPapirSoknad=${papirSoknad}&fnr=${encodeURIComponent(fnr)}`;
+  const query = `${FIKSDIGISOSID_URL_PARAM}=${encodeURIComponent(fiksDigisosId)}&isPapirSoknad=${papirSoknad}&fnr=${encodeURIComponent(fnr)}`;
   fetchPost(
-    `${backendUrl}${oppdaterDigisosSakUrl}${queryParams}`,
+    proxyUrl("digisosapi/oppdaterDigisosSak", query),
     JSON.stringify(fiksDigisosSokerJsonUtenNull),
   )
     .then((response) => {
@@ -348,11 +336,26 @@ export const opprettNyFsSoknadDersomDigisosIdIkkeEksistererHosFiks = (
     .finally(() => dispatch(TURN_OFF_LOADER()));
 };
 
-export const hentBrukere = (
-  backendUrlTypeToUse: keyof BackendUrls,
-  dispatch: AppDispatch,
-) => {
-  fetch(mockAltBrukereUrls[backendUrlTypeToUse])
+export const hentProxyInfo = (dispatch: AppDispatch) =>
+  fetch(proxyInfoUrl)
+    .then((response) => response.json() as Promise<ProxyInfo>)
+    .then((info) => {
+      dispatch(SET_PROXY_INFO(info));
+      return info;
+    });
+
+export const hentFiksSaker = (dispatch: AppDispatch) => {
+  fetch(proxyUrl("saker"))
+    .then((response) => {
+      if (!response.ok) throw new Error(response.statusText);
+      return response.json() as Promise<FiksSak[]>;
+    })
+    .then((saker) => dispatch(SET_FIKS_SAKER(saker)))
+    .catch((reason) => console.warn("Kunne ikke hente saker: " + reason.message));
+};
+
+export const hentBrukere = (dispatch: AppDispatch) => {
+  fetch(proxyUrl("brukere"))
     .then((response) => {
       if (!response.ok) {
         throw new Error(response.statusText);

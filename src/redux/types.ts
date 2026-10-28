@@ -13,7 +13,8 @@ import Hendelse, {
 
 export interface Model {
   loaderOn: boolean;
-  backendUrlTypeToUse: keyof BackendUrls;
+  proxyInfo: ProxyInfo | null;
+  fiksSaker: FiksSak[];
   thememode: "light" | "dark";
   fnr: string;
   brukere: Bruker[];
@@ -66,10 +67,17 @@ export interface FsSaksStatus extends SaksStatus {
   dokumentasjonskrav: Dokumentasjonkrav[];
 }
 
-export interface BackendUrls {
-  lokalInnsyn: string;
-  mock: string;
-  lokalMockalt: string;
+/** Sak registrert i sosialhjelp-fagsystem-backend (mottatt via Fiks IO eller opprettet herfra). */
+export interface FiksSak {
+  fiksDigisosId: string;
+  kilde: "FIKS_IO" | "OPPRETTET";
+  opprettet: string;
+  oppdatert: string;
+}
+
+export interface ProxyInfo {
+  target: "mock-alt" | "fiks";
+  innsynUrl: string;
 }
 
 export enum ActionTypeKeys {

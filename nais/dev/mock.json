@@ -3,5 +3,11 @@
   "ingresses": [
     "https://digisos.ekstern.dev.nav.no/sosialhjelp/fagsystem-mock"
   ],
-  "prometheusEnabled": false
+  "prometheusEnabled": false,
+  "target": "mock-alt",
+  "backendHost": "digisos.ekstern.dev.nav.no",
+  "backendBasePath": "/sosialhjelp/mock-alt-api",
+  "backendHttps": "true",
+  "innsynUrl": "https://digisos.ekstern.dev.nav.no/sosialhjelp/innsyn",
+  "outboundHost": "digisos.ekstern.dev.nav.no"
 }

@@ -44,6 +44,9 @@ jobs:
     name: Deploy til dev
     needs: build
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        variant: [mock, fiks]
     steps:
       - uses: actions/checkout@v7
       - name: Deploy
@@ -51,7 +54,7 @@ jobs:
         env:
           RESOURCE: nais.yaml
           CLUSTER: dev-gcp
-          VARS: nais/dev/mock.json
+          VARS: nais/dev/${{ matrix.variant }}.json
           REF: ${{ github.sha }}
           PRINT_PAYLOAD: true
           VAR: image=${{ needs.build.outputs.image }}
