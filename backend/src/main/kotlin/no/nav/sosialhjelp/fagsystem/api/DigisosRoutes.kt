@@ -4,6 +4,7 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.content.PartData
 import io.ktor.http.content.forEachPart
+import io.ktor.server.application.install
 import io.ktor.server.request.receiveMultipart
 import io.ktor.server.request.receiveText
 import io.ktor.server.response.respond
@@ -14,11 +15,17 @@ import io.ktor.server.routing.post
 import io.ktor.server.routing.route
 import io.ktor.utils.io.jvm.javaio.toInputStream
 import no.nav.sosialhjelp.fagsystem.FagsystemService
+import no.nav.sosialhjelp.fagsystem.auth.AzureAuth
+import no.nav.sosialhjelp.fagsystem.auth.azureAuthPlugin
 
 private const val MAKS_FILSTORRELSE = 10L * 1024 * 1024
 
-fun Route.digisosRoutes(service: FagsystemService) {
+fun Route.digisosRoutes(
+    service: FagsystemService,
+    azureAuth: AzureAuth?,
+) {
     route("/api/v1") {
+        install(azureAuthPlugin(azureAuth))
         post("/digisosapi/oppdaterDigisosSak") {
             val fiksDigisosId = call.request.queryParameters["fiksDigisosId"]
             val fnr = call.request.queryParameters["fnr"]

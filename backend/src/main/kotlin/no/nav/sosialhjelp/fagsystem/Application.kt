@@ -20,14 +20,12 @@ import io.ktor.server.request.path
 import io.ktor.server.response.respond
 import io.ktor.server.response.respondText
 import io.ktor.server.routing.get
-import io.ktor.server.routing.route
 import io.ktor.server.routing.routing
 import io.micrometer.prometheusmetrics.PrometheusConfig
 import io.micrometer.prometheusmetrics.PrometheusMeterRegistry
 import no.nav.sosialhjelp.fagsystem.api.digisosRoutes
 import no.nav.sosialhjelp.fagsystem.auth.AzureAuth
 import no.nav.sosialhjelp.fagsystem.auth.TexasClient
-import no.nav.sosialhjelp.fagsystem.auth.azureAuthPlugin
 import no.nav.sosialhjelp.fagsystem.db.Database
 import no.nav.sosialhjelp.fagsystem.db.SakRepository
 import no.nav.sosialhjelp.fagsystem.fiks.FiksDigisosClient
@@ -114,10 +112,7 @@ fun Application.module(config: AppConfig) {
         get("/internal/isReady") { call.respondText("READY") }
         get("/internal/prometheus") { call.respondText(prometheus.scrape()) }
 
-        route("") {
-            install(azureAuthPlugin(azureAuth))
-            digisosRoutes(service)
-        }
+        digisosRoutes(service, azureAuth)
     }
 
     monitor.subscribe(ApplicationStopped) {
