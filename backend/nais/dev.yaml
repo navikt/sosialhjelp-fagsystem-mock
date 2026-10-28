@@ -55,10 +55,12 @@ spec:
       value: https://api.fiks.test.ks.no
     - name: FIKS_MASKINPORTEN_SCOPE
       value: "ks:fiks"
-  # Hemmeligheter (opprettes manuelt i Nais Console, placeholder inntil videre):
-  # FIKS_ORG_ID, FIKS_INTEGRASJON_ID, FIKS_INTEGRASJON_PASSORD,
+    - name: FIKS_ORG_ID
+      value: "0eb83fd2-e2d4-45cd-adde-631c4e1df537"
+  # Fiks IO er ikke konfigurert ennå. Når nøklene er avklart, trengs:
   # FIKS_IO_KONTO_ID, FIKS_IO_PRIVATE_KEY,
   # VIRKSOMHETSSERTIFIKAT_KEYSTORE, VIRKSOMHETSSERTIFIKAT_KEYSTORE_PASSWORD,
   # VIRKSOMHETSSERTIFIKAT_KEY_ALIAS, VIRKSOMHETSSERTIFIKAT_KEY_PASSWORD
   envFrom:
-    - secret: sosialhjelp-fagsystem-backend-fiks
+    # Gir FIKS_INTEGRASJON_ID og FIKS_INTEGRASJON_PASSORD
+    - secret: fs-fiks-integrasjon-id
