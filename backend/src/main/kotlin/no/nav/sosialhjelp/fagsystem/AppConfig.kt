@@ -84,15 +84,17 @@ data class FiksConfig(
     }
 }
 
+/** Plassering av virksomhetssertifikatet i GCP Secret Manager. Ingen hemmeligheter. */
+data class SecretRef(val projectId: String, val secretId: String, val version: String)
+
 data class FiksIoConfig(
     val kontoId: UUID,
     /** PKCS#8 PEM, privatnøkkel for Fiks IO-kontoen. */
     val privatNokkelPem: String,
-    /** Base64-kodet PKCS#12 keystore med virksomhetssertifikat. */
-    val virksomhetssertifikatKeystore: String,
-    val keystorePassord: String,
-    val keyAlias: String,
-    val keyPassord: String,
+    /** JCEKS-keystore med virksomhetssertifikat. */
+    val keystore: SecretRef,
+    /** JSON med alias, password og type for keystoren. */
+    val keystoreCredentials: SecretRef,
 ) {
     override fun toString() = "FiksIoConfig(kontoId=$kontoId, nøkler=<redacted>)"
 
@@ -101,11 +103,19 @@ data class FiksIoConfig(
             val kontoId = env["FIKS_IO_KONTO_ID"]?.takeUnless(::isPlaceholder) ?: return null
             return FiksIoConfig(
                 kontoId = UUID.fromString(kontoId),
-                privatNokkelPem = env["FIKS_IO_PRIVATE_KEY"] ?: return null,
-                virksomhetssertifikatKeystore = env["VIRKSOMHETSSERTIFIKAT_KEYSTORE"] ?: return null,
-                keystorePassord = env["VIRKSOMHETSSERTIFIKAT_KEYSTORE_PASSWORD"] ?: return null,
-                keyAlias = env["VIRKSOMHETSSERTIFIKAT_KEY_ALIAS"] ?: return null,
-                keyPassord = env["VIRKSOMHETSSERTIFIKAT_KEY_PASSWORD"] ?: return null,
+                privatNokkelPem = env["FIKS_IO_PRIVATE_KEY"]?.takeUnless(::isPlaceholder) ?: return null,
+                keystore =
+                    SecretRef(
+                        env["VIRKSOMHETSSERTIFIKAT_PROJECT_ID"] ?: return null,
+                        env["VIRKSOMHETSSERTIFIKAT_SECRET_ID"] ?: return null,
+                        env["VIRKSOMHETSSERTIFIKAT_VERSION_ID"] ?: return null,
+                    ),
+                keystoreCredentials =
+                    SecretRef(
+                        env["VIRKSOMHETSSERTIFIKAT_PASSWORD_PROJECT_ID"] ?: return null,
+                        env["VIRKSOMHETSSERTIFIKAT_PASSWORD_SECRET_ID"] ?: return null,
+                        env["VIRKSOMHETSSERTIFIKAT_PASSWORD_VERSION_ID"] ?: return null,
+                    ),
             )
         }
     }

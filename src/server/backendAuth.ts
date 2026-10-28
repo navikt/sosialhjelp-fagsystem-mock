@@ -13,10 +13,6 @@ export class AuthError extends Error {
   }
 }
 
-/**
- * 🔴 Rød sone: validerer brukerens Azure-token før OBO-veksling.
- * Oasis bruker Nais/Texas og cacher OBO-tokenet frem til det utløper.
- */
 export const getOboToken = async (request: Request): Promise<string> => {
   const scope = process.env.FAGSYSTEM_BACKEND_SCOPE;
   if (!scope) {

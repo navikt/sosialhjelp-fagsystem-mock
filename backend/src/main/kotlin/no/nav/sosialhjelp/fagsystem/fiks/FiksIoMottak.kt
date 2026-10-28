@@ -1,6 +1,7 @@
 package no.nav.sosialhjelp.fagsystem.fiks
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import no.ks.fiks.io.client.FiksIOKlient
 import no.ks.fiks.io.client.FiksIOKlientFactory
@@ -15,9 +16,7 @@ import no.nav.sosialhjelp.fagsystem.FiksIoConfig
 import no.nav.sosialhjelp.fagsystem.auth.TexasClient
 import no.nav.sosialhjelp.fagsystem.db.SakRepository
 import org.slf4j.LoggerFactory
-import java.io.ByteArrayInputStream
 import java.security.KeyFactory
-import java.security.KeyStore
 import java.security.PrivateKey
 import java.security.spec.PKCS8EncodedKeySpec
 import java.util.Base64
@@ -29,8 +28,6 @@ const val MELDINGSTYPE_SOKNAD_MOTTATT = "no.nav.digisos.soknad.mottatt.v1"
 const val MELDINGSTYPE_ETTERSENDELSE_MOTTATT = "no.nav.digisos.ettersendelse.mottatt.v1"
 
 /**
- * 🔴 Rød sone: mottar krypterte søknader fra Fiks Digisos via Fiks IO.
- *
  * For hver søknad: les digisosId fra meldingen, lagre saken, kvitter med
  * "mottatt" og ack. Uten kvittering faller Fiks tilbake til SvarUt.
  * Søknadsinnholdet (personopplysninger) lagres ikke og logges ikke.
@@ -46,6 +43,7 @@ class FiksIoMottak(
     private var klient: FiksIOKlient? = null
 
     fun start() {
+        val sertifikat = Virksomhetssertifikat.hent(ioConfig.keystore, ioConfig.keystoreCredentials, objectMapper)
         val konfig =
             FiksIOKonfigurasjon.defaultTestConfiguration(
                 PLACEHOLDER_IKKE_BRUKT,
@@ -56,16 +54,16 @@ class FiksIoMottak(
                     .privatNokkel(lesPrivatNokkel(ioConfig.privatNokkelPem))
                     .build(),
                 VirksomhetssertifikatKonfigurasjon.builder()
-                    .keyStore(lesKeystore(ioConfig.virksomhetssertifikatKeystore, ioConfig.keystorePassord))
-                    .keyStorePassword(ioConfig.keystorePassord)
-                    .keyAlias(ioConfig.keyAlias)
-                    .keyPassword(ioConfig.keyPassord)
+                    .keyStore(sertifikat.keyStore)
+                    .keyStorePassword(sertifikat.credentials.password)
+                    .keyAlias(sertifikat.credentials.alias)
+                    .keyPassword(sertifikat.credentials.password)
                     .build(),
             )
         klient =
             FiksIOKlientFactory(konfig)
                 .setMaskinportenAccessTokenSupplier {
-                    runBlocking { texas.maskinportenToken(fiksConfig.maskinportenScope) }
+                    runBlocking(Dispatchers.IO) { texas.maskinportenToken(fiksConfig.maskinportenScope) }
                 }.build()
                 .also { it.newSubscription(::handle) }
         log.info("Fiks IO-mottak startet for konto ${ioConfig.kontoId}")
@@ -119,9 +117,9 @@ class FiksIoMottak(
     }
 
     private companion object {
-        // Første parameter i defaultTestConfiguration er Maskinporten-audience for virksomhetssertifikat-flyten.
-        // Den brukes ikke når vi gir egen token-supplier (Texas).
-        const val PLACEHOLDER_IKKE_BRUKT = "https://test.maskinporten.no/"
+        // Første parameter i defaultTestConfiguration er Maskinporten-klient-ID. Den brukes bare når
+        // klienten henter Maskinporten-token selv. Vi gir egen token-supplier (Texas), så verdien er ubrukt.
+        const val PLACEHOLDER_IKKE_BRUKT = "ubrukt-token-kommer-fra-texas"
 
         fun lesPrivatNokkel(pem: String): PrivateKey {
             val base64 =
@@ -129,10 +127,5 @@ class FiksIoMottak(
                     .replace(Regex("\\s"), "")
             return KeyFactory.getInstance("RSA").generatePrivate(PKCS8EncodedKeySpec(Base64.getDecoder().decode(base64)))
         }
-
-        fun lesKeystore(base64: String, passord: String): KeyStore =
-            KeyStore.getInstance("PKCS12").apply {
-                load(ByteArrayInputStream(Base64.getDecoder().decode(base64)), passord.toCharArray())
-            }
     }
 }

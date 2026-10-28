@@ -26,8 +26,6 @@ import java.util.UUID
 class FiksException(message: String, val status: Int) : RuntimeException(message)
 
 /**
- * 🔴 Rød sone: integrasjon mot Fiks Digisos Sak API.
- *
  * Autentisering: Maskinporten-token (via Texas) + IntegrasjonId/IntegrasjonPassord.
  * Filer krypteres med Fiks Dokumentlager sin offentlige nøkkel før opplasting
  * (håndteres av digisos-klient).

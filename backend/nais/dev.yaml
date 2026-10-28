@@ -57,10 +57,21 @@ spec:
       value: "ks:fiks"
     - name: FIKS_ORG_ID
       value: "0eb83fd2-e2d4-45cd-adde-631c4e1df537"
-  # Fiks IO er ikke konfigurert ennå. Når nøklene er avklart, trengs:
-  # FIKS_IO_KONTO_ID, FIKS_IO_PRIVATE_KEY,
-  # VIRKSOMHETSSERTIFIKAT_KEYSTORE, VIRKSOMHETSSERTIFIKAT_KEYSTORE_PASSWORD,
-  # VIRKSOMHETSSERTIFIKAT_KEY_ALIAS, VIRKSOMHETSSERTIFIKAT_KEY_PASSWORD
+    # Felles test-virksomhetssertifikat i GCP Secret Manager (krever secretAccessor)
+    - name: VIRKSOMHETSSERTIFIKAT_PROJECT_ID
+      value: virksomhetssertifikat-dev
+    - name: VIRKSOMHETSSERTIFIKAT_SECRET_ID
+      value: test-virksomhetssertifikat-felles-keystore-jceks_2018-2021
+    - name: VIRKSOMHETSSERTIFIKAT_VERSION_ID
+      value: "4"
+    - name: VIRKSOMHETSSERTIFIKAT_PASSWORD_PROJECT_ID
+      value: virksomhetssertifikat-dev
+    - name: VIRKSOMHETSSERTIFIKAT_PASSWORD_SECRET_ID
+      value: test-keystore-credentials-json
+    - name: VIRKSOMHETSSERTIFIKAT_PASSWORD_VERSION_ID
+      value: "3"
   envFrom:
     # Gir FIKS_INTEGRASJON_ID og FIKS_INTEGRASJON_PASSORD
     - secret: fs-fiks-integrasjon-id
+    # Gir FIKS_IO_KONTO_ID og FIKS_IO_PRIVATE_KEY
+    - secret: fs-fiks-io

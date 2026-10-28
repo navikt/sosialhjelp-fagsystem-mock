@@ -12,8 +12,6 @@ import no.nav.sosialhjelp.fagsystem.AzureConfig
 import org.slf4j.LoggerFactory
 
 /**
- * 🔴 Rød sone: tilgangskontroll.
- *
  * Validerer Azure AD-token via Texas og sjekker at kallende app (azp) er
  * forhåndsautorisert i AZURE_APP_PRE_AUTHORIZED_APPS. Kun fagsystem-mock-fiks
  * skal stå der (styres av accessPolicy.inbound i nais).

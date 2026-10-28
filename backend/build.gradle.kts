@@ -43,6 +43,7 @@ dependencies {
     implementation("no.ks.fiks:digisos-klient:3.0.1")
     implementation("no.ks.fiks:fiks-io-klient-java:3.4.5")
     implementation("no.ks.fiks:kryptering:2.0.8")
+    implementation("com.google.cloud:google-cloud-secretmanager:2.62.0")
 
     // Logging
     implementation("ch.qos.logback:logback-classic:1.6.6")
