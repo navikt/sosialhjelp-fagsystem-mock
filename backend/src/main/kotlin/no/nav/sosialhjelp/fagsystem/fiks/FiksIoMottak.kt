@@ -16,6 +16,7 @@ import no.nav.sosialhjelp.fagsystem.FiksIoConfig
 import no.nav.sosialhjelp.fagsystem.auth.TexasClient
 import no.nav.sosialhjelp.fagsystem.db.SakRepository
 import org.slf4j.LoggerFactory
+import java.io.OutputStream
 import java.security.KeyFactory
 import java.security.PrivateKey
 import java.security.spec.PKCS8EncodedKeySpec
@@ -100,16 +101,22 @@ class FiksIoMottak(
 
     /** Finner JSON-filen i meldingen som inneholder digisosId (no.nav.digisos.soknad.v1-skjemaet). */
     private fun lesMetadata(melding: MottattMelding): Metadata {
+        var funnet: Metadata? = null
+        // Strømmen må leses helt ut før den lukkes, ellers feiler skrivetråden i
+        // fiks-io-klienten med "Pipe closed".
         melding.dekryptertZipStream.use { zip ->
             while (true) {
                 val entry = zip.nextEntry ?: break
-                if (!entry.name.endsWith(".json")) continue
+                if (funnet != null || !entry.name.endsWith(".json")) {
+                    zip.transferTo(OutputStream.nullOutputStream())
+                    continue
+                }
                 val node = runCatching { objectMapper.readTree(zip.readAllBytes()) }.getOrNull() ?: continue
                 val digisosId = node.path("digisosId").asText(null) ?: continue
-                return Metadata(UUID.fromString(digisosId), node.path("eksternRef").asText(null))
+                funnet = Metadata(UUID.fromString(digisosId), node.path("eksternRef").asText(null))
             }
         }
-        throw IllegalArgumentException("Fant ikke digisosId i meldingen")
+        return funnet ?: throw IllegalArgumentException("Fant ikke digisosId i meldingen")
     }
 
     override fun close() {
