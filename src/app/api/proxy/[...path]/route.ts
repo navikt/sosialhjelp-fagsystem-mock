@@ -53,7 +53,7 @@ const proxy = async (
       bearerToken,
     });
   } catch (e) {
-    console.error(`Fikk ikke kontakt med ${target}-backend:`, (e as Error).message);
+    console.error(`Fikk ikke kontakt med ${target}-backend:`, (e as Error).message, (e as Error).cause);
     return NextResponse.json({ error: "Backend utilgjengelig" }, { status: 502 });
   }
 };
