@@ -43,12 +43,13 @@ const proxy = async (
   const basePath = process.env.FAGSYSTEM_BACKEND_BASE_PATH ?? "";
   const port = process.env.FAGSYSTEM_BACKEND_PORT || undefined;
   const https = process.env.FAGSYSTEM_BACKEND_HTTPS === "true";
+  const trailingSlash = resolved.path.endsWith("/") ? "/" : "";
   try {
     return await proxyRouteHandler(request, {
       hostname,
       port,
       https,
-      path: `/${[basePath, resolved.path].map((part) => part.replace(/^\/+|\/+$/g, "")).filter(Boolean).join("/")}`,
+      path: `/${[basePath, resolved.path].map((part) => part.replace(/^\/+|\/+$/g, "")).filter(Boolean).join("/")}${trailingSlash}`,
       bearerToken,
     });
   } catch (e) {
