@@ -6,6 +6,7 @@
   "prometheusEnabled": false,
   "target": "fiks",
   "backendHost": "sosialhjelp-fagsystem-backend",
+  "backendPort": "80",
   "backendBasePath": "",
   "backendHttps": "false",
   "backendScope": "api://dev-gcp.teamdigisos.sosialhjelp-fagsystem-backend/.default",
