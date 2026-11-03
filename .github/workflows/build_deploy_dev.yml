@@ -1,13 +1,24 @@
 name: Build and deploy to dev
 
 on:
+  push:
+    branches:
+      - main
+    tags-ignore:
+      - "**"
+    paths-ignore:
+      - "backend/**"
+      - ".github/workflows/backend.yml"
   workflow_dispatch:
   schedule:
     - cron: '0 2 * * *'
 
 permissions:
   contents: read
-  id-token: write
+
+concurrency:
+  group: deploy-dev
+  cancel-in-progress: false
 
 jobs:
   build:
@@ -44,6 +55,9 @@ jobs:
     name: Deploy til dev
     needs: build
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
     strategy:
       matrix:
         variant: [mock, fiks]
