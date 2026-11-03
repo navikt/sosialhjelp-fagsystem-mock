@@ -21,14 +21,19 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  build:
-    name: Build and push docker image
+  build-deploy:
+    name: Build and deploy ${{ matrix.variant }}
     runs-on: ubuntu-latest
     permissions:
       contents: read
       id-token: write
-    outputs:
-      image: ${{ steps.docker-push.outputs.image }}
+    strategy:
+      matrix:
+        include:
+          - variant: mock
+            base_path: /sosialhjelp/fagsystem-mock
+          - variant: fiks
+            base_path: /sosialhjelp/fagsystem-fiks
     steps:
       - uses: actions/checkout@v7
       - uses: pnpm/action-setup@v6
@@ -45,24 +50,14 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.READER_TOKEN }}
       - name: Build application
         run: pnpm run build
+        env:
+          NEXT_PUBLIC_BASE_PATH: ${{ matrix.base_path }}
       - uses: nais/docker-build-push@v0
         id: docker-push
         with:
           team: teamdigisos
           tag: latest
-
-  deploy:
-    name: Deploy til dev
-    needs: build
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      id-token: write
-    strategy:
-      matrix:
-        variant: [mock, fiks]
-    steps:
-      - uses: actions/checkout@v7
+          image_suffix: ${{ matrix.variant }}
       - name: Deploy
         uses: nais/deploy/actions/deploy@v2
         env:
@@ -71,4 +66,4 @@ jobs:
           VARS: nais/dev/${{ matrix.variant }}.json
           REF: ${{ github.sha }}
           PRINT_PAYLOAD: true
-          VAR: image=${{ needs.build.outputs.image }}
+          VAR: image=${{ steps.docker-push.outputs.image }}

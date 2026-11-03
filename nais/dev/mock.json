@@ -3,6 +3,7 @@
   "ingresses": [
     "https://digisos.ekstern.dev.nav.no/sosialhjelp/fagsystem-mock"
   ],
+  "basePath": "/sosialhjelp/fagsystem-mock",
   "prometheusEnabled": false,
   "target": "mock-alt",
   "backendHost": "sosialhjelp-mock-alt-api-mock",

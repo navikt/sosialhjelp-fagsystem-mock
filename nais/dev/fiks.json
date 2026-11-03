@@ -1,8 +1,9 @@
 {
   "applicationName": "sosialhjelp-fagsystem-mock-fiks",
   "ingresses": [
-    "https://sosialhjelp-fagsystem-mock-fiks.ansatt.dev.nav.no/sosialhjelp/fagsystem-mock"
+    "https://digisos.ansatt.dev.nav.no/sosialhjelp/fagsystem-fiks"
   ],
+  "basePath": "/sosialhjelp/fagsystem-fiks",
   "prometheusEnabled": false,
   "target": "fiks",
   "backendHost": "sosialhjelp-fagsystem-backend",

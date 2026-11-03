@@ -23,4 +23,4 @@ jobs:
           VARS: nais/dev/${{ matrix.variant }}.json
           REF: ${{ github.sha }}
           PRINT_PAYLOAD: true
-          VAR: image=europe-north1-docker.pkg.dev/nais-management-233d/teamdigisos/sosialhjelp-fagsystem-mock-mock:latest
+          VAR: image=europe-north1-docker.pkg.dev/nais-management-233d/teamdigisos/sosialhjelp-fagsystem-mock-${{ matrix.variant }}:latest

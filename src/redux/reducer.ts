@@ -40,8 +40,9 @@ export const defaultDokumentlagerRef: DokumentlagerExtended = {
 };
 
 /** Alle backend-kall går via proxyen på Next-serveren. Målet (mock-alt-api eller Fiks) settes per miljø. */
-export const proxyBaseUrl: string = "/sosialhjelp/fagsystem-mock/api/proxy";
-export const proxyInfoUrl: string = "/sosialhjelp/fagsystem-mock/api/proxy-info/";
+const basePath: string = process.env.NEXT_PUBLIC_BASE_PATH ?? "/sosialhjelp/fagsystem-mock";
+export const proxyBaseUrl: string = `${basePath}/api/proxy`;
+export const proxyInfoUrl: string = `${basePath}/api/proxy-info/`;
 
 export const proxyUrl = (path: string, query?: string): string =>
   `${proxyBaseUrl}/${path}/${query ? `?${query}` : ""}`;
