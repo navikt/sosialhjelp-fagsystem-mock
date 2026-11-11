@@ -29,6 +29,7 @@ spec:
     application:
       enabled: true
       tenant: nav.no
+      allowAllUsers: true
   maskinporten:
     enabled: true
     scopes:
