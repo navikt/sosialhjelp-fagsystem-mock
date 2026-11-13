@@ -59,7 +59,7 @@ jobs:
           tag: latest
           image_suffix: ${{ matrix.variant }}
       - name: Deploy
-        uses: nais/deploy/actions/deploy@v2
+        uses: nais/deploy/actions/deploy@v3
         env:
           RESOURCE: nais.yaml
           CLUSTER: dev-gcp
