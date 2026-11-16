@@ -98,7 +98,7 @@ const VedtakFattetView: React.FC<Props> = ({ soknad, sak }: Props) => {
               vedtaksfil: {
                 referanse: {
                   type: defaultDokumentlagerRef.type,
-                  id: defaultDokumentlagerRef.id,
+                  id: crypto.randomUUID(),
                 },
               },
               vedlegg: [],
