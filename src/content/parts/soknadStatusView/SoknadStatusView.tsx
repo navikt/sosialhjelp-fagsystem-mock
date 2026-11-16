@@ -95,7 +95,7 @@ const SoknadStatusView = ({ soknad }: Props) => {
         <Heading level="3" size="small">
           Foreløpig svar
         </Heading>
-        <ForelopigSvarButton soknad={soknad} />
+        <ForelopigSvarButton />
         <BodyShort>
           {"Antall sendt: " + getAntallForelopigSvarHendelser()}
         </BodyShort>

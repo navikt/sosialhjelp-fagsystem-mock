@@ -1,48 +1,16 @@
 import { Button } from "@navikt/ds-react";
-import { ForelopigSvar, HendelseType } from "../../../types/hendelseTypes";
-import { getNow } from "../../../utils/utilityFunctions";
-import {
-  defaultDokumentlagerRef,
-  OPPDATER_FORELOPIG_SVAR,
-} from "../../../redux/reducer";
-import { sendNyHendelseOgOppdaterModel } from "../../../redux/actions";
-import { RootState } from "../../../store";
-import { FsSoknad } from "../../../redux/types";
-import { useDispatch, useSelector } from "react-redux";
+import { sendPdfOgOppdaterForelopigSvar } from "../../../redux/actions";
+import { useAppDispatch } from "../../../store";
+import { lagDummyPdfFormData } from "../../../utils/dummyPdf";
 
-interface Props {
-  soknad: FsSoknad;
-}
-
-const ForelopigSvarButton = ({ soknad }: Props) => {
-  const model = useSelector((state: RootState) => state.model);
-  const dispatch = useDispatch();
+const ForelopigSvarButton = () => {
+  const dispatch = useAppDispatch();
 
   return (
     <Button
       size="small"
       onClick={() => {
-        const nyHendelse: ForelopigSvar = {
-          type: HendelseType.ForelopigSvar,
-          hendelsestidspunkt: getNow(),
-          forvaltningsbrev: {
-            referanse: {
-              type: defaultDokumentlagerRef.type,
-              id: defaultDokumentlagerRef.id,
-            },
-          },
-          vedlegg: [],
-        };
-
-        sendNyHendelseOgOppdaterModel(
-          nyHendelse,
-          model,
-          dispatch,
-          OPPDATER_FORELOPIG_SVAR({
-            forFiksDigisosId: soknad.fiksDigisosId,
-            nyttForelopigSvar: nyHendelse,
-          }),
-        );
+        dispatch(sendPdfOgOppdaterForelopigSvar(lagDummyPdfFormData("Forelopig svar")));
       }}
     >
       {"Send foreløpig svar"}

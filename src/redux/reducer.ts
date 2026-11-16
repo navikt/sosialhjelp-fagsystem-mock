@@ -10,9 +10,7 @@ import {
   DigisosSokerJson,
   DokumentasjonEtterspurt,
   Dokumentasjonkrav,
-  DokumentlagerExtended,
   FiksDigisosSokerJson,
-  FilreferanseType,
   ForelopigSvar,
   HendelseType,
   SaksStatus,
@@ -32,12 +30,6 @@ import {
   sorterEtterDatoStigende,
 } from "../utils/hentSoknadUtils";
 import { ReadonlyURLSearchParams } from "next/navigation";
-
-export const defaultDokumentlagerRef: DokumentlagerExtended = {
-  type: FilreferanseType.dokumentlager,
-  id: "2c75227d-64f8-4db6-b718-3b6dd6beb450",
-  tittel: "01 - qwer - dokumentalger",
-};
 
 /** Alle backend-kall går via proxyen på Next-serveren. Målet (mock-alt-api eller Fiks) settes per miljø. */
 const basePath: string = process.env.NEXT_PUBLIC_BASE_PATH ?? "/sosialhjelp/fagsystem-mock";

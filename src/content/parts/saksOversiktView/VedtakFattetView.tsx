@@ -2,22 +2,11 @@ import React, { useRef, useState } from "react";
 import { RootState } from "../../../store";
 import { useDispatch, useSelector } from "react-redux";
 
-import {
-  sendNyHendelseOgOppdaterModel,
-  sendPdfOgOppdaterVedtakFattet,
-} from "../../../redux/actions";
-import {
-  HendelseType,
-  Utfall,
-  VedtakFattet,
-} from "../../../types/hendelseTypes";
-import { getNow } from "../../../utils/utilityFunctions";
+import { sendPdfOgOppdaterVedtakFattet } from "../../../redux/actions";
+import { Utfall } from "../../../types/hendelseTypes";
+import { lagDummyPdfFormData } from "../../../utils/dummyPdf";
 import { FsSaksStatus, FsSoknad } from "../../../redux/types";
 
-import {
-  defaultDokumentlagerRef,
-  OPPDATER_VEDTAK_FATTET,
-} from "../../../redux/reducer";
 import { Button, Select } from "@navikt/ds-react";
 import globals from "../../../app/globals.module.css";
 
@@ -26,7 +15,7 @@ interface Props {
   sak: FsSaksStatus;
 }
 
-const VedtakFattetView: React.FC<Props> = ({ soknad, sak }: Props) => {
+const VedtakFattetView: React.FC<Props> = ({ sak }: Props) => {
   const [vedtakFattetUtfall, setVedtakFattetUtfall] = useState<Utfall | null>(
     null,
   );
@@ -90,28 +79,12 @@ const VedtakFattetView: React.FC<Props> = ({ soknad, sak }: Props) => {
           size="small"
           variant="secondary-neutral"
           onClick={() => {
-            const nyHendelse: VedtakFattet = {
-              type: HendelseType.VedtakFattet,
-              hendelsestidspunkt: getNow(),
-              saksreferanse: sak.referanse,
-              utfall: vedtakFattetUtfall,
-              vedtaksfil: {
-                referanse: {
-                  type: defaultDokumentlagerRef.type,
-                  id: crypto.randomUUID(),
-                },
-              },
-              vedlegg: [],
-            };
-
-            sendNyHendelseOgOppdaterModel(
-              nyHendelse,
+            sendPdfOgOppdaterVedtakFattet(
+              lagDummyPdfFormData("Vedtak"),
+              vedtakFattetUtfall,
+              sak.referanse,
               model,
               dispatch,
-              OPPDATER_VEDTAK_FATTET({
-                forFiksDigisosId: soknad.fiksDigisosId,
-                oppdatertVedtakFattet: nyHendelse,
-              }),
             );
           }}
         >

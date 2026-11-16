@@ -104,10 +104,10 @@ export const sendPdfOgLeggPdfRefTilHendelseOgSend = (
     }),
   })
     .then((response: Response) => {
-      response.text().then((id: string) => {
-        sendHendelseMedRef(id);
-      });
+      if (!response.ok) throw new Error(`Filopplasting feilet (${response.status})`);
+      return response.text();
     })
+    .then(sendHendelseMedRef)
     .catch((reason) => {
       runOnErrorResponse(reason, dispatch);
       dispatch(TURN_OFF_LOADER());
@@ -118,6 +118,7 @@ export const sendPdfOgOppdaterForelopigSvar =
   (formData: FormData) =>
   async (dispatch: AppDispatch, getState: () => RootState) => {
     dispatch(TURN_ON_LOADER());
+    const model = getState().model;
     const sendForelopigSvarMedRef = (id: string) => {
       const nyHendelse: ForelopigSvar = {
         type: HendelseType.ForelopigSvar,
@@ -133,17 +134,17 @@ export const sendPdfOgOppdaterForelopigSvar =
 
       sendNyHendelseOgOppdaterModel(
         nyHendelse,
-        getState().model,
+        model,
         dispatch,
         OPPDATER_FORELOPIG_SVAR({
-          forFiksDigisosId: getState().model.aktivSoknad,
+          forFiksDigisosId: model.aktivSoknad,
           nyttForelopigSvar: nyHendelse,
         }),
       );
     };
     sendPdfOgLeggPdfRefTilHendelseOgSend(
       formData,
-      getState().model,
+      model,
       dispatch,
       sendForelopigSvarMedRef,
     );
@@ -170,15 +171,7 @@ export const sendPdfOgOppdaterVedtakFattet = (
           id: id,
         },
       },
-      vedlegg: [
-        {
-          tittel: "",
-          referanse: {
-            type: FilreferanseType.dokumentlager,
-            id: id,
-          },
-        },
-      ],
+      vedlegg: [],
     };
     sendNyHendelseOgOppdaterModel(
       nyHendelse,
