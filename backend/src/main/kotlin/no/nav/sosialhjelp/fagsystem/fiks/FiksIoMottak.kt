@@ -30,8 +30,8 @@ const val MELDINGSTYPE_SOKNAD_MOTTATT = "no.nav.digisos.soknad.mottatt.v1"
 const val MELDINGSTYPE_ETTERSENDELSE_MOTTATT = "no.nav.digisos.ettersendelse.mottatt.v1"
 
 /**
- * For hver søknad: les digisosId fra meldingen, lagre saken, kvitter med
- * "mottatt", ack og opprett initiell innsynsfil. Uten kvittering faller Fiks tilbake til SvarUt.
+ * For hver søknad: les digisosId fra meldingen, lagre saken, opprett initiell
+ * innsynsfil, kvitter med "mottatt" og ack. Uten kvittering faller Fiks tilbake til SvarUt.
  * Søknadsinnholdet (personopplysninger) lagres ikke og logges ikke.
  */
 class FiksIoMottak(
@@ -74,7 +74,6 @@ class FiksIoMottak(
 
     internal fun handle(melding: MottattMelding, svar: SvarSender) {
         try {
-            var digisosIdForInnsynsfil: UUID? = null
             when (melding.meldingType) {
                 MELDINGSTYPE_SOKNAD -> {
                     val metadata = lesMetadata(melding)
@@ -84,9 +83,9 @@ class FiksIoMottak(
                         eksternRef = metadata.eksternRef,
                         meldingId = melding.meldingId.uuid,
                     )
+                    runBlocking(Dispatchers.IO) { service.opprettInitiellInnsynsfil(metadata.digisosId) }
                     svar.svar(MELDINGSTYPE_SOKNAD_MOTTATT)
                     log.info("Mottok søknad digisosId=${metadata.digisosId}")
-                    digisosIdForInnsynsfil = metadata.digisosId
                 }
                 MELDINGSTYPE_ETTERSENDELSE -> {
                     svar.svar(MELDINGSTYPE_ETTERSENDELSE_MOTTATT)
@@ -95,13 +94,6 @@ class FiksIoMottak(
                 else -> log.warn("Ukjent meldingstype ${melding.meldingType}, ack uten svar")
             }
             svar.ack()
-            digisosIdForInnsynsfil?.let { digisosId ->
-                try {
-                    runBlocking(Dispatchers.IO) { service.opprettInitiellInnsynsfil(digisosId) }
-                } catch (e: Exception) {
-                    log.error("Feil ved oppretting av innsynsfil digisosId=$digisosId: ${e.javaClass.simpleName}")
-                }
-            }
         } catch (e: Exception) {
             log.error("Feil ved håndtering av Fiks IO-melding ${melding.meldingId.uuid}: ${e.javaClass.simpleName}")
             svar.nackWithRequeue()
