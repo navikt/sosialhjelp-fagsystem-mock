@@ -54,6 +54,7 @@ dependencies {
     testImplementation("io.ktor:ktor-client-mock:$ktorVersion")
     testImplementation("io.kotest:kotest-assertions-core-jvm:6.2.6")
     testImplementation("org.testcontainers:testcontainers-postgresql:2.0.5")
+    testImplementation("io.mockk:mockk:1.14.12")
 }
 
 tasks.test {

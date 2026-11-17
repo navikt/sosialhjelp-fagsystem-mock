@@ -12,6 +12,7 @@ import no.ks.fiks.io.client.konfigurasjon.VirksomhetssertifikatKonfigurasjon
 import no.ks.fiks.io.client.model.KontoId
 import no.ks.fiks.io.client.model.MottattMelding
 import no.nav.sosialhjelp.fagsystem.FiksConfig
+import no.nav.sosialhjelp.fagsystem.FagsystemService
 import no.nav.sosialhjelp.fagsystem.FiksIoConfig
 import no.nav.sosialhjelp.fagsystem.auth.TexasClient
 import no.nav.sosialhjelp.fagsystem.db.SakRepository
@@ -30,7 +31,7 @@ const val MELDINGSTYPE_ETTERSENDELSE_MOTTATT = "no.nav.digisos.ettersendelse.mot
 
 /**
  * For hver søknad: les digisosId fra meldingen, lagre saken, kvitter med
- * "mottatt" og ack. Uten kvittering faller Fiks tilbake til SvarUt.
+ * "mottatt", ack og opprett initiell innsynsfil. Uten kvittering faller Fiks tilbake til SvarUt.
  * Søknadsinnholdet (personopplysninger) lagres ikke og logges ikke.
  */
 class FiksIoMottak(
@@ -39,6 +40,7 @@ class FiksIoMottak(
     private val texas: TexasClient,
     private val repository: SakRepository,
     private val objectMapper: ObjectMapper,
+    private val service: FagsystemService,
 ) : AutoCloseable {
     private val log = LoggerFactory.getLogger(FiksIoMottak::class.java)
     private var klient: FiksIOKlient? = null
@@ -72,6 +74,7 @@ class FiksIoMottak(
 
     internal fun handle(melding: MottattMelding, svar: SvarSender) {
         try {
+            var digisosIdForInnsynsfil: UUID? = null
             when (melding.meldingType) {
                 MELDINGSTYPE_SOKNAD -> {
                     val metadata = lesMetadata(melding)
@@ -83,6 +86,7 @@ class FiksIoMottak(
                     )
                     svar.svar(MELDINGSTYPE_SOKNAD_MOTTATT)
                     log.info("Mottok søknad digisosId=${metadata.digisosId}")
+                    digisosIdForInnsynsfil = metadata.digisosId
                 }
                 MELDINGSTYPE_ETTERSENDELSE -> {
                     svar.svar(MELDINGSTYPE_ETTERSENDELSE_MOTTATT)
@@ -91,6 +95,13 @@ class FiksIoMottak(
                 else -> log.warn("Ukjent meldingstype ${melding.meldingType}, ack uten svar")
             }
             svar.ack()
+            digisosIdForInnsynsfil?.let { digisosId ->
+                try {
+                    runBlocking(Dispatchers.IO) { service.opprettInitiellInnsynsfil(digisosId) }
+                } catch (e: Exception) {
+                    log.error("Feil ved oppretting av innsynsfil digisosId=$digisosId: ${e.javaClass.simpleName}")
+                }
+            }
         } catch (e: Exception) {
             log.error("Feil ved håndtering av Fiks IO-melding ${melding.meldingId.uuid}: ${e.javaClass.simpleName}")
             svar.nackWithRequeue()

@@ -68,9 +68,10 @@ fun Application.module(config: AppConfig) {
         if (config.fiks != null && texas != null) FiksDigisosClient(config.fiks, texas, httpClient) else null
     if (fiksClient == null) log.warn("Fiks er ikke konfigurert, kall mot Fiks vil feile med 503")
 
+    val service = FagsystemService(repository, fiksClient, config.fiks?.fiksOrgId, objectMapper)
     val fiksIoMottak =
         if (config.fiksIo != null && config.fiks != null && texas != null) {
-            FiksIoMottak(config.fiksIo, config.fiks, texas, repository, objectMapper).also {
+            FiksIoMottak(config.fiksIo, config.fiks, texas, repository, objectMapper, service).also {
                 runCatching { it.start() }.onFailure { e ->
                     log.error("Kunne ikke starte Fiks IO-mottak: ${e.javaClass.simpleName}: ${e.message}")
                 }
@@ -80,7 +81,6 @@ fun Application.module(config: AppConfig) {
             null
         }
 
-    val service = FagsystemService(repository, fiksClient, config.fiks?.fiksOrgId, objectMapper)
     val azureAuth = if (config.azure != null && texas != null) AzureAuth(texas, config.azure) else null
     val prometheus = PrometheusMeterRegistry(PrometheusConfig.DEFAULT)
 

@@ -53,6 +53,22 @@ class FagsystemService(
         return digisosId
     }
 
+    /** Oppretter og lagrer initiell innsynsfil for en mottatt sak dersom den mangler. */
+    suspend fun opprettInitiellInnsynsfil(digisosId: UUID) {
+        val sak = repository.hent(digisosId) ?: return
+        if (repository.hentDigisosSoker(digisosId) != null) return
+
+        val json =
+            objectMapper.writeValueAsString(
+                mapOf(
+                    "type" to DIGISOS_SOKER_TYPE,
+                    "sak" to mapOf("soker" to initialSoker(sak)),
+                ),
+            )
+        fiksOrFail().oppdaterSak(digisosId, json)
+        repository.oppdaterDigisosSoker(digisosId, json)
+    }
+
     /** Returnerer `sak.soker` (DigisosSokerJson), eller null hvis saken er ukjent. */
     fun hentInnsynsfil(fiksDigisosId: String): JsonNode? {
         val id = fiksDigisosId.toUuidOrNull() ?: return null
