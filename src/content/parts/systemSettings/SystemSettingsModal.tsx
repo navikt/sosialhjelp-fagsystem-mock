@@ -50,7 +50,7 @@ const SystemSettingsModal = () => {
         <BodyShort spacing>{targetLabel(model.proxyInfo?.target)}</BodyShort>
         <Select
           label="Søker for nye søknader"
-          value={model.fnr}
+          value={model.fnr} //todo copy knapp
           onChange={(event) => {
             const fnr = event.target.value;
             window.localStorage.setItem("fnr", fnr);

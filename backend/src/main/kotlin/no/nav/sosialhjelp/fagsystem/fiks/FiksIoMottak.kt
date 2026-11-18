@@ -1,5 +1,6 @@
 package no.nav.sosialhjelp.fagsystem.fiks
 
+import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
@@ -32,7 +33,7 @@ const val MELDINGSTYPE_ETTERSENDELSE_MOTTATT = "no.nav.digisos.ettersendelse.mot
 /**
  * For hver søknad: les digisosId fra meldingen, lagre saken, opprett initiell
  * innsynsfil, kvitter med "mottatt" og ack. Uten kvittering faller Fiks tilbake til SvarUt.
- * Søknadsinnholdet (personopplysninger) lagres ikke og logges ikke.
+ * Søknadsinnholdet lagres ikke, bortsett fra søkers fnr (testdata) som lagres i sak.soker_fnr.
  */
 class FiksIoMottak(
     private val ioConfig: FiksIoConfig,
@@ -82,6 +83,7 @@ class FiksIoMottak(
                         fiksOrgId = fiksConfig.fiksOrgId,
                         eksternRef = metadata.eksternRef,
                         meldingId = melding.meldingId.uuid,
+                        sokerFnr = metadata.sokerFnr,
                     )
                     runBlocking(Dispatchers.IO) { service.opprettInitiellInnsynsfil(metadata.digisosId) }
                     svar.svar(MELDINGSTYPE_SOKNAD_MOTTATT)
@@ -100,26 +102,40 @@ class FiksIoMottak(
         }
     }
 
-    internal data class Metadata(val digisosId: UUID, val eksternRef: String?)
+    internal data class Metadata(val digisosId: UUID, val eksternRef: String?, val sokerFnr: String?)
 
     /** Finner JSON-filen i meldingen som inneholder digisosId (no.nav.digisos.soknad.v1-skjemaet). */
     private fun lesMetadata(melding: MottattMelding): Metadata {
-        var funnet: Metadata? = null
+        var digisosIdMetadata: Pair<UUID, String?>? = null
+        var sokerFnr: String? = null
+        val entryNames = mutableListOf<String>()
         // Strømmen må leses helt ut før den lukkes, ellers feiler skrivetråden i
         // fiks-io-klienten med "Pipe closed".
         melding.dekryptertZipStream.use { zip ->
             while (true) {
                 val entry = zip.nextEntry ?: break
-                if (funnet != null || !entry.name.endsWith(".json")) {
+                entryNames += entry.name
+                if (!entry.name.endsWith(".json")) {
                     zip.transferTo(OutputStream.nullOutputStream())
                     continue
                 }
                 val node = runCatching { objectMapper.readTree(zip.readAllBytes()) }.getOrNull() ?: continue
-                val digisosId = node.path("digisosId").asText(null) ?: continue
-                funnet = Metadata(UUID.fromString(digisosId), node.path("eksternRef").asText(null))
+                if (sokerFnr == null) {
+                    sokerFnr = lesSokerFnr(node)
+                }
+                if (digisosIdMetadata == null) {
+                    val digisosId = node.path("digisosId").asText(null)
+                    if (digisosId != null) {
+                        digisosIdMetadata = UUID.fromString(digisosId) to node.path("eksternRef").asText(null)
+                    }
+                }
             }
         }
-        return funnet ?: throw IllegalArgumentException("Fant ikke digisosId i meldingen")
+        // TODO fjern diagnose-logging når soknad.json-sti er bekreftet i dev
+        log.info("Fiks IO zip entries: {}", entryNames)
+        log.info("Fiks IO fnrFunnet={}", sokerFnr != null)
+        val (digisosId, eksternRef) = digisosIdMetadata ?: throw IllegalArgumentException("Fant ikke digisosId i meldingen")
+        return Metadata(digisosId, eksternRef, sokerFnr)
     }
 
     override fun close() {
@@ -139,3 +155,11 @@ class FiksIoMottak(
         }
     }
 }
+
+internal fun lesSokerFnr(node: JsonNode): String? =
+    node.path("data")
+        .path("personalia")
+        .path("personIdentifikator")
+        .path("verdi")
+        .asText(null)
+        ?.takeIf { it.matches(Regex("^[0-9]{11}$")) }

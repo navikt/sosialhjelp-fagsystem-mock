@@ -70,6 +70,7 @@ export interface FsSaksStatus extends SaksStatus {
 /** Sak registrert i sosialhjelp-fagsystem-backend (mottatt via Fiks IO eller opprettet herfra). */
 export interface FiksSak {
   fiksDigisosId: string;
+  fnr: string | null;
   kilde: "FIKS_IO" | "OPPRETTET";
   opprettet: string;
   oppdatert: string;

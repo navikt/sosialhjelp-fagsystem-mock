@@ -12,11 +12,14 @@ import globals from "../../../app/globals.module.css";
 import styles from "./toppPanel.module.css";
 
 const ToppPanel = () => {
-  const { soknad, innsynUrl } = useSelector(
+  const { soknad, fiksSak, innsynUrl } = useSelector(
     (state: RootState) => ({
       soknad: getFsSoknadByFiksDigisosId(
         state.model.soknader,
         state.model.aktivSoknad,
+      ),
+      fiksSak: state.model.fiksSaker.find(
+        (sak) => sak.fiksDigisosId === state.model.aktivSoknad,
       ),
       innsynUrl: state.model.proxyInfo?.innsynUrl,
     }),
@@ -32,6 +35,9 @@ const ToppPanel = () => {
           <Heading level="2" size="medium" spacing>
             Oversikt over søknaden
           </Heading>
+          {fiksSak && (
+            <BodyShort>Fødselsnummer: {fiksSak.fnr ?? "ukjent"}</BodyShort>
+          )}
           <BodyShort>FiksDigisosId: {soknad.fiksDigisosId}</BodyShort>
           {frontendUrl && (
             <Link href={frontendUrl} target="_blank" rel="noopener noreferrer">

@@ -39,7 +39,7 @@ class FagsystemService(
         val digisosId =
             when {
                 eksisterende != null -> eksisterende.digisosId
-                fnr != null -> fiksClient.opprettNySak(fnr).also { repository.lagreOpprettet(it, orgId) }
+                fnr != null -> fiksClient.opprettNySak(fnr).also { repository.lagreOpprettet(it, orgId, fnr) }
                 else -> {
                     val id = requireNotNull(fiksDigisosId?.toUuidOrNull()) { "Ugyldig fiksDigisosId" }
                     repository.lagreOpprettet(id, orgId)
