@@ -7,7 +7,14 @@ import { getFsSoknadByFiksDigisosId } from "../../../utils/utilityFunctions";
 import SoknadStatusView from "../soknadStatusView/SoknadStatusView";
 
 import TildeldeltNavkontorView from "../navKontor/TildeltNavKontorView";
-import { BodyShort, Heading, Link, Panel } from "@navikt/ds-react";
+import {
+  BodyShort,
+  CopyButton,
+  Heading,
+  HStack,
+  Link,
+  Panel,
+} from "@navikt/ds-react";
 import globals from "../../../app/globals.module.css";
 import styles from "./toppPanel.module.css";
 
@@ -36,7 +43,16 @@ const ToppPanel = () => {
             Oversikt over søknaden
           </Heading>
           {fiksSak && (
-            <BodyShort>Fødselsnummer: {fiksSak.fnr ?? "ukjent"}</BodyShort>
+            <HStack gap="space-8" align="center">
+              <BodyShort>Fødselsnummer: {fiksSak.fnr ?? "ukjent"}</BodyShort>
+              {fiksSak.fnr && (
+                <CopyButton
+                  copyText={fiksSak.fnr}
+                  size="xsmall"
+                  title="Kopier fødselsnummer"
+                />
+              )}
+            </HStack>
           )}
           <BodyShort>FiksDigisosId: {soknad.fiksDigisosId}</BodyShort>
           {frontendUrl && (

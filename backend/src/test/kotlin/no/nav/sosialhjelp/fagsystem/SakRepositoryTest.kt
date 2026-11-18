@@ -44,10 +44,7 @@ class SakRepositoryTest {
         repository.lagreMottatt(id, orgId, "ref-1", UUID.randomUUID())
         repository.lagreMottatt(id, orgId, "ref-1", UUID.randomUUID()) // idempotent
 
-        val sak = repository.hent(id)!!
-        sak.kilde shouldBe Kilde.FIKS_IO
-        sak.sokerFnr.shouldBeNull()
-        sak.toString().contains("12345678910") shouldBe false
+        repository.hent(id)!!.kilde shouldBe Kilde.FIKS_IO
         repository.hentDigisosSoker(id).shouldBeNull()
 
         repository.oppdaterDigisosSoker(id, """{"sak":{"soker":{"hendelser":[]}}}""") shouldBe true

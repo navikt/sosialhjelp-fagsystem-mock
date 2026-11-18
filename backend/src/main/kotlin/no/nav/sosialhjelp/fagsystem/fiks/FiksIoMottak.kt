@@ -108,13 +108,11 @@ class FiksIoMottak(
     private fun lesMetadata(melding: MottattMelding): Metadata {
         var digisosIdMetadata: Pair<UUID, String?>? = null
         var sokerFnr: String? = null
-        val entryNames = mutableListOf<String>()
         // Strømmen må leses helt ut før den lukkes, ellers feiler skrivetråden i
         // fiks-io-klienten med "Pipe closed".
         melding.dekryptertZipStream.use { zip ->
             while (true) {
                 val entry = zip.nextEntry ?: break
-                entryNames += entry.name
                 if (!entry.name.endsWith(".json")) {
                     zip.transferTo(OutputStream.nullOutputStream())
                     continue
@@ -131,9 +129,6 @@ class FiksIoMottak(
                 }
             }
         }
-        // TODO fjern diagnose-logging når soknad.json-sti er bekreftet i dev
-        log.info("Fiks IO zip entries: {}", entryNames)
-        log.info("Fiks IO fnrFunnet={}", sokerFnr != null)
         val (digisosId, eksternRef) = digisosIdMetadata ?: throw IllegalArgumentException("Fant ikke digisosId i meldingen")
         return Metadata(digisosId, eksternRef, sokerFnr)
     }
