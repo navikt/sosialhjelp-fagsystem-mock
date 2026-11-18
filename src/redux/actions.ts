@@ -260,6 +260,7 @@ export const opprettDigisosSakHvisDenIkkeFinnes = (
         }),
       );
       dispatch(SET_AKTIV_SOKNAD(fiksId));
+      hentFiksSaker(dispatch);
     })
     .catch((reason) => runOnErrorResponse(reason, dispatch))
     .finally(() => dispatch(TURN_OFF_LOADER()));
@@ -324,6 +325,7 @@ export const opprettNyFsSoknadDersomDigisosIdIkkeEksistererHosFiks = (
       const fiksId = (response as { fiksDigisosId: string }).fiksDigisosId;
       dispatch(NY_SOKNAD(fiksId));
       dispatch(SET_AKTIV_SOKNAD(fiksId));
+      hentFiksSaker(dispatch);
     })
     .catch((reason) => runOnErrorResponse(reason, dispatch))
     .finally(() => dispatch(TURN_OFF_LOADER()));
@@ -340,6 +342,8 @@ export const hentProxyInfo = (dispatch: AppDispatch) =>
 export const hentFiksSaker = (dispatch: AppDispatch) => {
   fetch(proxyUrl("saker"))
     .then((response) => {
+      // 501: /saker støttes ikke av mock-alt-api, så det er ingen saker å hente
+      if (response.status === 501) return [] as FiksSak[];
       if (!response.ok) throw new Error(response.statusText);
       return response.json() as Promise<FiksSak[]>;
     })
