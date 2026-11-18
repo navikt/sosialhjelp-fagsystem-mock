@@ -12,6 +12,7 @@ import no.ks.fiks.io.client.konfigurasjon.VirksomhetssertifikatKonfigurasjon
 import no.ks.fiks.io.client.model.KontoId
 import no.ks.fiks.io.client.model.MottattMelding
 import no.nav.sosialhjelp.fagsystem.FiksConfig
+import no.nav.sosialhjelp.fagsystem.FagsystemService
 import no.nav.sosialhjelp.fagsystem.FiksIoConfig
 import no.nav.sosialhjelp.fagsystem.auth.TexasClient
 import no.nav.sosialhjelp.fagsystem.db.SakRepository
@@ -29,8 +30,8 @@ const val MELDINGSTYPE_SOKNAD_MOTTATT = "no.nav.digisos.soknad.mottatt.v1"
 const val MELDINGSTYPE_ETTERSENDELSE_MOTTATT = "no.nav.digisos.ettersendelse.mottatt.v1"
 
 /**
- * For hver søknad: les digisosId fra meldingen, lagre saken, kvitter med
- * "mottatt" og ack. Uten kvittering faller Fiks tilbake til SvarUt.
+ * For hver søknad: les digisosId fra meldingen, lagre saken, opprett initiell
+ * innsynsfil, kvitter med "mottatt" og ack. Uten kvittering faller Fiks tilbake til SvarUt.
  * Søknadsinnholdet (personopplysninger) lagres ikke og logges ikke.
  */
 class FiksIoMottak(
@@ -39,6 +40,7 @@ class FiksIoMottak(
     private val texas: TexasClient,
     private val repository: SakRepository,
     private val objectMapper: ObjectMapper,
+    private val service: FagsystemService,
 ) : AutoCloseable {
     private val log = LoggerFactory.getLogger(FiksIoMottak::class.java)
     private var klient: FiksIOKlient? = null
@@ -81,6 +83,7 @@ class FiksIoMottak(
                         eksternRef = metadata.eksternRef,
                         meldingId = melding.meldingId.uuid,
                     )
+                    runBlocking(Dispatchers.IO) { service.opprettInitiellInnsynsfil(metadata.digisosId) }
                     svar.svar(MELDINGSTYPE_SOKNAD_MOTTATT)
                     log.info("Mottok søknad digisosId=${metadata.digisosId}")
                 }
