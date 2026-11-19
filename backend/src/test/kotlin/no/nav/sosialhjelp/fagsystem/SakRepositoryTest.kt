@@ -51,4 +51,25 @@ class SakRepositoryTest {
         repository.hentDigisosSoker(id)!!.contains("hendelser") shouldBe true
         repository.hentAlle().filter { it.digisosId == id } shouldHaveSize 1
     }
+
+    @Test
+    fun `lagrer og henter mottatt sak med soker fnr`() {
+        val id = UUID.randomUUID()
+        repository.lagreMottatt(id, orgId, "ref-2", UUID.randomUUID(), "12345678910")
+
+        repository.hent(id)!!.sokerFnr shouldBe "12345678910"
+    }
+
+    @Test
+    fun `lagrer og henter opprettet sak med og uten soker fnr`() {
+        val medFnr = UUID.randomUUID()
+        val utenFnr = UUID.randomUUID()
+        repository.lagreOpprettet(medFnr, orgId, "12345678910")
+        repository.lagreOpprettet(utenFnr, orgId)
+
+        val sakMedFnr = repository.hent(medFnr)!!
+        sakMedFnr.sokerFnr shouldBe "12345678910"
+        sakMedFnr.toString().contains("12345678910") shouldBe false
+        repository.hent(utenFnr)!!.sokerFnr.shouldBeNull()
+    }
 }

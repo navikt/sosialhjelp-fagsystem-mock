@@ -28,6 +28,21 @@ class FagsystemServiceTest {
         Sak(id, orgId, Kilde.FIKS_IO, "ref", OffsetDateTime.now(), OffsetDateTime.now())
 
     @Test
+    fun `opprettet sak lagrer soker fnr`() =
+        runTest {
+            val fnr = "12345678910"
+            coEvery { fiks.opprettNySak(fnr) } returns id
+
+            service.oppdaterDigisosSak(
+                fiksDigisosId = null,
+                fnr = fnr,
+                body = """{"type":"$DIGISOS_SOKER_TYPE","sak":{"soker":{}}}""",
+            )
+
+            verify { repository.lagreOpprettet(id, orgId, fnr) }
+        }
+
+    @Test
     fun `oppretter initiell innsynsfil hos Fiks og lagrer den`() =
         runTest {
             every { repository.hent(id) } returns sak

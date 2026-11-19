@@ -16,16 +16,20 @@ data class Sak(
     val eksternRef: String?,
     val opprettet: OffsetDateTime,
     val oppdatert: OffsetDateTime,
-)
+    val sokerFnr: String? = null,
+) {
+    override fun toString(): String =
+        "Sak(digisosId=$digisosId, fiksOrgId=$fiksOrgId, kilde=$kilde, eksternRef=$eksternRef, opprettet=$opprettet, oppdatert=$oppdatert)"
+}
 
 class SakRepository(private val dataSource: DataSource) {
-    fun lagreMottatt(digisosId: UUID, fiksOrgId: UUID, eksternRef: String?, meldingId: UUID) =
+    fun lagreMottatt(digisosId: UUID, fiksOrgId: UUID, eksternRef: String?, meldingId: UUID, sokerFnr: String? = null) =
         sessionOf(dataSource).use { session ->
             session.run(
                 queryOf(
                     """
-                    INSERT INTO sak (digisos_id, fiks_org_id, kilde, ekstern_ref, fiks_io_melding)
-                    VALUES (:digisosId, :fiksOrgId, 'FIKS_IO', :eksternRef, :meldingId)
+                    INSERT INTO sak (digisos_id, fiks_org_id, kilde, ekstern_ref, fiks_io_melding, soker_fnr)
+                    VALUES (:digisosId, :fiksOrgId, 'FIKS_IO', :eksternRef, :meldingId, :sokerFnr)
                     ON CONFLICT (digisos_id) DO NOTHING
                     """.trimIndent(),
                     mapOf(
@@ -33,21 +37,22 @@ class SakRepository(private val dataSource: DataSource) {
                         "fiksOrgId" to fiksOrgId,
                         "eksternRef" to eksternRef,
                         "meldingId" to meldingId,
+                        "sokerFnr" to sokerFnr,
                     ),
                 ).asUpdate,
             )
         }
 
-    fun lagreOpprettet(digisosId: UUID, fiksOrgId: UUID) =
+    fun lagreOpprettet(digisosId: UUID, fiksOrgId: UUID, sokerFnr: String? = null) =
         sessionOf(dataSource).use { session ->
             session.run(
                 queryOf(
                     """
-                    INSERT INTO sak (digisos_id, fiks_org_id, kilde)
-                    VALUES (:digisosId, :fiksOrgId, 'OPPRETTET')
+                    INSERT INTO sak (digisos_id, fiks_org_id, kilde, soker_fnr)
+                    VALUES (:digisosId, :fiksOrgId, 'OPPRETTET', :sokerFnr)
                     ON CONFLICT (digisos_id) DO NOTHING
                     """.trimIndent(),
-                    mapOf("digisosId" to digisosId, "fiksOrgId" to fiksOrgId),
+                    mapOf("digisosId" to digisosId, "fiksOrgId" to fiksOrgId, "sokerFnr" to sokerFnr),
                 ).asUpdate,
             )
         }
@@ -97,5 +102,6 @@ class SakRepository(private val dataSource: DataSource) {
             eksternRef = row.stringOrNull("ekstern_ref"),
             opprettet = row.offsetDateTime("opprettet"),
             oppdatert = row.offsetDateTime("oppdatert"),
+            sokerFnr = row.stringOrNull("soker_fnr"),
         )
 }

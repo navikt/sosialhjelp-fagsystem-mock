@@ -66,6 +66,7 @@ fun Route.digisosRoutes(
                         "kilde" to it.kilde.name,
                         "opprettet" to it.opprettet.toInstant().toString(),
                         "oppdatert" to it.oppdatert.toInstant().toString(),
+                        "fnr" to it.sokerFnr,
                     )
                 },
             )
