@@ -90,8 +90,8 @@ class FiksIoMottak(
                     log.info("Mottok søknad digisosId=${metadata.digisosId}")
                 }
                 MELDINGSTYPE_ETTERSENDELSE -> {
+                    haandterEttersendelse(melding)
                     svar.svar(MELDINGSTYPE_ETTERSENDELSE_MOTTATT)
-                    log.info("Mottok ettersendelse, meldingId=${melding.meldingId.uuid}")
                 }
                 else -> log.warn("Ukjent meldingstype ${melding.meldingType}, ack uten svar")
             }
@@ -133,6 +133,51 @@ class FiksIoMottak(
         return Metadata(digisosId, eksternRef, sokerFnr)
     }
 
+    /** Leser alle JSON-filer i meldingen (maks MAKS_JSON_BYTES hver). Andre filer leses ut uten å se på innholdet. */
+    private fun lesJsonFiler(melding: MottattMelding): List<JsonNode> {
+        val filer = mutableListOf<JsonNode>()
+        // Strømmen må leses helt ut før den lukkes, ellers feiler skrivetråden i
+        // fiks-io-klienten med "Pipe closed".
+        melding.dekryptertZipStream.use { zip ->
+            while (true) {
+                val entry = zip.nextEntry ?: break
+                val bytes = if (entry.name.endsWith(".json")) zip.readNBytes(MAKS_JSON_BYTES + 1) else null
+                zip.transferTo(OutputStream.nullOutputStream())
+                if (bytes == null) continue
+                if (bytes.size > MAKS_JSON_BYTES) {
+                    log.warn("JSON-fil i melding over $MAKS_JSON_BYTES bytes, hoppet over")
+                    continue
+                }
+                runCatching { objectMapper.readTree(bytes) }.getOrNull()?.let(filer::add)
+            }
+        }
+        return filer
+    }
+
+    private fun finnMetadata(filer: List<JsonNode>): Metadata? =
+        filer.firstNotNullOfOrNull { node ->
+            node.path("digisosId").asText(null)?.let { Metadata(UUID.fromString(it), node.path("eksternRef").asText(null), sokerFnr = null) }
+        }
+
+    private fun finnVedlegg(filer: List<JsonNode>): List<EttersendtVedlegg>? =
+        filer.firstOrNull { it.path("vedlegg").isArray }?.let(EttersendtVedlegg::fraVedleggJson)
+
+    private fun haandterEttersendelse(melding: MottattMelding) {
+        val meldingId = melding.meldingId.uuid
+        try {
+            val filer = lesJsonFiler(melding)
+            val metadata = finnMetadata(filer)
+            val vedlegg = finnVedlegg(filer)
+            if (metadata == null || vedlegg == null) {
+                log.warn("Ettersendelse meldingId=$meldingId mangler digisosId eller vedlegg.json. JSON-nøkler: ${filer.map { it.fieldNames().asSequence().toList() }}")
+                return
+            }
+            runBlocking(Dispatchers.IO) { service.registrerEttersendelse(metadata.digisosId, meldingId, metadata.eksternRef, vedlegg) }
+        } catch (e: Exception) {
+            log.error("Kunne ikke behandle ettersendelse meldingId=$meldingId: ${e.javaClass.simpleName}")
+        }
+    }
+
     override fun close() {
         klient?.close()
     }
@@ -141,6 +186,7 @@ class FiksIoMottak(
         // Første parameter i defaultTestConfiguration er Maskinporten-klient-ID. Den brukes bare når
         // klienten henter Maskinporten-token selv. Vi gir egen token-supplier (Texas), så verdien er ubrukt.
         const val PLACEHOLDER_IKKE_BRUKT = "ubrukt-token-kommer-fra-texas"
+        const val MAKS_JSON_BYTES = 1_048_576
 
         fun lesPrivatNokkel(pem: String): PrivateKey {
             val base64 =

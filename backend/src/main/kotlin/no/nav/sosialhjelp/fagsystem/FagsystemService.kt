@@ -2,13 +2,20 @@ package no.nav.sosialhjelp.fagsystem
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.databind.node.ObjectNode
+import no.nav.sosialhjelp.fagsystem.db.EttersendelseRepository
 import no.nav.sosialhjelp.fagsystem.db.Sak
 import no.nav.sosialhjelp.fagsystem.db.SakRepository
+import no.nav.sosialhjelp.fagsystem.fiks.EttersendtVedlegg
 import no.nav.sosialhjelp.fagsystem.fiks.FiksDigisosClient
+import org.slf4j.LoggerFactory
+import java.time.Instant
 import java.util.UUID
 
 const val DIGISOS_SOKER_TYPE = "no.nav.digisos.digisos.soker.v1"
+
+private val log = LoggerFactory.getLogger(FagsystemService::class.java)
 
 /**
  * Speiler semantikken til mock-alt-api sitt innsyn-api, slik at frontenden
@@ -16,6 +23,7 @@ const val DIGISOS_SOKER_TYPE = "no.nav.digisos.digisos.soker.v1"
  */
 class FagsystemService(
     private val repository: SakRepository,
+    private val ettersendelser: EttersendelseRepository,
     private val fiks: FiksDigisosClient?,
     private val fiksOrgId: UUID?,
     private val objectMapper: ObjectMapper,
@@ -65,6 +73,31 @@ class FagsystemService(
                     "sak" to mapOf("soker" to initialSoker(sak)),
                 ),
             )
+        fiksOrFail().oppdaterSak(digisosId, json)
+        repository.oppdaterDigisosSoker(digisosId, json)
+    }
+
+    suspend fun registrerEttersendelse(digisosId: UUID, meldingId: UUID, eksternRef: String?, vedlegg: List<EttersendtVedlegg>) {
+        if (repository.hent(digisosId) == null) {
+            log.warn("Ettersendelse for ukjent sak digisosId=$digisosId meldingId=$meldingId")
+            return
+        }
+        if (ettersendelser.meldingFinnes(meldingId)) return
+
+        ettersendelser.lagre(digisosId, meldingId, eksternRef, vedlegg)
+        oppdaterInnsynsfilMedVedlegg(digisosId, vedlegg)
+        log.info("Ettersendelse registrert digisosId=$digisosId meldingId=$meldingId antallVedlegg=${vedlegg.size}")
+    }
+
+    /** Legger til hendelser for leverte krav og etterspurte dokumenter, og sender hele innsynsfilen til Fiks. */
+    private suspend fun oppdaterInnsynsfilMedVedlegg(digisosId: UUID, vedlegg: List<EttersendtVedlegg>) {
+        val doc = repository.hentDigisosSoker(digisosId)?.let(objectMapper::readTree) ?: return
+        val soker = doc.path("sak").path("soker")
+        val nye = KoblingAvVedlegg.nyeHendelser(soker, vedlegg, Instant.now().toString())
+        if (nye.isEmpty()) return
+
+        (soker.path("hendelser") as ArrayNode).addAll(nye)
+        val json = objectMapper.writeValueAsString(doc)
         fiksOrFail().oppdaterSak(digisosId, json)
         repository.oppdaterDigisosSoker(digisosId, json)
     }

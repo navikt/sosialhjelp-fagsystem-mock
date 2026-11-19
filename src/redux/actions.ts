@@ -20,6 +20,7 @@ import { oHendelser } from "./optics";
 import {
   FIKSDIGISOSID_URL_PARAM,
   getInitialFsSoknad,
+  ERSTATT_SOKNAD,
   HENTET_SOKNAD,
   NY_SOKNAD,
   OPPDATER_DOKUMENTASJON_ETTERSPURT,
@@ -303,6 +304,32 @@ export const hentFsSoknadFraFiksEllerOpprettNy = (
     })
     .catch((reason) => runOnErrorResponse(reason, dispatch))
     .finally(() => dispatch(TURN_OFF_LOADER()));
+};
+
+export const oppdaterInnsynsfilFraBackend = (
+  fiksDigisosId: string,
+  dispatch: AppDispatch,
+) => {
+  const url = proxyUrl(`digisosapi/${encodeURIComponent(fiksDigisosId)}/innsynsfil`);
+  return fetch(url, {
+    headers: new Headers({
+      "Content-Type": "application/json",
+      Accept: "application/json, text/plain, */*",
+    }),
+    method: "GET",
+    body: null,
+  })
+    .then((response: Response) => {
+      if (response.status !== 200) return;
+      return response
+        .json()
+        .then((data: DigisosSokerJson) =>
+          dispatch(ERSTATT_SOKNAD({ fiksDigisosId, data })),
+        );
+    })
+    .catch((reason) =>
+      console.warn("Kunne ikke oppdatere innsynsfil fra backend:", reason),
+    );
 };
 
 export const opprettNyFsSoknadDersomDigisosIdIkkeEksistererHosFiks = (
