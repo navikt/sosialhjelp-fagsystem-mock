@@ -27,6 +27,7 @@ import no.nav.sosialhjelp.fagsystem.api.digisosRoutes
 import no.nav.sosialhjelp.fagsystem.auth.AzureAuth
 import no.nav.sosialhjelp.fagsystem.auth.TexasClient
 import no.nav.sosialhjelp.fagsystem.db.Database
+import no.nav.sosialhjelp.fagsystem.db.EttersendelseRepository
 import no.nav.sosialhjelp.fagsystem.db.SakRepository
 import no.nav.sosialhjelp.fagsystem.fiks.FiksDigisosClient
 import no.nav.sosialhjelp.fagsystem.fiks.FiksException
@@ -56,6 +57,7 @@ fun Application.module(config: AppConfig) {
     val dataSource = Database.dataSource(config.database)
     Database.migrate(dataSource)
     val repository = SakRepository(dataSource)
+    val ettersendelser = EttersendelseRepository(dataSource)
 
     val httpClient =
         HttpClient(CIO) {
@@ -68,7 +70,7 @@ fun Application.module(config: AppConfig) {
         if (config.fiks != null && texas != null) FiksDigisosClient(config.fiks, texas, httpClient) else null
     if (fiksClient == null) log.warn("Fiks er ikke konfigurert, kall mot Fiks vil feile med 503")
 
-    val service = FagsystemService(repository, fiksClient, config.fiks?.fiksOrgId, objectMapper)
+    val service = FagsystemService(repository, ettersendelser, fiksClient, config.fiks?.fiksOrgId, objectMapper)
     val fiksIoMottak =
         if (config.fiksIo != null && config.fiks != null && texas != null) {
             FiksIoMottak(config.fiksIo, config.fiks, texas, repository, objectMapper, service).also {

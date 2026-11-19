@@ -17,6 +17,7 @@ import {
   hentFiksSaker,
   hentFsSoknadFraFiksEllerOpprettNy,
   hentProxyInfo,
+  oppdaterInnsynsfilFraBackend,
 } from "../redux/actions";
 import SplashScreen from "../components/splashScreen";
 import { Button, Loader } from "@navikt/ds-react";
@@ -28,6 +29,25 @@ const Forside = () => {
   const model = useSelector((state: RootState) => state.model);
   const dispatch = useDispatch();
   const hasLoadedInitialData = useRef(false);
+  const aktivSoknadRef = useRef(model.aktivSoknad);
+  const erFiksRef = useRef(false);
+
+  useEffect(() => {
+    aktivSoknadRef.current = model.aktivSoknad;
+  }, [model.aktivSoknad]);
+
+  // Mot Fiks kan backend legge til hendelser (ettersendelser). Hent innsynsfilen på nytt ved fokus.
+  useEffect(() => {
+    const vedFokus = () => {
+      const aktivSoknad = aktivSoknadRef.current;
+      if (erFiksRef.current && aktivSoknad) {
+        oppdaterInnsynsfilFraBackend(aktivSoknad, dispatch);
+      }
+    };
+    window.addEventListener("focus", vedFokus);
+    return () => window.removeEventListener("focus", vedFokus);
+  }, [dispatch]);
+
   useEffect(() => {
     if (hasLoadedInitialData.current) return;
 
@@ -45,6 +65,7 @@ const Forside = () => {
           if (idFraUrl) {
             hentFsSoknadFraFiksEllerOpprettNy(idFraUrl, dispatch, model.fnr);
           }
+          erFiksRef.current = info.target === "fiks";
           hentFiksSaker(dispatch);
         }
       })
