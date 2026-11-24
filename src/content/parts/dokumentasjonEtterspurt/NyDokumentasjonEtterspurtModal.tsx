@@ -85,6 +85,11 @@ const NyDokumentasjonEtterspurtModal: React.FC<Props> = ({ soknad }: Props) => {
       startTransition(() => {
         setModalDokumentasjonEtterspurt({
           ...soknad.dokumentasjonEtterspurt,
+          // Hendelsen backend lager etter en ettersendelse har ikke forvaltningsbrev.
+          // En ny etterspørring må ha det, ellers viser ikke innsyn den i historikken.
+          forvaltningsbrev:
+            soknad.dokumentasjonEtterspurt?.forvaltningsbrev ??
+            initialDokumentasjonEtterspurt.forvaltningsbrev,
         } as DokumentasjonEtterspurt);
       });
     }
