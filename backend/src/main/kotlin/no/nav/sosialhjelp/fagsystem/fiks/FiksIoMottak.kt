@@ -107,7 +107,6 @@ class FiksIoMottak(
             val digisosId = innhold.digisosId
             val vedlegg = innhold.vedlegg
             if (digisosId == null || vedlegg == null) {
-                // TODO: Fjern når formatet på vedlegg.json er bekreftet i dev.
                 log.warn("Ettersendelse meldingId=$meldingId mangler digisosId eller vedlegg.json")
                 return
             }
