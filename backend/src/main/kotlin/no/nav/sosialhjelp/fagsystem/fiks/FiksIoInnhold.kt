@@ -6,12 +6,11 @@ import java.io.OutputStream
 import java.util.UUID
 import java.util.zip.ZipInputStream
 
-/** Utdrag fra en Digisos-melding over Fiks IO. Inneholder søkers fnr ved søknad. Vedleggsfiler (PDF) leses aldri. */
 internal data class FiksIoInnhold(
     val digisosId: UUID?,
     val eksternRef: String?,
-    val sokerFnr: String?, // bare søknad (soknad.json)
-    val vedlegg: List<EttersendtVedlegg>?, // bare ettersendelse (vedlegg.json)
+    val sokerFnr: String?,
+    val vedlegg: List<EttersendtVedlegg>?,
 )
 
 internal const val MAKS_JSON_BYTES = 1_048_576

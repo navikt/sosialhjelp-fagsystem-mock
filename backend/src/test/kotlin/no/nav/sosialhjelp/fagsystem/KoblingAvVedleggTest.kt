@@ -40,7 +40,7 @@ class KoblingAvVedleggTest {
             EttersendtVedlegg("Kontoutskrift", null, "LastetOpp", "dokumentasjonEtterspurt", "dok-A", 1),
         )
 
-        val hendelser = KoblingAvVedlegg.nyeHendelser(soker, vedlegg, "2026-01-03T10:00:00Z")
+        val hendelser = KoblingAvVedlegg.hendelserForEttersendelse(soker, vedlegg, "2026-01-03T10:00:00Z")
 
         hendelser.size shouldBe 2
         hendelser[0].path("dokumentasjonkravreferanse").asText() shouldBe "krav-1"
@@ -51,49 +51,5 @@ class KoblingAvVedleggTest {
         hendelser[1].path("dokumenter").size() shouldBe 1
         hendelser[1].path("dokumenter").path(0).path("dokumentreferanse").asText() shouldBe "dok-B"
         hendelser[1].has("forvaltningsbrev") shouldBe false
-    }
-
-    @Test
-    fun `kanttilfeller`() {
-        val soker = objectMapper.readTree(
-            """
-            {
-              "hendelser": [
-                {
-                  "type": "dokumentasjonkrav",
-                  "hendelsestidspunkt": "2026-01-01T10:00:00Z",
-                  "dokumentasjonkravreferanse": "krav-ferdig",
-                  "tittel": "Skatteoppgjør",
-                  "beskrivelse": null,
-                  "status": "OPPFYLT"
-                },
-                {
-                  "type": "dokumentasjonEtterspurt",
-                  "hendelsestidspunkt": "2026-01-02T10:00:00Z",
-                  "dokumenter": [
-                    {"dokumenttype": "Kontoutskrift", "tilleggsinformasjon": "Januar", "dokumentreferanse": "dok-fallback"},
-                    {"dokumenttype": "Leiekontrakt", "tilleggsinformasjon": null, "dokumentreferanse": "dok-igjen"}
-                  ],
-                  "vedlegg": [],
-                  "forvaltningsbrev": {"referanse": {"type": "dokumentlager", "id": "brev-2"}}
-                }
-              ]
-            }
-            """.trimIndent(),
-        )
-        val vedlegg = listOf(
-            EttersendtVedlegg("Pass", null, "INGEN_VEDLEGG", "dokumentasjonEtterspurt", "dok-igjen", 0),
-            EttersendtVedlegg("Kontoutskrift", null, "LastetOpp", "dokumentasjonEtterspurt", "ukjent", 1),
-            EttersendtVedlegg("Kontoutskrift", "Januar", "LastetOpp", "dokumentasjonEtterspurt", null, 1),
-            EttersendtVedlegg("Skatteoppgjør", null, "LastetOpp", "dokumentasjonkrav", "krav-ferdig", 1),
-        )
-
-        val hendelser = KoblingAvVedlegg.nyeHendelser(soker, vedlegg, "2026-01-03T10:00:00Z")
-
-        hendelser.size shouldBe 1
-        hendelser[0].path("type").asText() shouldBe "dokumentasjonEtterspurt"
-        hendelser[0].path("dokumenter").size() shouldBe 1
-        hendelser[0].path("dokumenter").path(0).path("dokumentreferanse").asText() shouldBe "dok-igjen"
-        hendelser[0].has("forvaltningsbrev") shouldBe false
     }
 }

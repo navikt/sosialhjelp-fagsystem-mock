@@ -89,15 +89,15 @@ class FagsystemService(
         log.info("Ettersendelse registrert digisosId=$digisosId meldingId=$meldingId antallVedlegg=${vedlegg.size}")
     }
 
-    /** Legger til hendelser for leverte krav og etterspurte dokumenter, og sender hele innsynsfilen til Fiks. */
+    /** Legger til hendelser for levert dokumentasjon i innsynsfilen og sender hele filen til Fiks. */
     private suspend fun oppdaterInnsynsfilMedVedlegg(digisosId: UUID, vedlegg: List<EttersendtVedlegg>) {
-        val doc = repository.hentDigisosSoker(digisosId)?.let(objectMapper::readTree) ?: return
-        val soker = doc.path("sak").path("soker")
-        val nye = KoblingAvVedlegg.nyeHendelser(soker, vedlegg, Instant.now().toString())
-        if (nye.isEmpty()) return
+        val innsynsfil = repository.hentDigisosSoker(digisosId)?.let(objectMapper::readTree) ?: return
+        val soker = innsynsfil.path("sak").path("soker")
+        val hendelser = KoblingAvVedlegg.hendelserForEttersendelse(soker, vedlegg, Instant.now().toString())
+        if (hendelser.isEmpty()) return
 
-        (soker.path("hendelser") as ArrayNode).addAll(nye)
-        val json = objectMapper.writeValueAsString(doc)
+        (soker.path("hendelser") as ArrayNode).addAll(hendelser)
+        val json = objectMapper.writeValueAsString(innsynsfil)
         fiksOrFail().oppdaterSak(digisosId, json)
         repository.oppdaterDigisosSoker(digisosId, json)
     }
