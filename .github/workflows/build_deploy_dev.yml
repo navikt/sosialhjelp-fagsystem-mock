@@ -52,7 +52,7 @@ jobs:
         run: pnpm run build
         env:
           NEXT_PUBLIC_BASE_PATH: ${{ matrix.base_path }}
-      - uses: nais/docker-build-push@v0
+      - uses: nais/docker-build-push@v1
         id: docker-push
         with:
           team: teamdigisos
