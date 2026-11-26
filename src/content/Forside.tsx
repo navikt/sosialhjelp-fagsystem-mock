@@ -36,7 +36,6 @@ const Forside = () => {
     aktivSoknadRef.current = model.aktivSoknad;
   }, [model.aktivSoknad]);
 
-  // Mot Fiks kan backend legge til hendelser (ettersendelser). Hent innsynsfilen på nytt ved fokus.
   useEffect(() => {
     const vedFokus = () => {
       const aktivSoknad = aktivSoknadRef.current;

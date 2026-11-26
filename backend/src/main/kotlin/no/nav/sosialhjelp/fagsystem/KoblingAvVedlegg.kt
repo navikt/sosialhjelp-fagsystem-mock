@@ -30,8 +30,8 @@ object KoblingAvVedlegg {
     }
 
     /**
-     * Ny dokumentasjonEtterspurt-hendelse som bare inneholder dokumentene som fortsatt ikke er levert.
-     * Innsyn erstatter oppgavelisten med denne, så de leverte dokumentene forsvinner.
+     * Ny dokumentasjonEtterspurt med dokumentene som ikke er sendt inn ennå. Tom liste hvis alt er sendt inn.
+     * Null hvis ingen av de etterspurte dokumentene er sendt inn.
      */
     private fun oppdaterEtterspurt(hendelser: List<JsonNode>, vedlegg: List<EttersendtVedlegg>, tidspunkt: String): JsonNode? {
         val sisteEtterspurt = hendelser.lastOrNull { it.tekst("type") == "dokumentasjonEtterspurt" } ?: return null
