@@ -122,4 +122,15 @@ describe("oppdaterInnsynsfilFraBackend", () => {
     expect(fetchMock).toHaveBeenCalledTimes(1);
     expect(fetchMock.mock.calls[0][1]).toMatchObject({ method: "GET" });
   });
+
+  it("erstatter ikke søknaden når backend ikke har nye hendelser", async () => {
+    const soker = getInitialFsSoknad(sakId).fiksDigisosSokerJson.sak.soker;
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(Response.json(soker)));
+    const store = createStore();
+    const soknadBefore = store.getState().model.soknader[0];
+
+    await oppdaterInnsynsfilFraBackend(sakId, store.dispatch);
+
+    expect(store.getState().model.soknader[0]).toBe(soknadBefore);
+  });
 });

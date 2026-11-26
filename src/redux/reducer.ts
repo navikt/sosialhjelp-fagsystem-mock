@@ -265,6 +265,14 @@ const modelSlice = createSlice({
       const soknadIndex = state.soknader.findIndex(
         (soknad) => soknad.fiksDigisosId === fiksDigisosId,
       );
+      // Bare backend legger til hendelser utenfra. Er antallet likt, er ingenting nytt, og vi lar
+      // være å erstatte, slik at åpne skjemaer ikke mister det som er fylt ut.
+      const antallHendelser =
+        soknadIndex === -1
+          ? -1
+          : state.soknader[soknadIndex].fiksDigisosSokerJson.sak.soker.hendelser.length;
+      if (data.hendelser.length <= antallHendelser) return;
+
       const fsSoknad = createFsSoknadFromData(fiksDigisosId, data);
 
       if (soknadIndex === -1) {

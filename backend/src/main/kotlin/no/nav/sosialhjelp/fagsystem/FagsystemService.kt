@@ -84,8 +84,8 @@ class FagsystemService(
         }
         if (ettersendelser.meldingFinnes(meldingId)) return
 
-        ettersendelser.lagre(digisosId, meldingId, eksternRef, vedlegg)
         oppdaterInnsynsfilMedVedlegg(digisosId, vedlegg)
+        ettersendelser.lagre(digisosId, meldingId, eksternRef, vedlegg)
         log.info("Ettersendelse registrert digisosId=$digisosId meldingId=$meldingId antallVedlegg=${vedlegg.size}")
     }
 
