@@ -1,6 +1,5 @@
 package no.nav.sosialhjelp.fagsystem.fiks
 
-import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
@@ -18,12 +17,10 @@ import no.nav.sosialhjelp.fagsystem.FiksIoConfig
 import no.nav.sosialhjelp.fagsystem.auth.TexasClient
 import no.nav.sosialhjelp.fagsystem.db.SakRepository
 import org.slf4j.LoggerFactory
-import java.io.OutputStream
 import java.security.KeyFactory
 import java.security.PrivateKey
 import java.security.spec.PKCS8EncodedKeySpec
 import java.util.Base64
-import java.util.UUID
 
 const val MELDINGSTYPE_SOKNAD = "no.nav.digisos.soknad.v1"
 const val MELDINGSTYPE_ETTERSENDELSE = "no.nav.digisos.ettersendelse.v1"
@@ -77,21 +74,22 @@ class FiksIoMottak(
         try {
             when (melding.meldingType) {
                 MELDINGSTYPE_SOKNAD -> {
-                    val metadata = lesMetadata(melding)
+                    val innhold = lesFiksIoInnhold(melding.dekryptertZipStream, objectMapper)
+                    val digisosId = innhold.digisosId ?: throw IllegalArgumentException("Fant ikke digisosId i meldingen")
                     repository.lagreMottatt(
-                        digisosId = metadata.digisosId,
+                        digisosId = digisosId,
                         fiksOrgId = fiksConfig.fiksOrgId,
-                        eksternRef = metadata.eksternRef,
+                        eksternRef = innhold.eksternRef,
                         meldingId = melding.meldingId.uuid,
-                        sokerFnr = metadata.sokerFnr,
+                        sokerFnr = innhold.sokerFnr,
                     )
-                    runBlocking(Dispatchers.IO) { service.opprettInitiellInnsynsfil(metadata.digisosId) }
+                    runBlocking(Dispatchers.IO) { service.opprettInitiellInnsynsfil(digisosId) }
                     svar.svar(MELDINGSTYPE_SOKNAD_MOTTATT)
-                    log.info("Mottok søknad digisosId=${metadata.digisosId}")
+                    log.info("Mottok søknad digisosId=$digisosId")
                 }
                 MELDINGSTYPE_ETTERSENDELSE -> {
+                    handleEttersendelse(melding)
                     svar.svar(MELDINGSTYPE_ETTERSENDELSE_MOTTATT)
-                    log.info("Mottok ettersendelse, meldingId=${melding.meldingId.uuid}")
                 }
                 else -> log.warn("Ukjent meldingstype ${melding.meldingType}, ack uten svar")
             }
@@ -102,35 +100,20 @@ class FiksIoMottak(
         }
     }
 
-    internal data class Metadata(val digisosId: UUID, val eksternRef: String?, val sokerFnr: String?)
-
-    /** Finner JSON-filen i meldingen som inneholder digisosId (no.nav.digisos.soknad.v1-skjemaet). */
-    private fun lesMetadata(melding: MottattMelding): Metadata {
-        var digisosIdMetadata: Pair<UUID, String?>? = null
-        var sokerFnr: String? = null
-        // Strømmen må leses helt ut før den lukkes, ellers feiler skrivetråden i
-        // fiks-io-klienten med "Pipe closed".
-        melding.dekryptertZipStream.use { zip ->
-            while (true) {
-                val entry = zip.nextEntry ?: break
-                if (!entry.name.endsWith(".json")) {
-                    zip.transferTo(OutputStream.nullOutputStream())
-                    continue
-                }
-                val node = runCatching { objectMapper.readTree(zip.readAllBytes()) }.getOrNull() ?: continue
-                if (sokerFnr == null) {
-                    sokerFnr = lesSokerFnr(node)
-                }
-                if (digisosIdMetadata == null) {
-                    val digisosId = node.path("digisosId").asText(null)
-                    if (digisosId != null) {
-                        digisosIdMetadata = UUID.fromString(digisosId) to node.path("eksternRef").asText(null)
-                    }
-                }
+    private fun handleEttersendelse(melding: MottattMelding) {
+        val meldingId = melding.meldingId.uuid
+        try {
+            val innhold = lesFiksIoInnhold(melding.dekryptertZipStream, objectMapper)
+            val digisosId = innhold.digisosId
+            val vedlegg = innhold.vedlegg
+            if (digisosId == null || vedlegg == null) {
+                log.warn("Ettersendelse meldingId=$meldingId mangler digisosId eller vedlegg.json")
+                return
             }
+            runBlocking(Dispatchers.IO) { service.registrerEttersendelse(digisosId, meldingId, innhold.eksternRef, vedlegg) }
+        } catch (e: Exception) {
+            log.error("Kunne ikke behandle ettersendelse meldingId=$meldingId: ${e.javaClass.simpleName}")
         }
-        val (digisosId, eksternRef) = digisosIdMetadata ?: throw IllegalArgumentException("Fant ikke digisosId i meldingen")
-        return Metadata(digisosId, eksternRef, sokerFnr)
     }
 
     override fun close() {
@@ -150,11 +133,3 @@ class FiksIoMottak(
         }
     }
 }
-
-internal fun lesSokerFnr(node: JsonNode): String? =
-    node.path("data")
-        .path("personalia")
-        .path("personIdentifikator")
-        .path("verdi")
-        .asText(null)
-        ?.takeIf { it.matches(Regex("^[0-9]{11}$")) }

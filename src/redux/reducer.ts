@@ -74,6 +74,30 @@ export const getInitialFsSoknad = (fiksDigisosId: string): FsSoknad => {
   };
 };
 
+const createFsSoknadFromData = (
+  fiksDigisosId: string,
+  data: DigisosSokerJson,
+): FsSoknad => {
+  const fiksDigisosSokerJson = {
+    sak: {
+      soker: {
+        ...data,
+      },
+    },
+    type: "no.nav.digisos.digisos.soker.v1",
+  } as FiksDigisosSokerJson;
+
+  const sorterteHendelser = sorterEtterDatoStigende(
+    data.hendelser,
+    (hendelser) => hendelser.hendelsestidspunkt,
+  );
+  return createFsSoknadFromHendelser(
+    sorterteHendelser,
+    fiksDigisosSokerJson,
+    fiksDigisosId,
+  );
+};
+
 export const idFromQueryOrRandomId = (
   searchParams?: ReadonlyURLSearchParams,
 ): string => {
@@ -231,26 +255,31 @@ const modelSlice = createSlice({
       );
       if (soknadFinnes) return;
 
-      const fiksDigisosSokerJson = {
-        sak: {
-          soker: {
-            ...data,
-          },
-        },
-        type: "no.nav.digisos.digisos.soker.v1",
-      } as FiksDigisosSokerJson;
-
-      const sorterteHendelser = sorterEtterDatoStigende(
-        data.hendelser,
-        (hendelser) => hendelser.hendelsestidspunkt,
+      state.soknader.push(createFsSoknadFromData(fiksDigisosId, data));
+    },
+    ERSTATT_SOKNAD(
+      state,
+      action: PayloadAction<{ fiksDigisosId: string; data: DigisosSokerJson }>,
+    ) {
+      const { fiksDigisosId, data } = action.payload;
+      const soknadIndex = state.soknader.findIndex(
+        (soknad) => soknad.fiksDigisosId === fiksDigisosId,
       );
-      const fsSoknad = createFsSoknadFromHendelser(
-        sorterteHendelser,
-        fiksDigisosSokerJson,
-        fiksDigisosId,
-      );
+      // Bare backend legger til hendelser utenfra. Er antallet likt, er ingenting nytt, og vi lar
+      // være å erstatte, slik at åpne skjemaer ikke mister det som er fylt ut.
+      const antallHendelser =
+        soknadIndex === -1
+          ? -1
+          : state.soknader[soknadIndex].fiksDigisosSokerJson.sak.soker.hendelser.length;
+      if (data.hendelser.length <= antallHendelser) return;
 
-      state.soknader.push(fsSoknad);
+      const fsSoknad = createFsSoknadFromData(fiksDigisosId, data);
+
+      if (soknadIndex === -1) {
+        state.soknader.push(fsSoknad);
+      } else {
+        state.soknader[soknadIndex] = fsSoknad;
+      }
     },
     SLETT_SOKNAD(state, action: PayloadAction<string>) {
       state.soknader = state.soknader.filter(
@@ -600,6 +629,7 @@ export const {
   SKJUL_SNACKBAR,
   NY_SOKNAD,
   HENTET_SOKNAD,
+  ERSTATT_SOKNAD,
   OPPDATER_FIKS_DIGISOS_ID,
   OPPDATER_SOKNADS_STATUS,
   OPPDATER_NAV_KONTOR,

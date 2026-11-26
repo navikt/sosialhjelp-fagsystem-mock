@@ -1,7 +1,11 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { sendPdfOgOppdaterForelopigSvar, sendPdfOgOppdaterVedtakFattet } from "./actions";
+import {
+  oppdaterInnsynsfilFraBackend,
+  sendPdfOgOppdaterForelopigSvar,
+  sendPdfOgOppdaterVedtakFattet,
+} from "./actions";
 import { getInitialFsSoknad, initialModel } from "./reducer";
-import { Utfall } from "../types/hendelseTypes";
+import { HendelseType, Utfall } from "../types/hendelseTypes";
 import { configureStore } from "@reduxjs/toolkit";
 import modelReducer from "./reducer";
 
@@ -69,5 +73,64 @@ describe("opplasting av hendelsesdokument", () => {
     await vi.waitFor(() => expect(store.getState().model.loaderOn).toBe(false));
     expect(fetchMock).toHaveBeenCalledTimes(1);
     expect(store.getState().model.snackbarVariant).toBe("error");
+  });
+});
+
+describe("oppdaterInnsynsfilFraBackend", () => {
+  it("erstatter en eksisterende søknad med hendelser fra backend ved 200", async () => {
+    const existingSoknad = getInitialFsSoknad(sakId);
+    const soker = existingSoknad.fiksDigisosSokerJson.sak.soker;
+    const data = {
+      ...soker,
+      hendelser: [
+        ...soker.hendelser,
+        {
+          type: HendelseType.TildeltNavKontor,
+          hendelsestidspunkt: "2024-01-02T00:00:00Z",
+          navKontor: "Nav Oslo",
+        },
+      ],
+    };
+    const fetchMock = vi.fn().mockResolvedValue(Response.json(data));
+    vi.stubGlobal("fetch", fetchMock);
+    const store = createStore();
+
+    await oppdaterInnsynsfilFraBackend(sakId, store.dispatch);
+
+    expect(store.getState().model.soknader).toHaveLength(1);
+    expect(store.getState().model.soknader[0].navKontor).toMatchObject({
+      navKontor: "Nav Oslo",
+    });
+    expect(
+      store.getState().model.soknader[0].fiksDigisosSokerJson.sak.soker.hendelser,
+    ).toHaveLength(2);
+    expect(fetchMock).toHaveBeenCalledWith(
+      expect.stringContaining(`${encodeURIComponent(sakId)}/innsynsfil`),
+      expect.objectContaining({ method: "GET" }),
+    );
+  });
+
+  it("lar state være uendret og oppretter ikke søknad ved 404", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(new Response("", { status: 404 }));
+    vi.stubGlobal("fetch", fetchMock);
+    const store = createStore();
+    const modelBefore = store.getState().model;
+
+    await oppdaterInnsynsfilFraBackend(sakId, store.dispatch);
+
+    expect(store.getState().model).toBe(modelBefore);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(fetchMock.mock.calls[0][1]).toMatchObject({ method: "GET" });
+  });
+
+  it("erstatter ikke søknaden når backend ikke har nye hendelser", async () => {
+    const soker = getInitialFsSoknad(sakId).fiksDigisosSokerJson.sak.soker;
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(Response.json(soker)));
+    const store = createStore();
+    const soknadBefore = store.getState().model.soknader[0];
+
+    await oppdaterInnsynsfilFraBackend(sakId, store.dispatch);
+
+    expect(store.getState().model.soknader[0]).toBe(soknadBefore);
   });
 });

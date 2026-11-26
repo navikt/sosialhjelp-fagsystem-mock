@@ -148,27 +148,33 @@ export const createFsSoknadFromHendelser = (
         );
       }) as VedtakFattet;
 
-    const vilkarTilSak = hendelser.filter((hendelse: Hendelse) => {
-      if (hendelse.type !== HendelseType.Vilkar) {
-        return false;
-      }
-      return utbetalingerTilSak.find((utbetaling) => {
-        return hendelse.utbetalingsreferanse?.includes(
-          utbetaling.utbetalingsreferanse,
-        );
-      });
-    }) as Vilkar[];
+    const vilkarTilSak = getSisteUnikeElement(
+      hendelser.filter((hendelse: Hendelse) => {
+        if (hendelse.type !== HendelseType.Vilkar) {
+          return false;
+        }
+        return utbetalingerTilSak.find((utbetaling) => {
+          return hendelse.utbetalingsreferanse?.includes(
+            utbetaling.utbetalingsreferanse,
+          );
+        });
+      }) as Vilkar[],
+      (vilkar: Vilkar) => vilkar.vilkarreferanse,
+    );
 
-    const dokumentasjonskravTilSak = hendelser.filter((hendelse: Hendelse) => {
-      if (hendelse.type !== HendelseType.Dokumentasjonkrav) {
-        return false;
-      }
-      return utbetalingerTilSak.find((utbetaling) => {
-        return hendelse.utbetalingsreferanse?.includes(
-          utbetaling.utbetalingsreferanse,
-        );
-      });
-    }) as Dokumentasjonkrav[];
+    const dokumentasjonskravTilSak = getSisteUnikeElement(
+      hendelser.filter((hendelse: Hendelse) => {
+        if (hendelse.type !== HendelseType.Dokumentasjonkrav) {
+          return false;
+        }
+        return utbetalingerTilSak.find((utbetaling) => {
+          return hendelse.utbetalingsreferanse?.includes(
+            utbetaling.utbetalingsreferanse,
+          );
+        });
+      }) as Dokumentasjonkrav[],
+      (dokkrav: Dokumentasjonkrav) => dokkrav.dokumentasjonkravreferanse,
+    );
 
     const fsSaksStatus: FsSaksStatus = {
       ...sak,

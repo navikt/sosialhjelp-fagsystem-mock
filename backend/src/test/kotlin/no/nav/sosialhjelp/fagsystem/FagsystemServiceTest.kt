@@ -10,8 +10,10 @@ import io.mockk.slot
 import io.mockk.verify
 import kotlinx.coroutines.test.runTest
 import no.nav.sosialhjelp.fagsystem.db.Kilde
+import no.nav.sosialhjelp.fagsystem.db.EttersendelseRepository
 import no.nav.sosialhjelp.fagsystem.db.Sak
 import no.nav.sosialhjelp.fagsystem.db.SakRepository
+import no.nav.sosialhjelp.fagsystem.fiks.EttersendtVedlegg
 import no.nav.sosialhjelp.fagsystem.fiks.FiksDigisosClient
 import java.time.OffsetDateTime
 import java.util.UUID
@@ -20,9 +22,11 @@ import kotlin.test.Test
 class FagsystemServiceTest {
     private val orgId = UUID.randomUUID()
     private val id = UUID.randomUUID()
+    private val meldingId = UUID.randomUUID()
     private val repository = mockk<SakRepository>(relaxed = true)
+    private val ettersendelser = mockk<EttersendelseRepository>(relaxed = true)
     private val fiks = mockk<FiksDigisosClient>(relaxed = true)
-    private val service = FagsystemService(repository, fiks, orgId, objectMapper)
+    private val service = FagsystemService(repository, ettersendelser, fiks, orgId, objectMapper)
 
     private val sak =
         Sak(id, orgId, Kilde.FIKS_IO, "ref", OffsetDateTime.now(), OffsetDateTime.now())
@@ -83,5 +87,27 @@ class FagsystemServiceTest {
 
             coVerify(exactly = 0) { fiks.oppdaterSak(any(), any()) }
             verify(exactly = 0) { repository.oppdaterDigisosSoker(any(), any()) }
+        }
+
+    @Test
+    fun `registrerer ettersendelse og oppdaterer innsynsfilen`() =
+        runTest {
+            every { repository.hent(id) } returns sak
+            every { repository.hentDigisosSoker(id) } returns
+                """{"type":"no.nav.digisos.digisos.soker.v1","sak":{"soker":{"hendelser":[{"type":"dokumentasjonkrav","hendelsestidspunkt":"2026-01-01T10:00:00Z","dokumentasjonkravreferanse":"krav-1","tittel":"T","status":"RELEVANT"}]}}}"""
+            val json = slot<String>()
+            coEvery { fiks.oppdaterSak(id, capture(json)) } returns Unit
+            val vedlegg = listOf(EttersendtVedlegg("T", null, "LastetOpp", "dokumentasjonkrav", "krav-1", 1))
+
+            service.registrerEttersendelse(id, meldingId, "ref", vedlegg)
+
+            val hendelser = objectMapper.readTree(json.captured).path("sak").path("soker").path("hendelser")
+            hendelser.size() shouldBe 2
+            hendelser.path(1).path("status").asText() shouldBe "OPPFYLT"
+            coVerify {
+                fiks.oppdaterSak(id, json.captured)
+                repository.oppdaterDigisosSoker(id, json.captured)
+            }
+            verify { ettersendelser.lagre(id, meldingId, "ref", vedlegg) }
         }
 }
